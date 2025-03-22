@@ -1,7 +1,7 @@
 // components/AdBanner.jsx
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import adBannerImage from '../IMG/Myself.jpeg'; // 이미지 파일 import
+import adBannerImage from '../../IMG/Myself.jpeg'; // 이미지 파일 import
 
 const adBannerStyle = css`
   display: flex;

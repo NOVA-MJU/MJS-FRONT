@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
 import { FaBullhorn, FaSearch } from 'react-icons/fa';
 import ProfileComponent from './ProfileComponent';
 
@@ -117,7 +116,7 @@ const headerContainerStyle = css`
   }
 `;
 
-const HeaderComponent = () => {
+const Header = () => {
   return (
     <div css={headerContainerStyle}>
       <div className="left-section">
@@ -146,4 +145,4 @@ const HeaderComponent = () => {
   );
 };
 
-export default HeaderComponent;
+export default Header;

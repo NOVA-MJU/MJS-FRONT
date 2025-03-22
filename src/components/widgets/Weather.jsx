@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-
-import { weatherFetch } from '../api/weatherApi';
-import LoadingComponent from './util/LoadingComponent';
+import { weatherFetch } from '@/api/weatherApi';
+import LoadingComponent from '../util/LoadingComponent';
 
 const loadingContainerStyle = css`
   display: flex;
@@ -89,7 +88,7 @@ const weatherContainerStyle = css`
   }
 `;
 
-const WeatherComponent = () => {
+const Weather = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [currentTime, setCurrentTime] = useState('');
 
@@ -152,4 +151,4 @@ const WeatherComponent = () => {
   );
 };
 
-export default WeatherComponent;
+export default Weather;

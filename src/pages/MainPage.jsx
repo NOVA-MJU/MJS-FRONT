@@ -1,14 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
 import { useAuth } from '../context/AuthContext';
-import TabComponent from '../components/TabComponent';
-import WeatherComponent from '../components/WeatherComponent';
-
-import AdBanner from '../components/AdBanner';
-import MealPlan from '../components/MealPlan';
-import MyongjiNews from '../components/MyoungjiNews';
-import MiniBoard from '../components/widgets/MiniBoard';
+import Announcement from '@/components/widgets/Announcement';
+import MealPlan from '@/components/widgets/MealPlan';
+import MyongjiNews from '@/components/widgets/MyoungjiNews';
+import MiniBoard from '@/components/widgets/MiniBoard';
+import Weather from '@/components/widgets/Weather';
+import AdBanner from '@/components/widgets/AdBanner';
 
 const mainPageContainerStyle = css`
   width: 100%;
@@ -74,8 +72,8 @@ const MainPage = () => {
 
         {/* 학사 공지 탭 */}
         <div css={contentBoxStyle}>
-          <h3>학사 공지</h3>
-          <TabComponent />
+          <h3>공지사항</h3>
+          <Announcement />
         </div>
 
         {/* 명대 뉴스 */}
@@ -87,11 +85,8 @@ const MainPage = () => {
       {/* 오른쪽 섹션 */}
       <div css={rightSectionStyle}>
         <div css={contentBoxStyle}>
-          <WeatherComponent /> {/* 현재 날씨 컴포넌트 */}
+          <Weather /> {/* 현재 날씨 컴포넌트 */}
         </div>
-        {/* <div css={contentBoxStyle}>
-          <RankingComponent /> 검색
-        </div> */}
         <div css={contentBoxStyle}>
           <MiniBoard />
         </div>

@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import LoadingComponent from './util/LoadingComponent';
-import { getWeeklyMenu } from '../api/mealApi';
+import { getWeeklyMenu } from '@/api/mealApi';
 import { useNavigate } from 'react-router-dom';
-import { CgLogOff } from 'react-icons/cg';
-import { IoIosSad } from 'react-icons/io';
+import LoadingComponent from '../util/LoadingComponent';
 
 const mealPlanStyle = css`
   display: flex;
@@ -104,7 +102,7 @@ const MealPlan = () => {
 
   if (loading) {
     return (
-      <LoadingComponent message="식단 정보를 불러오는 중입니다."></LoadingComponent>
+      <LoadingComponent message="식단 정보를 불러오는 중입니다." />
     );
   }
 
