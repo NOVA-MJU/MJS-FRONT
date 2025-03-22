@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom'; // BrowserRouter 추가
 import './index.css';
 import App from './App.jsx';
-import { ToastContainer, Zoom } from 'react-toastify';
+import { ToastContainer, Bounce } from 'react-toastify';
 import { CookiesProvider } from 'react-cookie';
 
 createRoot(document.getElementById('root')).render(
@@ -12,17 +12,17 @@ createRoot(document.getElementById('root')).render(
       <BrowserRouter>
         <App />
         <ToastContainer
-          position="top-center"
+          position="bottom-center"
           autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
+          hideProgressBar
+          newestOnTop
           closeOnClick={false}
           rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
+          pauseOnFocusLoss={false}
+          draggable={false}
+          pauseOnHover={false}
           theme="light"
-          transition={Zoom} />
+          transition={Bounce} />
       </BrowserRouter>
     </CookiesProvider>
   </StrictMode>
