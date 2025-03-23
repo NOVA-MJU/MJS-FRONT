@@ -17,7 +17,6 @@ export default function Comment({ uuid }) {
     setIsLoading(true)
     try {
       const response = await getBoardComments(uuid)
-      console.log('getBoardComments 결과', response.data)
       setComments(response.data)
     } catch (error) {
       setIsError(true)
@@ -53,6 +52,7 @@ export default function Comment({ uuid }) {
   } else {
     return (
       <div css={css`display: flex; flex-direction: column; padding: 16px; gap: 16px;`}>
+        <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
         <span>
           댓글 수 {comments.length}개
         </span>
@@ -77,7 +77,6 @@ export default function Comment({ uuid }) {
             </button>
           </div>
         )}
-        <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
       </div>
     )
   }
