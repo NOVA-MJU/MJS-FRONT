@@ -2,8 +2,8 @@
 import { AuthProvider } from './context/AuthContext';
 import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
-import ScrollToTop from '@components/scrollToTop';
-import Layout from './components/Layout';
+import ScrollToTop from '@components/ScrollToTop';
+import Layout from '@pages/Layout';
 import BoardDetailPage from '@pages/board/BoardDetailPage';
 import BoardListPage from '@pages/board/BoardListPage';
 import BoardWritePage from '@pages/board/BoardWritePage';
@@ -16,28 +16,8 @@ import ProfileEditPage from '@pages/profile/edit';
 import InqueryPage from '@pages/profile/inquery';
 import InqueryWritePage from '@pages/profile/inquery/write';
 import WithDrawalPage from '@pages/profile/withdrawal';
-import MealPage from './pages/meal/MealPage';
-import NewsPage from './pages/news/NewsPage';
-
-// 전역 스타일
-const globalStyle = css`
-  body,
-  html,
-  #root {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    font-family: 'Poppins', 'Arial', sans-serif;
-  }
-`;
+import MealPage from '@pages/meal/MealPage';
+import NewsPage from '@pages/news/NewsPage';
 
 const App = () => {
   return (
@@ -55,7 +35,7 @@ const App = () => {
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
 
-            <Route path='/profile/' element={<ProfilePage />} />
+            <Route path='/profile' element={<ProfilePage />} />
             <Route path='/profile/edit' element={<ProfileEditPage />} />
             <Route path='/profile/inquery' element={<InqueryPage />} />
             <Route path='/profile/inquery/write' element={<InqueryWritePage />} />
@@ -76,3 +56,23 @@ const App = () => {
 };
 
 export default App;
+
+// 전역 스타일
+const globalStyle = css`
+  body,
+  html,
+  #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', 'Arial', sans-serif;
+  }
+`;

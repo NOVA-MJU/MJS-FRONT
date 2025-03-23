@@ -32,7 +32,7 @@ const ProfileComponent = () => {
           const response = await getUserInfo()
           setUserInfo(response.data)
         } catch (e) {
-          console.error('서버 통신 오류:', e)
+          console.error(e)
           await logout()
         } finally {
           setIsLoading(false)

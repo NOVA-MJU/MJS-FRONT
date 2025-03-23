@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import MarkdownViewer from "../../components/MarkdownViewer";
-import { deleteBoardContent, getBoardContent } from '../../api/boardApi';
+import { useEffect, useState } from 'react';
+import MarkdownViewer from "@components/MarkdownViewer";
+import { deleteBoardContent, getBoardContent } from '@api/boardApi';
 import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
-import Comment from '../../components/Comment';
-import LoadingComponent from '../../components/util/LoadingComponent';
+import Comment from '@components/Comment';
+import LoadingComponent from '@components/util/LoadingComponent';
 import { toast } from 'react-toastify';
 import Avatar from '@components/Avatar';
 
@@ -31,7 +31,7 @@ const BoardDetailPage = () => {
         navigate('/board')
         toast.info('게시글이 삭제되었습니다')
       } catch (e) {
-        console.error('error BoardDetailPage.jsx', e)
+        console.error(e)
         toast.error(e.message)
       } finally {
         setLoading(false)

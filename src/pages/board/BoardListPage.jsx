@@ -22,7 +22,6 @@ const BoardListPage = () => {
       try {
         const response = await getBoardContents(page, size);
         setContents(response.data.content);
-        console.log(response.data.content);
       } catch (error) {
         console.error(error);
       } finally {
