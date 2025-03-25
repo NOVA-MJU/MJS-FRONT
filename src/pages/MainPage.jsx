@@ -10,7 +10,6 @@ import AdBanner from '@/components/widgets/AdBanner';
 
 const mainPageContainerStyle = css`
   width: 100%;
-  padding: 40px 0;
   background-color: white;
   display: grid;
   grid-template-columns: 2fr 1fr; /* 왼쪽 2/3, 오른쪽 1/3 */
