@@ -3,57 +3,51 @@ import { css } from '@emotion/react';
 import PropTypes from 'prop-types';
 
 const baseStyles = css`
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
+  border-radius: 0.75rem; 
+  border: none; 
   cursor: pointer;
-`;
+  transition: background-color 0.3s ease;
+`
 
-const variantStyles = {
+const styleVariant = {
   primary: css`
-    background-color: #3b82f6;
-    color: white;
-    &:hover {
-      background-color: #2563eb;
-    }
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px #93c5fd;
-    }
-  `,
-  secondary: css`
-    background-color: #6b7280;
-    color: white;
-    &:hover {
-      background-color: #4b5563;
-    }
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px #d1d5db;
-    }
-  `,
-};
+    background-color: #0d2864; 
+    color: #fff; 
+    text-align: center; 
 
-const Button = ({ children, variant, className, ...rest }) => {
+    &:hover {
+      background-color: #244a94;
+    }
+  `,
+  outline: css`
+    background-color: #ffffff;
+    color: #333; 
+    text-align: center; 
+
+    &:hover {
+      background-color: #0000000f;
+    }
+  `,
+}
+
+const Button = ({ children, variant = 'primary', className = '', ...rest }) => {
   return (
     <button
-      css={[baseStyles, variantStyles[variant] || variantStyles.primary]}
+      css={[baseStyles, styleVariant[variant] || styleVariant.primary]}
       className={className}
       {...rest}
     >
-      {children}
+      <span>
+        {children}
+      </span>
     </button>
-  );
-};
+  )
+}
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['primary', 'secondary']),
+  variant: PropTypes.oneOf(['primary', 'outline']),
   className: PropTypes.string,
-};
+}
 
-Button.defaultProps = {
-  variant: 'primary',
-  className: '',
-};
-
-export default Button;
+export default Button

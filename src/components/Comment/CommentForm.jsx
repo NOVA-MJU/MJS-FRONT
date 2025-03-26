@@ -4,10 +4,21 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { postBoardComment } from '../../api/commentApi'
 import Avatar from '@components/Avatar'
+import { reissueAccessToken } from '@/api/apiClient'
+import Button from '../Button'
 
 export default function CommentForm({ uuid, onCommentAdded }) {
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const testReissus = async () => {
+    try {
+      const response = await reissueAccessToken()
+      // console.log(response)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   const handleSubmitComment = async () => {
     if (isLoading) {
@@ -41,12 +52,12 @@ export default function CommentForm({ uuid, onCommentAdded }) {
         type='text'
         placeholder='댓글을 남겨주세요'
         onChange={(e) => setContent(e.target.value)} />
-      <button
-        css={css`background-color: #0d2864; color: white; text-align: center; border-radius: 10px; border: none; padding: 10px 20px; cursor: pointer;`}
+      <Button
+        css={css`padding: 10px 20px;`}
         onClick={handleSubmitComment}
       >
         남기기
-      </button>
+      </Button>
     </div>
   )
 }
