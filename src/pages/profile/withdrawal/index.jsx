@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import Button from '@components/Button';
+import Button from '@/components/Button';
 import { css } from '@emotion/react';
 import { deleteUserAccount } from '@api/userApi';
 import { useState } from 'react';

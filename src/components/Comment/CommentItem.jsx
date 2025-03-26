@@ -68,13 +68,11 @@ export default function CommentItem(props) {
         const response = await deleteBoardComment(props.commentUuid)
         console.log(response)
         window.location.reload()
-
       } catch (e) {
-        console.error('error CommentItem.jsx', e)
+        console.error(e)
+        toast.error(e.message)
 
-        if (e.response.status === 400) {
-          toast.error(e.response.data.message)
-        } else if (e.response.status === 403) {
+        if (e.response.status === 403) {
           toast.error('로그인이 필요한 서비스 입니다')
           navigate('/login')
         }

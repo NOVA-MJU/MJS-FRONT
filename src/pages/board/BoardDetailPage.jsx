@@ -56,7 +56,6 @@ const BoardDetailPage = () => {
       setPageLoading(true);
       try {
         const response = await getBoardContent(uuid);
-        // console.log('getBoardContent 결과', response.data);
         setContent(response.data);
       } catch (error) {
         toast.error(error.message)
@@ -79,7 +78,7 @@ const BoardDetailPage = () => {
     return (
       <div css={pageStyle}>
         <div css={css`display: flex; flex-direction: column;`}>
-          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;`}>
+          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 0.75rem;`}>
             <div>
               <span css={css`font-size: 1.5em; font-weight: bold; margin: 8px; flex: 1;`}>
                 {content.title}
@@ -101,8 +100,7 @@ const BoardDetailPage = () => {
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
               <LuMessageSquare size={iconSize} />
-              게시판 댓글수를 GET Board api에서도 주세요
-              {/* {comments.totalElements} */}
+              {content.commentCount}
             </span>
           </div>
         </div>
