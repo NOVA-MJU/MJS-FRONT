@@ -4,11 +4,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import MarkdownViewer from "@components/MarkdownViewer";
 import { deleteBoardContent, getBoardContent } from '@api/boardApi';
-import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
+import { LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '@components/Comment';
 import LoadingComponent from '@components/util/LoadingComponent';
 import { toast } from 'react-toastify';
 import Avatar from '@components/Avatar';
+import Button from '@/components/Button';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
@@ -78,17 +79,19 @@ const BoardDetailPage = () => {
     return (
       <div css={pageStyle}>
         <div css={css`display: flex; flex-direction: column;`}>
-          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc;`}>
-            <span css={css`font-size: 1.5em; font-weight: bold; padding: 4px; margin: 8px; flex: 1;`}>
-              {content.title}
-            </span>
+          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem;`}>
+            <div>
+              <span css={css`font-size: 1.5em; font-weight: bold; margin: 8px; flex: 1;`}>
+                {content.title}
+              </span>
+            </div>
             <div css={css`display: flex; flex-direction: row; gap: 8px;`}>
-              <button css={textButtonStyle}>
+              <Button variant='outline' css={css`color: grey;`}>
                 수정
-              </button>
-              <button css={textButtonStyle} onClick={handleDeletePost}>
+              </Button>
+              <Button variant='outline' css={css`color: grey;`} onClick={handleDeletePost}>
                 삭제
-              </button>
+              </Button>
             </div>
           </div>
           <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 20px;`}>
@@ -100,10 +103,6 @@ const BoardDetailPage = () => {
               <LuMessageSquare size={iconSize} />
               게시판 댓글수를 GET Board api에서도 주세요
               {/* {comments.totalElements} */}
-            </span>
-            <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
-              <LuEye size={iconSize} />
-              {content.viewCount}
             </span>
           </div>
         </div>

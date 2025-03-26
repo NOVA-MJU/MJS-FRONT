@@ -86,7 +86,7 @@ export default function Comment({ uuid }) {
         {comments.length > commentsVisibleCount && (
           <>
             <div css={css`display: flex; justify-content: center;`}>
-              <Button onClick={handleViewMoreComments}>
+              <Button css={css`font-size: 0.75rem; padding: 0.75rem;`} onClick={handleViewMoreComments}>
                 댓글 더 보기
               </Button>
             </div>

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { LuHeart } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Button from '../Button';
 
 export default function CommentItem(props) {
   const [likeCount, setLikeCount] = useState(props.likeCount)
@@ -60,24 +61,26 @@ export default function CommentItem(props) {
       return
     }
 
-    setIsLoading(true)
+    if (confirm('삭제하시겠습니까?')) {
+      setIsLoading(true)
 
-    try {
-      const response = await deleteBoardComment(props.commentUuid)
-      console.log(response)
-      window.location.reload()
+      try {
+        const response = await deleteBoardComment(props.commentUuid)
+        console.log(response)
+        window.location.reload()
 
-    } catch (e) {
-      console.error('error CommentItem.jsx', e)
+      } catch (e) {
+        console.error('error CommentItem.jsx', e)
 
-      if (e.response.status === 400) {
-        toast.error(e.response.data.message)
-      } else if (e.response.status === 403) {
-        toast.error('로그인이 필요한 서비스 입니다')
-        navigate('/login')
+        if (e.response.status === 400) {
+          toast.error(e.response.data.message)
+        } else if (e.response.status === 403) {
+          toast.error('로그인이 필요한 서비스 입니다')
+          navigate('/login')
+        }
+      } finally {
+        setIsLoading(false)
       }
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -106,12 +109,12 @@ export default function CommentItem(props) {
         <span css={css`display: flex; align-items: center; font-size: 14px; margin: 4px; color: #999; gap: 0.25rem;`}>
           <LuHeart /> {likeCount}
         </span>
-        <span css={css`font-size: 14px; margin: 4px; color: #999; cursor: pointer;`} onClick={handleLikeComment}>
+        <Button variant='outline' css={css`color: #999; font-size: 14px`} onClick={handleLikeComment}>
           좋아요
-        </span>
-        <span css={css`font-size: 14px; margin: 4px; color: #999; cursor: pointer;`} onClick={handleDeleteComment}>
+        </Button>
+        <Button variant='outline' css={css`color: #999; font-size: 14px`} onClick={handleDeleteComment}>
           삭제
-        </span>
+        </Button>
       </div>
       <span>
         {props.content}
