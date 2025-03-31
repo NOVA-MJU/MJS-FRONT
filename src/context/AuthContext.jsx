@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { postLogin, postLogout, postSignup } from '../api/authApi'
+import { postLogin, postLogout, postReissueAccessToken, postSignup } from '../api/authApi'
 import { useCookies } from 'react-cookie'
 
 const AuthContext = createContext()
@@ -51,8 +51,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await postLogout(accessToken)
-    } catch (error) {
-      console.error('로그아웃 context logout 함수의 실패:', error)
+    } catch (e) {
+      console.error('error AuthContext.jsx', e)
     } finally {
       removeCookies('accessToken')
       removeCookies('refreshToken')
@@ -60,6 +60,22 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(null)
       setUser(null)
       setIsLoggedIn(false)
+    }
+  }
+
+  const reissusToken = async () => {
+    const refreshToken = cookies.refreshToken
+
+    if (!refreshToken) {
+      console.error('error AuthContext.jsx refreshToken이 없음')
+      logout()
+    }
+
+    try {
+      const response = await postReissueAccessToken(refreshToken)
+    } catch (e) {
+      console.error(e)
+
     }
   }
 

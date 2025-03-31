@@ -56,6 +56,7 @@ const BoardDetailPage = () => {
       setPageLoading(true);
       try {
         const response = await getBoardContent(uuid);
+        console.log(response.data)
         setContent(response.data);
       } catch (error) {
         toast.error(error.message)
@@ -122,7 +123,7 @@ const BoardDetailPage = () => {
                 <span css={css`
                 font-size: 18px;
                 font-weight: 700;`}>
-                  작성자
+                  {content.author}
                 </span>
                 <span>
                   {(() => {
@@ -202,15 +203,5 @@ const backButtonStyle = css`
 
   &:hover {
     background-color: #003cb3;
-  }
-`;
-
-const textButtonStyle = css`
-  background: transparent;
-  color: gray;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
   }
 `;

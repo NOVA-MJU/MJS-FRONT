@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { getBoardContents } from '../../api/boardApi';
 import { LuHeart, LuMessageSquare } from "react-icons/lu";
 import LoadingComponent from '../../components/util/LoadingComponent';
+import { useAuth } from '@/context/AuthContext';
 
 const BoardListPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const BoardListPage = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const iconSize = 14;
+  const { isLoggedin } = useAuth();
 
   useEffect(() => {
     const getData = async () => {
@@ -32,7 +34,16 @@ const BoardListPage = () => {
   }, [page, size]);
 
   return (
-    <div css={css`flex: 1; padding: 2%; display: flex; flex-direction: column;`}>
+    <div
+      css={css`
+        flex: 1; 
+        padding: 2%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 16px;
+      `}
+    >
       <div css={pageHeadingStyle}>
         <h1 css={css`color: #001f5c; margin: 4px;`}>
           자유 게시판
