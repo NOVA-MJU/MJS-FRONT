@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 export default function BoardActivityPage() {
   const [isLoading, setIsLoading] = useState(false)
-  const [contents, setContents] = useState(X.data)
+  const [contents, setContents] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -23,12 +23,14 @@ export default function BoardActivityPage() {
         setIsLoading(false)
       } catch (e) {
         console.error(e)
+        if (e.status === 403) {
+          toast.warn('로그인이 필요한 서비스입니다')
+          navigate('/login')
+        }
       }
     }
     getData()
   }, [])
-
-  console.log(contents)
 
   return (
     <div css={pageLayout}>
@@ -42,7 +44,7 @@ export default function BoardActivityPage() {
               <LoadingComponent message='게시글을 불러오는 중입니다' />
             </div>
           ) : (
-            contents ? (
+            contents.length != 0 ? (
               <div css={listStyle}>
                 {contents.map((content) => {
                   return (

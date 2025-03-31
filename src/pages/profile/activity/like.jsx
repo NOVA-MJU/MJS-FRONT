@@ -6,10 +6,11 @@ import { css } from '@emotion/react'
 import { useEffect, useState } from 'react'
 import { LuHeart, LuMessageSquare } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export default function LikeActivityPage() {
   const [isLoading, setIsLoading] = useState(false)
-  const [contents, setContents] = useState(X.data)
+  const [contents, setContents] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -20,15 +21,18 @@ export default function LikeActivityPage() {
         const response = await getMyLikedPosts()
         setContents(response.data)
         console.log(response.data)
+        console.log(contents.length)
         setIsLoading(false)
       } catch (e) {
         console.error(e)
+        if (e.status === 403) {
+          toast.warn('로그인이 필요한 서비스입니다')
+          navigate('/login')
+        }
       }
     }
     getData()
   }, [])
-
-  console.log(contents)
 
   return (
     <div css={pageLayout}>
@@ -42,7 +46,7 @@ export default function LikeActivityPage() {
               <LoadingComponent message='게시글을 불러오는 중입니다' />
             </div>
           ) : (
-            contents ? (
+            contents.length != 0 ? (
               <div css={listStyle}>
                 {contents.map((content) => {
                   return (
