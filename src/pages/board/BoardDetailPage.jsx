@@ -3,7 +3,7 @@ import { css } from '@emotion/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import MarkdownViewer from "@components/MarkdownViewer";
-import { deleteBoardContent, getBoardContent } from '@api/boardApi';
+import { deleteBoardContent, getBoardContent, postBoardLike } from '@api/boardApi';
 import { LuHeart, LuMessageSquare } from "react-icons/lu";
 import Comment from '@components/Comment';
 import LoadingComponent from '@components/util/LoadingComponent';
@@ -46,9 +46,16 @@ const BoardDetailPage = () => {
       return
     }
 
-    setLoading(true)
-    toast.info('게시글에 좋아요를 표시했습니다')
-    setLoading(false)
+    try {
+      setLoading(true)
+      const response = await postBoardLike(uuid)
+      toast.info(response.data)
+    } catch (e) {
+      console.error(e)
+      toast.error(e.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
