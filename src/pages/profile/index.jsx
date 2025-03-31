@@ -16,8 +16,6 @@ export default function ProfilePage() {
   const [isError, setIsError] = useState(false)
   const [userInfo, setUserInfo] = useState(null)
 
-
-
   useEffect(() => {
     const getData = async () => {
       setIsLoading(true)
@@ -36,7 +34,6 @@ export default function ProfilePage() {
         }
       } finally {
         setIsLoading(false)
-
       }
     }
     getData()
@@ -110,11 +107,14 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div css={css`display: flex; flex-direction: column; gap: 1.5rem; padding: 0.25rem;`}>
-                <Link css={linkStyle}>
+                <Link css={linkStyle} to={'activity/board'}>
                   <span>게시물</span>
                 </Link>
-                <Link css={linkStyle}>
+                <Link css={linkStyle} to={'activity/like'}>
                   <span>좋아요 누른 게시물</span>
+                </Link>
+                <Link css={linkStyle} to={'activity/comment'}>
+                  <span>댓글 작성한 게시글</span>
                 </Link>
               </div>
             </div>
@@ -174,10 +174,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <div css={css`width: 100%; display:flex; justify-content: flex-end;`}>
-              <Link
-                css={css`font-size: 0.75rem; color: #999; text-decoration: none;`}
-                to={'/profile/withdrawal'}
-              >
+              <Link to={'/profile/withdrawal'} css={css`font-size: 0.75rem; color: #999; text-decoration: none;`}>
                 <span>
                   회원 탈퇴
                 </span>

@@ -18,6 +18,9 @@ import InqueryWritePage from '@pages/profile/inquery/write';
 import WithDrawalPage from '@pages/profile/withdrawal';
 import MealPage from '@pages/meal/MealPage';
 import NewsPage from '@pages/news/NewsPage';
+import BoardActivityPage from '@pages/profile/activity/board';
+import CommentActivityPage from '@pages/profile/activity/comment';
+import LikeActivityPage from './pages/profile/activity/like';
 
 const App = () => {
   return (
@@ -40,6 +43,9 @@ const App = () => {
             <Route path='/profile/inquery' element={<InqueryPage />} />
             <Route path='/profile/inquery/write' element={<InqueryWritePage />} />
             <Route path='/profile/withdrawal' element={<WithDrawalPage />} />
+            <Route path='/profile/activity/board' element={<BoardActivityPage />} />
+            <Route path='/profile/activity/comment' element={<CommentActivityPage />} />
+            <Route path='/profile/activity/like' element={<LikeActivityPage />} />
 
             {/* 식단 상세조회 페이지 */}
             <Route path="/meal" element={<MealPage />} />
