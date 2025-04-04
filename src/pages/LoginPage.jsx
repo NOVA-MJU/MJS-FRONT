@@ -6,6 +6,7 @@ import SignUpPage from './SignupPage';
 import { useNavigate } from 'react-router-dom';
 import SuccessModal from '../components/message/SuccessModal';
 import { useAuth } from '../context/AuthContext';
+import LoginInput from '@/components/atomic/LoginInput';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -59,19 +60,17 @@ const LoginPage = () => {
             <img src={logoImg} alt="학교 로고" css={logoStyle} />
             <h2 css={titleStyle}>로그인</h2>
           </div>
-          <input
+          <LoginInput
             type="text"
-            placeholder="이메일"
+            placeholder="이메일을 입력하세요."
             onChange={handleEmailChange}
-            css={inputStyle}
           />
-          <input
+          <LoginInput
             type="password"
-            placeholder="비밀번호"
-            css={inputStyle}
-            value={password}
+            placeholder="비밀번호를 입력하세요."
             onChange={handlePasswordChange}
           />
+
           {error && <p css={errorMessageStyle}>{error}</p>}
           <button type="submit" css={buttonStyle}>
             로그인
@@ -162,21 +161,6 @@ const titleStyle = css`
   font-weight: 600;
   color: #001f5c;
   margin: 0; /* 로고와 제목의 간격 최소화 */
-`;
-
-const inputStyle = css`
-  width: 100%;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  outline: none;
-
-  &:focus {
-    border-color: #001f5c;
-    box-shadow: 0 0 5px rgba(0, 31, 92, 0.3);
-  }
 `;
 
 const buttonStyle = css`
