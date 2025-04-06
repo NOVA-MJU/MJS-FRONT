@@ -27,7 +27,7 @@ export default function ProfilePage() {
       } catch (e) {
         if (e.status == 403) {
           toast.warn('로그인이 필요한 서비스입니다')
-          navigate('/main')
+          navigate('/login')
         } else {
           setIsError(true)
           toast.error(e.message)
@@ -57,7 +57,7 @@ export default function ProfilePage() {
             <h1>
               문제가 발생했습니다
             </h1>
-            <Link to={'/main'}>
+            <Link to={'/'}>
               <button>
                 <h3>
                   돌아가기

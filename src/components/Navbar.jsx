@@ -19,7 +19,7 @@ const Navbar = () => {
             css={css`width: 40px; height: 40px;`}
             src={logo}
             alt="Logo" />
-          <Link to={'/main'} style={{ textDecoration: 'none' }}>
+          <Link to={'/'} style={{ textDecoration: 'none' }}>
             <span css={css`color: white; font-size: 1.5rem; font-weight: bold;`}>
               MJ<span style={{ color: 'skyblue' }}>S</span>
             </span>

@@ -31,7 +31,7 @@ const App = () => {
         <Routes>
           {/* Layout 적용되는 페이지 */}
           <Route element={<Layout />}>
-            <Route path="/main" element={<MainPage />} />
+            <Route path="/" element={<MainPage />} />
 
             {/* url parameter 활용하여, 자유게시판목록 디테일 들어감 */}
             <Route path="/board" element={<BoardListPage />} />
@@ -52,7 +52,7 @@ const App = () => {
             <Route path="/news" element={<NewsPage />}></Route>
           </Route>
           {/* Layout 미적용 페이지 */}
-          <Route path="/" element={<StartPage />}></Route>
+          <Route path="/start" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}
           <Route path="*" element={<NotFoundPage />} /> {/* 404 페이지 */}
         </Routes>
