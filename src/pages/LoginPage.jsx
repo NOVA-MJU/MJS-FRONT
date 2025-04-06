@@ -40,7 +40,7 @@ const LoginPage = () => {
 
   const handleSuccessModalClose = () => {
     setIsSuccessMessageModalOpen(false);
-    navigate('/main');
+    navigate(-1);
   };
 
   return (
