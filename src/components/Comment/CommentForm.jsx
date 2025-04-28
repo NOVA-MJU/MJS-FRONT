@@ -20,6 +20,30 @@ export default function CommentForm({ uuid, onCommentAdded }) {
     }
   }
 
+  const handleTestCommit = async () => {
+    if (isLoading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    for (let i = 0; i < 2000; i++) {
+      try {
+        setIsLoading(true)
+        const response = await postBoardComment(uuid, `${i}번째 댓글 남겨놓는다`)
+        console.log(response.data)
+      } catch (error) {
+        if (error.status == 403)
+          toast.error('댓글 작성 권한이 없습니다')
+        else
+          toast.error(error.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    onCommentAdded()
+  }
+
   const handleSubmitComment = async () => {
     if (isLoading) {
       toast.error('잠시 기다려주세요')
