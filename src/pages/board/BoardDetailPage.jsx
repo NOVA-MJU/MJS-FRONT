@@ -10,6 +10,7 @@ import LoadingComponent from '@components/util/LoadingComponent';
 import { toast } from 'react-toastify';
 import Avatar from '@components/Avatar';
 import Button from '@/components/Button';
+import { getTimeElapsed } from '@/util/getTimeElapsed';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ const BoardDetailPage = () => {
       setPageLoading(true);
       try {
         const response = await getBoardContent(uuid);
-        console.log(response.data)
+        // console.log(response.data)
         setContent(response.data);
       } catch (error) {
         toast.error(error.message)
@@ -127,17 +128,11 @@ const BoardDetailPage = () => {
             <div css={css`display: flex; gap: 16px; align-items: center;`}>
               <Avatar size={48} />
               <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
-                <span css={css`
-                font-size: 18px;
-                font-weight: 700;`}>
+                <span css={css`font-size: 18px; font-weight: 700;`}>
                   {content.author}
                 </span>
                 <span>
-                  {(() => {
-                    const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
-                    const timePart = content.publishedAt.substring(11, 16);
-                    return `${datePart} ${timePart}`;
-                  })()}
+                  {getTimeElapsed(content.publishedAt)}
                 </span>
               </div>
             </div>
