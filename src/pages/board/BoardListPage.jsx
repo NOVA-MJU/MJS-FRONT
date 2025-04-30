@@ -23,6 +23,7 @@ const BoardListPage = () => {
       setLoading(true);
       try {
         const response = await getBoardContents(page, size);
+        console.log(response.data.content)
         setContents(response.data.content);
       } catch (error) {
         console.error(error);
@@ -77,7 +78,19 @@ const BoardListPage = () => {
                 key={content.uuid}>
                 <div className='title-wrapper'>
                   <h3>{content.title}</h3>
-                  <p>{content.content.length > 40 ? content.content.slice(0, 40) + " ..." : content.content}</p>
+                  {content.previewContent ? (
+                    <p>
+                      {content.previewContent.length > 40
+                        ?
+                        content.previewContent.slice(0, 40) + " ..."
+                        :
+                        content.previewContent}
+                    </p>
+                  ) : (
+                    <p>
+                      미리보기가 없습니다
+                    </p>
+                  )}
                 </div>
                 <div className='info-wrapper'>
                   <span>
