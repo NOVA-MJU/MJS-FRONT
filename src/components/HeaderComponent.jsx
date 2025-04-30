@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
+
 import { FaBullhorn, FaSearch } from 'react-icons/fa';
 import ProfileComponent from './ProfileComponent';
 

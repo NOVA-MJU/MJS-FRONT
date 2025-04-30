@@ -1,48 +1,52 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useState } from 'react'
-import { FaExternalLinkAlt } from 'react-icons/fa'
-import LoadingComponent from './util/LoadingComponent'
-import Avatar from './Avatar'
-import { getUserInfo } from '@api/userApi'
+import { css } from '@emotion/react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
+import { FaExternalLinkAlt } from 'react-icons/fa';
+import LoadingComponent from './util/LoadingComponent';
+import Avatar from './Avatar';
+import { getUserInfo } from '@api/userApi';
 
 const ProfileComponent = () => {
-  const navigate = useNavigate()
-  const { isLoggedIn, logout } = useAuth()
-  const [isLoading, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
-  const [userInfo, setUserInfo] = useState(null)
+  const navigate = useNavigate();
+  const { isLoggedIn, logout } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   const handleLoginClick = () => {
-    navigate('/login')
-  }
+    navigate('/login');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
 
   const handleLogoutClick = async () => {
-    await logout()
-    window.location.reload()
-  }
+    await logout();
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (isLoggedIn) {
         try {
-          const response = await getUserInfo()
-          setUserInfo(response.data)
+          const response = await getUserInfo();
+          setUserInfo(response.data);
         } catch (e) {
-          console.error('서버 통신 오류:', e)
-          await logout()
+          console.error('서버 통신 오류:', e);
+          await logout();
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       } else {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-    fetchUserData()
-  }, [isLoggedIn])
+    };
+    fetchUserData();
+  }, [isLoggedIn]);
 
   //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
   if (isLoading) {
@@ -50,18 +54,29 @@ const ProfileComponent = () => {
       <div style={{ marginLeft: '300px' }}>
         <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
       </div>
-    )
+    );
   } else {
     if (isError) {
       return (
         <div css={profileContainerStyle}>
-          <div css={css`display: flex; flex-direction: column; justify-content: center; align-items: center;`}>
-            <span css={css`text-size: 2rem;`}>
+          <div
+            css={css`
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+            `}
+          >
+            <span
+              css={css`
+                font-size: 2rem;
+              `}
+            >
               오류가 발생했습니다
             </span>
           </div>
         </div>
-      )
+      );
     }
 
     return (
@@ -71,14 +86,10 @@ const ProfileComponent = () => {
             <div css={profileTopSectionStyle}>
               {/* 프로필 이미지 & 유저 정보 */}
               <div css={profileInfoStyle}>
-                <Avatar size={50} />
+                <Avatar size={50} onClick={handleProfileClick} />
                 <div css={userDetailsStyle}>
-                  <span css={userNameStyle}>
-                    {userInfo?.nickname}
-                  </span>
-                  <span css={userEmailStyle}>
-                    {userInfo?.email}
-                  </span>
+                  <span css={userNameStyle}>{userInfo?.nickname}</span>
+                  <span css={userEmailStyle}>{userInfo?.email}</span>
                 </div>
               </div>
               {/* 오른쪽 외부 링크 아이콘 */}
@@ -92,45 +103,89 @@ const ProfileComponent = () => {
             {/* 네비게이션 메뉴 */}
             <div css={navigationStyle}>
               <a
-                href='https://msi.mju.ac.kr'
+                href="https://msi.mju.ac.kr"
                 target="_blank"
                 rel="noopener noreferrer"
-                css={css`text-decoration: none; color: inherit;`}>
-                <span css={css`color: #012968;`}>
+                css={css`
+                  text-decoration: none;
+                  color: inherit;
+                `}
+              >
+                <span
+                  css={css`
+                    color: #012968;
+                  `}
+                >
                   MSI
                 </span>
               </a>
               <a
-                href='https://myicap.mju.ac.kr'
+                href="https://myicap.mju.ac.kr"
                 target="_blank"
                 rel="noopener noreferrer"
-                css={css`text-decoration: none; color: inherit;`}>
-                <span css={css`color: #0386D0;`}>
+                css={css`
+                  text-decoration: none;
+                  color: inherit;
+                `}
+              >
+                <span
+                  css={css`
+                    color: #0386d0;
+                  `}
+                >
                   MY
                 </span>
-                <span css={css`color: #7E8080;`}>
+                <span
+                  css={css`
+                    color: #7e8080;
+                  `}
+                >
                   i
                 </span>
-                <span css={css`color: #002968;`}>
+                <span
+                  css={css`
+                    color: #002968;
+                  `}
+                >
                   Cap
                 </span>
               </a>
               <a
-                href='https://mcloud.mju.ac.kr'
+                href="https://mcloud.mju.ac.kr"
                 target="_blank"
                 rel="noopener noreferrer"
-                css={css`text-decoration: none; color: inherit;`}>
-                <span css={css`color: #17171B;`}>
+                css={css`
+                  text-decoration: none;
+                  color: inherit;
+                `}
+              >
+                <span
+                  css={css`
+                    color: #17171b;
+                  `}
+                >
                   Office
                 </span>
-                <span css={css`color: #EF6700;`}>
+                <span
+                  css={css`
+                    color: #ef6700;
+                  `}
+                >
                   365
                 </span>
               </a>
               <Link
                 to={'/profile'}
-                css={css`text-decoration: none; color: inherit;`}>
-                <span css={css`color: #17171B;`}>
+                css={css`
+                  text-decoration: none;
+                  color: inherit;
+                `}
+              >
+                <span
+                  css={css`
+                    color: #17171b;
+                  `}
+                >
                   MyPage
                 </span>
               </Link>
@@ -155,12 +210,12 @@ const ProfileComponent = () => {
           </div>
         )}
       </>
-    )
+    );
   }
-}
+};
 
 // 방금 이렇게 local storage에 uuid (사용자 파라미터) 로그인 상태 를 각 로컬 스토리지, 세션 스트로지에 저장하여 리렌더링 시의 상태를 유지하는 과정, 그 상태를 통해 useEffect로 fetching을 하고난 후, Ux 증진을 위해
-export default ProfileComponent
+export default ProfileComponent;
 
 const profileContainerStyle = css`
   display: flex;
