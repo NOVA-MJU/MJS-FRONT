@@ -21,6 +21,7 @@ import NewsPage from '@pages/news/NewsPage';
 import BoardActivityPage from '@pages/profile/activity/board';
 import CommentActivityPage from '@pages/profile/activity/comment';
 import LikeActivityPage from './pages/profile/activity/like';
+import DebugPage from './pages/DebugPage';
 
 const App = () => {
   return (
@@ -55,6 +56,8 @@ const App = () => {
           <Route path="/start" element={<StartPage />}></Route>
           <Route path="/login" element={<LoginPage />} /> {/* 로그인 페이지 */}
           <Route path="*" element={<NotFoundPage />} /> {/* 404 페이지 */}
+
+          <Route path='/debug34' element={<DebugPage />} /> {/* 테스트 페이지 */}
         </Routes>
       </AuthProvider>
     </>
