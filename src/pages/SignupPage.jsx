@@ -1,11 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-
-import { useEffect, useState } from 'react';
+import useSignupForm from '@/hooks/useSignupForm';
 import { FaEye, FaEyeSlash, FaCheck } from 'react-icons/fa'; // 눈 아이콘 추가
-import { useNavigate } from 'react-router-dom';
-
-import { useAuth } from '../context/AuthContext';
 
 const modalOverlayStyle = css`
   position: fixed;
@@ -72,7 +68,7 @@ const buttonStyle = (enabled) => css`
   cursor: ${enabled ? 'pointer' : 'not-allowed'};
 `;
 
-const passwordErrorStyle = css`
+const ErrorStyle = css`
   color: red;
   font-size: 12px;
   text-align: left;
@@ -81,7 +77,7 @@ const passwordErrorStyle = css`
   margin-bottom: 10px;
 `;
 
-const passwordConfirmStyle = css`
+const ConfirmStyle = css`
   color: #28a745; /* 연두색 */
   font-size: 12px;
   text-align: left;
@@ -97,114 +93,47 @@ const successIconStyle = css`
 `;
 
 const SignUpPage = ({ closeSignUpModal }) => {
-  const [step, setStep] = useState(1);
-  const [isSignUpComplete, setIsSignUpcomplete] = useState(false);
-  const { signup } = useAuth();
-
-  // 입력 상태
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [department, setDepartment] = useState('');
-  const [studentId, setStudentId] = useState('');
-  const [gender, setGender] = useState('');
-  const [nickname, setNickname] = useState('');
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
-
-  //비밀번호 검증 정규식 (영문,숫자, 그리고 특수문자도 가능요)
-  const PASSWORD_REGEX =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/;
-
-  //비밀번호가 입력칸이 바뀔때 -> effect passWord 상태를 최신화 (의존성 배열에 password추가)
-  useEffect(() => {
-    if (password.length > 0 && !PASSWORD_REGEX.test(password)) {
-      setPasswordError(
-        '비밀번호는 영문, 숫자, 특수문자 포함 8-16자여야 합니다.'
-      );
-    } else {
-      setPasswordError('');
-    }
-  }, [password]);
-  // 상태 변경을 위한 useEffect
-  const [showEmail, setShowEmail] = useState(false);
-  const [showPasswordField, setShowPasswordField] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showStudentId, setShowStudentId] = useState(false);
-  const [showGender, setShowGender] = useState(false);
-  const [showNickname, setShowNickname] = useState(false);
-
-  const navigate = useNavigate();
-
-  //영은 요청 다음거 보여주는 useEffect.. 상태변경보단 이게 나음. showX 를 의존해서 바꿈
-  useEffect(() => {
-    if (name.length > 2) setShowEmail(true);
-  }, [name]);
-
-  useEffect(() => {
-    if (email.includes('@')) setShowPasswordField(true);
-  }, [email]);
-
-  useEffect(() => {
-    if (password.length >= 8) setShowConfirmPassword(true);
-  }, [password]);
-
-  useEffect(() => {
-    if (department.length > 2) setShowStudentId(true);
-  }, [department]);
-
-  useEffect(() => {
-    if (studentId.length >= 6) setShowGender(true);
-  }, [studentId]);
-
-  useEffect(() => {
-    if (gender) setShowNickname(true);
-  }, [gender]);
-
-  //요청한 스텝바이스텝을 위한 상태값 (1 상태)
-  const isStepOneValid =
-    //첫번째 네개의 값이 다 채워지면 1상태
-    name && email && password && confirmPassword === password;
-
-  //(2상태) 두번째 네개의 값이 다 채워지면 2상태
-  const isStepTwoValid = department && studentId && gender && nickname;
-
-  const handleNextStep = () => {
-    if (step === 1 && isStepOneValid) {
-      setStep(2);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    //서버에 보낼 객체값가공
-    const newUser = {
+  //커스텀훅의 return 값을 중첩 구조분해 할당하여 return
+  const {
+    values: {
       name,
       email,
       password,
+      confirmPassword,
       department,
       studentId,
       gender,
       nickname,
-    };
-
-    try {
-      const data = await signup(newUser);
-
-      setIsSignUpcomplete(true);
-      //회원가입 성공하면 로그인 페이지로 리다리엑션
-      setTimeout(() => {
-        navigate('/login');
-      }, 500);
-    } catch (e) {
-      alert('회원가입에 실패했습니다');
-      console.log('회원가입 실패', e);
-    }
-  };
+    },
+    setters: {
+      setName,
+      setEmail,
+      setPassword,
+      setConfirmPassword,
+      setDepartment,
+      setStudentId,
+      setGender,
+      setNickname,
+    },
+    errors: { passwordError, MjuEmailError },
+    flags: {
+      isStepOneValid,
+      isStepTwoValid,
+      step,
+      isSignUpComplete,
+      isMjuEmail,
+    },
+    display: {
+      showEmail,
+      showPasswordField,
+      showConfirmPassword,
+      showStudentId,
+      showGender,
+      showNickname,
+      showPassword,
+    },
+    actions: { setShowPassword, handleNextStep, handleSubmit },
+  } = useSignupForm();
 
   return (
     <div css={modalOverlayStyle} onClick={closeSignUpModal}>
@@ -230,6 +159,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
                     onChange={(e) => setName(e.target.value)}
                     css={inputStyle}
                   />
+                  {!isMjuEmail ? (
+                    <span css={ErrorStyle}> {MjuEmailError}</span>
+                  ) : null}
                   {showEmail && (
                     <input
                       type="email"
@@ -241,7 +173,7 @@ const SignUpPage = ({ closeSignUpModal }) => {
                   )}
                   {/* 비밀번호의 형식을 갖추지 않고 쓸 경우의 오류 */}
                   {passwordError && password.length > 1 ? (
-                    <span css={passwordErrorStyle}>{passwordError}</span>
+                    <span css={ErrorStyle}>{passwordError}</span>
                   ) : null}
                   {showPasswordField && (
                     <div css={inputContainerStyle}>
@@ -273,11 +205,9 @@ const SignUpPage = ({ closeSignUpModal }) => {
 
                   {/* 확인 비밀번호를 틀릴경우  */}
                   {confirmPassword && confirmPassword !== password ? (
-                    <p css={passwordErrorStyle}>
-                      비밀번호가 일치하지 않습니다.
-                    </p>
+                    <p css={ErrorStyle}>비밀번호가 일치하지 않습니다.</p>
                   ) : confirmPassword && confirmPassword === password ? (
-                    <p css={passwordConfirmStyle}>확인되었습니다!</p>
+                    <p css={ConfirmStyle}>확인되었습니다!</p>
                   ) : null}
                   <button
                     type="button"

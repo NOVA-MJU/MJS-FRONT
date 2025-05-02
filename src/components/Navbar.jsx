@@ -45,7 +45,7 @@ const Navbar = () => {
             <Link to="/notices">공지사항</Link>
           </li>
           <li>
-            <Link to="/board">자유게시판</Link>
+            <Link to="/board">검색게시판</Link>
           </li>
           <li>
             <Link to="/reviews">취업후기</Link>

@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'; // `BrowserRouter` 제거
 import { Global, css } from '@emotion/react';
 import ScrollToTop from '@components/ScrollToTop';
 import Layout from '@pages/Layout';
+
 import BoardDetailPage from '@pages/board/BoardDetailPage';
 import BoardListPage from '@pages/board/BoardListPage';
 import BoardWritePage from '@pages/board/BoardWritePage';
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="/board/:uuid" element={<BoardDetailPage />} />
             <Route path="/board/write" element={<BoardWritePage />} />
 
+
             <Route path='/profile' element={<ProfilePage />} />
             <Route path='/profile/edit' element={<ProfileEditPage />} />
             <Route path='/profile/inquery' element={<InqueryPage />} />
@@ -47,6 +49,8 @@ const App = () => {
             <Route path='/profile/activity/board' element={<BoardActivityPage />} />
             <Route path='/profile/activity/comment' element={<CommentActivityPage />} />
             <Route path='/profile/activity/like' element={<LikeActivityPage />} />
+
+
 
             {/* 식단 상세조회 페이지 */}
             <Route path="/meal" element={<MealPage />} />

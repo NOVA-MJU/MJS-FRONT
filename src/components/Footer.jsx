@@ -2,6 +2,7 @@
 import { css } from '@emotion/react';
 
 import logo from '../IMG/schoolLogoWithNewColor.png';
+import { useNavigate } from 'react-router-dom';
 
 // import logo from '../IMG/cuteLogo.webp';
 
@@ -70,6 +71,15 @@ const footerCopyrightStyle = css`
 `;
 
 const Footer = () => {
+  const handleContactClick = () => {
+    const email = 'mjsearch2025@gmail.com';
+    const subject = encodeURIComponent('MJS NOVA 문의드립니다');
+    const body = encodeURIComponent(
+      '안녕하세요,\n\n문의사항을 아래에 작성해주세요.\n\n- 이름:\n- 연락처:\n- 문의 내용:'
+    );
+
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  };
   return (
     <footer css={footerStyle}>
       <div css={footerContainerStyle}>
@@ -83,7 +93,7 @@ const Footer = () => {
           <ul>
             <li>이용 약관</li>
             <li>개인정보 처리방침</li>
-            <li>문의하기</li>
+            <li onClick={handleContactClick}>문의하기</li>
           </ul>
         </div>
         <div css={footerCopyrightStyle}>
