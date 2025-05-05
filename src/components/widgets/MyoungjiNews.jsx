@@ -2,8 +2,8 @@
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoadingComponent from './util/LoadingComponent';
-import { getNews } from '../api/newsApi';
+import LoadingComponent from '../util/LoadingComponent';
+import { getNews } from '../../api/newsApi';
 
 const newsContainerStyle = css`
   display: flex;

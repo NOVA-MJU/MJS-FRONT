@@ -32,9 +32,8 @@ apiClient.interceptors.request.use(
     // );
     return config;
   },
-  (error) => {
-    // console.error('요청 오류:', error);
-    return Promise.reject(error);
+  (e) => {
+    return Promise.reject(e);
   }
 );
 
@@ -52,76 +51,53 @@ apiClient.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
-      console.warn('! 401 Unauthorized: 토큰 갱신 시도...');
+      console.log('call access token reissue function');
       originalRequest._retry = true;
 
       try {
-        const newAccessToken = await refreshAccessToken();
+        const newAccessToken = await reissueAccessToken();
         originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest); // 🔄 재요청
-      } catch (refreshError) {
-        // console.error('토큰 갱신 실패:', refreshError);
-        cookies.remove('accessToken', { path: '/' });
+      } catch (e) {
+        console.error('error apiClient.jsx (refreshError)', e)
+        cookies.remove('accessToken', { path: '/' })
         cookies.remove('refreshToken', { path: '/' })
-        // localStorage.removeItem('token');
-        // localStorage.removeItem('refreshToken');
-        window.location.href = '/login'; // 로그인 페이지로 이동
-        return Promise.reject(refreshError);
+        window.location.href = '/login';
+        return Promise.reject(e);
       }
     }
-
-    // 응답 에러 로그
-    // console.error(
-    //   '응답 오류:',
-    //   error.response?.status || '알 수 없음',
-    //   error.response?.data || '응답 없음'
-    // );
     return Promise.reject(error);
   }
 );
 
-const refreshAccessToken = async () => {
+export const reissueAccessToken = async () => {
   try {
-    const accessToken = cookies.get('accessToken');
     const refreshToken = cookies.get('refreshToken');
-    // const refreshToken = localStorage.getItem('refreshToken');
-    // const accessToken = localStorage.getItem('token');
 
     if (!refreshToken) {
+      console.error('error apiClient.jsx refresh token이 없습니다')
       throw new Error('Refresh Token이 없습니다.');
     }
 
     const response = await axios.post(
-      import.meta.env.VITE_API_BASE_URL + '/auth/refresh', // ✅ 환경변수 적용
+      import.meta.env.VITE_API_BASE_URL + '/auth/reissue',
       {},
       {
         headers: {
-          'ACCESS-AUTH-KEY': `Bearer ${accessToken}`,
-          'REFRESH-AUTH-KEY': `Bearer ${refreshToken}`,
+          'Authorization': `Bearer ${refreshToken}`,
         },
       }
-    );
+    )
 
-    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      response.data;
-
-    if (newAccessToken)
-      cookies.set('accessToken', newAccessToken, { path: '/' })
-    // localStorage.setItem('token', newAccessToken);
-    if (newRefreshToken)
-      cookies.set('refreshToken', newRefreshToken, { path: '/' })
-    // localStorage.setItem('refreshToken', newRefreshToken);
-
-    // console.log('🔄 토큰 갱신 성공! 새 액세스 토큰:', newAccessToken);
-    return newAccessToken;
-  } catch (error) {
-    // console.error(
-    //   '❌ 리프레시 토큰 갱신 실패:',
-    //   error.response?.data || error.message
-    // );
-    throw error;
+    cookies.set('accessToken', response.data.data.accessToken)
+    // cookies.remove('accessToken')
+    console.log('새 access token', cookies.get('accessToken'))
+    return response.data
+  } catch (e) {
+    console.error('error apiClient.jsx', e)
+    throw e
   }
-};
+}
 
 // ✅ 최종 API 클라이언트 내보내기
-export default apiClient;
+export default apiClient

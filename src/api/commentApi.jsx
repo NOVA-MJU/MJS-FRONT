@@ -45,7 +45,7 @@ export const deleteBoardComment = async (commentUuid) => {
     const response = await apiClient.delete(`/boards/comments/${commentUuid}`);
     return response;
   } catch (e) {
-    console.error('error commentApi.jsx', e)
+    console.error(e)
     throw e;
   }
 }

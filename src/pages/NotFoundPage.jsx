@@ -96,7 +96,7 @@ function NotFoundPage() {
         <p css={messageStyle}>
           죄송합니다! 요청하신 페이지를 찾을 수 없습니다.
         </p>
-        <Link to="/main" css={buttonStyle}>
+        <Link to="/" css={buttonStyle}>
           Back to Home
         </Link>
       </div>

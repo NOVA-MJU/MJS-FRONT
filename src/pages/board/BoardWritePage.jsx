@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { LuBold, LuCode, LuHeading1, LuHeading2, LuHeading3, LuImage, LuItalic, LuLink2, LuQuote, LuStrikethrough } from "react-icons/lu";
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MarkdownViewer from '../../components/MarkdownViewer';
 import { postBoardContent } from "../../api/boardApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Button from "@/components/Button";
+import { useAuth } from "@/context/AuthContext";
 
 const BoardWritePage = () => {
   const [title, setTitle] = useState("");
@@ -13,10 +15,17 @@ const BoardWritePage = () => {
   const [link, setLink] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const titleBoxRef = useRef(null);
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스 입니다')
+      navigate('/login')
+    }
+  }, []);
 
   const toolbarIconSize = 20
 
@@ -295,14 +304,12 @@ const BoardWritePage = () => {
 
   return (
     <div css={editorWrapper}>
-      <div css={titleBoxContainer}>
-        <textarea
-          ref={titleBoxRef}
-          css={titleBox}
+      <div css={css`padding: 1.5rem 1.5rem 0 1.5rem;`}>
+        <input
+          css={css`font-size: 2rem; border: none; width: 100%;`}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목을 입력하세요"
-        />
+          placeholder="제목을 입력하세요" />
       </div>
       <div css={toolbarContainer}>
         <div css={toolbar}>
@@ -325,7 +332,7 @@ const BoardWritePage = () => {
             onChange={handleFileChange} />
           <button css={toolbarButton} onClick={() => insertCode()}><LuCode size={toolbarIconSize} /></button>
           <p css={toolbarSpacing}>|</p>
-          <button onClick={handleSave}>저장</button>
+          <Button css={css`padding: 0.5rem;`} onClick={handleSave}>저장</Button>
         </div>
       </div >
       <div css={editorContainer}>
@@ -376,9 +383,11 @@ const editorWrapper = css`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding: '20px';
+  padding: 1rem;
   background: white;
-`;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+`
 
 const titleBoxContainer = css`
   padding: 16px
@@ -386,11 +395,13 @@ const titleBoxContainer = css`
 
 const titleBox = css`
   width: 100%;
+  padding: 16px; 
+  border: none; 
+  resize: none; 
+  font-size: 2rem; 
+  font-weight: 700;
   font-size: 32px;
-  justify-content: center;
-  border: none;
   outline: none;
-  align-items: center;
 `;
 
 const toolbarContainer = css`

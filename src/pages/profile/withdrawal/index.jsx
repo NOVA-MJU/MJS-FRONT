@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import Button from '@components/Button';
+import Button from '@/components/Button';
 import { css } from '@emotion/react';
 import { deleteUserAccount } from '@api/userApi';
 import { useState } from 'react';
@@ -62,8 +62,7 @@ export default function WithDrawalPage() {
               ‼️ 자세한 내용은 개인정보처리방침을 확인해주세요.
             </span>
           </div>
-          <Button
-            onClick={handleDeleteAccount}>
+          <Button css={css`padding: 0.5rem;`} onClick={handleDeleteAccount}>
             탈퇴하기
           </Button>
         </div>

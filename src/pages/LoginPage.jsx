@@ -20,11 +20,9 @@ const LoginPage = () => {
   const openSignUpModal = () => setIsSignUpModalOpen(true);
   const closeSignUpModal = () => setIsSignUpModalOpen(false);
 
-  //onChange 핸들러
   const handleEmailChange = (e) => setEmail(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
-  //authContext에서 구현한 로그인 함수들을 가져옴
   const { login, setIsLoggedIn } = useAuth();
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,9 +31,6 @@ const LoginPage = () => {
         email,
         password,
       };
-
-      console.log('📤 로그인 요청 데이터:', userInfo); // 🚀 콘솔에서 확인
-      //postLOGIn으로
 
       await login(userInfo);
       setIsLoggedIn(true);
@@ -48,7 +43,7 @@ const LoginPage = () => {
 
   const handleSuccessModalClose = () => {
     setIsSuccessMessageModalOpen(false);
-    navigate('/main');
+    navigate(-1);
   };
 
   return (

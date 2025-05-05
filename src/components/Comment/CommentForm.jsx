@@ -4,10 +4,45 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { postBoardComment } from '../../api/commentApi'
 import Avatar from '@components/Avatar'
+import { reissueAccessToken } from '@/api/apiClient'
+import Button from '../Button'
 
 export default function CommentForm({ uuid, onCommentAdded }) {
   const [content, setContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  const testReissus = async () => {
+    try {
+      const response = await reissueAccessToken()
+      // console.log(response)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handleTestCommit = async () => {
+    if (isLoading) {
+      toast.error('잠시 기다려주세요')
+      return
+    }
+
+    for (let i = 0; i < 2000; i++) {
+      try {
+        setIsLoading(true)
+        const response = await postBoardComment(uuid, `${i}번째 댓글 남겨놓는다`)
+        console.log(response.data)
+      } catch (error) {
+        if (error.status == 403)
+          toast.error('댓글 작성 권한이 없습니다')
+        else
+          toast.error(error.message)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    onCommentAdded()
+  }
 
   const handleSubmitComment = async () => {
     if (isLoading) {
@@ -41,12 +76,12 @@ export default function CommentForm({ uuid, onCommentAdded }) {
         type='text'
         placeholder='댓글을 남겨주세요'
         onChange={(e) => setContent(e.target.value)} />
-      <button
-        css={css`background-color: #0d2864; color: white; text-align: center; border-radius: 10px; border: none; padding: 10px 20px; cursor: pointer;`}
+      <Button
+        css={css`padding: 10px 20px;`}
         onClick={handleSubmitComment}
       >
         남기기
-      </button>
+      </Button>
     </div>
   )
 }

@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getBoardComments } from '../../api/commentApi';
 import LoadingComponent from '../util/LoadingComponent';
 import CommentItem from './CommentItem';
 import { toast } from 'react-toastify';
 import CommentForm from './CommentForm';
+import Button from '../Button';
 
 export default function Comment({ uuid }) {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,7 +18,6 @@ export default function Comment({ uuid }) {
     setIsLoading(true)
     try {
       const response = await getBoardComments(uuid)
-      console.log('getBoardComments 결과', response.data)
       setComments(response.data)
     } catch (error) {
       setIsError(true)
@@ -53,31 +53,45 @@ export default function Comment({ uuid }) {
   } else {
     return (
       <div css={css`display: flex; flex-direction: column; padding: 16px; gap: 16px;`}>
-        <span>
-          댓글 수 {comments.length}개
-        </span>
-        <div css={css`padding: 8px; gap: 16px;`}>
-          {comments.slice(0, commentsVisibleCount).map((comment) => (
-            <CommentItem
-              key={comment.commentUUID}
-              userName={comment.nickname}
-              createdAt={comment.createdAt}
-              likeCount={comment.likeCount}
-              content={comment.content}
-              boardUuid={uuid}
-              commentUuid={comment.commentUUID} />
-          ))}
+        <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
+        <div>
+          {comments.length === 0 ? (
+            <>
+              <div css={css`display: flex; justify-content: center; align-items: center;`}>
+                <h2>
+                  작성된 댓글이 없습니다
+                </h2>
+              </div>
+            </>
+          ) : (
+            <>
+              <span>
+                댓글 수 {comments.length}개
+              </span>
+              <div css={css`padding: 8px; gap: 16px;`}>
+                {comments.slice(0, commentsVisibleCount).map((comment) => (
+                  <CommentItem
+                    key={comment.commentUUID}
+                    userName={comment.nickname}
+                    createdAt={comment.createdAt}
+                    likeCount={comment.likeCount}
+                    content={comment.content}
+                    boardUuid={uuid}
+                    commentUuid={comment.commentUUID} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
         {comments.length > commentsVisibleCount && (
-          <div css={css`display: flex; justify-content: center;`}>
-            <button onClick={handleViewMoreComments}>
-              <span>
+          <>
+            <div css={css`display: flex; justify-content: center;`}>
+              <Button css={css`font-size: 0.75rem; padding: 0.75rem;`} onClick={handleViewMoreComments}>
                 댓글 더 보기
-              </span>
-            </button>
-          </div>
+              </Button>
+            </div>
+          </>
         )}
-        <CommentForm uuid={uuid} onCommentAdded={fetchComments} />
       </div>
     )
   }
