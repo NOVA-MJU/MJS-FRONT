@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LoadingComponent from '../util/LoadingComponent';
 import { getNews } from '../../api/newsApi';
 
@@ -40,14 +40,15 @@ const tabStyle = (isActive) => css`
 `;
 
 const newsCardStyle = css`
-  display: flex;
-  flex-direction: row;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  text-decoration: none;
 
   &:hover {
     transform: scale(1.02);
@@ -66,30 +67,26 @@ const newsContentStyle = css`
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 `;
 
 const newsTitleStyle = css`
   font-size: 1.2rem;
   font-weight: bold;
   color: #001f5c;
-  margin-bottom: 5px;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  margin: 0;
 `;
 
 const newsSummaryStyle = css`
   font-size: 1rem;
   color: #333;
   line-height: 1.5;
-  margin-bottom: 8px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 `;
 
 const loadMoreButtonStyle = css`
@@ -163,24 +160,32 @@ const MyongjiNews = () => {
       </div>
       {displayedNews.length > 0 ? (
         displayedNews.map((news, index) => (
-          <div key={index} css={newsCardStyle}>
-            <img
-              src={news.imageUrl}
-              alt="썸네일이 존재하지 않습니다!"
-              css={newsImageStyle}
-            />
+          <a
+            href={news.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            key={index}
+            css={newsCardStyle}
+          >
+            {news.imageUrl ?
+              (
+                <img
+                  src={news.imageUrl}
+                  css={newsImageStyle}
+                />
+              ) : (
+                <></>
+              )
+            }
             <div css={newsContentStyle}>
-              <a
-                href={news.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                css={newsTitleStyle}
-              >
+              <p css={newsTitleStyle}>
                 {news.title}
-              </a>
-              <p css={newsSummaryStyle}>{news.summary}</p>
+              </p>
+              <p css={newsSummaryStyle}>
+                {news.summary}
+              </p>
             </div>
-          </div>
+          </a>
         ))
       ) : (
         <p>📭 표시할 뉴스가 없습니다.</p>

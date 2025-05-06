@@ -3,6 +3,72 @@ import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { getNotice } from '@/api/noticeApi';
 
+const Announcement = () => {
+  const [activeTab, setActiveTab] = useState(0);
+  const [notices, setNotices] = useState([]);
+
+  const tabs = [
+    { label: '일반공지', category: 'general' },
+    { label: '학사공지', category: 'academic' },
+    { label: '장학공지', category: 'scholarship' },
+    { label: '진로공지', category: 'career' },
+    { label: '학생활동', category: 'activity' },
+    { label: '학칙개정', category: 'rule' },
+  ];
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const data = await getNotice({ category: tabs[activeTab].category });
+        setNotices(data);
+      } catch (error) {
+        console.error('공지사항', error);
+      } finally {
+      }
+    };
+    fetchNotices();
+  }, [activeTab]);
+
+  return (
+    <div css={tabContainerStyle}>
+      <div css={tabHeaderStyle}>
+        {tabs.map((tab, index) => (
+          <button
+            key={index}
+            css={tabButtonStyle(activeTab === index)}
+            onClick={() => setActiveTab(index)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div css={tabContentStyle}>
+        {notices.length > 0 ? (
+          notices.map((notice, idx) => (
+            <div key={idx} css={noticeCardStyle}>
+              <a
+                href={notice.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                css={noticeTitleStyle}
+              >
+                {notice.title}
+              </a>
+              <div css={noticeInfoStyle}>
+                {notice.date} &bull; {notice.category}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div>공지사항이 존재하지 않습니다.</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Announcement;
+
 const tabContainerStyle = css`
   display: flex;
   flex-direction: column;
@@ -63,69 +129,3 @@ const noticeInfoStyle = css`
   font-size: 0.9rem;
   color: #777;
 `;
-
-const Announcement = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [notices, setNotices] = useState([]);
-
-  const tabs = [
-    { label: '일반공지', category: 'general' },
-    { label: '학사공지', category: 'academic' },
-    { label: '장학공지', category: 'scholarship' },
-    { label: '진로공지', category: 'career' },
-    { label: '학생활동', category: 'activity' },
-    { label: '학칙개정', category: 'rule' },
-  ];
-
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const data = await getNotice({ category: tabs[activeTab].category });
-        setNotices(data);
-      } catch (error) {
-        console.error('공지사항 실제 Fetching 중 오류 발생', error);
-      } finally {
-      }
-    };
-    fetchNotices();
-  }, [activeTab]);
-
-  return (
-    <div css={tabContainerStyle}>
-      <div css={tabHeaderStyle}>
-        {tabs.map((tab, index) => (
-          <button
-            key={index}
-            css={tabButtonStyle(activeTab === index)}
-            onClick={() => setActiveTab(index)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <div css={tabContentStyle}>
-        {notices.length > 0 ? (
-          notices.map((notice, idx) => (
-            <div key={idx} css={noticeCardStyle}>
-              <a
-                href={notice.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                css={noticeTitleStyle}
-              >
-                {notice.title}
-              </a>
-              <div css={noticeInfoStyle}>
-                {notice.date} &bull; {notice.category}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div>공지사항이 존재하지 않습니다.</div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default Announcement;

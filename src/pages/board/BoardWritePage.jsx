@@ -23,7 +23,7 @@ const BoardWritePage = () => {
   useEffect(() => {
     if (!isLoggedIn) {
       toast.error('로그인이 필요한 서비스 입니다')
-      navigate('/login')
+      navigate('/login', { replace: true })
     }
   }, []);
 

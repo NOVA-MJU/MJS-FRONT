@@ -11,10 +11,10 @@ export const getNotice = async ({
     const response = await apiClient.get('/notices', {
       params: { category, year, page, size },
     });
-    // console.log('공지사항 받은 데이터', response.data);
+    // console.log(response.data);
     return response.data;
-  } catch (error) {
-    console.log('공지사항 fetching 과정속의 ', error);
-    throw error;
+  } catch (e) {
+    console.log(e);
+    throw e;
   }
 };

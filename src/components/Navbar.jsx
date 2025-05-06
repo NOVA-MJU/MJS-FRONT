@@ -30,25 +30,25 @@ const Navbar = () => {
         </div>
         <ul className={`menu ${menuOpen ? 'menu-open' : ''}`}>
           <li>
-            <Link to="/info">학과정보</Link>
+            <Link css={disabled}>학과정보</Link>
           </li>
           <li>
             <Link to="/meal">식단</Link>
           </li>
           <li>
-            <Link to="/market">벼룩시장</Link>
+            <Link css={disabled}>벼룩시장</Link>
           </li>
           <li>
-            <Link to="/break">제휴</Link>
+            <Link css={disabled}>제휴</Link>
           </li>
           <li>
-            <Link to="/notices">공지사항</Link>
+            <Link css={disabled}>공지사항</Link>
           </li>
           <li>
             <Link to="/board">검색게시판</Link>
           </li>
           <li>
-            <Link to="/reviews">취업후기</Link>
+            <Link css={disabled}>취업후기</Link>
           </li>
           <li>
             <a
@@ -134,3 +134,12 @@ const hamburgerMenu = css`
     margin-left: 20px; /* 햄버거 메뉴와 로고 사이 간격 추가 */
   }
 `
+
+const disabled = css`
+  cursor: default;
+  transition: none !important;
+
+  &:hover {
+    background-color: transparent !important;
+  } 
+`;
