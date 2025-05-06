@@ -1,5 +1,5 @@
 # mjs-front
-## 개발용 브랜치
+
 ## Installation
 1. 노드 버전 셋업
 ```bash

@@ -33,3 +33,17 @@ export const postLogout = async (accessToken) => {
     throw error;
   }
 };
+
+export const postReissueAccessToken = async (refreshToken) => {
+  try {
+    const response = await apiClient.post('/auth/reissue', {
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    })
+    return response
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
+}

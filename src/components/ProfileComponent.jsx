@@ -36,8 +36,8 @@ const ProfileComponent = () => {
           const response = await getUserInfo();
           setUserInfo(response.data);
         } catch (e) {
-          console.error('서버 통신 오류:', e);
-          await logout();
+          console.error(e)
+          await logout()
         } finally {
           setIsLoading(false);
         }
@@ -51,8 +51,10 @@ const ProfileComponent = () => {
   //독립적인 렌더컴포넌트의 위치 스타일이 구린 이슈
   if (isLoading) {
     return (
-      <div style={{ marginLeft: '300px' }}>
-        <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
+      <div css={profileContainerStyle}>
+        <div css={css`width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;`}>
+          <LoadingComponent message="프로필 정보 로딩중입니다."></LoadingComponent>
+        </div>
       </div>
     );
   } else {
@@ -192,21 +194,32 @@ const ProfileComponent = () => {
             </div>
           </div>
         ) : (
-          <div css={profileContainerStyle}>
-            <div css={profileLoginSectionStyle}>
-              <div css={loginMessageStyle}>
-                커뮤니티 이용을 위한
-                <span style={{ color: ' navy', fontWeight: 'bold' }}>
-                  {' '}
-                  로그인{' '}
-                </span>
-                이 필요합니다!
-              </div>
-              <button css={loginButtonStyle} onClick={handleLoginClick}>
-                {' '}
-                로그인
-              </button>
-            </div>
+          <div
+            css={css`
+              width: 100%;
+              height: 100%; 
+              display: flex; 
+              flex-direction: column; 
+              justify-content: center; 
+              align-items: center; 
+              gap: 1rem; 
+              border-radius: 8px;
+              border: 1px solid #ddd;
+            `}
+          >
+            <span css={css`color: #333; font-weight: 600;`}>
+              커뮤니티 이용을 위한
+              <span css={css`color: navy;`}>
+                {' 로그인'}
+              </span>
+              이 필요합니다!
+            </span>
+            <button
+              css={loginButtonStyle}
+              onClick={handleLoginClick}
+            >
+              로그인
+            </button>
           </div>
         )}
       </>
@@ -218,26 +231,20 @@ const ProfileComponent = () => {
 export default ProfileComponent;
 
 const profileContainerStyle = css`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  width: 700px;
-  border-radius: 12px;
-  margin-left: 100px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
   padding: 15px;
-  background-color: white;
   font-family: 'Poppins', 'Arial', sans-serif;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const profileTopSectionStyle = css`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
-
-const profileLoginSectionStyle = css`
-  ${profileTopSectionStyle}; /* ✅ 기존 스타일을 상속 */
-  flex-direction: column;
 `;
 
 const profileInfoStyle = css`
@@ -280,13 +287,6 @@ const navigationStyle = css`
   justify-content: space-around;
   font-size: 0.9rem;
   font-weight: bold;
-`;
-
-const loginMessageStyle = css`
-  font-size: 1rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
 `;
 
 const loginButtonStyle = css`

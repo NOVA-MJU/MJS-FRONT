@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { getBoardContents } from '../../api/boardApi';
-import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
+import { LuHeart, LuMessageSquare } from "react-icons/lu";
 import LoadingComponent from '../../components/util/LoadingComponent';
+import { useAuth } from '@/context/AuthContext';
 
 const BoardListPage = () => {
   const navigate = useNavigate();
@@ -15,14 +16,15 @@ const BoardListPage = () => {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const iconSize = 14;
+  const { isLoggedin } = useAuth();
 
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
       try {
         const response = await getBoardContents(page, size);
+        console.log(response.data.content)
         setContents(response.data.content);
-        console.log(response.data.content);
       } catch (error) {
         console.error(error);
       } finally {
@@ -33,7 +35,16 @@ const BoardListPage = () => {
   }, [page, size]);
 
   return (
-    <div css={css`flex: 1; padding: 2%; display: flex; flex-direction: column;`}>
+    <div
+      css={css`
+        flex: 1; 
+        padding: 2%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ddd;
+        border-radius: 16px;
+      `}
+    >
       <div css={pageHeadingStyle}>
         <h1 css={css`color: #001f5c; margin: 4px;`}>
           자유 게시판
@@ -67,7 +78,19 @@ const BoardListPage = () => {
                 key={content.uuid}>
                 <div className='title-wrapper'>
                   <h3>{content.title}</h3>
-                  <p>{content.content.length > 40 ? content.content.slice(0, 40) + " ..." : content.content}</p>
+                  {content.previewContent ? (
+                    <p>
+                      {content.previewContent.length > 40
+                        ?
+                        content.previewContent.slice(0, 40) + " ..."
+                        :
+                        content.previewContent}
+                    </p>
+                  ) : (
+                    <p>
+                      미리보기가 없습니다
+                    </p>
+                  )}
                 </div>
                 <div className='info-wrapper'>
                   <span>
@@ -77,10 +100,6 @@ const BoardListPage = () => {
                   <span>
                     <LuMessageSquare className='icon' size={iconSize} />
                     {content.commentCount === undefined ? "null" : content.commentCount}
-                  </span>
-                  <span>
-                    <LuEye className='icon' size={iconSize} />
-                    {content.viewCount === undefined ? "null" : content.viewCount}
                   </span>
                 </div>
               </div>

@@ -82,3 +82,15 @@ export const deleteBoardContent = async (uuid) => {
     throw error;
   }
 }
+
+export const postBoardLike = async (uuid) => {
+  if (!uuid)
+    throw new Error('postBoardLike중 오류 발생: uuid가 지정되지 않았습니다')
+
+  try {
+    const response = await apiClient.post(`/boards/${uuid}/like`)
+    return response.data
+  } catch (e) {
+    throw e
+  }
+}

@@ -1,14 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import MarkdownViewer from "../../components/MarkdownViewer";
-import { deleteBoardContent, getBoardContent } from '../../api/boardApi';
-import { LuEye, LuHeart, LuMessageSquare } from "react-icons/lu";
-import Comment from '../../components/Comment';
-import LoadingComponent from '../../components/util/LoadingComponent';
+import { useEffect, useState } from 'react';
+import MarkdownViewer from "@components/MarkdownViewer";
+import { deleteBoardContent, getBoardContent, postBoardLike } from '@api/boardApi';
+import { LuHeart, LuMessageSquare } from "react-icons/lu";
+import Comment from '@components/Comment';
+import LoadingComponent from '@components/util/LoadingComponent';
 import { toast } from 'react-toastify';
 import Avatar from '@components/Avatar';
+import Button from '@/components/Button';
+import { getTimeElapsed } from '@/util/getTimeElapsed';
 
 const BoardDetailPage = () => {
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ const BoardDetailPage = () => {
         navigate('/board')
         toast.info('게시글이 삭제되었습니다')
       } catch (e) {
-        console.error('error BoardDetailPage.jsx', e)
+        console.error(e)
         toast.error(e.message)
       } finally {
         setLoading(false)
@@ -45,9 +47,16 @@ const BoardDetailPage = () => {
       return
     }
 
-    setLoading(true)
-    toast.info('게시글에 좋아요를 표시했습니다')
-    setLoading(false)
+    try {
+      setLoading(true)
+      const response = await postBoardLike(uuid)
+      toast.info(response.data)
+    } catch (e) {
+      console.error(e)
+      toast.error(e.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -55,7 +64,7 @@ const BoardDetailPage = () => {
       setPageLoading(true);
       try {
         const response = await getBoardContent(uuid);
-        // console.log('getBoardContent 결과', response.data);
+        // console.log(response.data)
         setContent(response.data);
       } catch (error) {
         toast.error(error.message)
@@ -78,17 +87,19 @@ const BoardDetailPage = () => {
     return (
       <div css={pageStyle}>
         <div css={css`display: flex; flex-direction: column;`}>
-          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc;`}>
-            <span css={css`font-size: 1.5em; font-weight: bold; padding: 4px; margin: 8px; flex: 1;`}>
-              {content.title}
-            </span>
+          <div css={css`display:flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 0.75rem;`}>
+            <div>
+              <span css={css`font-size: 1.5em; font-weight: bold; margin: 8px; flex: 1;`}>
+                {content.title}
+              </span>
+            </div>
             <div css={css`display: flex; flex-direction: row; gap: 8px;`}>
-              <button css={textButtonStyle}>
+              <Button variant='outline' css={css`color: grey;`}>
                 수정
-              </button>
-              <button css={textButtonStyle} onClick={handleDeletePost}>
+              </Button>
+              <Button variant='outline' css={css`color: grey;`} onClick={handleDeletePost}>
                 삭제
-              </button>
+              </Button>
             </div>
           </div>
           <div css={css`margin: 8px; display: flex; justify-content: flex-end; gap: 20px;`}>
@@ -98,12 +109,7 @@ const BoardDetailPage = () => {
             </span>
             <span css={css`display: flex; align-items: center; gap: 8px; color: #0386D0;`}>
               <LuMessageSquare size={iconSize} />
-              게시판 댓글수를 GET Board api에서도 주세요
-              {/* {comments.totalElements} */}
-            </span>
-            <span css={css`display: flex; align-items: center; gap: 8px; color: #1103D0;`}>
-              <LuEye size={iconSize} />
-              {content.viewCount}
+              {content.commentCount}
             </span>
           </div>
         </div>
@@ -122,17 +128,11 @@ const BoardDetailPage = () => {
             <div css={css`display: flex; gap: 16px; align-items: center;`}>
               <Avatar size={48} />
               <div css={css`display: flex; flex-direction: column; gap: 4px;`}>
-                <span css={css`
-                font-size: 18px;
-                font-weight: 700;`}>
-                  작성자
+                <span css={css`font-size: 18px; font-weight: 700;`}>
+                  {content.author}
                 </span>
                 <span>
-                  {(() => {
-                    const datePart = content.publishedAt.substring(0, 10).replace(/-/g, "/");
-                    const timePart = content.publishedAt.substring(11, 16);
-                    return `${datePart} ${timePart}`;
-                  })()}
+                  {getTimeElapsed(content.publishedAt)}
                 </span>
               </div>
             </div>
@@ -205,15 +205,5 @@ const backButtonStyle = css`
 
   &:hover {
     background-color: #003cb3;
-  }
-`;
-
-const textButtonStyle = css`
-  background: transparent;
-  color: gray;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    text-decoration: underline;
   }
 `;

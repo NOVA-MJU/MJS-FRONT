@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useEffect, useState } from 'react';
-import { getNotice } from '../api/noticeApi';
-import LoadingComponent from './util/LoadingComponent';
+import { getNotice } from '@/api/noticeApi';
 
 const tabContainerStyle = css`
   display: flex;
@@ -48,6 +47,7 @@ const noticeCardStyle = css`
   transition: transform 0.2s ease-in-out;
   &:hover {
     transform: translateY(-3px);
+    cursor: pointer;
   }
 `;
 
@@ -64,7 +64,7 @@ const noticeInfoStyle = css`
   color: #777;
 `;
 
-const TabComponent = () => {
+const Announcement = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [notices, setNotices] = useState([]);
 
@@ -128,4 +128,4 @@ const TabComponent = () => {
   );
 };
 
-export default TabComponent;
+export default Announcement;
