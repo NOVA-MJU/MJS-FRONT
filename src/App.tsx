@@ -1,10 +1,14 @@
-import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import ButtonTestPage from './components/atomic/button/ButtonTestPage';
 
 const App = () => {
   return (
-    <div>
-      
-    </div>
+    <Routes>
+      <Route
+        path="/test/button"
+        element={<ButtonTestPage></ButtonTestPage>}
+      ></Route>
+    </Routes>
   );
 };
 
