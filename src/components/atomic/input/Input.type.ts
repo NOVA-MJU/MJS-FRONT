@@ -1,5 +1,6 @@
 export type InputVariant = 'field' | 'searchbar' | 'labelfield';
-export interface InputProps extends React.InsHTMLAttributes<HTMLInputElement> {
+
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;
   label?: string;
   helperText?: string;
@@ -7,4 +8,5 @@ export interface InputProps extends React.InsHTMLAttributes<HTMLInputElement> {
   showCount?: boolean;
   error?: boolean;
   icon?: React.ReactNode;
+  value?: string | number;
 }
