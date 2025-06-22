@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 // import { useAuth } from '../context/AuthContext';
 import Avatar from './Avatar';
+interface ProfileComponentProps {
+  className: string;
+}
 
-const ProfileComponent = () => {
+const ProfileComponent = ({ className }: ProfileComponentProps) => {
   //dummy
   const isLoggedIn = true;
   // const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +59,9 @@ const ProfileComponent = () => {
   // }
 
   return isLoggedIn ? (
-    <div className='w-full h-full flex flex-col border border-gray-300 rounded-md p-4 font-sans'>
+    <div
+      className={`w-full h-full flex flex-col border border-gray-300 rounded-md p-4 font-sans ${className}`}
+    >
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-4'>
           <Avatar size={50} />
