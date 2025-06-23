@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from './Avatar';
 import { useAuthStore } from '../../../store/useAuthStore';
-
+import Button from '../button';
 interface ProfileComponentProps {
   className?: string;
 }
@@ -64,7 +64,6 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
     );
   }
 
-  // 로그인 전 UI
   return (
     <div
       className={`w-full h-full flex flex-col justify-center items-center gap-4 border border-gray-300 rounded-md p-6 font-sans ${className}`}
@@ -74,12 +73,12 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
       </span>
 
       <div className='flex flex-col gap-2 w-full max-w-[250px]'>
-        <button className='w-full py-2 bg-[#003c9e] text-white rounded-md font-bold text-sm hover:bg-[#002f7a] transition-all'>
+        <Button variant='main' disabled={false} size='md' fullWidth>
           로그인
-        </button>
-        <button className='w-full py-2 bg-gray-200 text-gray-800 rounded-md font-bold text-sm hover:bg-gray-300 transition-all'>
+        </Button>
+        <Button variant='basic' disabled={false} size='md' fullWidth>
           회원가입
-        </button>
+        </Button>
       </div>
 
       <div className='flex gap-2 text-xs text-gray-400 font-medium mt-2'>
