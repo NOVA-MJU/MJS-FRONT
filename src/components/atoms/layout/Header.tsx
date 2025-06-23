@@ -1,6 +1,6 @@
 import { FaBullhorn } from 'react-icons/fa';
 import ProfileComponent from './ProfileComponent';
-import SearchBar from './SearchBar';
+import SearchBar from '../SearchBar';
 
 export default function Header() {
   return (
