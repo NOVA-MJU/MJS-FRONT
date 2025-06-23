@@ -23,7 +23,7 @@ const variantConfig: Record<
   { tag: keyof JSX.IntrinsicElements; className: string }
 > = {
   heading01: { tag: 'h1', className: 'font-bold text-[40px] leading-[150%]' },
-  heading02: { tag: 'h2', className: 'font-bold text-[24px] leading-[150%]' },
+  heading02: { tag: 'h2', className: 'font-bold text-[28px] leading-[150%]' },
   title01: { tag: 'h3', className: 'font-bold text-[20px] leading-[150%]' },
   title02: { tag: 'h4', className: 'font-semibold text-[20px] leading-[150%]' },
   body01: { tag: 'p', className: 'font-normal text-[20px] leading-[150%]' },
