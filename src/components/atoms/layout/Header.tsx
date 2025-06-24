@@ -19,6 +19,7 @@ export default function Header() {
         <div className='flex-1 w-full'>
           <ProfileComponent className='mr-7' />
         </div>
+
       </div>
     </div>
   );

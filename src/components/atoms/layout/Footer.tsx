@@ -12,7 +12,11 @@ const Footer = () => {
   };
 
   return (
-    <footer className='w-full bg-blue-50 py-4'>
+
+    <footer className='w-full bg-white py-4'>
+
+    
+
       <div className='max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
         <div className='flex items-center gap-2'>
           <img src={logo} alt='Logo' className='w-10 h-10' />
@@ -31,6 +35,7 @@ const Footer = () => {
             문의하기
           </li>
         </ul>
+
 
         <p className='text-xs text-gray-400 text-right w-full md:w-auto'>
           © 2025 MJS. All rights reserved.
