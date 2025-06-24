@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
-import ButtonTestPage from './components/atomic/button/ButtonTestPage';
-import InputTestPage from './components/atomic/input/InputTestPage';
-import Layout from './components/atomic/layout/Layout';
+import ButtonTestPage from './components/atoms/button/ButtonTestPage';
+import InputTestPage from './components/atoms/input/InputTestPage';
+import Layout from './components/atoms/layout/Layout';
 
 const App = () => {
   return (
