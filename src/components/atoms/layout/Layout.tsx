@@ -1,23 +1,27 @@
-import { Outlet } from 'react-router-dom';
+
+import { Outlet, useLocation } from 'react-router-dom';
+
 import Footer from './Footer';
 import Navbar from './Navbar';
 import Header from './Header';
 
 const Layout = () => {
+
+  const location = useLocation();
+  const hideHeaderRoutes = ['/login', '/register'];
+  const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
+
   return (
-    <div className='flex flex-col min-w-screen min-h-screen gap-4'>
-      <div className='w-full'>
-        <Navbar />
-      </div>
-      <Header />
-      <main className='flex-1 w-full flex justify-center px-4 py-4'>
-        <div className='w-full max-w-screen-xl flex flex-col gap-7'>
+    <div className='flex flex-col w-screen min-h-screen items-center'>
+      <Navbar />
+      <main className='flex-1 w-[1280px] mx-auto flex flex-col'>
+        {shouldShowHeader && <Header />}
+        <div className='w-full h-full'>
           <Outlet />
         </div>
       </main>
-      <div className='w-full'>
-        <Footer />
-      </div>
+      <Footer />
+
     </div>
   );
 };

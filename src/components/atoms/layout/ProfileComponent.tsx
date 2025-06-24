@@ -86,6 +86,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
         <span>|</span>
         <button className='hover:underline'>비밀번호 찾기</button>
       </div>
+
     </div>
   );
 };
