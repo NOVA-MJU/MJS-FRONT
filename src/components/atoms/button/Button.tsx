@@ -1,7 +1,7 @@
 import type { InputProps } from '../input/Input.type';
 import { colors } from '../../../styles/color';
 
-const Input = ({
+const Button = ({
   variant = 'field',
   label,
   helperText,
@@ -71,4 +71,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default Button;

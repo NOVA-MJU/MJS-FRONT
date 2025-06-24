@@ -1,4 +1,4 @@
-import logo from '../../../IMG/schoolLogoWithNewColor.png';
+import logo from '../../IMG/schoolLogoWithNewColor.png';
 
 const Footer = () => {
   const handleContactClick = () => {
