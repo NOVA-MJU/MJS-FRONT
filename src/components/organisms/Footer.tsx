@@ -12,7 +12,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className='w-full bg-white py-4'>
+    <footer className='w-full bg-blue-05 py-4'>
       <div className='max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
         <div className='flex items-center gap-2'>
           <img src={logo} alt='Logo' className='w-10 h-10' />
