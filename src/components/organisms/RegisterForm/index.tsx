@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import InputField from '../../molecules/InputField';
 import GenderSelector from '../../molecules/GenderSelector';
 import Button from '../../atoms/button/Button';
-
+import DropdownField from '../../molecules/DropdownField';
 const RegisterForm: React.FC = () => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
@@ -95,13 +95,7 @@ const RegisterForm: React.FC = () => {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
             />
-            <InputField
-              label='학과'
-              type='text'
-              placeholder='ex.융합소프트웨어학과'
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-            />
+            <DropdownField label='학과' selected={department} onSelect={setDepartment} />
             <div className='h-[110px]'>
               <InputField
                 label='학번'
