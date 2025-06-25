@@ -6,6 +6,8 @@ import Layout from './components/templates/Layout';
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const App = () => {
   return (
@@ -14,7 +16,8 @@ const App = () => {
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
-
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
         <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
         <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
       </Route>
