@@ -1,6 +1,6 @@
 import { FaBullhorn } from 'react-icons/fa';
 import ProfileComponent from './ProfileComponent';
-import SearchBar from './SearchBar';
+import SearchBar from '../molecules/SearchBar';
 
 export default function Header() {
   return (
@@ -19,7 +19,6 @@ export default function Header() {
         <div className='flex-1 w-full'>
           <ProfileComponent className='mr-7' />
         </div>
-
       </div>
     </div>
   );

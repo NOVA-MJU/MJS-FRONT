@@ -1,12 +1,10 @@
-
 import { Outlet, useLocation } from 'react-router-dom';
 
-import Footer from './Footer';
-import Navbar from './Navbar';
-import Header from './Header';
+import Footer from '../organisms/Footer';
+import Navbar from '../organisms/Navbar';
+import Header from '../organisms/Header';
 
 const Layout = () => {
-
   const location = useLocation();
   const hideHeaderRoutes = ['/login', '/register'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
@@ -21,7 +19,6 @@ const Layout = () => {
         </div>
       </main>
       <Footer />
-
     </div>
   );
 };
