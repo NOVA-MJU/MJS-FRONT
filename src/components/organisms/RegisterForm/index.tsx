@@ -86,7 +86,7 @@ const RegisterForm: React.FC = () => {
       {/* ===== 개인 정보 ===== */}
       <section>
         <p className='text-3xl font-bold mb-6'>개인 정보</p>
-        <div className='flex flex-col bg-white h-[6340px] p-6 rounded-xl gap-12'>
+        <div className='flex flex-col bg-white h-[634px] p-6 rounded-xl gap-12'>
           <div className='flex flex-col mx-auto gap-12 w-[440px] my-6'>
             <InputField
               label='닉네임'
