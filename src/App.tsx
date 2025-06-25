@@ -6,7 +6,7 @@ import Layout from './components/atoms/layout/Layout';
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
-
+import LoginPage from './pages/LoginPage';
 
 const App = () => {
   return (
@@ -18,6 +18,7 @@ const App = () => {
 
         <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
         <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
+        <Route path='/login' element={<LoginPage />}></Route>
       </Route>
     </Routes>
   );
