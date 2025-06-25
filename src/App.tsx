@@ -1,12 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
 import ButtonTestPage from './components/atoms/button/ButtonTestPage';
 import InputTestPage from './components/atoms/input/InputTestPage';
-import Layout from './components/atoms/layout/Layout';
+import Layout from './components/templates/Layout';
 
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
-
 
 const App = () => {
   return (
