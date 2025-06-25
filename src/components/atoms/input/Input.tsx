@@ -51,10 +51,7 @@ const Input = ({
     color: disabled ? colors.grey40 : undefined,
     backgroundColor: disabled ? colors.grey10 : variantStyleMap[variant].backgroundColor,
     borderColor: error ? colors.error : variantStyleMap[variant].borderColor,
-    border:
-      error && variant !== 'labelfield'
-        ? `1px solid ${colors.error}`
-        : variantStyleMap[variant].border,
+    border: error && variant !== 'labelfield' ? `1px solid ${colors.error}` : '1px solid white',
   };
 
   const isMaxed = typeof value === 'string' && maxLength && value.length >= maxLength;
@@ -104,12 +101,7 @@ const Input = ({
       </div>
 
       {helperText && (
-        <p
-          className='text-xs mt-1'
-          style={{
-            color: error ? colors.error : colors.grey40,
-          }}
-        >
+        <p className='text-xs ml-1 mt-2' style={{ color: error ? colors.error : colors.grey40 }}>
           {helperText}
         </p>
       )}
