@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../../IMG/schoolLogo.png';
+import logo from '../../assets/schoolLogo.png';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
