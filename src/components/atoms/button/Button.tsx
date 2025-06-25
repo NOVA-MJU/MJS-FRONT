@@ -1,15 +1,20 @@
-
 import type { ButtonProps } from './Button.type';
 import { colors } from '../../../styles/color';
 
 const Button = ({
   variant = 'main',
   size = 'md',
+  shape = 'pill',
   children,
   disabled,
   fullWidth,
   ...props
 }: ButtonProps) => {
+  const shapeRadius = {
+    pill: '9999px', // 기존 값
+    rounded: '0.75rem', // 새 값 (12 px 정도)
+  } as const;
+
   const sizeClassName = {
     sm: 'px-3 py-1 text-sm',
     md: 'px-4 py-2 text-base',
@@ -37,6 +42,14 @@ const Button = ({
       backgroundColor: disabled ? colors.grey02 : colors.grey02,
       color: disabled ? colors.grey40 : colors.black,
     },
+    grey: {
+      backgroundColor: disabled ? colors.grey20 : colors.grey40,
+      color: colors.white,
+    },
+    greyLight: {
+      backgroundColor: disabled ? colors.grey20 : '#E3E6E6',
+      color: disabled ? colors.grey40 : '#999999',
+    },
   };
 
   const { backgroundColor, color } = styleMap[variant];
@@ -47,7 +60,7 @@ const Button = ({
         backgroundColor,
         color,
         width: fullWidth ? '100%' : undefined,
-        borderRadius: '9999px',
+        borderRadius: shapeRadius[shape],
         fontWeight: 500,
         transition: 'all 0.2s ease-in-out',
       }}
@@ -61,4 +74,3 @@ const Button = ({
 };
 
 export default Button;
-
