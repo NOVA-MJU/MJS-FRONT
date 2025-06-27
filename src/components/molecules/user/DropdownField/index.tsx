@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import ArrowDown from '../../../assets/btn_arrow_pub.svg';
-import { MAJORS } from '../../../constants/departments'; // dummy 데이터
+import ArrowDown from '../../../../assets/btn_arrow_pub.svg';
+import { MAJORS } from '../../../../constants/departments'; // dummy 데이터
 import clsx from 'clsx';
 
 interface Props {

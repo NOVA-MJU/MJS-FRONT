@@ -6,7 +6,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
-
   return (
     <nav className='w-full bg-[#002f6c] p-3 z-50'>
       <div className='max-w-[1200px] w-[90%] mx-auto flex justify-between items-center'>
@@ -44,7 +43,9 @@ const Navbar = () => {
             <span className='px-3 py-2 rounded cursor-default text-white/60'>제휴</span>
           </li>
           <li>
-            <span className='px-3 py-2 rounded cursor-default text-white/60'>공지사항</span>
+            <Link to='/notice' className='nav-link'>
+              공지사항
+            </Link>
           </li>
           <li>
             <Link to='/board' className='nav-link'>
