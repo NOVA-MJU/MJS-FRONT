@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import InputField from '../../molecules/InputField';
-import LoginButtons from '../../molecules/LoginButtons';
+import InputField from '../../molecules/common/InputField';
+import LoginButtons from '../../molecules/user/LoginButtons';
 import { useNavigate } from 'react-router-dom';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
