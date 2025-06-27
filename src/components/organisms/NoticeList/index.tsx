@@ -16,6 +16,7 @@ const NoticeList: React.FC<NoticeListProps> = ({ items }) => {
           title={item.title}
           content={item.content}
           date={item.date}
+          link={item.link}
         />
       ))}
     </section>

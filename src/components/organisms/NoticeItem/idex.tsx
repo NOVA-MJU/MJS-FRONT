@@ -6,8 +6,9 @@ export interface NoticeItemProps {
   title: string;
   content: string;
   date: string;
+  link: string;
 }
-const NoticeItem: React.FC<NoticeItemProps> = ({ id, category, title, content, date }) => (
+const NoticeItem: React.FC<NoticeItemProps> = ({ id, category, title, content, date, link }) => (
   <>
     <div className='flex justify-between items-center gap-2 py-6'>
       <div>
@@ -15,10 +16,15 @@ const NoticeItem: React.FC<NoticeItemProps> = ({ id, category, title, content, d
           <p className='font-light mr-4'>{id}</p>
           <Badge text={category} />
         </span>
-        <div className='flex flex-col gap-2 cursor-pointer'>
+        <a
+          href={link} //api 연결 후 링크 연결 예정
+          target='_blank'
+          rel='noopener noreferrer'
+          className='flex flex-col gap-2 cursor-pointer'
+        >
           <p className='text-base font-medium'>{title}</p>
           <p className='text-base font-light'>{content}</p>
-        </div>
+        </a>
       </div>
       <p className='text-sm text-grey-40 flex'>{date}</p>
     </div>
