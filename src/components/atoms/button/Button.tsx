@@ -64,7 +64,7 @@ const Button = ({
         fontWeight: 500,
         transition: 'all 0.2s ease-in-out',
       }}
-      className={`${sizeClassName[size]} font-medium`}
+      className={`${sizeClassName[size]} font-medium cursor-pointer`}
       disabled={disabled}
       {...props}
     >
