@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import InputField from '../../molecules/InputField';
-import GenderSelector from '../../molecules/GenderSelector';
+import InputField from '../../molecules/common/InputField';
+import GenderSelector from '../../molecules/user/GenderSelector';
 import Button from '../../atoms/button/Button';
-import DropdownField from '../../molecules/DropdownField';
+import DropdownField from '../../molecules/user/DropdownField';
 const RegisterForm: React.FC = () => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
