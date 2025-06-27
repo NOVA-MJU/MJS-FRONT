@@ -6,7 +6,7 @@ import Header from '../organisms/Header';
 
 const Layout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ['/login', '/register'];
+  const hideHeaderRoutes = ['/login', '/register', '/notice'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
