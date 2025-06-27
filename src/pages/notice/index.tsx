@@ -15,7 +15,7 @@ const Notice: React.FC = () => {
       ? noticeData
       : noticeData.filter((notice) => notice.category === selectedCategory);
   return (
-    <div className='bg-grey-05 w-[1240px] min-h-screen flex flex-col p-12 gap-6'>
+    <div className='bg-grey-05 w-[1240px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
       <p className='text-4xl font-bold text-blue-900 text-mju-primary'>공지사항</p>
       <SearchBar />
       <CategoryFilter
