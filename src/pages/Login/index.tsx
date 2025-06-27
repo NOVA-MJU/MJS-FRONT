@@ -8,7 +8,7 @@ const Login: React.FC = () => {
       <p className='text-4xl font-bold text-blue-900 text-mju-primary'>로그인</p>
 
       {/* 가운데 정렬 영역 */}
-      <div className='w-full flex justify-center items-cente'>
+      <div className='w-full flex justify-center items-center'>
         <div className='flex flex-col gap-6 w-[672px]'>
           <p className='text-3xl font-bold text-mju-primary'>필수 정보</p>
 
