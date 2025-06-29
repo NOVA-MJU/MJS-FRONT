@@ -1,15 +1,16 @@
 import React from 'react';
-import NoticeItem, { type NoticeItemProps } from '../../organisms/NoticeItem/idex';
+import DetailItem, { type ListItemProps } from '../DetailItem/idex';
 
 interface NoticeListProps {
-  items: NoticeItemProps[];
+  items: ListItemProps[];
+  category: string;
 }
 
-const NoticeList: React.FC<NoticeListProps> = ({ items }) => {
+const CommonList: React.FC<NoticeListProps> = ({ items, category }) => {
   return (
     <section className='flex flex-col'>
       {items.map((item) => (
-        <NoticeItem
+        <DetailItem
           key={item.id}
           id={item.id}
           category={item.category}
@@ -17,10 +18,12 @@ const NoticeList: React.FC<NoticeListProps> = ({ items }) => {
           content={item.content}
           date={item.date}
           link={item.link}
+          imgSrc={item.imgSrc}
+          variant={category as 'notice' | 'news'}
         />
       ))}
     </section>
   );
 };
 
-export default NoticeList;
+export default CommonList;
