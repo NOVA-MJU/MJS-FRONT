@@ -9,6 +9,7 @@ import BoardWrite from './pages/board/write';
 import Login from './pages/login';
 import Register from './pages/register';
 import Notice from './pages/notice';
+import News from './pages/news';
 
 const App = () => {
   return (
@@ -19,7 +20,8 @@ const App = () => {
         <Route path='/board/write' element={<BoardWrite />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/Notice' element={<Notice />} />
+        <Route path='/notice' element={<Notice />} />
+        <Route path='/news' element={<News />} />
 
         <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
         <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
