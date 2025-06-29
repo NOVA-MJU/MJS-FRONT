@@ -13,7 +13,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
   if (isLoggedIn) {
     return (
       <div
-        className={`w-full h-full flex flex-col border border-gray-300 rounded-md p-4 font-sans ${className}`}
+        className={`w-full  flex flex-col border border-gray-300 rounded-md p-4 font-sans ${className}`}
       >
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-4'>
@@ -66,7 +66,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
 
   return (
     <div
-      className={`w-full h-full flex flex-col justify-center items-center gap-4 border border-gray-300 rounded-md p-6 font-sans ${className}`}
+      className={`w-full  flex flex-col justify-center items-center gap-4 border border-gray-300 rounded-md p-6 font-sans ${className}`}
     >
       <span className='text-sm font-semibold text-gray-700'>
         커뮤니티 이용을 위한 <span className='text-blue-900'>로그인</span>이 필요합니다!
@@ -86,7 +86,6 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
         <span>|</span>
         <button className='hover:underline'>비밀번호 찾기</button>
       </div>
-
     </div>
   );
 };
