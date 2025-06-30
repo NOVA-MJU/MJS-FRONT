@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Header from './Header';
 import SearchBar from './SearchBar';
 import ProfileComponent from './ProfileComponent';
+import WeatherComponent from '../../molecules/mainpage/weatherComponent';
 
 const Layout = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const Layout = () => {
 
           <div className='w-full md:w-1/3 flex flex-col gap-3'>
             <ProfileComponent />
+            <WeatherComponent />
           </div>
         </div>
       </main>
