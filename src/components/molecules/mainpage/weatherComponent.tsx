@@ -21,13 +21,9 @@ const WeatherComponent = () => {
     );
   }
 
-  const hour = new Date(data.timestamp).getHours();
-
   return (
     <div className='rounded-xl border px-4 py-4 bg-white shadow-md w-full max-w-xs'>
-      <div className='text-sm text-gray-500 mb-2'>
-        {data.location} {hour}시 날씨
-      </div>
+      <div className='text-sm text-gray-500 mb-2'>{data.location} 현재 날씨</div>
 
       <div className='flex items-center space-x-4'>
         <img src={data.weatherIcon} alt='날씨 아이콘' className='w-12 h-12' />

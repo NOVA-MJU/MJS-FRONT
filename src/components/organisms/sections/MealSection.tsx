@@ -1,8 +1,7 @@
 'use client';
 
-import MealComponent from '../../molecules/mainpage/MealComponent';
+import MealComponent from '../../molecules/mainpage/mealComponent';
 
-//dummy data
 const dummyMeals = {
   아침: ['어쩌구저쩌구', '어쩌구저쩌구', '어쩌구저쩌구', '어쩌구저쩌구'],
   점심: ['어쩌구저쩌구', '어쩌구저쩌구', '어쩌구저쩌구', '어쩌구저쩌구'],
