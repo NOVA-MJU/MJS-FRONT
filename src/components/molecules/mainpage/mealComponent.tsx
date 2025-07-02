@@ -7,12 +7,16 @@ interface MealComponentProps {
 const MealComponent = ({ title, items, highlight }: MealComponentProps) => {
   return (
     <div
-      className={`rounded-xl border ${highlight ? 'bg-grey-20' : 'bg-white'} shadow-sm w-full max-w-xs`}
+      className={` border rounded-xl  ${highlight ? 'bg-grey-10 ' : 'bg-white'} shadow-sm w-full max-w-xs`}
     >
-      <div className='border-b px-4 py-2'>
-        <h2 className='text-sm font-semibold text-blue-600'>{title}</h2>
+      <div className='border-b border-mju-primary px-4 py-2'>
+        <h2
+          className={`text-sm  ${highlight ? 'text-blue-35 ' : 'text-blue-10'} font-semibold text-black`}
+        >
+          {title}
+        </h2>
       </div>
-      <ul className='px-4 py-2 text-sm text-gray-800 space-y-1'>
+      <ul className='px-4 py-2 text-sm text-black-40 space-y-1'>
         {items.map((item, idx) => (
           <li key={idx}>{item}</li>
         ))}
