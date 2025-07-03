@@ -13,7 +13,7 @@ apiClient.interceptors.request.use((config) => {
   // const token = localStorage.getItem('accessToken');
   // 유라님 TODO이 여기서 토큰 handle 해주세요!
   //env ignoring test + rebase to basic branch
-  //after rebasing develop
+  //after rebasing develop + after develop setting change + rule tmp change
   // if (token) {
   //   config.headers.Authorization = `Bearer ${token}`;
   // }
