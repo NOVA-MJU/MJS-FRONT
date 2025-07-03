@@ -12,7 +12,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   // const token = localStorage.getItem('accessToken');
   // 유라님 TODO이 여기서 토큰 handle 해주세요!
-  //env ignoring successFul
+  //env ignoring test
   // if (token) {
   //   config.headers.Authorization = `Bearer ${token}`;
   // }
