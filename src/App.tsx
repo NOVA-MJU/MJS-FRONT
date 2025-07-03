@@ -11,22 +11,24 @@ import Register from './pages/Register';
 import Notice from './pages/notice';
 import News from './pages/news';
 import MainPage from './pages/board/main/MainPage';
+import Navbar from './components/organisms/Navbar';
 
 const App = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
         <Route path='/' element={<MainPage />} />
+        <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
+        <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
+      </Route>
+      <Route element={<Navbar />}>
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
-
-        <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
-        <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
       </Route>
     </Routes>
   );
