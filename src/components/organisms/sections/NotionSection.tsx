@@ -22,12 +22,12 @@ const dummyData: Record<string, NotionItem[]> = {
 };
 
 const NotionSection = () => {
-  const [selectedTab, setSelectedTab] = useState('학사공지');
+  const [selectedTab, setSelectedTab] = useState('일반공지');
   const data = dummyData[selectedTab];
   return (
     <div>
       <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab}></TabComponent>
-      <div className='p-4 border border-blue-500 rounded-xl bg-white space-y-2 mt-4'>
+      <div className='p-4 rounded-xl bg-white space-y-2 mt-4'>
         {data.length === 0 ? (
           <p className='text-sm text-gray-500'>해당 탭에 공지사항이 없습니다.</p>
         ) : (
@@ -41,20 +41,6 @@ const NotionSection = () => {
           ))
         )}
       </div>{' '}
-      <div className='p-4 border border-blue-500 rounded-xl bg-white space-y-2 mt-4'>
-        {data.length === 0 ? (
-          <p className='text-sm text-gray-500'>해당 탭에 공지사항이 없습니다.</p>
-        ) : (
-          data.map((item) => (
-            <div
-              key={item.id}
-              className='border border-dashed border-blue-400 p-3 rounded bg-gray-100 text-sm text-gray-800'
-            >
-              {item.content}
-            </div>
-          ))
-        )}
-      </div>
     </div>
   );
 };
