@@ -3,7 +3,7 @@ import LoginForm from '../../components/organisms/LoginForm';
 
 const Login: React.FC = () => {
   return (
-    <div className='bg-grey-05 w-[1240px] min-h-screen flex flex-col p-12'>
+    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
       {/* 제목: 왼쪽 정렬 */}
       <p className='text-4xl font-bold text-blue-900 text-mju-primary'>로그인</p>
 

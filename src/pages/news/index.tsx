@@ -21,7 +21,7 @@ const News: React.FC = () => {
   const currentItems = filteredNotices.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE); // 현재 페이지에 보여줄 아이템 목록
 
   return (
-    <div className='w-[1240px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
+    <div className='w-[1280px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
       <p className='text-4xl font-bold text-blue-900 text-mju-primary'>명대신문</p>
       <SearchBar />
       <CategoryFilter
