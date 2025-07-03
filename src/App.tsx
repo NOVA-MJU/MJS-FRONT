@@ -6,12 +6,13 @@ import Layout from './components/atoms/layout/Layout';
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
-
+import MainPage from './pages/board/main/MainPage';
 
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<Layout></Layout>}>
+      <Route element={<Layout />}>
+        <Route path='/' element={<MainPage />} />
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
