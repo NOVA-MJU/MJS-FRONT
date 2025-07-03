@@ -1,4 +1,4 @@
-export type InputVariant = 'field' | 'searchbar' | 'labelfield';
+export type InputVariant = 'field' | 'searchbar' | 'labelfield' | 'outlined';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: InputVariant;

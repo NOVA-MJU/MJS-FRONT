@@ -1,15 +1,15 @@
 import { Outlet, useLocation } from 'react-router-dom';
 
-import Footer from './Footer';
-import Navbar from './Navbar';
-import Header from './Header';
-import SearchBar from './SearchBar';
-import ProfileComponent from './ProfileComponent';
-import WeatherComponent from '../../molecules/mainpage/weatherComponent';
+import Footer from '../organisms/Footer';
+import Navbar from '../organisms/Navbar';
+import Header from '../organisms/Header';
+import SearchBar from '../atoms/SearchBar';
+import ProfileComponent from '../organisms/ProfileComponent';
+import WeatherComponent from '../molecules/mainpage/weatherComponent';
 
 const Layout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ['/login', '/register'];
+  const hideHeaderRoutes = ['/login', '/register', '/notice', '/news'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
@@ -31,7 +31,6 @@ const Layout = () => {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );

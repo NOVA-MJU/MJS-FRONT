@@ -1,4 +1,6 @@
 import { FaBullhorn } from 'react-icons/fa';
+import ProfileComponent from './ProfileComponent';
+import SearchBar from '../molecules/common/SearchBar';
 
 export default function Header() {
   return (

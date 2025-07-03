@@ -1,4 +1,4 @@
-import type { InputProps } from './Input.type';
+import type { InputProps, InputVariant } from './Input.type';
 import { colors } from '../../../styles/color';
 
 const Input = ({
@@ -12,10 +12,9 @@ const Input = ({
   value,
   ...props
 }: InputProps) => {
-  const baseClass = 'px-4 py-2 text-sm';
   const disabled = props.disabled;
 
-  const variantStyleMap: Record<typeof variant, React.CSSProperties> = {
+  const variantStyleMap: Record<InputVariant, React.CSSProperties> = {
     field: {
       backgroundColor: colors.grey02,
       border: `1px solid ${colors.mju_primary}`,
@@ -32,6 +31,19 @@ const Input = ({
       backgroundColor: '#ffffff',
       borderBottom: `1px solid ${colors.grey20}`,
     },
+    outlined: {
+      backgroundColor: colors.white,
+      outline: `2px solid ${colors.grey10}`,
+      outlineOffset: '-2px',
+      borderRadius: '0.75rem',
+      border: 'none',
+    },
+  };
+  const variantExtraClass: Record<InputVariant, string> = {
+    field: 'px-4 py-2 text-sm',
+    searchbar: 'px-4 py-2 text-sm',
+    labelfield: 'px-4 py-2 text-sm',
+    outlined: 'p-3 text-base',
   };
 
   const wrapperStyle: React.CSSProperties = {
@@ -39,10 +51,7 @@ const Input = ({
     color: disabled ? colors.grey40 : undefined,
     backgroundColor: disabled ? colors.grey10 : variantStyleMap[variant].backgroundColor,
     borderColor: error ? colors.error : variantStyleMap[variant].borderColor,
-    border:
-      error && variant !== 'labelfield'
-        ? `1px solid ${colors.error}`
-        : variantStyleMap[variant].border,
+    border: error && variant !== 'labelfield' ? `1px solid ${colors.error}` : '1px solid white',
   };
 
   const isMaxed = typeof value === 'string' && maxLength && value.length >= maxLength;
@@ -59,7 +68,7 @@ const Input = ({
       )}
 
       <div
-        className={`${baseClass} w-full`}
+        className={`w-full ${variantExtraClass[variant]}`}
         style={{
           ...wrapperStyle,
           ...(isMaxed && !error ? { backgroundColor: '#fee2e2', borderColor: colors.error } : {}),
@@ -68,7 +77,7 @@ const Input = ({
       >
         {icon && <span className='mr-2'>{icon}</span>}
         <input
-          className='bg-transparent w-full outline-none'
+          className='bg-transparent w-full outline-none placeholder:text-common-grey-scale-grey20'
           maxLength={maxLength}
           value={value}
           disabled={disabled}
@@ -92,12 +101,7 @@ const Input = ({
       </div>
 
       {helperText && (
-        <p
-          className='text-xs mt-1'
-          style={{
-            color: error ? colors.error : colors.grey40,
-          }}
-        >
+        <p className='text-xs ml-1 mt-2' style={{ color: error ? colors.error : colors.grey40 }}>
           {helperText}
         </p>
       )}
