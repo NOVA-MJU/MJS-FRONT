@@ -11,6 +11,12 @@ export interface RegisterReq {
   studentNumber: number;
 }
 
+/** 로그인 **/
+export const login = async (email: string, password: string) => {
+  const { data } = await apiClient.post('/auth/login', { email, password });
+  return data as { accessToken: string; refreshToken: string };
+};
+/** 회원가입 **/
 export const registerMember = async (userData: RegisterReq) => {
   try {
     const response = await apiClient.post('/members', userData);
@@ -21,13 +27,13 @@ export const registerMember = async (userData: RegisterReq) => {
   }
 };
 
-/** 이메일 중복 확인 */
+/** 이메일 중복 확인 **/
 export const emailVerification = async (email: string) => {
   const { data } = await apiClient.post('/member/email/verify', { email });
   return data;
 };
 
-/** 이메일 인증 코드 검증  */
+/** 이메일 인증 코드 검증  **/
 export const verifyEmailCode = async (email: string, code: string) => {
   const { data } = await apiClient.post('/member/email/check', { email, code });
   return data.data.matched as boolean;
