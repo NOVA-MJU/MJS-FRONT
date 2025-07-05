@@ -40,8 +40,13 @@ export default function Board() {
       </div>
       <hr className='w-full h-[4px] bg-gradient-to-r from-blue-05 to-white rounded-full border-0' />
       <div className='flex justify-end'>
-        <button>
-          <Typography variant='body02'>글 남기기</Typography>
+        <button
+          className='gap-[10px] p-3 bg-blue-35 rounded-xl w-46 cursor-pointer'
+          onClick={() => navigate('write')}
+        >
+          <Typography variant='body02' className='text-white'>
+            글 남기기
+          </Typography>
         </button>
       </div>
       <div className='flex flex-col p-3 gap-3'>

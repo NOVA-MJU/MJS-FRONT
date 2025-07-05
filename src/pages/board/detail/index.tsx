@@ -3,6 +3,8 @@ import { Typography } from '../../../components/atoms/Typography';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Comment from '../../../components/organisms/Comment';
+import Markdown from 'react-markdown';
+import '../markdown.css';
 
 export default function BoardDetail() {
   const navigate = useNavigate();
@@ -45,9 +47,12 @@ export default function BoardDetail() {
         </div>
       </div>
       <hr className='w-full h-[2px] bg-grey-05 rounded-full border-0' />
-      <div className='w-full px-29 py-3'>
-        <Typography variant='body03'>{post.content}</Typography>
+
+      <div className='markdown w-full px-29 py-3 break-all'>
+        <Markdown>{post.content}</Markdown>
+        {/* <Typography variant='body03'>{post.content}</Typography> */}
       </div>
+
       <div className='flex px-3'>
         <Typography variant='body02' className='text-mju-primary'>
           좋아요 ☒
@@ -99,8 +104,27 @@ const dummyPost = {
   viewCount: 123,
   commentCount: 2,
   likeCount: 45,
-  content:
-    '본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 본문이 어쩌구 저쩌구 이러쿵 저러쿵 어쩌렴 저쩌렴 ',
+  content: `
+  # 다람쥐 헌 쳇바퀴에 타고파
+
+  ## 다람쥐 헌 쳇바퀴에 타고파
+
+  ### 다람쥐 헌 쳇바퀴에 타고파
+
+  다람쥐 헌 쳇바퀴에 타고파
+
+  **다람쥐 헌 쳇바퀴에 타고파**
+
+  # The Quick Brown Fox Jumps Over The Lazy Dog
+
+  ## The Quick Brown Fox Jumps Over The Lazy Dog
+
+  ### The Quick Brown Fox Jumps Over The Lazy Dog
+
+  The Quick Brown Fox Jumps Over The Lazy Dog
+
+  **The Quick Brown Fox Jumps Over The Lazy Dog**
+  `,
 };
 
 // 더미 댓글 데이터 예시
