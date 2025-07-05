@@ -4,6 +4,7 @@ export interface WeatherInfo {
   temperature: number;
   feelsLike: number;
   humidity: number;
+  rainProbability: number;
   weatherMain: string;
   weatherDescription: string;
   weatherIcon: string;

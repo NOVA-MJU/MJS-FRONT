@@ -23,19 +23,16 @@ const WeatherComponent = () => {
 
   return (
     <div className='rounded-xl border border-grey-20 px-4 py-4 bg-white shadow-md w-full '>
-      <div className='text-sm text-gray-500 mb-2'>{data.location} 현재 날씨</div>
+      <div className='text-m text-gray-500 mb-2'>{data.location} 현재 날씨</div>
 
-      <div className='flex items-center space-x-4'>
-        <img src={data.weatherIcon} alt='날씨 아이콘' className='w-12 h-12' />
-        <div>
-          <div className='text-2xl font-bold'>{Math.round(data.temperature)}°C</div>
-          <div className='text-sm text-gray-500'>
-            {Math.round(data.minTemperature)}° | {Math.round(data.maxTemperature)}°
-          </div>
-        </div>
+      <div className='flex  items-center gap-x-13'>
+        <img src={data.weatherIcon} alt='날씨 아이콘' className='w-30 h-30' />
+        <div className='text-2xl font-bold textc'> {Math.round(data.temperature)}°C</div>
       </div>
-
-      <div className='mt-4 text-xs text-gray-700 space-y-1'>
+      <div className='text-l text-center text-gray-500'>
+        {Math.round(data.minTemperature)}° | {Math.round(data.maxTemperature)}°
+      </div>
+      <div className='mt-4 text-xs text-center text-gray-700 space-y-1'>
         <div>체감 온도: {Math.round(data.feelsLike)}°C</div>
         <div>습도: {data.humidity}%</div>
         <div>
