@@ -76,7 +76,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
         <Button variant='main' disabled={false} size='md' fullWidth>
           로그인
         </Button>
-        <Button variant='basic' disabled={false} size='md' fullWidth>
+        <Button variant='greyLight' disabled={false} size='md' fullWidth>
           회원가입
         </Button>
       </div>

@@ -8,7 +8,7 @@ const Navbar = () => {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   return (
     <>
-      <nav className='w-[1280px] bg-[#002f6c] p-3 z-50 mx-auto'>
+      <nav className='w-full bg-[#002f6c] p-3 z-50 mx-auto'>
         <div className='max-w-[1200px] w-[90%] mx-auto flex justify-between items-center'>
           {/* 로고 + 이름 */}
           <div className='flex items-center gap-2'>
