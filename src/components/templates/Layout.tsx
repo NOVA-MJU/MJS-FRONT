@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import Footer from '../organisms/Footer';
 import Navbar from '../organisms/Navbar';
@@ -6,8 +6,11 @@ import Header from '../organisms/Header';
 import SearchBar from '../atoms/SearchBar';
 import ProfileComponent from '../organisms/ProfileComponent';
 import WeatherComponent from '../molecules/mainpage/weatherComponent';
-
-const Layout = () => {
+import type { ReactNode } from 'react';
+interface LayoutProps {
+  children: ReactNode;
+}
+const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const hideHeaderRoutes = ['/login', '/register', '/notice', '/news'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
@@ -22,7 +25,7 @@ const Layout = () => {
         <div className='flex flex-col md:flex-row gap-4 mt-6'>
           <div className='w-full md:w-2/3 flex flex-col gap-3'>
             <SearchBar />
-            <Outlet />
+            {children}
           </div>
 
           <div className='w-full md:w-1/3 flex flex-col gap-3'>
