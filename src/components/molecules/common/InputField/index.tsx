@@ -9,6 +9,8 @@ interface InputFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
   helperText?: string;
+  rightElement?: React.ReactNode;
+  showHr?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -19,22 +21,27 @@ const InputField: React.FC<InputFieldProps> = ({
   onChange,
   error = false,
   helperText,
+  showHr = true,
+  rightElement,
 }) => {
   return (
     <div className='flex flex-col gap-2 w-full'>
       <div className='flex items-center gap-6'>
         <label className='text-blue-10 text-xl font-semibold whitespace-nowrap'>{label}</label>
-        <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
+        {showHr && <hr className='w-full flex-1 border-t-2 border-blue-10 rounded-xl' />}
       </div>
-      <Input
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        variant='outlined'
-        error={error}
-        helperText={helperText}
-      />
+      <div className='flex'>
+        <Input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          variant='outlined'
+          error={error}
+          helperText={helperText}
+        />
+        {rightElement && <div className='ml-4'>{rightElement}</div>}
+      </div>
     </div>
   );
 };

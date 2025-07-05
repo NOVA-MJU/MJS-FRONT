@@ -21,7 +21,7 @@ const DropdownField: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className='relative w-full flex flex-col gap-2'>
+    <div className='relative w-full h-[90px] flex flex-col gap-2'>
       {/* 라벨 + 라인 */}
       <div className='flex items-center gap-6'>
         <label className='text-blue-10 text-xl font-semibold whitespace-nowrap'>{label}</label>

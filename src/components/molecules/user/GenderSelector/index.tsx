@@ -9,9 +9,9 @@ interface Props {
 
 const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
   <div>
-    <div className='flex items-center gap-24 mb-3'>
+    <div className='flex items-center gap-6 mb-3'>
       <label className='text-blue-10 text-xl font-semibold'>성별</label>
-      <hr className='w-[306px] border-t-2 border-blue-10 rounded-xl' />
+      <hr className='w-[381px] border-t-2 border-blue-10 rounded-xl' />
     </div>
     <div className='flex justify-center gap-4'>
       {options.map((g) => (
