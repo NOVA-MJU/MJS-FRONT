@@ -34,7 +34,7 @@ const NotionSection = () => {
           data.map((item) => (
             <div
               key={item.id}
-              className='border border-dashed border-blue-400 p-3 rounded bg-gray-100 text-sm text-gray-800'
+              className='border border-dashed border-blue-400 p-3 rounded bg-grey-10 text-sm text-gray-800'
             >
               {item.content}
             </div>
