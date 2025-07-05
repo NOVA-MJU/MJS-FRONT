@@ -10,6 +10,7 @@ export default function BoardWrite() {
   const navigate = useNavigate();
   const [content, setContent] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function normalizeNewlines(input: string): string {
     return input
@@ -45,27 +46,105 @@ export default function BoardWrite() {
   const toggleBold = () => {
     const ta = textareaRef.current;
     if (!ta) return;
-
     const { value, selectionStart: start, selectionEnd: end } = ta;
-    let newText: string, selStart: number, selEnd: number;
+    let newStart = start,
+      newEnd = end;
 
-    if (start !== end) {
-      const sel = value.slice(start, end);
-      newText = value.slice(0, start) + `**${sel}**` + value.slice(end);
-      selStart = start;
-      selEnd = start + sel.length + 4;
+    const prefix = value.slice(start - 2, start);
+    const suffix = value.slice(end, end + 2);
+
+    if (start >= 2 && end + 2 <= value.length && prefix === '**' && suffix === '**') {
+      ta.value = value.slice(0, start - 2) + value.slice(start, end) + value.slice(end + 2);
+      newStart = start - 2;
+      newEnd = end - 2;
     } else {
-      newText = value.slice(0, start) + `****` + value.slice(end);
-      selStart = selEnd = start + 2;
+      if (start !== end) {
+        ta.value = value.slice(0, start) + '**' + value.slice(start, end) + '**' + value.slice(end);
+        newStart = start + 2;
+        newEnd = end + 2;
+      } else {
+        ta.value = value.slice(0, start) + '****' + value.slice(start);
+        newStart = newEnd = start + 2;
+      }
     }
 
-    ta.value = newText;
-    setContent(normalizeNewlines(newText));
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(selStart, selEnd);
-    }, 0);
+    ta.focus();
+    ta.setSelectionRange(newStart, newEnd);
+    setContent(normalizeNewlines(ta.value));
   };
+
+  // italic 추가 function
+  const toggleItalic = () => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+
+    const { value, selectionStart: start, selectionEnd: end } = ta;
+    let newStart = start,
+      newEnd = end;
+
+    const prefix = value.slice(start - 2, start);
+    const suffix = value.slice(end, end + 2);
+
+    if (start >= 2 && end + 2 <= value.length && prefix === ' _' && suffix === '_ ') {
+      ta.value = value.slice(0, start - 2) + value.slice(start, end) + value.slice(end + 2);
+      newStart = start - 2;
+      newEnd = end - 2;
+    } else {
+      if (start !== end) {
+        ta.value = value.slice(0, start) + ' _' + value.slice(start, end) + '_ ' + value.slice(end);
+        newStart = start + 2;
+        newEnd = end + 2;
+      } else {
+        ta.value = value.slice(0, start) + ' __ ' + value.slice(start);
+        newStart = newEnd = start + 2;
+      }
+    }
+
+    ta.focus();
+    ta.setSelectionRange(newStart, newEnd);
+    setContent(normalizeNewlines(ta.value));
+  };
+
+  // 이미지 추가 function
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const ta = textareaRef.current!;
+
+    // TODO 이 파일을 업로드해야함
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    console.log(file.type.startsWith('image/') ? '이미지입니다' : '이미지가 아닙니다');
+
+    const imgCaption = `\n![업로드중]()\n`;
+    const { selectionStart, selectionEnd, value } = ta;
+
+    ta.value = value.slice(0, selectionStart) + imgCaption + value.slice(selectionEnd);
+
+    ta.selectionStart = ta.selectionEnd = selectionStart + imgCaption.length;
+    ta.focus();
+    setContent(normalizeNewlines(ta.value));
+  };
+
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    const ta = textareaRef.current!;
+
+    // TODO 이 파일을 업로드해야함
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const imgCaption = `\n![업로드중]()\n`;
+    const { selectionStart, selectionEnd, value } = ta;
+
+    ta.value = value.slice(0, selectionStart) + imgCaption + value.slice(selectionEnd);
+
+    ta.selectionStart = ta.selectionEnd = selectionStart + imgCaption.length;
+    ta.focus();
+    setContent(normalizeNewlines(ta.value));
+  }
+
+  function handleImageUploadClick(): void {
+    fileInputRef.current?.click();
+  }
 
   return (
     <div className='w-full h-screen px-9 py-12 gap-6 flex flex-col'>
@@ -132,7 +211,7 @@ export default function BoardWrite() {
                   B
                 </Typography>
               </IconButton>
-              <IconButton>
+              <IconButton onClick={() => toggleItalic()}>
                 <Typography variant='body02' className='text-black'>
                   I
                 </Typography>
@@ -145,7 +224,7 @@ export default function BoardWrite() {
             </div>
             <hr className='w-0 h-6 border-1 border-grey-10' />
             <div className='flex gap-3'>
-              <IconButton>
+              <IconButton onClick={handleImageUploadClick}>
                 <Typography variant='body02' className='text-black'>
                   ☒
                 </Typography>
@@ -173,6 +252,7 @@ export default function BoardWrite() {
             placeholder='자유롭게 말을 남겨보세요'
             ref={textareaRef}
             onChange={(e) => setContent(normalizeNewlines(e.target.value))}
+            onDrop={handleDrop}
           />
         </div>
 
@@ -187,6 +267,14 @@ export default function BoardWrite() {
           </div>
         </div>
       </div>
+
+      <input
+        type='file'
+        accept='image/*'
+        ref={fileInputRef}
+        className='hidden'
+        onChange={handleImageChange}
+      />
     </div>
   );
 }
