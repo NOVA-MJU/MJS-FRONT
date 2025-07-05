@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import ButtonTestPage from './components/atoms/button/ButtonTestPage';
-import InputTestPage from './components/atoms/input/InputTestPage';
+
 import Layout from './components/templates/Layout';
 
 import Board from './pages/board';
@@ -18,9 +17,8 @@ const App = () => {
     <Routes>
       <Route element={<Layout />}>
         <Route path='/' element={<MainPage />} />
-        <Route path='/test/button' element={<ButtonTestPage></ButtonTestPage>}></Route>
-        <Route path='/test/input' element={<InputTestPage></InputTestPage>}></Route>
       </Route>
+
       <Route element={<Navbar />}>
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
