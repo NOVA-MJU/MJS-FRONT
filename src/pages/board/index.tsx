@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../../components/molecules/common/Pagination';
 
 export default function Board() {
   const navigate = useNavigate();
   const [contents] = useState(dummyPost);
   const [, setIsLoading] = useState(false);
-  const [page] = useState(0);
+  const [page, setPage] = useState(1);
   const [size] = useState(10);
+  const [totalPages] = useState(10);
 
   useEffect(() => {
     const getData = async () => {
@@ -66,6 +68,7 @@ export default function Board() {
           </div>
         ))}
       </div>
+      <Pagination page={page} totalPages={totalPages} onChange={(next) => setPage(next)} />
     </div>
   );
 }
