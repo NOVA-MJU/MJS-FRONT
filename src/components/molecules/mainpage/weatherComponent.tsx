@@ -22,7 +22,7 @@ const WeatherComponent = () => {
   }
 
   return (
-    <div className='rounded-xl border px-4 py-4 bg-white shadow-md w-full max-w-xs'>
+    <div className='rounded-xl border border-grey-20 px-4 py-4 bg-white shadow-md w-full '>
       <div className='text-sm text-gray-500 mb-2'>{data.location} 현재 날씨</div>
 
       <div className='flex items-center space-x-4'>
