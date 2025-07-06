@@ -1,9 +1,8 @@
-import { Pageable } from './notionInfo';
 export interface NoticeItem {
-  title: string;
-  date: string;
   category: 'general' | 'academic' | 'scholarship' | 'career' | 'activity' | 'rule';
+  date: string;
   link: string;
+  title: string;
 }
 
 export interface Pageable {

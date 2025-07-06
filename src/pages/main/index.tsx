@@ -1,11 +1,11 @@
-import NotionSection from '../../components/organisms/sections/NotionSection';
+import NoticeSection from '../../components/organisms/sections/NoticeSection';
 import MealSection from '../../components/organisms/sections/MealSection';
 import Layout from '../../components/templates/Layout';
 const Main = () => {
   return (
     <Layout>
       <MealSection />
-      <NotionSection />
+      <NoticeSection />
     </Layout>
   );
 };

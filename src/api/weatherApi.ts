@@ -1,4 +1,4 @@
-import type { WeatherInfo } from '../types/weatherInfo';
+import type { WeatherInfo } from '../types/weather/weatherInfo';
 import apiClient from './apiClient';
 
 export const fetchWeatherInfo = async (): Promise<WeatherInfo> => {
