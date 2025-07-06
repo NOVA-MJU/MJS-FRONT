@@ -5,8 +5,8 @@ export const fetchNotionInfo = async (
   category: string,
   year = new Date().getFullYear(),
   page = 0,
-  size = 15,
-  sort: 'asc' | 'desc' = 'asc',
+  size = 5,
+  sort: 'asc' | 'desc' = 'desc',
 ): Promise<NoticeResponse> => {
   try {
     const response = await apiClient.get('/notices', {
