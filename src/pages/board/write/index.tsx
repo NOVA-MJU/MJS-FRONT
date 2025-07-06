@@ -3,15 +3,68 @@ import { Typography } from '../../../components/atoms/Typography';
 import IconButton from '../../../components/atoms/IconButton';
 import Markdown from 'react-markdown';
 import '../markdown.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getTempImageFolderUuid, postBoard, uploadImage } from '../../../api/board';
 
 export default function BoardWrite() {
   const navigate = useNavigate();
   const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageFolderUuid, setImageFolderUuid] = useState('');
 
+  /**
+   * 신규 이미지 폴더 발급 요청 함수
+   */
+  useEffect(() => {
+    const getImageFolderUuid = async () => {
+      try {
+        const uuid = await getTempImageFolderUuid();
+
+        console.log(uuid);
+
+        setImageFolderUuid(uuid);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getImageFolderUuid();
+  }, []);
+
+  /**
+   * 게시글 업로드 요청 함수
+   */
+  const handleUploadPost = async () => {
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+
+      // TODO contentImages 전달 방법 고안할 것.
+      const req = {
+        title: title,
+        content: content,
+        published: true,
+        contentImages: [],
+      };
+
+      const response = await postBoard(req);
+      console.log(response);
+      navigate(`/board/${response.data.uuid}`);
+    } catch (e) {
+      console.log(e);
+      alert('문제가 발생했습니다');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 게시글 줄바꿈 파싱
+   */
   function normalizeNewlines(input: string): string {
     return input
       .replace(/\r\n/g, '\n')
@@ -19,7 +72,9 @@ export default function BoardWrite() {
       .replace(/\n{3,}/g, '\n\n');
   }
 
-  // heading 추가 function
+  /**
+   * heading 추가 function
+   */
   const toggleHeading = (level: 1 | 2 | 3) => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -42,7 +97,9 @@ export default function BoardWrite() {
     setContent(normalizeNewlines(newVal));
   };
 
-  // bold 추가 function
+  /**
+   * bold 추가 function
+   */
   const toggleBold = () => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -73,7 +130,9 @@ export default function BoardWrite() {
     setContent(normalizeNewlines(ta.value));
   };
 
-  // italic 추가 function
+  /**
+   * italic 추가 function
+   */
   const toggleItalic = () => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -105,42 +164,80 @@ export default function BoardWrite() {
     setContent(normalizeNewlines(ta.value));
   };
 
-  // 이미지 추가 function
-  const handleDrop = (e: React.DragEvent) => {
+  /**
+   * 이미지 드래그 해서 추가
+   */
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     const ta = textareaRef.current!;
 
-    // TODO 이 파일을 업로드해야함
     const file = e.dataTransfer.files[0];
     if (!file) return;
-    console.log(file.type.startsWith('image/') ? '이미지입니다' : '이미지가 아닙니다');
 
-    const imgCaption = `\n![업로드중]()\n`;
+    const imgCaption = `\n![업로드중 ${file.name}]()\n`;
     const { selectionStart, selectionEnd, value } = ta;
 
     ta.value = value.slice(0, selectionStart) + imgCaption + value.slice(selectionEnd);
-
     ta.selectionStart = ta.selectionEnd = selectionStart + imgCaption.length;
-    ta.focus();
     setContent(normalizeNewlines(ta.value));
+
+    try {
+      const imageUrl = await uploadImage(file, imageFolderUuid);
+
+      const successCaption = `\n![${file.name}](${imageUrl})\n`;
+      ta.value = value.slice(0, selectionStart) + successCaption + value.slice(selectionEnd);
+      ta.selectionStart = ta.selectionEnd = selectionStart + successCaption.length;
+
+      setContent(normalizeNewlines(ta.value));
+    } catch (err) {
+      console.log(err);
+
+      const errorCaption = `\n![업로드 중 문제가 발생했습니다]()\n`;
+      ta.value = value.slice(0, selectionStart) + errorCaption + value.slice(selectionEnd);
+      ta.selectionStart = ta.selectionEnd = selectionStart + errorCaption.length;
+
+      setContent(normalizeNewlines(ta.value));
+    }
+
+    ta.focus();
   };
 
-  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>): void {
+  /**
+   * 이미지 직접 추가
+   */
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const ta = textareaRef.current!;
 
-    // TODO 이 파일을 업로드해야함
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const imgCaption = `\n![업로드중]()\n`;
+    const imgCaption = `\n![업로드중 ${file.name}]()\n`;
     const { selectionStart, selectionEnd, value } = ta;
-
     ta.value = value.slice(0, selectionStart) + imgCaption + value.slice(selectionEnd);
 
     ta.selectionStart = ta.selectionEnd = selectionStart + imgCaption.length;
-    ta.focus();
     setContent(normalizeNewlines(ta.value));
-  }
+
+    try {
+      const imageUrl = await uploadImage(file, imageFolderUuid);
+
+      const successCaption = `\n![${file.name}](${imageUrl})\n`;
+      ta.value = value.slice(0, selectionStart) + successCaption + value.slice(selectionEnd);
+      ta.selectionStart = ta.selectionEnd = selectionStart + successCaption.length;
+
+      setContent(normalizeNewlines(ta.value));
+    } catch (err) {
+      console.error(err);
+
+      const errorCaption = `\n![업로드 중 문제가 발생했습니다]()\n`;
+      ta.value = value.slice(0, selectionStart) + errorCaption + value.slice(selectionEnd);
+      ta.selectionStart = ta.selectionEnd = selectionStart + errorCaption.length;
+
+      setContent(normalizeNewlines(ta.value));
+    }
+
+    ta.focus();
+  };
 
   function handleImageUploadClick(): void {
     fileInputRef.current?.click();
@@ -171,7 +268,10 @@ export default function BoardWrite() {
               00
             </Typography>
           </button>
-          <button className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'>
+          <button
+            className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
+            onClick={handleUploadPost}
+          >
             <Typography variant='body02' className='text-black'>
               완료
             </Typography>
@@ -182,6 +282,7 @@ export default function BoardWrite() {
       <input
         className='p-3 placeholder-grey-20 font-bold text-[28px] border-2 border-blue-05 rounded-xl focus:bg-blue-05 focus:outline-none'
         placeholder='제목'
+        onChange={(e) => setTitle(e.target.value)}
       />
 
       <div className='h-full flex gap-6'>
