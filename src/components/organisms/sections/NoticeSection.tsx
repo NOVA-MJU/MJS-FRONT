@@ -25,6 +25,7 @@ const NoticeSection = () => {
   }, [selectedTab]);
   return (
     <div>
+      <h1 className='text-xl mt-1.5 font-bold text-mju-primary mb-4'>공지사항</h1>
       <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab}></TabComponent>
       <div className='grid grid-cols-1 gap-4 mt-6 '>
         {selectedInfo.map((data, idx) => (
