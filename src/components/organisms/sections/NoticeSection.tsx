@@ -27,15 +27,15 @@ const NoticeSection = () => {
     <div>
       <h1 className='text-xl mt-1.5 font-bold text-mju-primary mb-4'>공지사항</h1>
       <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab}></TabComponent>
-      <div className='grid grid-cols-1 gap-4 mt-6 '>
+      <div className='grid grid-cols-1 gap-2 mt-5 '>
         {selectedInfo.map((data, idx) => (
-          <div className='bg-grey-05'>
+          <div className='bg-grey-05 '>
             <a
               href={data.link}
               target='_blank'
               rel='noopener noreferrer'
               key={idx}
-              className='block p-4 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow'
+              className='block p-4 border border-grey-10 rounded-xl shadow-sm hover:shadow-md transition-shadow'
             >
               <h3 className='text-lg font-semibold text-blue-800 truncate'>{data.title}</h3>
               <div className='mt-2 text-sm text-gray-600'>
