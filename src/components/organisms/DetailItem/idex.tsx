@@ -66,7 +66,7 @@ const DetailItem: React.FC<ListItemProps> = ({
     <>
       <div className='flex justify-between items-center gap-2 py-6'>
         <div>
-          <span className='w-[1104px] flex items-center mb-6'>
+          <span className='w-[1000px] flex items-center mb-6'>
             <p className='font-light mr-4'>{String(id).padStart(2, '0')}</p>
             <Badge text={layout === 'notice' ? categoryLabel[category] || category : category} />
           </span>

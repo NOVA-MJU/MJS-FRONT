@@ -43,7 +43,7 @@ const Notice: React.FC = () => {
   }, [selectedCategory, page]);
 
   return (
-    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
+    <div className='w-[1280px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
       <p className='text-4xl font-bold text-mju-primary'>공지사항</p>
       <SearchBar />
       <CategoryFilter
@@ -54,6 +54,7 @@ const Notice: React.FC = () => {
           setPage(1); // 카테고리 바뀌면 첫 페이지로
         }}
       />
+      <hr className='w-full border-blue-05 border-2' />
       <NoticeList items={items} category='notice' />
       <Pagination page={page} totalPages={totalPages} onChange={(next) => setPage(next)} />
     </div>
