@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import TabComponent from '../../molecules/mainpage/TabComponent';
 import { fetchNotionInfo } from '../../../api/notice/noticeApi';
