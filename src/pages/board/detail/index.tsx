@@ -1,17 +1,89 @@
 import { IoIosArrowBack } from 'react-icons/io';
 import { Typography } from '../../../components/atoms/Typography';
-import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Comment from '../../../components/organisms/Comment';
 import Markdown from 'react-markdown';
 import '../markdown.css';
+import {
+  getBoardComments,
+  getBoardDetail,
+  postComment,
+  type BoardDetailRes,
+  type CommentRes,
+} from '../../../api/board';
+import LoadingComponent from '../../../components/atoms/Loading/LoadingComponent';
+
+interface BoardDetail {
+  id: string;
+  title: string;
+  date: string;
+  author: string;
+  viewCount: number;
+  commentCount: number;
+  likeCount: number;
+  content: string;
+}
 
 export default function BoardDetail() {
   const navigate = useNavigate();
-  const [post] = useState(dummyPost);
-  const [comments] = useState(dummyComments);
+  const { uuid } = useParams<{ uuid: string }>();
+  const [content, setContent] = useState<BoardDetailRes | null>(null);
+  const [comments, setComments] = useState<CommentRes[] | null>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
-  const commentInputCounterRef = useRef<HTMLParagraphElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [newComment, setNewComment] = useState('');
+
+  useEffect(() => {
+    if (!uuid) return;
+    getContent(uuid);
+  }, [uuid]);
+
+  /**
+   * 페이지 로드 함수
+   */
+  const getContent = async (uuid: string) => {
+    setIsLoading(true);
+
+    try {
+      const contentRes = await getBoardDetail(uuid);
+      const commentsRes = await getBoardComments(uuid);
+
+      setContent(contentRes);
+      setComments(commentsRes);
+    } catch (err) {
+      console.error(err);
+      alert('페이지를 로드하는 중 문제가 발생했습니다');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 댓글 작성 함수
+   */
+  const handleCommentUpload = async () => {
+    if (!uuid || isLoading) return;
+
+    if (newComment.length <= 2) {
+      alert('댓글을 작성해 주세요');
+      return;
+    } else if (newComment.length > 100) {
+      alert('100자 이내로 작성해주세요');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await postComment(uuid, newComment);
+      await getContent(uuid);
+      setNewComment('');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className='w-full h-full flex flex-col px-9 py-12 gap-6'>
@@ -22,138 +94,113 @@ export default function BoardDetail() {
             이전
           </Typography>
         </div>
-        <div className='flex items-center gap-6'>
-          <button className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'>
-            <Typography variant='body02' className='text-black'>
-              수정
-            </Typography>
-          </button>
-          <button className='w-46 bg-error cursor-pointer p-3 rounded-xl'>
-            <Typography variant='body02' className='text-white'>
-              삭제
-            </Typography>
-          </button>
-        </div>
+        {content && (
+          <div className='flex items-center gap-6'>
+            <button className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'>
+              <Typography variant='body02' className='text-black'>
+                수정
+              </Typography>
+            </button>
+            <button className='w-46 bg-error cursor-pointer p-3 rounded-xl'>
+              <Typography variant='body02' className='text-white'>
+                삭제
+              </Typography>
+            </button>
+          </div>
+        )}
       </div>
-      <div className='flex flex-col w-full p-3, gap-3'>
-        <Typography variant='heading02'>{post.title}</Typography>
-        <div className='flex justify-between'>
-          <Typography variant='body03' className='text-grey-40'>
-            {post.date} | {post.author}
-          </Typography>
-          <Typography variant='body03' className='text-grey-40'>
-            ☒ {post.viewCount} | ☒ {post.commentCount}
-          </Typography>
+      {isLoading ? (
+        <div className='h-screen w-full flex justify-center items-center'>
+          <LoadingComponent />
         </div>
-      </div>
-      <hr className='w-full h-[2px] bg-grey-05 rounded-full border-0' />
+      ) : !content ? (
+        <div className='h-screen w-full flex flex-col justify-center items-center'>
+          <Typography variant='heading01'>404</Typography>
+          <Typography variant='heading01'>페이지를 찾을 수 없습니다</Typography>
+        </div>
+      ) : (
+        <>
+          <div className='flex flex-col w-full p-3, gap-3'>
+            <Typography variant='heading02'>{content.title}</Typography>
+            <div className='flex justify-between'>
+              <Typography variant='body03' className='text-grey-40'>
+                {content.publishedAt} | {content.author}
+              </Typography>
+              <Typography variant='body03' className='text-grey-40'>
+                ☒ {content.viewCount} | ☒ {content.commentCount}
+              </Typography>
+            </div>
+          </div>
+          <hr className='w-full h-[2px] bg-grey-05 rounded-full border-0' />
 
-      <div className='markdown w-full px-29 py-3 break-all'>
-        <Markdown>{post.content}</Markdown>
-        {/* <Typography variant='body03'>{post.content}</Typography> */}
-      </div>
+          <div className='markdown w-full px-29 py-3 break-all'>
+            <Markdown>{content.content}</Markdown>
+            {/* <Typography variant='body03'>{content.content}</Typography> */}
+          </div>
 
-      <div className='flex px-3'>
-        <Typography variant='body02' className='text-mju-primary'>
-          좋아요 ☒
-        </Typography>
-      </div>
-      <hr className='h-[2px] bg-grey-05 rounded-full border-0' />
-      <div className='flex justify-start px-3'>
-        <Typography variant='title02' className='text-mju-primary'>
-          좋아요
-        </Typography>
-      </div>
-      <div className='flex gap-6'>
-        <div className='flex-1 flex flex-col items-end gap-1'>
-          <input
-            className='w-full p-3 border-2 border-grey-05 rounded-xl placeholder-grey-20'
-            placeholder='PlaceHolder'
-            type='text'
-            ref={commentInputRef}
-          />
-          <Typography variant='caption02' className='text-grey-40'>
-            <p ref={commentInputCounterRef}>00/00</p>
-          </Typography>
-        </div>
-        <button className='w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'>
-          <Typography variant='body02' className='text-white'>
-            전송
-          </Typography>
-        </button>
-      </div>
-      <div className='bg-grey-05 p-6 gap-6 rounded-xl flex flex-col'>
-        {comments.map((comment) => (
-          <Comment
-            id={comment.commentUUID}
-            authorName={comment.nickname}
-            content={comment.content}
-            createdAt={comment.createdAt}
-          />
-        ))}
-      </div>
+          <div className='flex px-3'>
+            <Typography variant='body02' className='text-mju-primary'>
+              좋아요 ☒
+            </Typography>
+          </div>
+          <hr className='h-[2px] bg-grey-05 rounded-full border-0' />
+          <div className='flex justify-start px-3'>
+            <Typography variant='title02' className='text-mju-primary'>
+              좋아요
+            </Typography>
+          </div>
+          <div className='flex gap-6'>
+            <div className='flex-1 flex flex-col items-end gap-1'>
+              <input
+                className='w-full p-3 border-2 border-grey-05 rounded-xl placeholder-grey-20'
+                placeholder='PlaceHolder'
+                type='text'
+                ref={commentInputRef}
+                onChange={(e) => setNewComment(e.target.value)}
+              />
+              <div className='flex gap-0.5'>
+                <Typography variant='caption02' className='text-grey-40'>
+                  {newComment.length}
+                  {/* <p ref={commentInputCounterRef}>00/00</p> */}
+                </Typography>
+                <Typography variant='caption02' className='text-grey-40'>
+                  {` / 100`}
+                </Typography>
+              </div>
+            </div>
+            <button
+              className='w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
+              onClick={handleCommentUpload}
+            >
+              <Typography variant='body02' className='text-white'>
+                전송
+              </Typography>
+            </button>
+          </div>
+          <div className='bg-grey-05 p-6 gap-6 rounded-xl flex flex-col'>
+            {comments && (
+              <>
+                {comments.length === 0 ? (
+                  <div className='h-32 flex justify-center items-center'>
+                    <Typography variant='heading01'>작성된 댓글이 없습니다</Typography>
+                  </div>
+                ) : (
+                  <>
+                    {comments.map((comment) => (
+                      <Comment
+                        key={comment.commentUUID}
+                        authorName={comment.nickname}
+                        content={comment.content}
+                        createdAt={comment.createdAt}
+                      />
+                    ))}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
-
-const dummyPost = {
-  id: 1,
-  title: '제목어쩌구저쩌구이러쿵저러쿵',
-  date: '2025-06-23',
-  author: '박대럭',
-  viewCount: 123,
-  commentCount: 2,
-  likeCount: 45,
-  content: `
-  # 다람쥐 헌 쳇바퀴에 타고파
-
-  ## 다람쥐 헌 쳇바퀴에 타고파
-
-  ### 다람쥐 헌 쳇바퀴에 타고파
-
-  다람쥐 헌 쳇바퀴에 타고파
-
-  **다람쥐 헌 쳇바퀴에 타고파**
-
-  # The Quick Brown Fox Jumps Over The Lazy Dog
-
-  ## The Quick Brown Fox Jumps Over The Lazy Dog
-
-  ### The Quick Brown Fox Jumps Over The Lazy Dog
-
-  The Quick Brown Fox Jumps Over The Lazy Dog
-
-  **The Quick Brown Fox Jumps Over The Lazy Dog**
-  `,
-};
-
-// 더미 댓글 데이터 예시
-const dummyComments = [
-  {
-    commentUUID: 'a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6',
-    content: '첫 번째 댓글 내용입니다.',
-    nickname: '박재욱대머리',
-    likeCount: 2,
-    createdAt: '2025-06-29T10:15:30.000Z',
-    liked: false,
-    replies: [],
-  },
-  {
-    commentUUID: '0p9o8n7m-6l5k-4j3i-2h1g-f6e5d4c3b2a1',
-    content: '두 번째 댓글이에요!',
-    nickname: '김동삼',
-    likeCount: 5,
-    createdAt: '2025-06-29T11:20:45.000Z',
-    liked: false,
-    replies: [],
-  },
-  {
-    commentUUID: '123e4567-e89b-12d3-a456-426614174000',
-    content: '세 번째 댓글 테스트.',
-    nickname: '남보라 자다가걸림',
-    likeCount: 0,
-    createdAt: '2025-06-29T12:30:00.000Z',
-    liked: false,
-    replies: [],
-  },
-];

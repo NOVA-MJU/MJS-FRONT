@@ -3,7 +3,7 @@ import Avatar from '../../atoms/avatar/Avatar';
 import { Typography } from '../../atoms/Typography';
 
 interface CommentProps {
-  id: string;
+  key: string;
   authorName: string;
   //   authorImage: string;
   content: string;
@@ -13,7 +13,7 @@ interface CommentProps {
 }
 
 export default function Comment({
-  id,
+  key,
   authorName,
   //   authorImage,
   content,
@@ -41,7 +41,7 @@ export default function Comment({
   }, []);
 
   return (
-    <div key={id} className='gap-3 flex flex-col' ref={containerRef}>
+    <div key={key} className='gap-3 flex flex-col' ref={containerRef}>
       <div className='relative flex'>
         <div className='flex-1 gap-3 flex'>
           <Avatar size={40} />

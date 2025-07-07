@@ -113,3 +113,71 @@ export const uploadImage = async (file: File, folderUuid: string) => {
     throw new Error(err.response?.data?.message || '이미지 업로드 실패!');
   }
 };
+
+/**
+ * 게시글 상세 조회
+ */
+export const getBoardDetail = async (uuid: string) => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      data: BoardDetailRes;
+    }>(`/boards/${uuid}`);
+    return response.data.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || '게시글 상세 조회 실패!');
+  }
+};
+
+export interface BoardDetailRes {
+  uuid: string;
+  title: string;
+  content: string;
+  contentImages: string[];
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
+
+/**
+ * 게시글 댓글 조회
+ */
+export interface CommentRes {
+  commentUUID: string;
+  content: string;
+  nickname: string;
+  likeCount: number;
+  createdAt: string;
+  liked: boolean;
+  replies: Comment[];
+}
+
+export const getBoardComments = async (boardUuid: string) => {
+  try {
+    const response = await apiClient.get<{
+      status: string;
+      data: CommentRes[];
+    }>(`/boards/${boardUuid}/comments`);
+    return response.data.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || '댓글 상세 조회 실패!');
+  }
+};
+
+/**
+ * 게시글 댓글 작성
+ */
+export const postComment = async (boardUuid: string, content: string) => {
+  try {
+    const response = await apiClient.post(`/boards/${boardUuid}/comments`, { content });
+    return response.data.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || '댓글 작성 실패');
+  }
+};

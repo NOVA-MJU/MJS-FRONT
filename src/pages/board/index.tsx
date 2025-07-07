@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 
@@ -12,27 +12,26 @@ export default function Board() {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(10);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
+    const p = parseInt(searchParams.get('page') ?? '0', 10);
+    if (p !== page) {
+      setPage(p);
+    }
+
     const getData = async () => {
       setIsLoading(true);
       try {
-        const response = await getBoards(page, size);
-
-        /**
-         * response data binding
-         */
-        console.log(response);
+        const response = await getBoards(p, size);
         setContents(response.content);
         setTotalPages(response.totalPages);
-      } catch (error) {
-        console.error(error);
       } finally {
         setIsLoading(false);
       }
     };
     getData();
-  }, [page, size]);
+  }, [searchParams, size]);
 
   return (
     <div className='w-full h-full px-9 py-12 flex flex-col gap-6'>
@@ -79,7 +78,14 @@ export default function Board() {
           </div>
         ))}
       </div>
-      <Pagination page={page + 1} totalPages={totalPages} onChange={(next) => setPage(next)} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onChange={(next) => {
+          setPage(next);
+          setSearchParams({ page: next.toString(), size: size.toString() });
+        }}
+      />
     </div>
   );
 }

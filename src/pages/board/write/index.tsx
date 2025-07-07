@@ -19,13 +19,12 @@ export default function BoardWrite() {
   /**
    * 신규 이미지 폴더 발급 요청 함수
    */
+
+  // TODO 이게 새 글 작성인지 기존 글 수정인지 판단해서 폴더 uuid를 다르게 처리해야함
   useEffect(() => {
     const getImageFolderUuid = async () => {
       try {
         const uuid = await getTempImageFolderUuid();
-
-        console.log(uuid);
-
         setImageFolderUuid(uuid);
       } catch (err) {
         console.error(err);
@@ -48,18 +47,31 @@ export default function BoardWrite() {
         title: title,
         content: content,
         published: true,
-        contentImages: [],
+        contentImages: parseContentImages(),
       };
 
       const response = await postBoard(req);
       console.log(response);
-      navigate(`/board/${response.data.uuid}`);
+      navigate(`/board/${response.data.uuid}`, { replace: true });
     } catch (e) {
       console.log(e);
       alert('문제가 발생했습니다');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  /**
+   * 게시글 이미지 검색
+   */
+  const parseContentImages = (): string[] => {
+    const regex = /!\[.*?\]\(([^)]+)\)/g;
+    const urls: string[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+      urls.push(match[1]);
+    }
+    return urls;
   };
 
   /**
