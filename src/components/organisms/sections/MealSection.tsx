@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 
 const getCurrentMealTime = () => {
   const hour = new Date().getHours();
-  console.log(hour);
   if (hour < 10) return '아침';
   if (hour < 16) return '점심';
   return '저녁';

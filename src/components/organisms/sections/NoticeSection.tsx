@@ -14,7 +14,6 @@ const NoticeSection = () => {
       try {
         const fetchedNoticeData = await fetchNotionInfo(selectedCategory, recentYear);
         setSelectedInfo(fetchedNoticeData.content);
-        console.log(fetchedNoticeData);
       } catch (e) {
         console.log('FC 내부 NoticeData Fetching 실패', e);
       }
