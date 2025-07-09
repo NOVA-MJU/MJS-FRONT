@@ -25,6 +25,8 @@ const App = () => {
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
+        <Route path='/board/edit/:uuid' element={<BoardWrite />} />
+
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />

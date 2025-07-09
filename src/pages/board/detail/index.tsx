@@ -1,18 +1,21 @@
 import { IoIosArrowBack } from 'react-icons/io';
 import { Typography } from '../../../components/atoms/Typography';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Comment from '../../../components/organisms/Comment';
 import Markdown from 'react-markdown';
 import '../markdown.css';
 import {
+  deletePost,
   getBoardComments,
   getBoardDetail,
+  likePost,
   postComment,
   type BoardDetailRes,
   type CommentRes,
 } from '../../../api/board';
 import LoadingComponent from '../../../components/atoms/Loading/LoadingComponent';
+import Button from '../../../components/atoms/button';
 
 interface BoardDetail {
   id: string;
@@ -53,7 +56,6 @@ export default function BoardDetail() {
       setComments(commentsRes);
     } catch (err) {
       console.error(err);
-      alert('페이지를 로드하는 중 문제가 발생했습니다');
     } finally {
       setIsLoading(false);
     }
@@ -85,6 +87,51 @@ export default function BoardDetail() {
     }
   };
 
+  /**
+   * 글 삭제 함수
+   */
+  const handleDeletePost = async () => {
+    if (!uuid || isLoading) return;
+
+    if (!window.confirm('삭제하시겠습니까?')) return;
+
+    setIsLoading(true);
+    try {
+      const response = await deletePost(uuid);
+      console.log(response);
+      navigate(-1);
+    } catch (err) {
+      console.error(err);
+      alert(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * 좋아요 표시 함수
+   */
+  const handleLikePost = async () => {
+    if (!uuid || !content || isLoading) return;
+
+    try {
+      const response = await likePost(uuid);
+      console.log(response);
+
+      setContent((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          likeCount: prev.liked ? prev.likeCount - 1 : prev.likeCount + 1,
+          liked: !prev.liked,
+        };
+      });
+    } catch (err) {
+      console.error(err);
+      alert(err);
+    }
+  };
+
   return (
     <div className='w-full h-full flex flex-col px-9 py-12 gap-6'>
       <div className='w-full flex justify-between'>
@@ -96,16 +143,23 @@ export default function BoardDetail() {
         </div>
         {content && (
           <div className='flex items-center gap-6'>
-            <button className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'>
-              <Typography variant='body02' className='text-black'>
-                수정
-              </Typography>
-            </button>
-            <button className='w-46 bg-error cursor-pointer p-3 rounded-xl'>
-              <Typography variant='body02' className='text-white'>
-                삭제
-              </Typography>
-            </button>
+            <Link to={`/board/edit/${uuid}`}>
+              <button className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'>
+                <Typography variant='body02' className='text-black'>
+                  수정
+                </Typography>
+              </button>
+            </Link>
+            <Button
+              variant='danger'
+              shape='rounded'
+              disabled={false}
+              fullWidth={false}
+              className='p-3 w-46'
+              onClick={handleDeletePost}
+            >
+              삭제
+            </Button>
           </div>
         )}
       </div>
@@ -127,7 +181,7 @@ export default function BoardDetail() {
                 {content.publishedAt} | {content.author}
               </Typography>
               <Typography variant='body03' className='text-grey-40'>
-                ☒ {content.viewCount} | ☒ {content.commentCount}
+                ☒ {content.likeCount} | ☒ {content.commentCount}
               </Typography>
             </div>
           </div>
@@ -135,18 +189,19 @@ export default function BoardDetail() {
 
           <div className='markdown w-full px-29 py-3 break-all'>
             <Markdown>{content.content}</Markdown>
-            {/* <Typography variant='body03'>{content.content}</Typography> */}
           </div>
 
           <div className='flex px-3'>
-            <Typography variant='body02' className='text-mju-primary'>
-              좋아요 ☒
-            </Typography>
+            <button className='cursor-pointer' onClick={handleLikePost}>
+              <Typography variant='body02' className='text-mju-primary'>
+                좋아요 ☒
+              </Typography>
+            </button>
           </div>
           <hr className='h-[2px] bg-grey-05 rounded-full border-0' />
           <div className='flex justify-start px-3'>
             <Typography variant='title02' className='text-mju-primary'>
-              좋아요
+              댓글
             </Typography>
           </div>
           <div className='flex gap-6'>
@@ -161,7 +216,6 @@ export default function BoardDetail() {
               <div className='flex gap-0.5'>
                 <Typography variant='caption02' className='text-grey-40'>
                   {newComment.length}
-                  {/* <p ref={commentInputCounterRef}>00/00</p> */}
                 </Typography>
                 <Typography variant='caption02' className='text-grey-40'>
                   {` / 100`}
@@ -177,28 +231,24 @@ export default function BoardDetail() {
               </Typography>
             </button>
           </div>
-          <div className='bg-grey-05 p-6 gap-6 rounded-xl flex flex-col'>
-            {comments && (
-              <>
-                {comments.length === 0 ? (
-                  <div className='h-32 flex justify-center items-center'>
-                    <Typography variant='heading01'>작성된 댓글이 없습니다</Typography>
-                  </div>
-                ) : (
-                  <>
-                    {comments.map((comment) => (
-                      <Comment
-                        key={comment.commentUUID}
-                        authorName={comment.nickname}
-                        content={comment.content}
-                        createdAt={comment.createdAt}
-                      />
-                    ))}
-                  </>
-                )}
-              </>
-            )}
-          </div>
+          {comments && (
+            <>
+              {comments.length === 0 ? (
+                <></>
+              ) : (
+                <div className='bg-grey-05 p-6 gap-6 rounded-xl flex flex-col'>
+                  {comments.map((comment) => (
+                    <Comment
+                      key={comment.commentUUID}
+                      authorName={comment.nickname}
+                      content={comment.content}
+                      createdAt={comment.createdAt}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
     </div>

@@ -49,6 +49,32 @@ export interface PostBoardRes {
   updatedAt: string;
 }
 
+export interface BoardDetailRes {
+  uuid: string;
+  title: string;
+  content: string;
+  contentImages: string[];
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
+
+export interface CommentRes {
+  commentUUID: string;
+  content: string;
+  nickname: string;
+  likeCount: number;
+  createdAt: string;
+  liked: boolean;
+  replies: Comment[];
+}
+
 /**
  * 게시글 목록 조회
  */
@@ -129,35 +155,9 @@ export const getBoardDetail = async (uuid: string) => {
   }
 };
 
-export interface BoardDetailRes {
-  uuid: string;
-  title: string;
-  content: string;
-  contentImages: string[];
-  viewCount: number;
-  published: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  likeCount: number;
-  commentCount: number;
-  author: string;
-  liked: boolean;
-}
-
 /**
  * 게시글 댓글 조회
  */
-export interface CommentRes {
-  commentUUID: string;
-  content: string;
-  nickname: string;
-  likeCount: number;
-  createdAt: string;
-  liked: boolean;
-  replies: Comment[];
-}
-
 export const getBoardComments = async (boardUuid: string) => {
   try {
     const response = await apiClient.get<{
@@ -179,5 +179,29 @@ export const postComment = async (boardUuid: string, content: string) => {
     return response.data.data;
   } catch (err: any) {
     throw new Error(err.response?.data?.message || '댓글 작성 실패');
+  }
+};
+
+/**
+ * 게시글 삭제
+ */
+export const deletePost = async (boardUuid: string) => {
+  try {
+    const response = await apiClient.delete(`/boards/${boardUuid}`);
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || '게시글 삭제 실패');
+  }
+};
+
+/**
+ * 게시글 좋아요 표시
+ */
+export const likePost = async (boardUuid: string) => {
+  try {
+    const response = await apiClient.post(`/boards/${boardUuid}/like`);
+    return response.data;
+  } catch (err: any) {
+    throw new Error(err.response?.data?.message || '좋아요 실패');
   }
 };

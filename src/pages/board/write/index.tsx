@@ -4,15 +4,18 @@ import IconButton from '../../../components/atoms/IconButton';
 import Markdown from 'react-markdown';
 import '../markdown.css';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getTempImageFolderUuid, postBoard, uploadImage } from '../../../api/board';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getBoardDetail, getTempImageFolderUuid, postBoard, uploadImage } from '../../../api/board';
 
 export default function BoardWrite() {
+  const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const [content, setContent] = useState('');
+  const [parsedContent, setParsedContent] = useState('');
   const [title, setTitle] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentBoxRef = useRef<HTMLTextAreaElement>(null);
+
   const [isLoading, setIsLoading] = useState(false);
   const [imageFolderUuid, setImageFolderUuid] = useState('');
 
@@ -22,16 +25,40 @@ export default function BoardWrite() {
 
   // TODO 이게 새 글 작성인지 기존 글 수정인지 판단해서 폴더 uuid를 다르게 처리해야함
   useEffect(() => {
-    const getImageFolderUuid = async () => {
+    const startWriteMode = async () => {
       try {
-        const uuid = await getTempImageFolderUuid();
-        setImageFolderUuid(uuid);
+        const tempUuid = await getTempImageFolderUuid();
+        setImageFolderUuid(tempUuid);
       } catch (err) {
         console.error(err);
       }
     };
-    getImageFolderUuid();
-  }, []);
+
+    const startEditMode = async () => {
+      if (!uuid) return;
+
+      setIsLoading(true);
+
+      try {
+        const res = await getBoardDetail(uuid);
+
+        setImageFolderUuid(res.uuid);
+        setTitle(res.title);
+        setContent(res.content);
+        setParsedContent(res.content);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!uuid) {
+      startWriteMode();
+    } else {
+      startEditMode();
+    }
+  }, [uuid]);
 
   /**
    * 게시글 업로드 요청 함수
@@ -88,7 +115,7 @@ export default function BoardWrite() {
    * heading 추가 function
    */
   const toggleHeading = (level: 1 | 2 | 3) => {
-    const ta = textareaRef.current;
+    const ta = contentBoxRef.current;
     if (!ta) return;
 
     const { value, selectionStart: start, selectionEnd: end } = ta;
@@ -106,14 +133,16 @@ export default function BoardWrite() {
     const pos = added ? start - prefix.length : start + prefix.length;
     ta.setSelectionRange(pos, pos + (end - start));
     ta.focus();
-    setContent(normalizeNewlines(newVal));
+
+    setContent(newVal);
+    setParsedContent(normalizeNewlines(newVal));
   };
 
   /**
    * bold 추가 function
    */
   const toggleBold = () => {
-    const ta = textareaRef.current;
+    const ta = contentBoxRef.current;
     if (!ta) return;
     const { value, selectionStart: start, selectionEnd: end } = ta;
     let newStart = start,
@@ -139,14 +168,16 @@ export default function BoardWrite() {
 
     ta.focus();
     ta.setSelectionRange(newStart, newEnd);
-    setContent(normalizeNewlines(ta.value));
+
+    setContent(ta.value);
+    setParsedContent(normalizeNewlines(ta.value));
   };
 
   /**
    * italic 추가 function
    */
   const toggleItalic = () => {
-    const ta = textareaRef.current;
+    const ta = contentBoxRef.current;
     if (!ta) return;
 
     const { value, selectionStart: start, selectionEnd: end } = ta;
@@ -173,7 +204,9 @@ export default function BoardWrite() {
 
     ta.focus();
     ta.setSelectionRange(newStart, newEnd);
-    setContent(normalizeNewlines(ta.value));
+
+    setContent(ta.value);
+    setParsedContent(normalizeNewlines(ta.value));
   };
 
   /**
@@ -181,7 +214,7 @@ export default function BoardWrite() {
    */
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
-    const ta = textareaRef.current!;
+    const ta = contentBoxRef.current!;
 
     const file = e.dataTransfer.files[0];
     if (!file) return;
@@ -200,7 +233,8 @@ export default function BoardWrite() {
       ta.value = value.slice(0, selectionStart) + successCaption + value.slice(selectionEnd);
       ta.selectionStart = ta.selectionEnd = selectionStart + successCaption.length;
 
-      setContent(normalizeNewlines(ta.value));
+      setContent(ta.value);
+      setParsedContent(normalizeNewlines(ta.value));
     } catch (err) {
       console.log(err);
 
@@ -208,7 +242,8 @@ export default function BoardWrite() {
       ta.value = value.slice(0, selectionStart) + errorCaption + value.slice(selectionEnd);
       ta.selectionStart = ta.selectionEnd = selectionStart + errorCaption.length;
 
-      setContent(normalizeNewlines(ta.value));
+      setContent(ta.value);
+      setParsedContent(normalizeNewlines(ta.value));
     }
 
     ta.focus();
@@ -218,7 +253,7 @@ export default function BoardWrite() {
    * 이미지 직접 추가
    */
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const ta = textareaRef.current!;
+    const ta = contentBoxRef.current!;
 
     const file = event.target.files?.[0];
     if (!file) return;
@@ -237,7 +272,8 @@ export default function BoardWrite() {
       ta.value = value.slice(0, selectionStart) + successCaption + value.slice(selectionEnd);
       ta.selectionStart = ta.selectionEnd = selectionStart + successCaption.length;
 
-      setContent(normalizeNewlines(ta.value));
+      setContent(ta.value);
+      setParsedContent(normalizeNewlines(ta.value));
     } catch (err) {
       console.error(err);
 
@@ -245,7 +281,8 @@ export default function BoardWrite() {
       ta.value = value.slice(0, selectionStart) + errorCaption + value.slice(selectionEnd);
       ta.selectionStart = ta.selectionEnd = selectionStart + errorCaption.length;
 
-      setContent(normalizeNewlines(ta.value));
+      setContent(ta.value);
+      setParsedContent(normalizeNewlines(ta.value));
     }
 
     ta.focus();
@@ -295,6 +332,7 @@ export default function BoardWrite() {
         className='p-3 placeholder-grey-20 font-bold text-[28px] border-2 border-blue-05 rounded-xl focus:bg-blue-05 focus:outline-none'
         placeholder='제목'
         onChange={(e) => setTitle(e.target.value)}
+        value={title}
       />
 
       <div className='h-full flex gap-6'>
@@ -363,9 +401,13 @@ export default function BoardWrite() {
           <textarea
             className='h-full p-3 placeholder-grey-20 text-[16px] leading-[150%] border-2 border-grey-05 rounded-xl focus:bg-blue-05 focus:outline-none focus:border-blue-05'
             placeholder='자유롭게 말을 남겨보세요'
-            ref={textareaRef}
-            onChange={(e) => setContent(normalizeNewlines(e.target.value))}
+            ref={contentBoxRef}
+            onChange={(e) => {
+              setContent(e.target.value);
+              setParsedContent(normalizeNewlines(e.target.value));
+            }}
             onDrop={handleDrop}
+            value={content}
           />
         </div>
 
@@ -376,7 +418,7 @@ export default function BoardWrite() {
             </Typography>
           </div>
           <div className='markdown h-full p-3 border-2 border-grey-05 rounded-xl break-all'>
-            <Markdown>{content}</Markdown>
+            <Markdown>{parsedContent}</Markdown>
           </div>
         </div>
       </div>
