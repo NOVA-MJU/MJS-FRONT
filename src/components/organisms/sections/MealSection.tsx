@@ -56,7 +56,13 @@ const MealSection = () => {
 
   return (
     <section className='w-full px-1 py-6'>
-      <h1 className='text-xl font-bold text-mju-primary mb-4'>학식</h1>
+      <div className='flex justify-between'>
+        <h1 className='text-xl font-bold text-mju-primary mb-4'>학식</h1>
+        <span>
+          {/* <FiPlus size={20} /> 더보기 유라님이 만드신 학식 상세 경로에 라우팅 로직 필요 */}
+        </span>
+      </div>
+
       <div className='flex flex-col md:flex-row gap-4 justify-start'>
         {(['아침', '점심', '저녁'] as const).map((meal) => (
           <MealComponent

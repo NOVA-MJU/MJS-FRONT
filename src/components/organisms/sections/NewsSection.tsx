@@ -27,7 +27,7 @@ const NewsSection = () => {
     <section className='w-full mt-5 '>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold text-mju-primary mb-4'>명대신문</h1>
-        <span>더보기</span>
+        <span>{/* <FiPlus size={20} /> 더보기 유라님이 만드신 경로에 라우팅 로직 필요 */}</span>
       </div>
       <div className='flex space-x-6 border-b border-gray-200 mb-6'>
         {(['REPORT', 'SOCIETY'] as CategoryTab[]).map((category) => (

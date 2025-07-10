@@ -22,7 +22,12 @@ const NoticeSection = () => {
   }, [selectedTab]);
   return (
     <div>
-      <h1 className='text-xl mt-1.5 font-bold text-mju-primary mb-4'>공지사항</h1>
+      <div className='flex justify-between'>
+        <h1 className='text-xl font-bold text-mju-primary mb-4'>공지사항</h1>
+        <span>
+          {/* <FiPlus size={20} /> 더보기 공지사항 유라님이 만드신 경로에 라우팅 로직 필요 */}
+        </span>
+      </div>
       <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab}></TabComponent>
       <div className='grid grid-cols-1 gap-2 mt-5 '>
         {selectedInfo.map((data, idx) => (
