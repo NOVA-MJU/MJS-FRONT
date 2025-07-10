@@ -11,6 +11,15 @@ export interface ListItemProps {
   variant?: 'notice' | 'news';
 }
 
+const categoryLabel: Record<string, string> = {
+  general: '일반공지',
+  academic: '학사공지',
+  scholarship: '장학공지',
+  career: '진로공지',
+  activity: '학생활동',
+  rule: '학칙개정',
+};
+
 const DetailItem: React.FC<ListItemProps> = ({
   id,
   category,
@@ -57,12 +66,12 @@ const DetailItem: React.FC<ListItemProps> = ({
     <>
       <div className='flex justify-between items-center gap-2 py-6'>
         <div>
-          <span className='w-[98px] flex items-center mb-6'>
-            <p className='font-light mr-4'>{id}</p>
-            <Badge text={category} />
+          <span className='w-[1000px] flex items-center mb-6'>
+            <p className='font-light mr-4'>{String(id).padStart(2, '0')}</p>
+            <Badge text={layout === 'notice' ? categoryLabel[category] || category : category} />
           </span>
           <a
-            href={link} //api 연결 후 링크 연결 예정
+            href={link}
             target='_blank'
             rel='noopener noreferrer'
             className='flex flex-col gap-2 cursor-pointer'
@@ -71,7 +80,7 @@ const DetailItem: React.FC<ListItemProps> = ({
             <p className='text-base font-light'>{content}</p>
           </a>
         </div>
-        <p className='text-sm text-grey-40 flex'>{date}</p>
+        <p className='text-sm text-grey-40 flex'> {date?.split('T')[0]}</p>
       </div>
       <hr className='border-grey-20' />
     </>
