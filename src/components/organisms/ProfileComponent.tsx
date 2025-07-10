@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import Avatar from '../atoms/avatar/Avatar';
+import Avatar from '../atoms/Avatar';
 import { useAuthStore } from '../../store/useAuthStore';
-import Button from '../atoms/button';
+import Button from '../atoms/Button';
 interface ProfileComponentProps {
   className?: string;
 }

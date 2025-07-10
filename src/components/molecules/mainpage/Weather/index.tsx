@@ -1,6 +1,6 @@
 'use client';
 
-import { useWeatherQuery } from '../../../hooks/useWeatherQuery';
+import { useWeatherQuery } from '../../../../hooks/useWeatherQuery';
 
 const WeatherComponent = () => {
   const { data, isLoading, isError } = useWeatherQuery();

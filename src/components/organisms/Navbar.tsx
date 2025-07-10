@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/schoolLogo.png';
 
 const Navbar = () => {
@@ -69,7 +69,6 @@ const Navbar = () => {
           </ul>
         </div>
       </nav>
-      <Outlet />
     </>
   );
 };

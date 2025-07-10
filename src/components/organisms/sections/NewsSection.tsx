@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchNewsInfo } from '../../../api/news/newsApi';
+import { fetchNewsInfo } from '../../../api/main/news-api';
 import type { NewsInfo } from '../../../types/news/newsInfo';
 
 const NewsSection = () => {

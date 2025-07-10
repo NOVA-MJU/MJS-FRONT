@@ -7,6 +7,7 @@ export interface NoticeQuery {
   size?: number;
   sort?: 'asc' | 'desc';
 }
+
 /** 공지사항 리스트 불러오기 **/
 export const fetchNotices = async ({
   category,

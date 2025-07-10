@@ -4,7 +4,7 @@ import { Typography } from '../../components/atoms/Typography';
 import { Link, useSearchParams } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
-import LoadingComponent from '../../components/atoms/Loading/LoadingComponent';
+import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 
 export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
@@ -64,7 +64,7 @@ export default function Board() {
 
       {isLoading ? (
         <div className='flex justify-center items-center h-screen'>
-          <LoadingComponent />
+          <LoadingIndicator />
         </div>
       ) : (
         <>

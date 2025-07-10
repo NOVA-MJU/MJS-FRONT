@@ -14,8 +14,8 @@ import {
   type BoardDetailRes,
   type CommentRes,
 } from '../../../api/board';
-import LoadingComponent from '../../../components/atoms/Loading/LoadingComponent';
-import Button from '../../../components/atoms/button';
+import Button from '../../../components/atoms/Button';
+import LoadingIndicator from '../../../components/atoms/LoadingIndicator';
 
 interface BoardDetail {
   id: string;
@@ -165,7 +165,7 @@ export default function BoardDetail() {
       </div>
       {isLoading ? (
         <div className='h-screen w-full flex justify-center items-center'>
-          <LoadingComponent />
+          <LoadingIndicator />
         </div>
       ) : !content ? (
         <div className='h-screen w-full flex flex-col justify-center items-center'>
