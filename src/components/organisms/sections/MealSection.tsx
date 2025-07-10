@@ -1,6 +1,6 @@
-import { fetchMealInfo } from '../../../api/meal/mealApi';
+import { fetchMealInfo } from '../../../api/main/meal-api';
 import type { MealInfo } from '../../../types/meal/mealInfo';
-import MealComponent from '../../molecules/mainpage/mealComponent';
+import MealComponent from '../../molecules/mainpage/Meal';
 import { useEffect, useState } from 'react';
 
 const getCurrentMealTime = () => {

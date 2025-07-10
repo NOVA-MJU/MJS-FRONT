@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import Avatar from '../../atoms/avatar/Avatar';
+import Avatar from '../../atoms/Avatar';
 import { Typography } from '../../atoms/Typography';
 
 interface CommentProps {

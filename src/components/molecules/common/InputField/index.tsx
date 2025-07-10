@@ -1,5 +1,5 @@
 import React from 'react';
-import Input from '../../../atoms/input/Input';
+import Input from '../../../atoms/Input/Input';
 
 interface InputFieldProps {
   label: string;

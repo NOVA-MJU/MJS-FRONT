@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import TabComponent from '../../molecules/mainpage/TabComponent';
-import { fetchNotionInfo } from '../../../api/notice/noticeApi';
+import TabComponent from '../../molecules/mainpage/Tab';
+import { fetchNotionInfo } from '../../../api/main/notice-api';
 import type { NoticeItem } from '../../../types/notice/noticeInfo';
 
 const NoticeSection = () => {

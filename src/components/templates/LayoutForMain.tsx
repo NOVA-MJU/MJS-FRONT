@@ -5,7 +5,7 @@ import Navbar from '../organisms/Navbar';
 import Header from '../organisms/Header';
 import SearchBar from '../atoms/SearchBar';
 import ProfileComponent from '../organisms/ProfileComponent';
-import WeatherComponent from '../molecules/mainpage/weatherComponent';
+import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
 interface LayoutProps {
   children: ReactNode;

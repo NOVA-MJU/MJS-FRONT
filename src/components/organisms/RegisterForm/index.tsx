@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import InputField from '../../molecules/common/InputField';
 import GenderSelector from '../../molecules/user/GenderSelector';
-import Button from '../../atoms/button/Button';
+import Button from '../../atoms/Button/Button';
 import DropdownField from '../../molecules/user/DropdownField';
 import { emailVerification, registerMember, verifyEmailCode } from '../../../api/user';
 import { useNavigate } from 'react-router-dom';
