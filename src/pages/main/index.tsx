@@ -1,14 +1,15 @@
 import NoticeSection from '../../components/organisms/sections/NoticeSection';
 import MealSection from '../../components/organisms/sections/MealSection';
-import Layout from '../../components/templates/Layout';
+
 import NewsSection from '../../components/organisms/sections/NewsSection';
+import LayoutForMain from '../../components/templates/LayoutForMain';
 const Main = () => {
   return (
-    <Layout>
+    <LayoutForMain>
       <MealSection />
       <NoticeSection />
       <NewsSection />
-    </Layout>
+    </LayoutForMain>
   );
 };
 
