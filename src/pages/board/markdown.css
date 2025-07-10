@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+.markdown h1 {
+  @apply font-bold text-[40px] leading-[150%];
+}
+.markdown h2 {
+  @apply font-bold text-[28px] leading-[150%];
+}
+.markdown h3 {
+  @apply font-bold text-[20px] leading-[150%];
+}
+.markdown strong {
+  @apply font-bold;
+}
+.markdown em {
+  @apply italic;
+}
