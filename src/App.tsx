@@ -9,6 +9,7 @@ import Notice from './pages/notice';
 import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
+import Menu from './pages/menu';
 
 const App = () => {
   return (
@@ -25,6 +26,8 @@ const App = () => {
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
+
+        <Route path='/menu' element={<Menu />} />
       </Route>
     </Routes>
   );
