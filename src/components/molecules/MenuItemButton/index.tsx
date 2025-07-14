@@ -24,7 +24,12 @@ export default function MenuItemButton({ time, menus, focused }: MenuItemButtonP
           focused ? 'bg-blue-10' : 'bg-grey-05',
         )}
       />
-      <div className='w-full grid grid-cols-2 gap-3'>
+      <div
+        className={clsx(
+          'w-full h-full',
+          menus.length === 1 ? 'flex items-center justify-center' : 'grid grid-cols-2 gap-3',
+        )}
+      >
         {menus.map((menu, idx) => (
           <Typography key={idx} variant='body03'>
             {menu}
