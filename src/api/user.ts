@@ -7,7 +7,7 @@ export interface RegisterReq {
   password: string;
   gender: string;
   nickname: string;
-  department: string;
+  departmentName: string;
   studentNumber: number;
 }
 
@@ -37,4 +37,24 @@ export const emailVerification = async (email: string) => {
 export const verifyEmailCode = async (email: string, code: string) => {
   const { data } = await apiClient.post('/member/email/check', { email, code });
   return data.data.matched as boolean;
+};
+/** 프로필 이미지 업로드 API */
+export const uploadProfileImage = async (imageFile: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', imageFile);
+
+  try {
+    const response = await apiClient.post('/members/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      // 로그인 필요 없다고 했으므로 Authorization 제거
+      withCredentials: false,
+    });
+
+    // CloudFront 이미지 URL은 data.data로 반환됨
+    return response.data.data as string;
+  } catch (err: any) {
+    throw err?.response?.data || { message: '프로필 이미지 업로드 실패' };
+  }
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ArrowDown from '../../../../assets/btn_arrow_pub.svg';
-import { MAJORS } from '../../../../constants/departments'; // dummy 데이터
+import { DEPARTMENT_OPTIONS } from '../../../../constants/departments'; // enum 리스트
 import clsx from 'clsx';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   onSelect: (v: string) => void;
   placeholder?: string;
   error?: boolean;
+  options: { label: string; value: string }[];
 }
 
 const DropdownField: React.FC<Props> = ({
@@ -17,9 +18,11 @@ const DropdownField: React.FC<Props> = ({
   onSelect,
   placeholder = '학과',
   error,
+  options,
 }) => {
   const [open, setOpen] = useState(false);
 
+  const selectedLabel = options.find((item) => item.value === selected)?.label;
   return (
     <div className='relative w-full h-[90px] flex flex-col gap-2'>
       {/* 라벨 + 라인 */}
@@ -37,25 +40,25 @@ const DropdownField: React.FC<Props> = ({
         )}
         onClick={() => setOpen(!open)}
       >
-        <span className={clsx('text-base', selected ? 'text-black' : 'text-grey-30')}>
-          {selected || placeholder}
+        <span className={clsx('text-base', selected ? 'text-grey-40' : 'text-grey-20')}>
+          {selectedLabel || placeholder}
         </span>
         <img src={ArrowDown} alt='dropdownBtn' className='w-4 h-4' />
       </button>
 
       {/* 옵션 리스트 */}
       {open && (
-        <ul className='absolute top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto'>
-          {MAJORS.map((m) => (
+        <ul className='absolute top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto text-grey-40'>
+          {DEPARTMENT_OPTIONS.map((item) => (
             <li
-              key={m}
+              key={item.value}
               className='px-4 py-2 hover:bg-blue-10/10 cursor-pointer'
               onClick={() => {
-                onSelect(m);
+                onSelect(item.value);
                 setOpen(false);
               }}
             >
-              {m}
+              {item.label}
             </li>
           ))}
         </ul>

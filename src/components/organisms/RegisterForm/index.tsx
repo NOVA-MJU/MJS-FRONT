@@ -2,15 +2,23 @@
 import React, { useState } from 'react';
 import InputField from '../../molecules/common/InputField';
 import GenderSelector from '../../molecules/user/GenderSelector';
-import Button from '../../atoms/Button/Button';
+import Button from '../../atoms/button/Button';
 import DropdownField from '../../molecules/user/DropdownField';
-import { emailVerification, registerMember, verifyEmailCode } from '../../../api/user';
+import {
+  emailVerification,
+  registerMember,
+  verifyEmailCode,
+  uploadProfileImage,
+} from '../../../api/user';
 import { useNavigate } from 'react-router-dom';
+import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
+import { DEPARTMENT_OPTIONS } from '../../../constants/departments.ts';
 
 const RegisterForm: React.FC = () => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [nickname, setNickname] = useState('');
   const [department, setDepartment] = useState('');
   const [studentCode, setStudentCode] = useState('');
@@ -72,7 +80,7 @@ const RegisterForm: React.FC = () => {
         setEmailVerified(true);
         alert('이메일 인증이 완료되었습니다.');
       } else {
-        alert('인증에 실패했습니다. 인증번호를 다시 확인하세요.');
+        alert('인증에 실패했습니다. 인증번호를 다시 확인하세호요.');
       }
     } catch (err: any) {
       alert(err?.message || '인증 요청 실패');
@@ -86,14 +94,30 @@ const RegisterForm: React.FC = () => {
     e?.preventDefault();
     if (!formValid) return;
     try {
+      let profileImageUrl = '';
+      if (profileImageFile) {
+        profileImageUrl = await uploadProfileImage(profileImageFile);
+      }
+      console.log('1. 회원가입 입력값 체크:');
+      console.log('2. 이메일:', id);
+      console.log('3. 비밀번호:', pw);
+      console.log('4. 비밀번호 확인:', confirmPw);
+      console.log('5. 닉네임:', nickname);
+      console.log('6. 학과:', department);
+      console.log('7. 학번:', studentCode);
+      console.log('8. 성별:', gender);
+      console.log('9. 업로드된 프로필 이미지 파일:', profileImageFile);
+      console.log('10. 저장된 프로필 이미지 URL:', profileImageUrl);
+
       const req = {
         name: nickname,
         email: id,
         password: pw,
         gender: gender === '남자' ? 'MALE' : gender === '여자' ? 'FEMALE' : 'OTHER',
         nickname,
-        department,
+        departmentName: department,
         studentNumber: Number(studentCode),
+        profileImage: profileImageUrl,
       };
       await registerMember(req);
       alert('회원가입이 완료되었습니다!');
@@ -104,7 +128,7 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className='flex flex-col gap-12 w-[672px] mt-6'>
+    <form className='flex flex-col gap-12 w-[672px] mt-6' onSubmit={handleSubmit}>
       <section>
         <p className='text-3xl font-bold mb-6'>필수 정보</p>
         <div className='flex flex-col bg-white min-h-[540px] p-6 rounded-xl gap-12'>
@@ -115,6 +139,7 @@ const RegisterForm: React.FC = () => {
                   <InputField
                     label='이메일'
                     type='email'
+                    autoComplete='email'
                     placeholder='@mju.ac.kr'
                     value={id}
                     onChange={(e) => setId(e.target.value)}
@@ -127,7 +152,7 @@ const RegisterForm: React.FC = () => {
                         disabled={isSending || emailVerified || !isEmailValid}
                         onClick={handleSendCode}
                         fullWidth={false}
-                        variant={emailVerified ? 'main' : 'greyLight'}
+                        variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
                         className='w-34 h-12 p-2'
                       >
                         {emailVerified ? '완료' : isSending ? '전송 중...' : '중복 확인'}
@@ -144,7 +169,7 @@ const RegisterForm: React.FC = () => {
                       type='text'
                       placeholder='인증번호 입력'
                       value={code}
-                      onChange={(e) => setCode(e.target.value)}
+                      onChange={(e) => setCode(e.target.value.trim())}
                       showHr={false} // 또는 showHr={false} - 사용하는 InputField prop 명에 따라
                     />
                     <Button
@@ -171,6 +196,7 @@ const RegisterForm: React.FC = () => {
               <InputField
                 label='비밀번호'
                 type='password'
+                autoComplete='new-password'
                 placeholder='비밀번호를 입력하세요'
                 value={pw}
                 onChange={(e) => setPw(e.target.value)}
@@ -184,6 +210,7 @@ const RegisterForm: React.FC = () => {
             <InputField
               label='비밀번호'
               type='password'
+              autoComplete='new-password'
               placeholder='비밀번호를 다시 입력하세요'
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
@@ -195,8 +222,9 @@ const RegisterForm: React.FC = () => {
       </section>
       <section>
         <p className='text-3xl font-bold mb-6'>개인 정보</p>
-        <div className='flex flex-col bg-white h-[634px] p-6 rounded-xl gap-12'>
+        <div className='flex flex-col bg-white h-[auto] p-6 rounded-xl gap-12'>
           <div className='flex flex-col mx-auto gap-12 w-[440px] my-6'>
+            <ProfileImageUploader onUpload={setProfileImageFile} />
             <InputField
               label='닉네임'
               type='text'
@@ -204,7 +232,12 @@ const RegisterForm: React.FC = () => {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
             />
-            <DropdownField label='학과' selected={department} onSelect={setDepartment} />
+            <DropdownField
+              label='학과'
+              selected={department}
+              onSelect={setDepartment}
+              options={DEPARTMENT_OPTIONS}
+            />
             <div className='h-[110px]'>
               <InputField
                 label='학번'
@@ -218,19 +251,23 @@ const RegisterForm: React.FC = () => {
                 }
               />
             </div>
-            <GenderSelector options={genderOptions} selected={gender} onSelect={setGender} />
+            <GenderSelector
+              label='성별'
+              options={genderOptions}
+              selected={gender}
+              onSelect={setGender}
+            />
           </div>
         </div>
       </section>
 
       <Button
-        type='button'
+        type='submit'
         variant={formValid ? 'main' : 'greyLight'}
         disabled={!formValid}
         fullWidth
         size='lg'
         shape='rounded'
-        onClick={handleSubmit}
       >
         MJS 시작하기
       </Button>
