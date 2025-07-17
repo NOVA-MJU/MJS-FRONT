@@ -1,7 +1,7 @@
-import Divider from '../../../components/atoms/Divider';
-import { Typography } from '../../../components/atoms/Typography';
-import CalendarListItem from '../../../components/molecules/CalendarListItem';
-import Calendar from '../../../components/organisms/Calendar';
+import Divider from '../../components/atoms/Divider';
+import { Typography } from '../../components/atoms/Typography';
+import CalendarListItem from '../../components/molecules/CalendarListItem';
+import Calendar from '../../components/organisms/Calendar';
 
 export default function AcademicCalendar() {
   return (

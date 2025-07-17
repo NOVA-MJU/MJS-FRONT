@@ -22,7 +22,7 @@ export default function CalendarGridItem({
         weekend && 'text-error',
       )}
     >
-      <Typography variant='body02'>{day}</Typography>
+      <Typography variant='body02'>{String(day).padStart(2, '0')}</Typography>
       <hr
         className={clsx('h-[2px] rounded-full border-0', focused ? 'bg-blue-10' : 'bg-grey-05')}
       />

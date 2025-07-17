@@ -10,7 +10,8 @@ import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
 import Menu from './pages/menu';
-import AcademicCalendar from './pages/academics/calendar';
+import AcademicCalendar from './pages/academic-calendar';
+import Department from './pages/department';
 
 const App = () => {
   return (
@@ -29,7 +30,8 @@ const App = () => {
         <Route path='/register' element={<Register />} />
 
         <Route path='/menu' element={<Menu />} />
-        <Route path='/academics/calendar' element={<AcademicCalendar />} />
+        <Route path='/academic-calendar' element={<AcademicCalendar />} />
+        <Route path='/department' element={<Department />} />
 
         <Route path='/admin' element={<></>} />
         <Route path='/admin/login' element={<></>} />
