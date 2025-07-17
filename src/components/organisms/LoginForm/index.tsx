@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import InputField from '../../molecules/common/InputField';
 import LoginButtons from '../../molecules/user/LoginButtons';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../../api/user';
+import { login, saveUserInfo } from '../../../api/user';
+import { useAuthStore } from '../../../store/useAuthStore';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
+  const loginStore = useAuthStore((stat) => stat.login);
 
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
@@ -20,13 +22,11 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     if (!formValid) return;
 
-    console.log('로그인 요청: ', { id, pw });
     try {
-      const { accessToken, refreshToken } = await login(id, pw);
-
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
+      const { accessToken } = await login(id, pw);
+      const userInfo = await saveUserInfo();
+      loginStore(accessToken, userInfo);
+      console.log(userInfo);
       navigate('/');
     } catch (err: any) {
       console.log(err);

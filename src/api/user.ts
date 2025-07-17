@@ -14,8 +14,15 @@ export interface RegisterReq {
 /** 로그인 **/
 export const login = async (email: string, password: string) => {
   const { data } = await apiClient.post('/auth/login', { email, password });
-  return data as { accessToken: string; refreshToken: string };
+  return data as { accessToken: string };
 };
+
+/** 회원정보 저장 **/
+export const saveUserInfo = async () => {
+  const { data } = await apiClient.get('/members/info');
+  return data.data;
+};
+
 /** 회원가입 **/
 export const registerMember = async (userData: RegisterReq) => {
   try {
