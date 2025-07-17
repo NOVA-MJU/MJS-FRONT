@@ -1,6 +1,6 @@
 import { colors } from '../../../styles/color';
 
-const variantStyleMap: Record<string, React.CSSProperties> = {
+const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
   main: {
     backgroundColor: colors.mju_primary,
     color: colors.white,
@@ -40,4 +40,4 @@ const variantStyleMap: Record<string, React.CSSProperties> = {
   },
 };
 
-export default variantStyleMap;
+export default buttonActiveStyleMap;

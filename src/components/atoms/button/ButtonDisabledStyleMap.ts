@@ -1,6 +1,6 @@
 import { colors } from '../../../styles/color';
 
-const disabledStyleMap: Record<string, React.CSSProperties> = {
+const buttonDisabledStyleMap: Record<string, React.CSSProperties> = {
   main: {
     backgroundColor: colors.grey20,
     color: colors.white,
@@ -40,4 +40,4 @@ const disabledStyleMap: Record<string, React.CSSProperties> = {
   },
 };
 
-export default disabledStyleMap;
+export default buttonDisabledStyleMap;
