@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ProfileSection from '../../components/organisms/Mypage/ProfileSection';
 import ActivitiesSection from '../../components/organisms/Mypage/ActivitiesSection';
 import InfoSection from '../../components/organisms/Mypage/InfoSection';
 import Button from '../../components/atoms/Button/Button';
+import { getProfileStats, type ProfileStatsRes } from '../../api/mypage';
 
 const Mypage: React.FC = () => {
+  const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getProfileStats();
+        setStateData(data);
+      } catch (err) {
+        console.error('마이페이지 데이터 불러오기 실패', err);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
       {/* 제목: 왼쪽 정렬 */}
@@ -13,7 +27,11 @@ const Mypage: React.FC = () => {
       {/* 가운데 정렬 영역 */}
       <div className='w-full flex flex-col justify-center items-center mt-10 gap-12'>
         <ProfileSection />
-        <ActivitiesSection />
+        <ActivitiesSection
+          postCount={stateData?.postCount || 0}
+          commentCount={stateData?.commentCount || 0}
+          likedCount={stateData?.likedPostCount || 0}
+        />
         <InfoSection />
         <div className='w-[600px]'>
           <Button variant='borderRed' disabled={false} fullWidth={true} shape='rounded'>
