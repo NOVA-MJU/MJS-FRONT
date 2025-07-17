@@ -1,4 +1,11 @@
-export type ButtonVariant = 'main' | 'sub' | 'basic' | 'danger' | 'grey' | 'greyLight';
+export type ButtonVariant =
+  | 'main'
+  | 'sub'
+  | 'basic'
+  | 'danger'
+  | 'grey'
+  | 'greyLight'
+  | 'borderRed';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonShape = 'pill' | 'rounded';
 
