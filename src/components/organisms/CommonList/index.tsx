@@ -1,9 +1,8 @@
-import React from 'react';
 import DetailItem, { type ListItemProps } from '../DetailItem/idex';
 
 interface NoticeListProps {
   items: ListItemProps[];
-  category: string;
+  category: 'notice' | 'news';
   page?: number;
   itemsPerPage?: number;
 }
@@ -14,14 +13,9 @@ const CommonList: React.FC<NoticeListProps> = ({ items, category, page = 1, item
       {items.map((item, index) => (
         <DetailItem
           key={item.id}
+          {...item}
           id={(page - 1) * itemsPerPage + index + 1}
-          category={item.category}
-          title={item.title}
-          content={item.content}
-          date={item.date}
-          link={item.link}
-          imgSrc={item.imgSrc}
-          variant={category as 'notice' | 'news'}
+          variant={category}
         />
       ))}
     </section>
