@@ -1,33 +1,27 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { AuthState } from '../types/auth';
 
-interface UserInfo {
-  uuid: string;
-  name: string;
-  email: string;
-  gender: string;
-  nickname: string;
-  department: string;
-  studentNumber: string;
-}
-
-interface AuthState {
-  isLoggedIn: boolean;
-  accessToken: string | null;
-  user: UserInfo | null;
-  login: (accessToken: string, user: UserInfo) => void;
-  logout: () => void;
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: !!localStorage.getItem('accessToken'), // 새로고침 시 유지
-  accessToken: localStorage.getItem('accessToken'),
-  user: null,
-  login: (accessToken, user) => {
-    localStorage.setItem('accessToken', accessToken);
-    set({ isLoggedIn: true, accessToken, user });
-  },
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    set({ isLoggedIn: false, accessToken: null, user: null });
-  },
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      isLoggedIn: false,
+      accessToken: null,
+      user: null,
+      login: (accessToken, user) => {
+        set({ isLoggedIn: true, accessToken, user });
+      },
+      logout: () => {
+        set({ isLoggedIn: false, accessToken: null, user: null });
+      },
+    }),
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        accessToken: state.accessToken,
+        user: state.user,
+      }),
+    },
+  ),
+);

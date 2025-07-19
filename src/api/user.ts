@@ -45,3 +45,20 @@ export const verifyEmailCode = async (email: string, code: string) => {
   const { data } = await apiClient.post('/member/email/check', { email, code });
   return data.data.matched as boolean;
 };
+
+/** 회원 탈퇴  **/
+export const deleteUser = async (password: string) => {
+  console.log('[deleteUser API 호출] 비밀번호:', password);
+
+  try {
+    const res = await apiClient.delete('/members/info', {
+      data: { password },
+    });
+
+    console.log('[deleteUser API 응답 status]:', res.status);
+    return res.status;
+  } catch (error) {
+    console.error('[deleteUser API 오류]', error);
+    throw error;
+  }
+};
