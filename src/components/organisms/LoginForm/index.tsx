@@ -10,7 +10,6 @@ const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const loginStore = useAuthStore((stat) => stat.login);
 
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
@@ -20,20 +19,24 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formValid) return;
+    if (!formValid) {
+      console.warn('유효하지 않은 로그인 정보입니다.');
+      return;
+    }
 
     try {
       const { accessToken } = await login(id, pw);
+      localStorage.setItem('accessToken', accessToken);
+
       const userInfo = await saveUserInfo();
-      loginStore(accessToken, userInfo);
-      console.log(userInfo);
+      useAuthStore.getState().login(accessToken, userInfo);
+
       navigate('/');
     } catch (err: any) {
-      console.log(err);
-      alert('로그인에 실패했습니다');
+      console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
+      alert('로그인 또는 회원정보 요청 중 오류 발생');
     }
   };
-
   return (
     <form className='flex flex-col mx-auto gap-12 w-[440px]' onSubmit={handleLogin}>
       <InputField
