@@ -30,13 +30,13 @@ const DetailItem: React.FC<ListItemProps> = ({
   imgSrc,
   variant,
 }) => {
-  //variant가 없으면 date 유무로 판단
+  /* --- variant가 없으면 date 유무로 판단 --- */
   const layout: 'notice' | 'news' = variant ?? (date ? 'notice' : 'news');
 
   /* --- 명대신문 --- */
   if (layout === 'news') {
     return (
-      <>
+      <div>
         <a
           href={link}
           target='_blank'
@@ -45,9 +45,13 @@ const DetailItem: React.FC<ListItemProps> = ({
         >
           {imgSrc && (
             <img
-              src={imgSrc}
-              alt='image'
-              className='min-w-[120px] h-[90px] object-cover rounded-md'
+              src={imgSrc || '/default-thumbnail.png'}
+              alt={title}
+              className='min-w-[152px] h-[114px] object-cover rounded-xl'
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/default-thumbnail.png';
+              }}
             />
           )}
 
@@ -57,7 +61,7 @@ const DetailItem: React.FC<ListItemProps> = ({
           </div>
         </a>
         <hr className='border-grey-20' />
-      </>
+      </div>
     );
   }
 
