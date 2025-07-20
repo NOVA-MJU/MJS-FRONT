@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ImageInput from '../../../atoms/input/ImageInput';
+import ImageInput from '../../../atoms/Input/ImageInput';
 
 interface Props {
   onUpload: (file: File) => void;
