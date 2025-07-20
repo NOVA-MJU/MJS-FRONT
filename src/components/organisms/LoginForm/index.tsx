@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import InputField from '../../molecules/common/InputField';
 import LoginButtons from '../../molecules/user/LoginButtons';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../../api/user';
+import { login, saveUserInfo } from '../../../api/user';
+import { useAuthStore } from '../../../store/useAuthStore';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
@@ -18,22 +19,24 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formValid) return;
+    if (!formValid) {
+      console.warn('유효하지 않은 로그인 정보입니다.');
+      return;
+    }
 
-    console.log('로그인 요청: ', { id, pw });
     try {
-      const { accessToken, refreshToken } = await login(id, pw);
-
+      const { accessToken } = await login(id, pw);
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+
+      const userInfo = await saveUserInfo();
+      useAuthStore.getState().login(accessToken, userInfo);
 
       navigate('/');
     } catch (err: any) {
-      console.log(err);
-      alert('로그인에 실패했습니다');
+      console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
+      alert('로그인 또는 회원정보 요청 중 오류 발생');
     }
   };
-
   return (
     <form className='flex flex-col mx-auto gap-12 w-[440px]' onSubmit={handleLogin}>
       <InputField

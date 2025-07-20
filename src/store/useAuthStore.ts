@@ -1,19 +1,27 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import type { AuthState } from '../types/auth';
 
-interface AuthState {
-  isLoggedIn: boolean;
-  accessToken: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-}
-
-export const useAuthStore = create<AuthState>((set) => ({
-  isLoggedIn: false,
-  accessToken: null,
-  login: (token: string) => {
-    set(() => ({ isLoggedin: true, accessToken: token }));
-  },
-  logout: () => {
-    set(() => ({ isLoggedin: false, accessToken: null }));
-  },
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      isLoggedIn: false,
+      accessToken: null,
+      user: null,
+      login: (accessToken, user) => {
+        set({ isLoggedIn: true, accessToken, user });
+      },
+      logout: () => {
+        set({ isLoggedIn: false, accessToken: null, user: null });
+      },
+    }),
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({
+        isLoggedIn: state.isLoggedIn,
+        accessToken: state.accessToken,
+        user: state.user,
+      }),
+    },
+  ),
+);
