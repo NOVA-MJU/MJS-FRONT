@@ -12,6 +12,7 @@ import Layout from './components/templates/Layout';
 import Menu from './pages/menu';
 import AcademicCalendar from './pages/academic-calendar';
 import Department from './pages/department';
+import Search from './pages/search';
 
 const App = () => {
   return (
@@ -41,6 +42,8 @@ const App = () => {
         <Route path='/admin/signup' element={<></>} />
         <Route path='/admin/signup' element={<></>} />
         <Route path='/admin/signup' element={<></>} />
+
+        <Route path='/search' element={<Search />} />
       </Route>
     </Routes>
   );
