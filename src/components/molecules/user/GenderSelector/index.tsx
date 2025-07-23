@@ -2,11 +2,13 @@ import React from 'react';
 import Button from '../../../atoms/Button';
 
 interface Props {
+  label: string;
   options: string[];
   selected: string;
   onSelect: (v: string) => void;
+  placeholder?: string;
+  error?: boolean;
 }
-
 const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
   <div>
     <div className='flex items-center gap-6 mb-3'>
@@ -16,6 +18,7 @@ const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
     <div className='flex justify-center gap-4'>
       {options.map((g) => (
         <Button
+          type='button'
           key={g}
           variant={selected === g ? 'main' : 'greyLight'}
           shape='rounded'
