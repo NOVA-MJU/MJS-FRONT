@@ -9,7 +9,7 @@ interface NewsItemProps {
 
 export default function SearchNewsItem({ imageUrl, category, title, content }: NewsItemProps) {
   return (
-    <button className='cursor-pointer p-3 flex gap-6 items-center'>
+    <button className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'>
       {imageUrl ? (
         <>
           <img className='w-46 h-36 rounded-xl object-cover' src={imageUrl} />

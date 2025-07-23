@@ -3,6 +3,7 @@ import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import SearchNewsItem from '../../components/molecules/SearchNewsItem';
 import SearchNoticeItem from '../../components/molecules/SearchNoticeItem';
+import SearchCategoryChip from '../../components/molecules/SearchCategoryChip';
 
 export default function Search() {
   return (
@@ -10,37 +11,12 @@ export default function Search() {
       <SearchBar />
 
       <div className='flex gap-6'>
-        <button className='w-46 h-12 p-3 bg-mju-primary rounded-full cursor-pointer'>
-          <Typography variant='body02' className='text-white'>
-            전체
-          </Typography>
-        </button>
-
-        <button className='h-12 px-6 bg-grey-05 rounded-full cursor-pointer'>
-          <Typography variant='body03' className='text-black'>
-            공지사항
-          </Typography>
-        </button>
-        <button className='h-12 px-6 bg-grey-05 rounded-full cursor-pointer'>
-          <Typography variant='body03' className='text-black'>
-            명대신문
-          </Typography>
-        </button>
-        <button className='h-12 px-6 bg-grey-05 rounded-full cursor-pointer'>
-          <Typography variant='body03' className='text-black'>
-            자유게시판
-          </Typography>
-        </button>
-        <button className='h-12 px-6 bg-grey-05 rounded-full cursor-pointer'>
-          <Typography variant='body03' className='text-black'>
-            제휴
-          </Typography>
-        </button>
-        <button className='h-12 px-6 bg-grey-05 rounded-full cursor-pointer'>
-          <Typography variant='body03' className='text-black'>
-            취업후기
-          </Typography>
-        </button>
+        <SearchCategoryChip text='전체' selected primary />
+        <SearchCategoryChip text='공지사항' />
+        <SearchCategoryChip text='명대신문' />
+        <SearchCategoryChip text='자유게시판' />
+        <SearchCategoryChip text='제휴' />
+        <SearchCategoryChip text='취업후기' />
       </div>
 
       <Divider variant='default' />

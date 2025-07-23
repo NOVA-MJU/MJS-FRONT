@@ -7,7 +7,7 @@ interface NoticeItemProps {
 
 export default function SearchNoticeItem({ badgeTitle, title }: NoticeItemProps) {
   return (
-    <button className='cursor-pointer p-3 flex gap-6 items-center'>
+    <button className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'>
       {badgeTitle && (
         <button className='cursor-pointer py-1.5 px-3 bg-mju-primary rounded-full'>
           <Typography variant='caption01' className='text-white'>
