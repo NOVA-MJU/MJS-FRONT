@@ -3,8 +3,14 @@ import { Typography } from '../../atoms/Typography';
 import CalendarGridItem from '../../molecules/CalendarGridItem';
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
+import { type CalendarEventItem } from '../../../api/calendar';
 
-export default function Calendar() {
+interface CalendarProps {
+  events: CalendarEventItem[] | null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function Calendar({ events }: CalendarProps) {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth() + 1);
   const [currentDayIndex] = useState(() => new Date().getDay());
@@ -60,7 +66,7 @@ export default function Calendar() {
             </button>
           ))}
         </div>
-        <div className='grid grid-cols-7 gap-1'>
+        <div className='grid grid-cols-7'>
           {calendarDays.map(({ day, outdated, focused }, index) => (
             <CalendarGridItem
               key={index}

@@ -1,9 +1,32 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useEffect, useState } from 'react';
 import Divider from '../../components/atoms/Divider';
 import { Typography } from '../../components/atoms/Typography';
 import CalendarListItem from '../../components/molecules/CalendarListItem';
 import Calendar from '../../components/organisms/Calendar';
+import { getAcademicEvents, type CalendarEventItem } from '../../api/calendar';
 
 export default function AcademicCalendar() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [events, setEvents] = useState<CalendarEventItem[] | null>(null);
+
+  useEffect(() => {
+    const getEvents = async () => {
+      setIsLoading(true);
+
+      try {
+        const res = getAcademicEvents({ year: currentYear });
+        console.log(res);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getEvents();
+  }, [currentYear]);
+
   return (
     <div className='px-7 py-12 flex flex-col gap-6'>
       <Typography variant='heading01' className='text-mju-primary'>
@@ -12,7 +35,7 @@ export default function AcademicCalendar() {
       <Divider />
       <div className='flex gap-6'>
         {/* 캘린더 컨테이너 */}
-        <Calendar />
+        <Calendar events={events} />
 
         {/* 전체 학사일정 컨테이너 */}
         <div className='flex-1/3'>
