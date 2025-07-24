@@ -25,9 +25,7 @@ export default function Menu() {
     const getData = async () => {
       try {
         const res = await getMenus();
-        console.log(res.data);
         setContents(res.data);
-        console.log(res.data[1].meals);
       } catch (e) {
         console.error(e);
       }
