@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
-import Login from './pages/login';
-import Register from './pages/register';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import Notice from './pages/notice';
 import News from './pages/news';
 import Main from './pages/main';
@@ -13,6 +13,7 @@ import Menu from './pages/menu';
 import AcademicCalendar from './pages/academic-calendar';
 import Department from './pages/department';
 import Search from './pages/search';
+import MyPage from './pages/mypage';
 
 const App = () => {
   return (
@@ -34,16 +35,8 @@ const App = () => {
         <Route path='/academic-calendar' element={<AcademicCalendar />} />
         <Route path='/department' element={<Department />} />
 
-        <Route path='/admin' element={<></>} />
-        <Route path='/admin/login' element={<></>} />
-        <Route path='/admin/signup' element={<></>} />
-        <Route path='/admin/profile' element={<></>} />
-
-        <Route path='/admin/signup' element={<></>} />
-        <Route path='/admin/signup' element={<></>} />
-        <Route path='/admin/signup' element={<></>} />
-
         <Route path='/search' element={<Search />} />
+        <Route path='/mypage' element={<MyPage />} />
       </Route>
     </Routes>
   );

@@ -5,6 +5,7 @@ interface InputFieldProps {
   label: string;
   placeholder: string;
   type: string;
+  autoComplete?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
@@ -17,6 +18,7 @@ const InputField: React.FC<InputFieldProps> = ({
   label,
   placeholder,
   type,
+  autoComplete,
   value,
   onChange,
   error = false,
@@ -39,6 +41,7 @@ const InputField: React.FC<InputFieldProps> = ({
           variant='outlined'
           error={error}
           helperText={helperText}
+          autoComplete={autoComplete}
         />
         {rightElement && <div className='ml-4'>{rightElement}</div>}
       </div>

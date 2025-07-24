@@ -77,7 +77,7 @@ const Input = ({
       >
         {icon && <span className='mr-2'>{icon}</span>}
         <input
-          className='bg-transparent w-full outline-none placeholder:text-common-grey-scale-grey20'
+          className='bg-transparent w-full outline-none placeholder:text-grey-20'
           maxLength={maxLength}
           value={value}
           disabled={disabled}
