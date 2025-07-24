@@ -9,6 +9,10 @@ import Notice from './pages/notice';
 import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
+import Menu from './pages/menu';
+import AcademicCalendar from './pages/academic-calendar';
+import Department from './pages/department';
+import Search from './pages/search';
 import MyPage from './pages/mypage';
 
 const App = () => {
@@ -26,6 +30,12 @@ const App = () => {
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
+
+        <Route path='/menu' element={<Menu />} />
+        <Route path='/academic-calendar' element={<AcademicCalendar />} />
+        <Route path='/department' element={<Department />} />
+
+        <Route path='/search' element={<Search />} />
         <Route path='/mypage' element={<MyPage />} />
       </Route>
     </Routes>

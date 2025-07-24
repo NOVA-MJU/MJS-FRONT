@@ -12,30 +12,28 @@ const Footer = () => {
   };
 
   return (
-    <footer className='w-full bg-blue-05 py-4'>
-      <div className='max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
-        <div className='flex items-center gap-2'>
-          <img src={logo} alt='Logo' className='w-10 h-10' />
-          <span className='text-lg font-bold text-gray-800'>
-            MJ<span className='text-sky-400'>S</span> NOVA
-          </span>
-        </div>
-
-        <ul className='flex gap-6 text-sm text-gray-800'>
-          <li className='hover:text-gray-600 hover:underline cursor-pointer'>이용 약관</li>
-          <li className='hover:text-gray-600 hover:underline cursor-pointer'>개인정보 처리방침</li>
-          <li
-            className='hover:text-gray-600 hover:underline cursor-pointer'
-            onClick={handleContactClick}
-          >
-            문의하기
-          </li>
-        </ul>
-
-        <p className='text-xs text-gray-400 text-right w-full md:w-auto'>
-          © 2025 MJS. All rights reserved.
-        </p>
+    <footer className='min-w-[1280px] w-full bg-blue-05 py-4 mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
+      <div className='flex items-center gap-2'>
+        <img src={logo} alt='Logo' className='w-10 h-10' />
+        <span className='text-lg font-bold text-gray-800'>
+          MJ<span className='text-sky-400'>S</span> NOVA
+        </span>
       </div>
+
+      <ul className='flex gap-6 text-sm text-gray-800'>
+        <li className='hover:text-gray-600 hover:underline cursor-pointer'>이용 약관</li>
+        <li className='hover:text-gray-600 hover:underline cursor-pointer'>개인정보 처리방침</li>
+        <li
+          className='hover:text-gray-600 hover:underline cursor-pointer'
+          onClick={handleContactClick}
+        >
+          문의하기
+        </li>
+      </ul>
+
+      <p className='text-xs text-gray-400 text-right w-full md:w-auto'>
+        © 2025 MJS. All rights reserved.
+      </p>
     </footer>
   );
 };

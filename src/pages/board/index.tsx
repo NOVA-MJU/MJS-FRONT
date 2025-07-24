@@ -5,6 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
+import Divider from '../../components/atoms/Divider';
 
 export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
@@ -50,7 +51,7 @@ export default function Board() {
       <div>
         <SearchBar />
       </div>
-      <hr className='w-full h-[4px] bg-gradient-to-r from-blue-05 to-white rounded-full border-0' />
+      <Divider />
       <div className='flex justify-end'>
         <Link
           className='inline-flex items-center justify-center gap-[10px] p-3 bg-blue-35 rounded-xl w-46 cursor-pointer'
