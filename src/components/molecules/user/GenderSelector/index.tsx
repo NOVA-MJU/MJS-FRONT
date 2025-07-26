@@ -1,9 +1,14 @@
 import React from 'react';
 import Button from '../../../atoms/Button';
 
+interface GenderOption {
+  label: string;
+  value: string;
+}
+
 interface Props {
   label: string;
-  options: string[];
+  options: GenderOption[];
   selected: string;
   onSelect: (v: string) => void;
   placeholder?: string;
@@ -19,15 +24,15 @@ const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
       {options.map((g) => (
         <Button
           type='button'
-          key={g}
-          variant={selected === g ? 'main' : 'greyLight'}
+          key={g.value}
+          variant={selected === g.value ? 'main' : 'greyLight'}
           shape='rounded'
           fullWidth={false}
-          onClick={() => onSelect(g)}
+          onClick={() => onSelect(g.value)}
           className='w-[120px] h-[48px]'
           disabled={false}
         >
-          {g}
+          {g.label}
         </Button>
       ))}
     </div>
