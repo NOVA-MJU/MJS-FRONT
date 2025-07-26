@@ -9,4 +9,5 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: boolean;
   icon?: React.ReactNode;
   value?: string | number;
+  disabled?: boolean;
 }

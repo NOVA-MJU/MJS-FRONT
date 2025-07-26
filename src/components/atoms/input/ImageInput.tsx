@@ -14,7 +14,7 @@ const ImageInput: React.FC<ProfileImageInputProps> = ({ imageUrl, onImageChange 
           className='w-32 h-32 rounded-xl overflow-hidden border-2 mt-3'
           style={{ borderColor: colors.grey10 }}
         >
-          {imageUrl ? (
+          {imageUrl && imageUrl !== '' ? (
             <img src={imageUrl} alt='프로필' className='w-full h-full object-cover' />
           ) : (
             <div className='w-full h-full flex items-center justify-center text-sm text-grey-20'>

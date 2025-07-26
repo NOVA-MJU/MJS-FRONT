@@ -9,6 +9,8 @@ const Button = ({
   children,
   disabled,
   fullWidth,
+  fontWeight,
+
   ...props
 }: ButtonProps) => {
   const shapeClassMap = {
@@ -17,15 +19,15 @@ const Button = ({
   } as const;
 
   const sizeClassMap: Record<string, React.CSSProperties> = {
-    sm: { padding: '0.25rem 0.75rem', fontSize: '0.875rem' }, // py-1 px-3 text-sm
-    md: { padding: '0.5rem 1rem', fontSize: '1rem' }, // py-2 px-4 text-base
-    lg: { padding: '0.75rem 1.25rem', fontSize: '1.125rem' }, // py-3 px-5 text-lg
+    sm: { padding: '0.25rem 0.75rem', fontSize: '0.875rem' },
+    md: { padding: '0.5rem 1rem', fontSize: '1rem' },
+    lg: { padding: '0.75rem 1.25rem', fontSize: '1.125rem' },
   };
 
   const finalStyle: React.CSSProperties = {
     ...(disabled ? disabledStyleMap[variant] : variantStyleMap[variant]),
     borderRadius: shapeClassMap[shape],
-    fontWeight: 500,
+    fontWeight: fontWeight ?? 500,
     transition: 'all 0.2s ease-in-out',
     width: fullWidth ? '100%' : undefined,
     ...sizeClassMap[size],
