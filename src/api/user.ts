@@ -9,6 +9,7 @@ export interface RegisterReq {
   nickname: string;
   departmentName: string;
   studentNumber: number;
+  profileImageUrl: string | null;
 }
 
 /** 로그인 **/
