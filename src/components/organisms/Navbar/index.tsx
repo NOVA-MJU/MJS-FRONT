@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import logo from '../../assets/schoolLogo.png';
+import logo from '../../../assets/schoolLogo.png';
 
 const Navbar = () => {
   return (
     <>
       <nav className='min-w-[1280px] w-full bg-[#002f6c] p-3 z-50 mx-auto'>
-        <div className='max-w-[1200px] w-[90%] mx-auto flex justify-between items-center'>
+        <div className='w-[1280px] mx-auto flex justify-between items-center'>
           {/* 로고 + 이름 */}
           <Link to='/'>
             <div className='flex items-center gap-3'>
@@ -19,7 +19,9 @@ const Navbar = () => {
 
           <ul className='flex  gap-3 list-none  text-white text-sm font-medium'>
             <li>
-              <span className='px-3 py-2 rounded cursor-default text-white/60'>학과정보</span>
+              <Link to='/department' className='p-3'>
+                학과정보
+              </Link>
             </li>
             <li>
               <Link to='/menu' className='p-3'>

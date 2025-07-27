@@ -3,7 +3,7 @@ import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import SearchNewsItem from '../../components/molecules/SearchNewsItem';
 import SearchNoticeItem from '../../components/molecules/SearchNoticeItem';
-import SearchCategoryChip from '../../components/molecules/SearchCategoryChip';
+import Chip from '../../components/atoms/Chip';
 
 export default function Search() {
   return (
@@ -11,12 +11,12 @@ export default function Search() {
       <SearchBar />
 
       <div className='flex gap-6'>
-        <SearchCategoryChip text='전체' selected primary />
-        <SearchCategoryChip text='공지사항' />
-        <SearchCategoryChip text='명대신문' />
-        <SearchCategoryChip text='자유게시판' />
-        <SearchCategoryChip text='제휴' />
-        <SearchCategoryChip text='취업후기' />
+        <Chip text='전체' selected primary />
+        <Chip text='공지사항' />
+        <Chip text='명대신문' />
+        <Chip text='자유게시판' />
+        <Chip text='제휴' />
+        <Chip text='취업후기' />
       </div>
 
       <Divider variant='default' />

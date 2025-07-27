@@ -3,18 +3,19 @@ import { Routes, Route } from 'react-router-dom';
 import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
-import Login from './pages/login';
-import Register from './pages/register';
 import Notice from './pages/notice';
 import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
 import Menu from './pages/menu';
 import AcademicCalendar from './pages/academic-calendar';
-import Department from './pages/department';
 import Search from './pages/search';
 import MyPage from './pages/mypage';
 import MyPageEdit from './pages/mypage/edit';
+import Department from './pages/department';
+import DepartmentDetail from './pages/department/detail';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const App = () => {
   return (
@@ -36,7 +37,9 @@ const App = () => {
 
         <Route path='/menu' element={<Menu />} />
         <Route path='/academic-calendar' element={<AcademicCalendar />} />
+
         <Route path='/department' element={<Department />} />
+        <Route path='/department/:uuid' element={<DepartmentDetail />} />
 
         <Route path='/search' element={<Search />} />
       </Route>
