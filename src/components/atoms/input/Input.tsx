@@ -10,10 +10,9 @@ const Input = ({
   error = false,
   icon,
   value,
+  disabled,
   ...props
 }: InputProps) => {
-  const disabled = props.disabled;
-
   const variantStyleMap: Record<InputVariant, React.CSSProperties> = {
     field: {
       backgroundColor: colors.grey02,
@@ -49,7 +48,7 @@ const Input = ({
   const wrapperStyle: React.CSSProperties = {
     ...variantStyleMap[variant],
     color: disabled ? colors.grey40 : undefined,
-    backgroundColor: disabled ? colors.grey10 : variantStyleMap[variant].backgroundColor,
+    backgroundColor: disabled ? colors.white : variantStyleMap[variant].backgroundColor,
     borderColor: error ? colors.error : variantStyleMap[variant].borderColor,
     border: error && variant !== 'labelfield' ? `1px solid ${colors.error}` : '1px solid white',
   };
@@ -60,8 +59,10 @@ const Input = ({
     <div className='w-full'>
       {variant === 'labelfield' && label && (
         <label
-          className='block mb-1 text-sm font-semibold'
-          style={{ color: error ? colors.error : colors.black }}
+          className={`block mb-1 text-sm ${
+            disabled ? 'font-medium text-grey-40' : 'font-semibold'
+          }`}
+          style={{ color: error ? colors.error : disabled ? colors.grey40 : colors.black }}
         >
           {label}
         </label>

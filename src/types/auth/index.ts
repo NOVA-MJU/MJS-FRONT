@@ -4,6 +4,7 @@ export interface UserInfo {
   email: string;
   gender: string;
   nickname: string;
+  profileImageUrl: string;
   departmentName: string;
   studentNumber: string;
 }
@@ -14,4 +15,5 @@ export interface AuthState {
   user: UserInfo | null;
   login: (accessToken: string, user: UserInfo) => void;
   logout: () => void;
+  setUser: (user: UserInfo) => void;
 }

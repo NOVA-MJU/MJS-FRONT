@@ -7,11 +7,12 @@ interface InputFieldProps {
   type: string;
   autoComplete?: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: boolean;
   helperText?: string;
   rightElement?: React.ReactNode;
   showHr?: boolean;
+  disabled?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -25,12 +26,25 @@ const InputField: React.FC<InputFieldProps> = ({
   helperText,
   showHr = true,
   rightElement,
+  disabled = false,
 }) => {
   return (
     <div className='flex flex-col gap-2 w-full'>
       <div className='flex items-center gap-6'>
-        <label className='text-blue-10 text-xl font-semibold whitespace-nowrap'>{label}</label>
-        {showHr && <hr className='w-full flex-1 border-t-2 border-blue-10 rounded-xl' />}
+        <label
+          className={`text-xl whitespace-nowrap ${
+            disabled ? 'text-grey-40 font-med' : 'text-blue-10 font-semibold'
+          }`}
+        >
+          {label}
+        </label>
+        {showHr && (
+          <hr
+            className={`w-full flex-1 border-t-2 rounded-xl ${
+              disabled ? 'border-grey-40' : 'border-blue-10'
+            }`}
+          />
+        )}
       </div>
       <div className='flex'>
         <Input
@@ -42,6 +56,7 @@ const InputField: React.FC<InputFieldProps> = ({
           error={error}
           helperText={helperText}
           autoComplete={autoComplete}
+          disabled={disabled}
         />
         {rightElement && <div className='ml-4'>{rightElement}</div>}
       </div>

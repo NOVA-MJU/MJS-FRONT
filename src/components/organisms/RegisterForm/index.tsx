@@ -2,17 +2,14 @@
 import React, { useState } from 'react';
 import InputField from '../../molecules/common/InputField';
 import GenderSelector from '../../molecules/user/GenderSelector';
-import Button from '../../atoms/button/Button';
+import Button from '../../atoms/Button/Button';
 import DropdownField from '../../molecules/user/DropdownField';
-import {
-  emailVerification,
-  registerMember,
-  verifyEmailCode,
-  uploadProfileImage,
-} from '../../../api/user';
+import { emailVerification, registerMember, verifyEmailCode } from '../../../api/user';
 import { useNavigate } from 'react-router-dom';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import { DEPARTMENT_OPTIONS } from '../../../constants/departments.ts';
+import { uploadProfileImage } from '../../../api/user';
+import { genderOptions } from '../../../constants/gender.ts';
 
 const RegisterForm: React.FC = () => {
   const [id, setId] = useState('');
@@ -23,7 +20,6 @@ const RegisterForm: React.FC = () => {
   const [department, setDepartment] = useState('');
   const [studentCode, setStudentCode] = useState('');
   const [gender, setGender] = useState<string>('');
-  const genderOptions = ['남자', '여자', '기타'];
 
   const navigator = useNavigate();
 
@@ -94,10 +90,7 @@ const RegisterForm: React.FC = () => {
     e?.preventDefault();
     if (!formValid) return;
     try {
-      let profileImageUrl = '';
-      if (profileImageFile) {
-        profileImageUrl = await uploadProfileImage(profileImageFile);
-      }
+      const uploadedUrl = profileImageFile ? await uploadProfileImage(profileImageFile) : null;
       console.log('1. 회원가입 입력값 체크:');
       console.log('2. 이메일:', id);
       console.log('3. 비밀번호:', pw);
@@ -107,17 +100,16 @@ const RegisterForm: React.FC = () => {
       console.log('7. 학번:', studentCode);
       console.log('8. 성별:', gender);
       console.log('9. 업로드된 프로필 이미지 파일:', profileImageFile);
-      console.log('10. 저장된 프로필 이미지 URL:', profileImageUrl);
 
       const req = {
         name: nickname,
         email: id,
         password: pw,
-        gender: gender === '남자' ? 'MALE' : gender === '여자' ? 'FEMALE' : 'OTHER',
+        gender: gender,
         nickname,
         departmentName: department,
         studentNumber: Number(studentCode),
-        profileImage: profileImageUrl,
+        profileImageUrl: uploadedUrl,
       };
       await registerMember(req);
       alert('회원가입이 완료되었습니다!');
@@ -224,7 +216,7 @@ const RegisterForm: React.FC = () => {
         <p className='text-3xl font-bold mb-6'>개인 정보</p>
         <div className='flex flex-col bg-white h-[auto] p-6 rounded-xl gap-12'>
           <div className='flex flex-col mx-auto gap-12 w-[440px] my-6'>
-            <ProfileImageUploader onUpload={setProfileImageFile} />
+            <ProfileImageUploader onChange={(file) => setProfileImageFile(file)} />
             <InputField
               label='닉네임'
               type='text'
