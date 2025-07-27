@@ -14,7 +14,7 @@ interface ApiResponse<T> {
  * @param college 필터링할 단과대학을 입력하세요
  * @returns Department[] 형태의 학과 목록을 반환합니다
  */
-interface Department {
+export interface DepartmentRes {
   departmentUuid: string;
   departmentName: string;
   studentCouncilName: string | null;
@@ -24,18 +24,18 @@ interface Department {
 }
 
 export const getDepartments = async (college?: string) => {
-  const res = await apiClient.get<ApiResponse<Department[]>>('/departments/info', {
+  const res = await apiClient.get<ApiResponse<DepartmentRes[]>>('/departments/info', {
     params: college ? { college } : undefined,
   });
-  return res.data;
+  return res.data.data;
 };
 
 /**
  * 특정 학과의 학생회, 슬로전, 설명, SNS 정보 등 상세 정보를 조회합니다
  * @param uuid 학과의 uuid를 입력하세요
- * @returns
+ * @returns 학과 상세 정보를 반환합니다
  */
-interface DepartmentDetail {
+export interface DepartmentDetailRes {
   departmentUuid: string;
   departmentName: string;
   studentCouncilName: string | null;
@@ -48,8 +48,8 @@ interface DepartmentDetail {
   college: string;
 }
 
-export const getDepartmentInfo = async (departmentUuid: string): Promise<DepartmentDetail> => {
-  const res = await apiClient.get<ApiResponse<DepartmentDetail>>(
+export const getDepartmentDetail = async (departmentUuid: string): Promise<DepartmentDetailRes> => {
+  const res = await apiClient.get<ApiResponse<DepartmentDetailRes>>(
     `/departments/info/${departmentUuid}`,
   );
   return res.data.data;

@@ -4,26 +4,17 @@ import Chip from '../../components/atoms/Chip';
 import { useEffect, useState } from 'react';
 import DepartmentButton from '../../components/molecules/DepartmentButton';
 import { COLLEGE_OPTIONS } from '../../constants/colleges';
-import { getDepartments } from '../../api/departments';
-
-interface Department {
-  departmentUuid: string;
-  departmentName: string;
-  studentCouncilName: string | null;
-  studentCouncilLogo: string | null;
-  slogan: string;
-  college: string;
-}
+import { getDepartments, type DepartmentRes } from '../../api/departments';
 
 export default function Department() {
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<DepartmentRes[]>([]);
   const [selectedCollege, setSelectedCollege] = useState<string>('');
 
   useEffect(() => {
     const getData = async () => {
       try {
         const res = await getDepartments(selectedCollege);
-        setDepartments(res.data);
+        setDepartments(res);
       } catch (e) {
         console.error(e);
       }
