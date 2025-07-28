@@ -3,6 +3,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from '../atoms/Avatar';
 import { useAuthStore } from '../../store/useAuthStore';
 import Button from '../atoms/Button';
+
 interface ProfileComponentProps {
   className?: string;
 }
@@ -71,16 +72,18 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
       <span className='text-sm font-semibold text-gray-700'>
         커뮤니티 이용을 위한 <span className='text-blue-900'>로그인</span>이 필요합니다!
       </span>
-
       <div className='flex flex-col gap-2 w-full max-w-[250px]'>
-        <Button variant='main' disabled={false} size='md' fullWidth>
-          로그인
-        </Button>
-        <Button variant='greyLight' disabled={false} size='md' fullWidth>
-          회원가입
-        </Button>
+        <Link to='login'>
+          <Button variant='main' disabled={false} size='md' fullWidth>
+            로그인
+          </Button>
+        </Link>
+        <Link to='register'>
+          <Button variant='greyLight' disabled={false} size='md' fullWidth>
+            회원가입
+          </Button>
+        </Link>
       </div>
-
       <div className='flex gap-2 text-xs text-gray-400 font-medium mt-2'>
         <button className='hover:underline'>아이디 찾기</button>
         <span>|</span>
