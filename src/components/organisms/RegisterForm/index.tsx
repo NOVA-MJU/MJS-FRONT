@@ -4,7 +4,14 @@ import InputField from '../../molecules/common/InputField';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import Button from '../../atoms/Button/Button';
 import DropdownField from '../../molecules/user/DropdownField';
-import { emailVerification, registerMember, verifyEmailCode } from '../../../api/user';
+import {
+  registerMember,
+  checkEmailValidation,
+  emailVerification,
+  verifyEmailCode,
+  checkNicknameValidation,
+  checkStuCodeValidation,
+} from '../../../api/user';
 import { useNavigate } from 'react-router-dom';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import { DEPARTMENT_OPTIONS } from '../../../constants/departments.ts';
@@ -16,6 +23,7 @@ const RegisterForm: React.FC = () => {
   const [pw, setPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
   const [department, setDepartment] = useState('');
   const [studentCode, setStudentCode] = useState('');
@@ -24,7 +32,6 @@ const RegisterForm: React.FC = () => {
   const navigator = useNavigate();
 
   /* 유효성 검사 로직 */
-  const isEmailValid = /^[\w.-]+@mju\.ac\.kr$/.test(id.trim());
   const isPwValid = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\\[\]:;<>,.?~\\/-]).{8,16}$/.test(
     pw,
   );
@@ -33,10 +40,10 @@ const RegisterForm: React.FC = () => {
   const isStudentCodeValid = /^60\d{6}$/.test(studentCode.trim());
 
   const formValid =
-    isEmailValid &&
     isPwValid &&
     isPwMatch &&
     nickname.trim() &&
+    name.trim() &&
     department.trim() &&
     isStudentCodeValid &&
     gender;
@@ -48,20 +55,24 @@ const RegisterForm: React.FC = () => {
   const [isVerifying, setIsVerifying] = useState(false); // 인증번호 검증 로딩
   const [emailVerified, setEmailVerified] = useState(false);
 
+  /*  중복 검증 상태  */
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
+  const [isStuCodeChecked, setIsStuCodeChecked] = useState(false);
+
   /* 중복 확인(메일 발송) 버튼 */
   const handleSendCode = async () => {
-    if (!isEmailValid) {
-      alert('올바른 학교 이메일 형식이 아닙니다.');
-      return;
-    }
     try {
+      const fullEmail = id + '@mju.ac.kr';
+      await checkEmailValidation(fullEmail);
+      setIsEmailChecked(true);
       setIsSending(true);
-      await emailVerification(id);
+      await emailVerification(fullEmail);
       alert('인증 메일을 발송했습니다. 메일함을 확인하세요!');
       setShowCodeInput(true);
     } catch (err: any) {
       console.error(err);
-      alert(err?.message || '메일 발송에 실패했습니다.');
+      alert(err?.message || '이메일 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -70,18 +81,50 @@ const RegisterForm: React.FC = () => {
   /* 인증번호 검증 */
   const handleVerifyCode = async () => {
     try {
+      const fullEmail = id + '@mju.ac.kr';
       setIsVerifying(true);
-      const ok = await verifyEmailCode(id, code.trim());
+      const ok = await verifyEmailCode(fullEmail, code.trim());
       if (ok) {
         setEmailVerified(true);
         alert('이메일 인증이 완료되었습니다.');
       } else {
-        alert('인증에 실패했습니다. 인증번호를 다시 확인하세호요.');
+        alert('인증에 실패했습니다. 인증번호를 다시 확인하세요.');
       }
     } catch (err: any) {
       alert(err?.message || '인증 요청 실패');
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  /* 닉네임 중복 검증 */
+  const handleVerifyNickname = async () => {
+    try {
+      setIsSending(true);
+      const res = await checkNicknameValidation(nickname);
+      setIsNicknameChecked(true);
+      alert(res.data);
+      setShowCodeInput(true);
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || '이메일 중복 확인 또는 인증 메일 발송 실패');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  /* 학번 중복 검증 */
+  const handleVerifyStudentCode = async () => {
+    try {
+      setIsSending(true);
+      const res = await checkStuCodeValidation(studentCode.trim());
+      setIsStuCodeChecked(true);
+      alert(res.data);
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || '학번 중복 확인 또는 인증 메일 발송 실패');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -91,22 +134,13 @@ const RegisterForm: React.FC = () => {
     if (!formValid) return;
     try {
       const uploadedUrl = profileImageFile ? await uploadProfileImage(profileImageFile) : null;
-      console.log('1. 회원가입 입력값 체크:');
-      console.log('2. 이메일:', id);
-      console.log('3. 비밀번호:', pw);
-      console.log('4. 비밀번호 확인:', confirmPw);
-      console.log('5. 닉네임:', nickname);
-      console.log('6. 학과:', department);
-      console.log('7. 학번:', studentCode);
-      console.log('8. 성별:', gender);
-      console.log('9. 업로드된 프로필 이미지 파일:', profileImageFile);
-
+      const fullEmail = id + '@mju.ac.kr';
       const req = {
-        name: nickname,
-        email: id,
+        name: name,
+        email: fullEmail,
         password: pw,
         gender: gender,
-        nickname,
+        nickname: nickname,
         departmentName: department,
         studentNumber: Number(studentCode),
         profileImageUrl: uploadedUrl,
@@ -130,25 +164,36 @@ const RegisterForm: React.FC = () => {
                 <div className='flex justify-center'>
                   <InputField
                     label='이메일'
-                    type='email'
+                    type='text'
                     autoComplete='email'
-                    placeholder='@mju.ac.kr'
+                    placeholder='이메일을 입력하세요'
                     value={id}
-                    onChange={(e) => setId(e.target.value)}
-                    error={id !== '' && !isEmailValid}
-                    helperText={id && !isEmailValid ? '학교 이메일 형식이 아닙니다.' : ''}
+                    onChange={(e) => {
+                      setId(e.target.value);
+                      setIsEmailChecked(false);
+                    }}
+                    error={id !== ''}
                     rightElement={
-                      <Button
-                        type='button'
-                        shape='rounded'
-                        disabled={isSending || emailVerified || !isEmailValid}
-                        onClick={handleSendCode}
-                        fullWidth={false}
-                        variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
-                        className='w-34 h-12 p-2'
-                      >
-                        {emailVerified ? '완료' : isSending ? '전송 중...' : '중복 확인'}
-                      </Button>
+                      <div className='flex items-center gap-6'>
+                        <p className='font-light'>@mju.ac.kr</p>
+                        <Button
+                          type='button'
+                          shape='rounded'
+                          disabled={isSending || emailVerified || isEmailChecked}
+                          onClick={handleSendCode}
+                          fullWidth={false}
+                          variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
+                          className='w-34 h-12 p-2'
+                        >
+                          {emailVerified
+                            ? '완료'
+                            : isSending
+                              ? '전송 중...'
+                              : isEmailChecked
+                                ? '확인 완료'
+                                : '인증 요청'}
+                        </Button>
+                      </div>
                     }
                   />
                 </div>
@@ -218,11 +263,43 @@ const RegisterForm: React.FC = () => {
           <div className='flex flex-col mx-auto gap-12 w-[440px] my-6'>
             <ProfileImageUploader onChange={(file) => setProfileImageFile(file)} />
             <InputField
+              label='이름'
+              type='text'
+              placeholder='홍길동(실명)'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              helperText={'실명을 입력하지 않을 경우 추후 불이익이 발생할 수 있습니다.'}
+            />
+            <InputField
               label='닉네임'
               type='text'
-              placeholder='홍길동'
+              placeholder='닉네임'
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={(e) => {
+                setNickname(e.target.value);
+                setIsNicknameChecked(false);
+              }}
+              rightElement={
+                <Button
+                  type='button'
+                  shape='rounded'
+                  disabled={isSending || nickname === '' || isNicknameChecked}
+                  onClick={handleVerifyNickname}
+                  fullWidth={false}
+                  variant={
+                    isNicknameChecked
+                      ? 'greyLight'
+                      : isSending
+                        ? 'greyLight'
+                        : nickname
+                          ? 'main'
+                          : 'greyLight'
+                  }
+                  className='w-34 h-12 p-2'
+                >
+                  {isNicknameChecked ? '확인 완료' : isSending ? '확인 중...' : '중복 확인'}
+                </Button>
+              }
             />
             <DropdownField
               label='학과'
@@ -240,6 +317,33 @@ const RegisterForm: React.FC = () => {
                 error={studentCode !== '' && !isStudentCodeValid}
                 helperText={
                   studentCode && !isStudentCodeValid ? '학번 형식이 올바르지 않습니다.' : ''
+                }
+                rightElement={
+                  <Button
+                    type='button'
+                    shape='rounded'
+                    disabled={isSending || !isStudentCodeValid || isStuCodeChecked}
+                    onClick={handleVerifyStudentCode}
+                    fullWidth={false}
+                    variant={
+                      !studentCode
+                        ? 'greyLight'
+                        : isSending
+                          ? 'greyLight'
+                          : isStuCodeChecked
+                            ? 'greyLight'
+                            : 'main'
+                    }
+                    className='w-34 h-12 p-2'
+                  >
+                    {!studentCode
+                      ? '중복 확인'
+                      : isSending
+                        ? '확인 중...'
+                        : isStuCodeChecked
+                          ? '확인 완료'
+                          : '중복 확인'}
+                  </Button>
                 }
               />
             </div>

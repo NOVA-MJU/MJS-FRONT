@@ -35,13 +35,52 @@ export const registerMember = async (userData: RegisterReq) => {
   }
 };
 
-/** 이메일 중복 확인 **/
+/** 이메일 중복 및 도메인 유효성 검사 **/
+export const checkEmailValidation = async (email: string) => {
+  try {
+    const response = await apiClient.get('/members/validation/email', {
+      params: { email },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    throw err?.response?.data || { message: '이메일 유효성 검사 실패' };
+  }
+};
+
+/** 닉네임 중복 검증 **/
+export const checkNicknameValidation = async (nickname: string) => {
+  try {
+    const response = await apiClient.get('/members/validation/nickname', {
+      params: { nickname },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    throw err?.response?.data || { message: '닉네임 유효성 검사 실패' };
+  }
+};
+
+/** 학번 중복 검증 **/
+export const checkStuCodeValidation = async (studentCode: string) => {
+  try {
+    const response = await apiClient.get('/members/validation/student-number', {
+      params: { studentNumber: studentCode },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    throw err?.response?.data || { message: '학번 유효성 검사 실패' };
+  }
+};
+
+/** 이메일 인증코드 발송 **/
 export const emailVerification = async (email: string) => {
   const { data } = await apiClient.post('/member/email/verify', { email });
   return data;
 };
 
-/** 이메일 인증 코드 검증  **/
+/** 이메일 인증 코드 체크 **/
 export const verifyEmailCode = async (email: string, code: string) => {
   const { data } = await apiClient.post('/member/email/check', { email, code });
   return data.data.matched as boolean;
@@ -57,11 +96,8 @@ export const uploadProfileImage = async (imageFile: File): Promise<string> => {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      // 로그인 필요 없다고 했으므로 Authorization 제거
       withCredentials: false,
     });
-
-    // CloudFront 이미지 URL은 data.data로 반환됨
     return response.data.data as string;
   } catch (err: any) {
     throw err?.response?.data || { message: '프로필 이미지 업로드 실패' };
