@@ -1,6 +1,6 @@
 import { useAuthStore } from '../../../store/useAuthStore';
 import InputField from '../../molecules/common/InputField';
-import DropdownField from '../../molecules/user/DropdownField';
+import DropdownField from '../../molecules/common/DropdownField/index.tsx';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
