@@ -1,21 +1,24 @@
 import clsx from 'clsx';
 import { Typography } from '../../atoms/Typography';
-import type { ReactNode } from 'react';
 
-type CalendarGridItemProps = {
+interface Event {
+  event: string;
+}
+
+interface CalendarGridItemProps {
   day: number;
   outdated?: boolean;
   focused?: boolean;
   weekend?: boolean;
-  children?: ReactNode;
-};
+  events?: Event[];
+}
 
 export default function CalendarGridItem({
   day,
   outdated = false,
   focused = false,
   weekend = false,
-  // children,
+  events,
 }: CalendarGridItemProps) {
   return (
     <div
@@ -35,17 +38,21 @@ export default function CalendarGridItem({
           focused ? 'bg-blue-10' : 'bg-grey-05',
         )}
       />
-      {/* 리본 만들자 */}
-      {/* <div className='h-6 px-3 bg-blue-10'>
-        <Typography variant='caption01' className='text-white'>
-          학사일정
-        </Typography>
-      </div>
-      <div className='h-6 px-3 bg-blue-10'>
-        <Typography variant='caption01' className='text-white'>
-          학사일정
-        </Typography>
-      </div> */}
+      {events?.map((event) => <CalendarEventRibbon event={event.event} />)}
+    </div>
+  );
+}
+
+interface CalendarEventRibbonProps {
+  event?: string;
+}
+
+function CalendarEventRibbon({ event }: CalendarEventRibbonProps) {
+  return (
+    <div className={`h-6 px-3 bg-blue-10`}>
+      <Typography variant='caption01' className='text-white'>
+        {event}
+      </Typography>
     </div>
   );
 }

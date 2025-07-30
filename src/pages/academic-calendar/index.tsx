@@ -16,14 +16,16 @@ export default function AcademicCalendar() {
       setIsLoading(true);
 
       try {
-        const res = getAcademicEvents({ year: currentYear });
+        const res = await getAcademicEvents({ year: currentYear });
         console.log(res);
+        setEvents(res);
       } catch (err) {
         console.error(err);
       } finally {
         setIsLoading(false);
       }
     };
+
     getEvents();
   }, [currentYear]);
 

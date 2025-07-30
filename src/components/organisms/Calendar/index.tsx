@@ -8,8 +8,9 @@ import { type CalendarEventItem } from '../../../api/calendar';
 interface CalendarProps {
   events: CalendarEventItem[] | null;
 }
+type Event = { event: string };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export default function Calendar({ events }: CalendarProps) {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth() + 1);
@@ -18,6 +19,8 @@ export default function Calendar({ events }: CalendarProps) {
   const calendarDays = useMemo(() => generateCalendarDays(year, month), [year, month]);
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
+
+  const eventsByDay = useMemo(() => mapEventsToDays(events, year, month), [events, year, month]);
 
   const prevMonth = () => {
     if (month === 1) {
@@ -74,6 +77,7 @@ export default function Calendar({ events }: CalendarProps) {
               outdated={outdated}
               focused={focused}
               weekend={index % 7 === 0}
+              events={eventsByDay[day]}
             />
           ))}
         </div>
@@ -106,4 +110,24 @@ function generateCalendarDays(year: number, month: number) {
     days.push({ day: i, outdated: true, focused: false });
   }
   return days;
+}
+
+function mapEventsToDays(
+  events: CalendarEventItem[] | null,
+  year: number,
+  month: number,
+): Record<number, Event[]> {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const result: Record<number, Event[]> = {};
+  for (let d = 1; d <= daysInMonth; d++) result[d] = [];
+  if (!events) return result;
+
+  events.forEach(({ startDate, description }) => {
+    const start = new Date(startDate);
+    if (start.getFullYear() === year && start.getMonth() + 1 === month) {
+      result[start.getDate()].push({ event: description });
+    }
+  });
+
+  return result;
 }
