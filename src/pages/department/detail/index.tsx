@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography } from '../../../components/atoms/Typography';
 import DepartmentNoticeItem from '../../../components/molecules/DepartmentNoticeItem';
-import Calendar from '../../../components/organisms/Calendar';
+import CalendarGrid from '../../../components/organisms/CalendarGrid';
 import Pagination from '../../../components/molecules/common/Pagination';
 import { getDepartmentDetail, type DepartmentDetailRes } from '../../../api/departments';
 
@@ -120,7 +120,7 @@ export default function DepartmentDetail() {
             </div>
             {activeTab === '학과일정' ? (
               <div className='p-6'>
-                <Calendar />
+                <CalendarGrid />
               </div>
             ) : (
               <div className='p-3 flex flex-col gap-3'>

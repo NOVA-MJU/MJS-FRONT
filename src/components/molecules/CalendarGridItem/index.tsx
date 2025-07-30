@@ -23,7 +23,7 @@ export default function CalendarGridItem({
   return (
     <div
       className={clsx(
-        'h-40 flex flex-col gap-3',
+        'w-full h-40 flex flex-col gap-3',
         outdated && 'text-grey-40',
         focused && 'text-blue-35',
         weekend && 'text-error',

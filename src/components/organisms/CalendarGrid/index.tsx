@@ -5,13 +5,15 @@ import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { type CalendarEventItem } from '../../../api/calendar';
 
-interface CalendarProps {
+interface CalendarGridProps {
   events: CalendarEventItem[] | null;
+  onYearChange: (year: number) => void;
+  onMonthChange: (month: number) => void;
 }
+
 type Event = { event: string };
 
- 
-export default function Calendar({ events }: CalendarProps) {
+export default function CalendarGrid({ events, onYearChange, onMonthChange }: CalendarGridProps) {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth() + 1);
   const [currentDayIndex] = useState(() => new Date().getDay());
@@ -24,24 +26,36 @@ export default function Calendar({ events }: CalendarProps) {
 
   const prevMonth = () => {
     if (month === 1) {
-      setYear(year - 1);
-      setMonth(12);
+      const newYear = year - 1;
+      const newMonth = 12;
+      setYear(newYear);
+      setMonth(newMonth);
+      onYearChange(newYear);
+      onMonthChange(newMonth);
     } else {
-      setMonth(month - 1);
+      const newMonth = month - 1;
+      setMonth(newMonth);
+      onMonthChange(newMonth);
     }
   };
 
   const nextMonth = () => {
     if (month === 12) {
-      setYear(year + 1);
-      setMonth(1);
+      const newYear = year + 1;
+      const newMonth = 1;
+      setYear(newYear);
+      setMonth(newMonth);
+      onYearChange(newYear);
+      onMonthChange(newMonth);
     } else {
-      setMonth(month + 1);
+      const newMonth = month + 1;
+      setMonth(newMonth);
+      onMonthChange(newMonth);
     }
   };
 
   return (
-    <div className='flex-2/3 flex flex-col gap-12'>
+    <div className='w-full h-fit flex flex-col gap-12'>
       <div className='flex items-center'>
         <button className='cursor-pointer text-blue-10 text-2xl' onClick={prevMonth}>
           <IoIosArrowBack />
@@ -53,13 +67,12 @@ export default function Calendar({ events }: CalendarProps) {
           <IoIosArrowForward />
         </button>
       </div>
-
       <div className='flex flex-col gap-3'>
         <div className='grid grid-cols-7 gap-1'>
           {weekdays.map((day, index) => (
             <button
               className={clsx(
-                'h-10 rounded-xl',
+                'w-full h-10 rounded-xl',
                 currentYear === year && currentMonth === month && index === currentDayIndex
                   ? 'bg-blue-35 text-white'
                   : 'bg-blue-05 text-blue-10',
