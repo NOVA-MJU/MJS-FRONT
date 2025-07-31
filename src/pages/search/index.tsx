@@ -1,8 +1,7 @@
 import Divider from '../../components/atoms/Divider';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import SearchNewsItem from '../../components/molecules/SearchNewsItem';
-import SearchNoticeItem from '../../components/molecules/SearchNoticeItem';
+import SearchResultItem from '../../components/molecules/SearchResultItem';
 import Chip from '../../components/atoms/Chip';
 
 export default function Search() {
@@ -28,28 +27,33 @@ export default function Search() {
           </Typography>
         </div>
         <div className='border-2 border-grey-05 rounded-xl flex flex-col p-3 gap-3'>
-          <SearchNoticeItem
-            badgeTitle='일반공지'
+          <SearchResultItem
+            variant='notice'
+            category='일반공지'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='일반공지'
+          <SearchResultItem
+            variant='notice'
+            category='일반공지'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='학사공지'
+          <SearchResultItem
+            variant='notice'
+            category='학사공지'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='장학공지'
+          <SearchResultItem
+            variant='notice'
+            category='장학공지'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='장학공지'
+          <SearchResultItem
+            variant='notice'
+            category='장학공지'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
         </div>
@@ -70,24 +74,33 @@ export default function Search() {
           </Typography>
         </div>
         <div className='border-2 border-grey-05 rounded-xl flex flex-col p-3 gap-3'>
-          <SearchNoticeItem
-            badgeTitle='HOT'
+          <SearchResultItem
+            variant='community'
+            category='HOT'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='HOT'
+          <SearchResultItem
+            variant='community'
+            category='HOT'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem
-            badgeTitle='HOT'
+          <SearchResultItem
+            variant='community'
+            category='HOT'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
           />
           <Divider variant='thin' />
-          <SearchNoticeItem title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다' />
+          <SearchResultItem
+            variant='community'
+            title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
+          />
           <Divider variant='thin' />
-          <SearchNoticeItem title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다' />
+          <SearchResultItem
+            variant='community'
+            title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
+          />
         </div>
 
         <div className='px-14 gap-6 flex items-center'>
@@ -107,34 +120,39 @@ export default function Search() {
         </div>
 
         <div className='border-2 border-grey-05 rounded-xl flex flex-col p-3 gap-3'>
-          <SearchNewsItem
+          <SearchResultItem
+            variant='news'
             imageUrl='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU'
             category='보도'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
             content='미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 '
           />
           <Divider variant='thin' />
-          <SearchNewsItem
+          <SearchResultItem
+            variant='news'
             imageUrl='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU'
             category='보도'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
             content='미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 '
           />
           <Divider variant='thin' />
-          <SearchNewsItem
+          <SearchResultItem
+            variant='news'
             category='보도'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
             content='미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 '
           />{' '}
           <Divider variant='thin' />
-          <SearchNewsItem
+          <SearchResultItem
+            variant='news'
             imageUrl='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU'
             category='보도'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
             content='미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 '
           />{' '}
           <Divider variant='thin' />
-          <SearchNewsItem
+          <SearchResultItem
+            variant='news'
             category='보도'
             title='제목이들어갑니다 제목이들어갑니다 제목이들어갑니다'
             content='미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 미리보기가 들어갑니다 '
