@@ -25,12 +25,9 @@ const LoginForm: React.FC = () => {
     }
 
     try {
-      const { accessToken } = await login(id, pw);
-      localStorage.setItem('accessToken', accessToken);
-
+      await login(id, pw);
       const userInfo = await saveUserInfo();
-      useAuthStore.getState().login(accessToken, userInfo);
-
+      useAuthStore.getState().login(userInfo);
       navigate('/');
     } catch (err: any) {
       console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);

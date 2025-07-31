@@ -15,7 +15,9 @@ export interface RegisterReq {
 /** 로그인 **/
 export const login = async (email: string, password: string) => {
   const { data } = await apiClient.post('/auth/login', { email, password });
-  return data as { accessToken: string };
+  sessionStorage.setItem('accessToken', data.accessToken);
+  sessionStorage.setItem('refreshToken', data.refreshToken);
+  return data;
 };
 
 /** 회원정보 저장 **/
