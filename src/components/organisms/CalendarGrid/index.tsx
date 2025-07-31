@@ -77,6 +77,7 @@ export default function CalendarGrid({ events, onYearChange, onMonthChange }: Ca
         <div className='grid grid-cols-7 gap-1'>
           {weekdays.map((day, index) => (
             <button
+              key={index}
               className={clsx(
                 'w-full h-10 rounded-xl',
                 currentYear === year && currentMonth === month && index === currentDayIndex
