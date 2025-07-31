@@ -6,13 +6,12 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       isLoggedIn: false,
-      accessToken: null,
       user: null,
-      login: (accessToken, user) => {
-        set({ isLoggedIn: true, accessToken, user });
+      login: (user) => {
+        set({ isLoggedIn: true, user });
       },
       logout: () => {
-        set({ isLoggedIn: false, accessToken: null, user: null });
+        set({ isLoggedIn: false, user: null });
       },
       setUser: (user: UserInfo) => {
         set({ user });
@@ -22,7 +21,6 @@ export const useAuthStore = create<AuthState>()(
       name: 'auth-storage',
       partialize: (state) => ({
         isLoggedIn: state.isLoggedIn,
-        accessToken: state.accessToken,
         user: state.user,
       }),
     },

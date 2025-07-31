@@ -1,5 +1,5 @@
 import React from 'react';
-import RegisterForm from '../../components/organisms/RegisterForm';
+import RegisterForm from '../../components/organisms/Register/index';
 
 const Register: React.FC = () => (
   <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>

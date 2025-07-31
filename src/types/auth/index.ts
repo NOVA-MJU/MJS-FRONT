@@ -11,9 +11,9 @@ export interface UserInfo {
 
 export interface AuthState {
   isLoggedIn: boolean;
-  accessToken: string | null;
+
   user: UserInfo | null;
-  login: (accessToken: string, user: UserInfo) => void;
+  login: (user: UserInfo) => void;
   logout: () => void;
   setUser: (user: UserInfo) => void;
 }
