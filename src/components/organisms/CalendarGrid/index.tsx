@@ -3,7 +3,13 @@ import { Typography } from '../../atoms/Typography';
 import CalendarGridItem from '../../molecules/CalendarGridItem';
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { type CalendarEventItem } from '../../../api/calendar';
+
+export interface CalendarEventItem {
+  year: number;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
 
 interface CalendarGridProps {
   events: CalendarEventItem[] | null;

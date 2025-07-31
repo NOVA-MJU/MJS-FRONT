@@ -11,7 +11,7 @@ import type { ApiResponse, Paginated } from './types';
  * @param year 조회할 년도를 입력합니다
  * @returns CalendarEventItem[] 배열과, pagination 정보를 반환합니다
  */
-export interface CalendarEventItem {
+interface CalendarEventItem {
   year: number;
   startDate: string;
   endDate: string;

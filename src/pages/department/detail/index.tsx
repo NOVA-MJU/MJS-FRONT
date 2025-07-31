@@ -2,10 +2,16 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography } from '../../../components/atoms/Typography';
-import DepartmentNoticeItem from '../../../components/molecules/DepartmentNoticeItem';
-import CalendarGrid from '../../../components/organisms/CalendarGrid';
-import Pagination from '../../../components/molecules/common/Pagination';
-import { getDepartmentDetail, type DepartmentDetailRes } from '../../../api/departments';
+import CalendarGrid, { type CalendarEventItem } from '../../../components/organisms/CalendarGrid';
+import {
+  getDepartmentDetail,
+  type DepartmentDetailRes,
+  getDepartmentSchedules,
+  getDepartmentNotices,
+} from '../../../api/departments';
+import DepartmentNoticeBoard, {
+  type DepartmentNoticeBoardItem,
+} from '../../../components/organisms/DepartmentNoticeBoard';
 
 export default function DepartmentDetail() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -13,8 +19,13 @@ export default function DepartmentDetail() {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'학과일정' | '학생회 공지사항'>('학과일정');
-  const [noticeItems] = useState(x);
   const [department, setDepartment] = useState<DepartmentDetailRes | null>(null);
+  const [schedules, setSchedules] = useState<CalendarEventItem[]>([]);
+  const [noticeItems, setNoticeItems] = useState<DepartmentNoticeBoardItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [, setCurrentMonth] = useState(0);
+  const [, setCurrentYear] = useState(0);
 
   useEffect(() => {
     const getData = async () => {
@@ -22,7 +33,40 @@ export default function DepartmentDetail() {
       setIsLoading(true);
 
       try {
+        /**
+         * 학과 정보를 불러옵니다
+         */
         setDepartment(await getDepartmentDetail(uuid));
+
+        /**
+         * 학과 캘린더 정보를 불러옵니다
+         */
+        setSchedules(
+          (await getDepartmentSchedules(uuid)).schedules.map(
+            ({ title, startDateTime, endDateTime }) => ({
+              year: new Date(startDateTime).getFullYear(),
+              startDate: startDateTime.slice(0, 10),
+              endDate: endDateTime.slice(0, 10),
+              description: title,
+            }),
+          ),
+        );
+
+        /**
+         * 학과 공지사항 정보를 불러옵니다
+         */
+        const res = await getDepartmentNotices(uuid, 0, 10);
+        setNoticeItems(
+          res.content.map((item) => ({
+            uuid: item.noticeUuid,
+            imageUrl: item.thumbnailUrl,
+            title: item.title,
+            content: item.previewContent,
+            date: item.createdAt,
+          })),
+        );
+        setPage(0);
+        setTotalPages(res.totalPages);
       } catch (e) {
         setIsError(true);
         console.error(e);
@@ -30,8 +74,39 @@ export default function DepartmentDetail() {
         setIsLoading(false);
       }
     };
+
     getData();
   }, [uuid]);
+
+  useEffect(() => {
+    const getData = async () => {
+      if (!uuid) return;
+      setIsLoading(true);
+
+      try {
+        setNoticeItems(
+          (await getDepartmentNotices(uuid, page, 10)).content.map((item) => ({
+            uuid: item.noticeUuid,
+            imageUrl: item.thumbnailUrl,
+            title: item.title,
+            content: item.previewContent,
+            date: item.createdAt,
+          })),
+        );
+      } catch (e) {
+        setIsError(true);
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getData();
+    /**
+     * page 값 변화만 감지합니다
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   return (
     <div className='flex-1 p-7 flex flex-col gap-12'>
@@ -120,19 +195,19 @@ export default function DepartmentDetail() {
             </div>
             {activeTab === '학과일정' ? (
               <div className='p-6'>
-                <CalendarGrid />
+                <CalendarGrid
+                  events={schedules}
+                  onYearChange={setCurrentYear}
+                  onMonthChange={setCurrentMonth}
+                />
               </div>
             ) : (
-              <div className='p-3 flex flex-col gap-3'>
-                {noticeItems.map((item) => (
-                  <DepartmentNoticeItem
-                    imageUrl={item.imageUrl}
-                    title={item.title}
-                    content={item.content}
-                    date={item.date}
-                  />
-                ))}
-                <Pagination page={1} totalPages={2} onChange={() => 0} />
+              <div className='p-3'>
+                <DepartmentNoticeBoard
+                  items={noticeItems}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                />
               </div>
             )}
           </div>
@@ -146,55 +221,3 @@ export default function DepartmentDetail() {
     </div>
   );
 }
-
-const x = [
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-  {
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDAnmNUf-EgecHeBwTA1fld6hdWifH9uJLVmxVU3UrRkBW0C43iIdGiTjMK-D_BfAL33E&usqp=CAU',
-    title: '제목',
-    content: '미리보기가 어쩌고',
-    date: '2025.07.17',
-  },
-];

@@ -1,7 +1,7 @@
 import { IoIosArrowDown } from 'react-icons/io';
 import { Typography } from '../../atoms/Typography';
 
-interface DepartmentNoticeItemProps {
+export interface DepartmentNoticeItemProps {
   imageUrl?: string;
   title: string;
   content: string;

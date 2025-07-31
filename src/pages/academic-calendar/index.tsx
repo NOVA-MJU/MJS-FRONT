@@ -1,9 +1,8 @@
- 
 import { useEffect, useState } from 'react';
 import Divider from '../../components/atoms/Divider';
 import { Typography } from '../../components/atoms/Typography';
-import CalendarGrid from '../../components/organisms/CalendarGrid';
-import { getAcademicEvents, type CalendarEventItem } from '../../api/calendar';
+import CalendarGrid, { type CalendarEventItem } from '../../components/organisms/CalendarGrid';
+import { getAcademicEvents } from '../../api/calendar';
 import CalendarList from '../../components/organisms/CalendarList';
 
 export default function AcademicCalendar() {
@@ -38,7 +37,6 @@ export default function AcademicCalendar() {
             onMonthChange={setCurrentMonth}
           />
         </div>
-        {/* 전체 학사일정 컨테이너 */}
         <div className='flex-1/3'>
           <CalendarList events={events} month={currentMonth} />
         </div>
