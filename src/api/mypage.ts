@@ -6,9 +6,45 @@ export interface ProfileStatsRes {
   likedPostCount: number;
 }
 
+export interface Content {
+  uuid: string;
+  title: string;
+  previewContent: string;
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
+
 /** 회원 통계 정보 **/
 export const getProfileStats = async (): Promise<ProfileStatsRes> => {
   const res = await apiClient.get('/profile');
+  return res.data.data;
+};
+
+/** 내 게시글 조회 **/
+
+export const getMyPost = async (): Promise<Content[]> => {
+  const res = await apiClient.get('/profile/posts');
+  console.log('게시글 조회:', res.data.data);
+  return res.data.data; // Content[] 형태
+};
+/** 내 좋아요 조회 **/
+export const getMyLikes = async () => {
+  const res = await apiClient.get('/profile/liked_posts');
+  console.log('좋아요 조회:', res.data.data);
+  return res.data.data;
+};
+
+/** 내 댓글 조회 **/
+export const getMyComments = async () => {
+  const res = await apiClient.get('/profile/comments');
+  console.log('댓글 조회:', res.data.data);
   return res.data.data;
 };
 

@@ -3,13 +3,14 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from '../atoms/Avatar';
 import { useAuthStore } from '../../store/useAuthStore';
 import Button from '../atoms/Button';
+
 interface ProfileComponentProps {
   className?: string;
 }
 
 const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
   const { isLoggedIn } = useAuthStore();
-
+  const user = useAuthStore();
   if (isLoggedIn) {
     return (
       <div
@@ -56,7 +57,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
             <span className='text-[#17171b]'>Office</span>
             <span className='text-[#ef6700]'>365</span>
           </a>
-          <Link to='/profile' className='text-[#17171b] hover:underline'>
+          <Link to={`/mypage/${user?.user.uuid}`} className='text-[#17171b] hover:underline'>
             MyPage
           </Link>
         </div>
