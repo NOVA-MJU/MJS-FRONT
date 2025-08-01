@@ -15,7 +15,8 @@ export type TypographyVariant =
 interface TypographyProps {
   variant?: TypographyVariant;
   className?: string;
-  children: React.ReactNode;
+  dangerouslySetInnerHTML?: { __html: string };
+  children?: React.ReactNode;
 }
 
 const variantConfig: Record<
@@ -37,7 +38,15 @@ export const Typography: React.FC<TypographyProps> = ({
   variant = 'body01',
   className,
   children,
+  dangerouslySetInnerHTML,
 }) => {
   const { tag: Tag, className: vClass } = variantConfig[variant];
-  return <Tag className={clsx('font-pretendard', vClass, className)}>{children}</Tag>;
+  return (
+    <Tag
+      className={clsx('font-pretendard', vClass, className)}
+      {...(dangerouslySetInnerHTML ? { dangerouslySetInnerHTML } : {})}
+    >
+      {children}
+    </Tag>
+  );
 };

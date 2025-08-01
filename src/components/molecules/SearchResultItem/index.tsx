@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { Typography } from '../../atoms/Typography';
 
 interface NoticeItemProps {
@@ -6,6 +7,7 @@ interface NoticeItemProps {
   imageUrl?: string;
   category?: string;
   content?: string;
+  link: string;
 }
 
 export default function SearchResultItem({
@@ -14,10 +16,33 @@ export default function SearchResultItem({
   imageUrl,
   category,
   content,
+  link,
 }: NoticeItemProps) {
+  const safeTitle = DOMPurify.sanitize(title, {
+    ALLOWED_TAGS: ['em', 'strong', 'u'],
+    ALLOWED_ATTR: [],
+  });
+  const safeContent = DOMPurify.sanitize(content ?? '', {
+    ALLOWED_TAGS: ['em', 'strong', 'u'],
+    ALLOWED_ATTR: [],
+  });
+
+  const renderText = (html: string, variant: Parameters<typeof Typography>[0]['variant']) => (
+    <Typography
+      variant={variant}
+      className='search-result__highlight'
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+
   if (variant === 'news')
     return (
-      <button className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'>
+      <a
+        className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'
+        target='_blank'
+        rel='noopener noreferrer'
+        href={link}
+      >
         {imageUrl ? (
           <>
             <img className='w-46 h-36 rounded-xl object-cover' src={imageUrl} />
@@ -27,8 +52,8 @@ export default function SearchResultItem({
                   {category}
                 </Typography>
               </div>
-              <Typography variant='title02'>{title}</Typography>
-              <Typography variant='body02'>{content}</Typography>
+              {renderText(safeTitle, 'title02')}
+              {renderText(safeContent, 'body02')}
             </div>
           </>
         ) : (
@@ -39,16 +64,21 @@ export default function SearchResultItem({
                   {category}
                 </Typography>
               </div>
-              <Typography variant='title02'>{title}</Typography>
-              <Typography variant='body02'>{content}</Typography>
+              {renderText(safeTitle, 'title02')}
+              {renderText(safeContent, 'body02')}
             </div>
           </>
         )}
-      </button>
+      </a>
     );
   else
     return (
-      <button className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'>
+      <a
+        className='rounded-xl cursor-pointer p-3 flex gap-6 items-center hover:bg-grey-05'
+        target='_blank'
+        rel='noopener noreferrer'
+        href={link}
+      >
         {category && (
           <div className='cursor-pointer py-1.5 px-3 bg-mju-primary rounded-full'>
             <Typography variant='caption01' className='text-white'>
@@ -56,7 +86,7 @@ export default function SearchResultItem({
             </Typography>
           </div>
         )}
-        <Typography variant='body03'>{title}</Typography>
-      </button>
+        {renderText(safeTitle, 'body03')}
+      </a>
     );
 }

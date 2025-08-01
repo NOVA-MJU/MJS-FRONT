@@ -86,7 +86,7 @@ export const getDepartmentSchedules = async (
  * @param uuid
  * @param page
  * @param size
- * @returns 공지사항 list 반환
+ * @returns 공지사항 paginated list 반환
  */
 interface NoticeItem {
   createdAt: string;

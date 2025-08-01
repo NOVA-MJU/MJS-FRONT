@@ -44,6 +44,9 @@
     sans-serif;
 }
 
+/**
+ * 스크롤바를 제거하는 스타일 입니다
+ */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -51,4 +54,14 @@
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/**
+ * 검색 결과에서 검색어를 highlight하는 스타일 입니다
+ */
+.search-result__highlight em {
+  background-color: rgba(255, 235, 59, 0.4);
+  font-style: normal;
+  padding: 0 2px;
+  border-radius: 2px;
 }

@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 interface SearchBarProps {
-  placeholder?: string;
+  placeholder: string;
   onTextChange: (text: string) => void;
-  onHandleSearch: (text: string) => void;
+  onSubmit: (text: string) => void;
 }
 
 export default function SearchBar({
   placeholder = '검색어를 입력하세요',
   onTextChange,
-  onHandleSearch,
+  onSubmit,
 }: SearchBarProps) {
   const [text, setText] = useState('');
 
@@ -28,9 +28,7 @@ export default function SearchBar({
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            onHandleSearch(text);
-            console.log(text);
-            console.log('검색되엇습니다');
+            onSubmit(text);
           }
         }}
       />
