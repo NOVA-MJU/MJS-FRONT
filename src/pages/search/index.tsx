@@ -5,28 +5,47 @@ import SearchResultItem from '../../components/molecules/SearchResultItem';
 import Chip from '../../components/atoms/Chip';
 import { useEffect, useState } from 'react';
 import { getSearchOverview, type SearchResultItemRes } from '../../api/search';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Search() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchText, setSearchText] = useState('');
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
 
   /**
-   * 검색어 입력 후 enter 버튼 클릭 시 handler
+   * search params url 반영
    */
-  async function handleSubmit(text: string) {
-    // TODO 검색 api를 연결합니다
-    console.log(text);
+  useEffect(() => {
+    const q = searchParams.get('search') ?? '';
+    if (q) {
+      setSearchText(q);
+      handleSearch(q);
+    }
+  }, [searchParams]);
+
+  /**
+   * 검색 요청 function
+   */
+  async function handleSearch(text: string) {
     try {
       const res = await getSearchOverview(text);
       setNoticeItems(res.notice);
       setBoardItems(res.community);
       setNewsItems(res.news);
-      console.log(res);
     } catch (e) {
       console.error(e);
     }
+  }
+
+  /**
+   * 검색어 입력 후 enter 버튼 클릭 시 handler
+   */
+  function handleSubmit(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setSearchParams({ search: trimmed });
   }
 
   /**
@@ -40,6 +59,7 @@ export default function Search() {
     <div className='py-12 px-7 flex flex-col gap-12'>
       <SearchBar
         placeholder='검색어를 입력하세요'
+        value={searchText}
         onTextChange={setSearchText}
         onSubmit={handleSubmit}
       />
