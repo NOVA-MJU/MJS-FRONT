@@ -16,7 +16,6 @@ const LoginButtons: React.FC<LoginButtonsProps> = ({
   const loginVariant = isLoginDisabled ? 'grey' : 'main';
   return (
     <div className='flex flex-col gap-3 w-full'>
-      {/* 1) 로그인 버튼 */}
       <Button
         type='submit'
         variant={loginVariant}
