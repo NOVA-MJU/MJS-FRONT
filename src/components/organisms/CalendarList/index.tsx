@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Divider from '../../atoms/Divider';
 import { Typography } from '../../atoms/Typography';
 import CalendarListItem, { type CalendarListItemProps } from '../../molecules/CalendarListItem';
@@ -5,10 +6,19 @@ import CalendarListItem, { type CalendarListItemProps } from '../../molecules/Ca
 interface CalendarListProps {
   events: CalendarListItemProps[] | null;
   month: number;
+  administrator?: boolean;
+  handleAddEvent?: () => void;
+  handleDeleteEvent?: (uuid: string) => void;
 }
 
-export default function CalendarList({ events, month }: CalendarListProps) {
+export default function CalendarList({
+  events,
+  month,
+  administrator = false,
+  handleAddEvent,
+}: CalendarListProps) {
   const filteredEvents = getFilteredCalendarList(events, month);
+  const [deleteMode, setDeleteMode] = useState(false);
 
   return (
     <div className='w-full h-fit px-6 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl'>
@@ -16,13 +26,52 @@ export default function CalendarList({ events, month }: CalendarListProps) {
         전체 학사일정
       </Typography>
       <Divider variant='thin' />
-      {filteredEvents?.map((event) => (
+      {filteredEvents?.map((event, index) => (
         <CalendarListItem
+          key={index}
           description={event.description}
           startDate={event.startDate}
           endDate={event.endDate}
+          deleteMode={deleteMode}
         />
       ))}
+      {administrator &&
+        (!deleteMode ? (
+          <>
+            <button
+              className='w-full h-fit p-3 bg-blue-35 rounded-xl cursor-pointer'
+              onClick={handleAddEvent}
+            >
+              <Typography variant='body02' className='text-white'>
+                일정 추가
+              </Typography>
+            </button>
+            <button
+              className='w-full h-fit p-3 bg-grey-10 rounded-xl cursor-pointer'
+              onClick={() => setDeleteMode((p) => !p)}
+            >
+              <Typography variant='body02' className='text-error'>
+                일정 삭제
+              </Typography>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className='w-full h-fit p-3 bg-grey-10 rounded-xl cursor-pointer'
+              onClick={() => setDeleteMode((p) => !p)}
+            >
+              <Typography variant='body02' className='text-blue-35'>
+                취소
+              </Typography>
+            </button>
+            <button className='w-full h-fit p-3 bg-error rounded-xl cursor-pointer'>
+              <Typography variant='body02' className='text-white'>
+                삭제
+              </Typography>
+            </button>
+          </>
+        ))}
     </div>
   );
 }

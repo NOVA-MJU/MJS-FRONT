@@ -15,6 +15,7 @@ import Department from './pages/department';
 import DepartmentDetail from './pages/department/detail';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Admin from './pages/admin';
 
 const App = () => {
   return (
@@ -41,6 +42,8 @@ const App = () => {
         <Route path='/department/:uuid' element={<DepartmentDetail />} />
 
         <Route path='/search' element={<Search />} />
+
+        <Route path='/admin/:uuid' element={<Admin />} />
       </Route>
     </Routes>
   );
