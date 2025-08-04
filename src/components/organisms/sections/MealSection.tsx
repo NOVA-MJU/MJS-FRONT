@@ -27,10 +27,17 @@ const MealSection = () => {
     저녁: [],
   });
 
+  //주말인 경우의 예외처리로직
+  const isWeekend = () => {
+    const day = new Date().getDay();
+    return day === 0 || day === 6;
+  };
+
   useEffect(() => {
     const fetchingMealSection = async () => {
       try {
         const response = await fetchMealInfo();
+        console.log(response.data);
         const todayStr = getTodayString();
         const meals = response.data.filter((item) => item.date === todayStr);
 
@@ -63,16 +70,18 @@ const MealSection = () => {
         </span>
       </div>
 
-      <div className='flex flex-col md:flex-row gap-4 justify-start'>
-        {(['아침', '점심', '저녁'] as const).map((meal) => (
+      {isWeekend() ? (
+        <div className='text-gray-400 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
+      ) : (
+        <div className='w-full md:flex-row gap-4 justify-start'>
           <MealComponent
-            key={meal}
-            title={meal}
-            items={todayMeals[meal]}
-            highlight={current === meal}
+            key={current}
+            title={current}
+            items={todayMeals[current]}
+            highlight={true}
           />
-        ))}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

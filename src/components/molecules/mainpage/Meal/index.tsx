@@ -7,7 +7,7 @@ interface MealComponentProps {
 const MealComponent = ({ title, items, highlight }: MealComponentProps) => {
   return (
     <div
-      className={` border rounded-xl  ${highlight ? 'bg-grey-10 ' : 'bg-white'} shadow-sm w-full max-w-xs`}
+      className={` border rounded-xl  ${highlight ? 'bg-white ' : 'bg-white'} shadow-sm w-full `}
     >
       <div className='border-b border-mju-primary px-4 py-2'>
         <h2
