@@ -6,6 +6,7 @@ import BoardWrite from './pages/board/write';
 import Login from './pages/login';
 import Register from './pages/register';
 import Notice from './pages/notice';
+import Broadcast from './pages/broadcast';
 import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
@@ -30,6 +31,7 @@ const App = () => {
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/broadcast' element={<Broadcast />} />
         <Route path='/register' element={<Register />} />
         <Route path='/mypage/:uuid' element={<MyPage />} />
         <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />

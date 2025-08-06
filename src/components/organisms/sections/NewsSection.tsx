@@ -26,7 +26,7 @@ const NewsSection = () => {
   }, [categoryTab]);
 
   return (
-    <section className='w-full mt-5'>
+    <section className='w-full mt-7'>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold text-mju-primary mb-4'>명대신문</h1>
         <span>
