@@ -27,7 +27,7 @@ const BroadcastSection = () => {
 
   return (
     <section className='p-4'>
-      <h2 className='text-xl text-mju-primary font-bold mb-4'>명대뉴스</h2>
+      <h2 className='text-xl text-mju-primary font-bold mb-4'>명대방송</h2>
 
       {loading ? (
         <p className='text-sm text-gray-500'>로딩 중...</p>
