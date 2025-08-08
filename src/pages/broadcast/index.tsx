@@ -35,9 +35,8 @@ const Broadcast = () => {
         const broadcastInfo = await fetchBroadCastInfo(currentPage, PAGE_SIZE); // 모든 데이터 중 id로 찾음
         const fetchedTotalPages = broadcastInfo.data.totalPages;
 
-        console.log(fetchedTotalPages);
         setTotalPage(fetchedTotalPages);
-        console.log(broadcastInfo.data.content);
+
         setBroadcast(broadcastInfo.data.content);
       } catch (err) {
         console.error('방송 데이터를 불러오는 데 실패했습니다.', err);
