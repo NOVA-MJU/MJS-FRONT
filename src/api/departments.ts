@@ -11,6 +11,13 @@ import type { ApiResponse, Paginated } from './types';
  * @param college 필터링할 단과대학을 입력하세요
  * @returns Department[] 형태의 학과 목록을 반환합니다
  */
+export const getDepartments = async (college?: string) => {
+  const res = await apiClient.get<ApiResponse<DepartmentRes[]>>('/departments/info', {
+    params: college ? { college } : undefined,
+  });
+  return res.data.data;
+};
+
 export interface DepartmentRes {
   departmentUuid: string;
   departmentName: string;
@@ -20,19 +27,19 @@ export interface DepartmentRes {
   college: string;
 }
 
-export const getDepartments = async (college?: string) => {
-  const res = await apiClient.get<ApiResponse<DepartmentRes[]>>('/departments/info', {
-    params: college ? { college } : undefined,
-  });
-  return res.data.data;
-};
-
 /**
  * /departments/info/{departmentUuid}
  * 특정 학과의 학생회, 슬로전, 설명, SNS 정보 등 상세 정보를 조회합니다
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 상세 정보를 반환합니다
  */
+export const getDepartmentDetail = async (departmentUuid: string): Promise<DepartmentDetailRes> => {
+  const res = await apiClient.get<ApiResponse<DepartmentDetailRes>>(
+    `/departments/info/${departmentUuid}`,
+  );
+  return res.data.data;
+};
+
 export interface DepartmentDetailRes {
   departmentUuid: string;
   departmentName: string;
@@ -46,19 +53,21 @@ export interface DepartmentDetailRes {
   college: string;
 }
 
-export const getDepartmentDetail = async (departmentUuid: string): Promise<DepartmentDetailRes> => {
-  const res = await apiClient.get<ApiResponse<DepartmentDetailRes>>(
-    `/departments/info/${departmentUuid}`,
-  );
-  return res.data.data;
-};
-
 /**
  * /departments/{departmentUuid}/schedules
  * 해당 학과에 등록된 전체 일정을 조회합니다. 각 일정은 제목, 기간, 내용 등의 정보를 포함합니다.
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 일정 목록 반환
  */
+export const getDepartmentSchedules = async (
+  departmentUuid: string,
+): Promise<DepartmentSchedulesRes> => {
+  const res = await apiClient.get<ApiResponse<DepartmentSchedulesRes>>(
+    `/departments/${departmentUuid}/schedules`,
+  );
+  return res.data.data;
+};
+
 export interface DepartmentSchedulesRes {
   schedules: DepartmentSchedule[];
 }
@@ -71,15 +80,6 @@ interface DepartmentSchedule {
   content: string;
 }
 
-export const getDepartmentSchedules = async (
-  departmentUuid: string,
-): Promise<DepartmentSchedulesRes> => {
-  const res = await apiClient.get<ApiResponse<DepartmentSchedulesRes>>(
-    `/departments/${departmentUuid}/schedules`,
-  );
-  return res.data.data;
-};
-
 /**
  * /departments/{departmentUuid}/notices
  * 특정 학과의 최신 공지사항 목록을 페이징 형태로 조회합니다. 기본 size는 5이며, 각 공지는 제목, 썸네일, 미리보기 내용, 등록일을 포함합니다.
@@ -88,14 +88,6 @@ export const getDepartmentSchedules = async (
  * @param size
  * @returns 공지사항 paginated list 반환
  */
-interface NoticeItem {
-  createdAt: string;
-  noticeUuid: string;
-  previewContent: string;
-  thumbnailUrl: string;
-  title: string;
-}
-
 export const getDepartmentNotices = async (
   departmentUuid: string,
   page: number,
@@ -107,3 +99,11 @@ export const getDepartmentNotices = async (
   );
   return res.data.data;
 };
+
+interface NoticeItem {
+  createdAt: string;
+  noticeUuid: string;
+  previewContent: string;
+  thumbnailUrl: string;
+  title: string;
+}
