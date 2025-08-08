@@ -62,12 +62,14 @@ const Broadcast = () => {
           );
         })}
       </section>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPage}
-        onChange={setCurrentPage}
-        window={5} // 가운데 점 개수 (스크린샷처럼 5개)
-      />
+      <div className='mt-6'>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPage}
+          onChange={(p) => setCurrentPage(p)}
+          window={10} // 가운데 점
+        />
+      </div>
     </main>
   );
 };
