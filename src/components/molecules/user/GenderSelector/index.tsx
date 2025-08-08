@@ -16,8 +16,8 @@ interface Props {
 }
 const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
   <div>
-    <div className='flex items-center gap-6 mb-3'>
-      <label className='text-blue-10 text-xl font-semibold'>성별</label>
+    <div className='flex items-center gap-4 md:gap-6 mb-3'>
+      <label className='text-blue-10 text-md md:text-xl font-semibold w-16 md:w-auto'>성별</label>
       <hr className='w-[381px] border-t-2 border-blue-10 rounded-xl' />
     </div>
     <div className='flex justify-center gap-4'>
@@ -25,11 +25,12 @@ const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
         <Button
           type='button'
           key={g.value}
+          size='sm'
           variant={selected === g.value ? 'main' : 'greyLight'}
           shape='rounded'
           fullWidth={false}
           onClick={() => onSelect(g.value)}
-          className='w-[120px] h-[48px]'
+          className='w-16 h-10 md:w-[120px] md:h-[48px]'
           disabled={false}
         >
           {g.label}

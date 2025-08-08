@@ -44,16 +44,18 @@ const EmailFieldWithVerification: React.FC<Props> = ({
       }}
       error={id !== ''}
       rightElement={
-        <div className='flex items-center gap-6'>
-          <p className='font-light'>@mju.ac.kr</p>
+        <div className='flex flex-col md:flex-row md:items-center gap-2 md:gap-6'>
+          <p className='font-light md:order-1 ml-4'>@mju.ac.kr</p>
+
           <Button
             type='button'
             shape='rounded'
+            size='sm'
             disabled={isSending || emailVerified || isEmailChecked}
             onClick={handleSendCode}
             fullWidth={false}
             variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
-            className='w-34 h-12 p-2'
+            className='mt-6 md:mt-0 w-24 h-10 md:w-34 md:h-12 p-2 md:order-2'
           >
             {emailVerified
               ? '완료'
@@ -66,6 +68,9 @@ const EmailFieldWithVerification: React.FC<Props> = ({
         </div>
       }
     />
+    <p className='w-[55%] block md:hidden -mt-8 text-xs font-normal text-grey-40'>
+      @mju.ac.kr 형식의 이메일만 지원
+    </p>
     {showCodeInput && (
       <div className='flex items-center gap-4 mt-4'>
         <InputField
@@ -84,13 +89,15 @@ const EmailFieldWithVerification: React.FC<Props> = ({
           fullWidth={false}
           size='sm'
           shape='rounded'
-          className='w-34 h-12 p-2 mt-2'
+          className='mt-4 md:mt-0 w-28 h-10 md:w-34 md:h-12'
         >
           {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
         </Button>
       </div>
     )}
-    <p className='text-xs font-normal text-grey-40 mt-2 ml-1'>@mju.ac.kr 형식의 이메일만 지원</p>
+    <p className='hidden md:block text-xs font-normal text-grey-40 mt-2 ml-1'>
+      @mju.ac.kr 형식의 이메일만 지원
+    </p>
   </div>
 );
 

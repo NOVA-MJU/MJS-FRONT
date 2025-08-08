@@ -32,6 +32,7 @@ const NicknameFieldWithVerify: React.FC<Props> = ({
       <Button
         type='button'
         shape='rounded'
+        size='sm'
         disabled={isSending || nickname === '' || isNicknameChecked}
         onClick={handleVerifyNickname}
         fullWidth={false}
@@ -44,7 +45,7 @@ const NicknameFieldWithVerify: React.FC<Props> = ({
                 ? 'main'
                 : 'greyLight'
         }
-        className='w-34 h-12 p-2'
+        className='w-20 h-10 md:w-34 md:h-12 ml-4 p-2'
       >
         {isNicknameChecked ? '확인 완료' : isSending ? '확인 중...' : '중복 확인'}
       </Button>

@@ -11,7 +11,7 @@ const DepartmentDropdownField: React.FC<Props> = ({ department, setDepartment })
     label='학과'
     selected={department}
     onSelect={setDepartment}
-    options={DEPARTMENT_OPTIONS} // 직접 고정됨 👈
+    options={DEPARTMENT_OPTIONS}
     placeholder='학과를 선택해주세요'
   />
 );
