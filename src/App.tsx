@@ -3,6 +3,7 @@ import Board from './pages/board';
 import BoardDetail from './pages/board/detail';
 import BoardWrite from './pages/board/write';
 import Notice from './pages/notice';
+import Broadcast from './pages/broadcast';
 import News from './pages/news';
 import Main from './pages/main';
 import Layout from './components/templates/Layout';
@@ -19,6 +20,9 @@ import Admin from './pages/admin';
 import AdminNotice from './pages/admin/notice';
 import AdminNoticeDetail from './pages/admin/notice/detail';
 import BoardEdit from './pages/board/edit';
+import ViewPosts from './pages/mypage/viewPosts';
+import ViewComments from './pages/mypage/viewComments';
+import ViewLikes from './pages/mypage/viewLikes';
 
 const App = () => {
   return (
@@ -34,9 +38,14 @@ const App = () => {
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/broadcast' element={<Broadcast />} />
         <Route path='/register' element={<Register />} />
         <Route path='/mypage/:uuid' element={<MyPage />} />
         <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
+
+        <Route path='/mypage/my-post/:uuid' element={<ViewPosts />} />
+        <Route path='/mypage/my-comment/:uuid' element={<ViewComments />} />
+        <Route path='/mypage/my-likes/:uuid' element={<ViewLikes />} />
 
         <Route path='/menu' element={<Menu />} />
         <Route path='/academic-calendar' element={<AcademicCalendar />} />
