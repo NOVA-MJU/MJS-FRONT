@@ -30,9 +30,9 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => {
   return (
     <div className='flex flex-col gap-2 w-full'>
-      <div className='flex items-center gap-6'>
+      <div className='flex items-center gap-4 md:gap-6'>
         <label
-          className={`text-xl whitespace-nowrap ${
+          className={`text-md md:text-xl whitespace-nowrap ${
             disabled ? 'text-grey-40 font-med' : 'text-blue-10 font-semibold'
           }`}
         >

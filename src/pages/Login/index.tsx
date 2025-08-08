@@ -1,24 +1,21 @@
-import React from 'react';
 import LoginForm from '../../components/organisms/LoginForm';
 
-const Login: React.FC = () => {
+const Login = () => {
   return (
-    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
+    <div className='w-full h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
       {/* 제목: 왼쪽 정렬 */}
-      <p className='text-4xl font-bold text-blue-900 text-mju-primary'>로그인</p>
 
       {/* 가운데 정렬 영역 */}
-      <div className='w-full flex justify-center items-center'>
-        <div className='flex flex-col gap-6 w-[672px]'>
-          <p className='text-3xl font-bold text-mju-primary'>필수 정보</p>
-
+      <p className='text-2xl mb-4 md:text-4xl font-bold text-mju-primary'>로그인</p>
+      <div className='w-full mx-auto flex justify-center items-center'>
+        <div className='w-[375px] flex flex-col md:gap-6 md:w-[672px]'>
           {/* 하얀 박스: 로그인 폼 */}
-          <div className='flex w-full min-h-[480px] items-center bg-white p-6 rounded-xl'>
+          <div className='flex mx-auto w-[80%] md:w-full md:min-h-[480px] items-center bg-white p-6 rounded-xl'>
             <LoginForm />
           </div>
 
           {/* 아이디/비밀번호 찾기 */}
-          <div className='flex justify-evenly'>
+          <div className='w-[375px] md:w-full mt-4 flex justify-center gap-4 md:gap-20 text-sm md:text-md'>
             <p className='font-normal text-[#999999]'>아이디 찾기</p>
             <p className='font-normal text-[#999999]'>|</p>
             <p className='font-normal text-[#999999]'>비밀번호 찾기</p>

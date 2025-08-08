@@ -35,7 +35,7 @@ const LoginForm: React.FC = () => {
     }
   };
   return (
-    <form className='flex flex-col mx-auto gap-12 w-[440px]' onSubmit={handleLogin}>
+    <form className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]' onSubmit={handleLogin}>
       <InputField
         label='이메일'
         type='email'
