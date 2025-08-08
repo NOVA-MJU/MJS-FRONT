@@ -15,6 +15,9 @@ import Department from './pages/department';
 import Search from './pages/search';
 import MyPage from './pages/mypage';
 import MyPageEdit from './pages/mypage/edit';
+import ViewPosts from './pages/mypage/viewPosts';
+import ViewComments from './pages/mypage/viewComments';
+import ViewLikes from './pages/mypage/viewLikes';
 
 const App = () => {
   return (
@@ -26,7 +29,6 @@ const App = () => {
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
         <Route path='/board/edit/:uuid' element={<BoardWrite />} />
-
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
         <Route path='/login' element={<Login />} />
@@ -34,10 +36,13 @@ const App = () => {
         <Route path='/mypage/:uuid' element={<MyPage />} />
         <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
 
+        <Route path='/mypage/my-post/:uuid' element={<ViewPosts />} />
+        <Route path='/mypage/my-comment/:uuid' element={<ViewComments />} />
+        <Route path='/mypage/my-likes/:uuid' element={<ViewLikes />} />
+
         <Route path='/menu' element={<Menu />} />
         <Route path='/academic-calendar' element={<AcademicCalendar />} />
         <Route path='/department' element={<Department />} />
-
         <Route path='/search' element={<Search />} />
       </Route>
     </Routes>
