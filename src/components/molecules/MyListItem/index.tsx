@@ -8,13 +8,7 @@ export interface MyListItemProps {
   isLast: boolean;
 }
 
-const MyListItem: React.FC<MyListItemProps> = ({
-  title,
-  content,
-  date,
-  link,
-  variant = 'default',
-}) => {
+const MyListItem = ({ title, content, date, link, variant = 'default' }: MyListItemProps) => {
   return (
     <div className='w-full h-auto flex justify-between p-4'>
       <div className='flex flex-col'>

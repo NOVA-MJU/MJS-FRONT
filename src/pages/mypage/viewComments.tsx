@@ -10,7 +10,7 @@ interface CommentedPost {
   commentPreviewContent: string;
 }
 
-const ViewComments: React.FC = () => {
+const ViewComments = () => {
   const ITEMS_PER_PAGE = 8;
   const [page, setPage] = useState(1);
   const [contentList, setContentList] = useState<CommentedPost[]>([]);

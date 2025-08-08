@@ -4,7 +4,7 @@ import MyViewLayout from '../../components/templates/MyViewLayout';
 import type { Content } from '../../types/mypage/content';
 import Demo from '../../constants/demopost';
 
-const ViewPosts: React.FC = () => {
+const ViewPosts = () => {
   const ITEMS_PER_PAGE = 8;
   const [page, setPage] = useState(1);
   const [contentList, setContentList] = useState<Content[]>([]);

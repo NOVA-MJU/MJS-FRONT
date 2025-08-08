@@ -13,7 +13,7 @@ interface MyViewProps {
   totalPages: number;
   onChange: (page: number) => void;
 }
-const MyViewLayout: React.FC<MyViewProps> = ({
+const MyViewLayout = ({
   title,
   itemsPerPage,
   items,
@@ -21,7 +21,7 @@ const MyViewLayout: React.FC<MyViewProps> = ({
   page = 1,
   totalPages,
   onChange,
-}) => {
+}: MyViewProps) => {
   const user = useAuthStore();
   return (
     <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>

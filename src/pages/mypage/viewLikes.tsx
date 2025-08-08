@@ -3,7 +3,7 @@ import MyViewLayout from '../../components/templates/MyViewLayout';
 import likedPostsDemo from '../../constants/demo-likes';
 import type { Content } from '../../types/mypage/content';
 
-const ViewLikedPosts: React.FC = () => {
+const ViewLikedPosts = () => {
   const ITEMS_PER_PAGE = 8;
   const [page, setPage] = useState(1);
   const [contentList, setContentList] = useState<Content[]>([]);
