@@ -2,18 +2,26 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchBroadCastInfo } from '../../api/main/broadcast-api';
 import type { BroadcastContent } from '../../types/broadcast/broadcastInfo';
-
+import Pagination from '../../components/molecules/pagination';
 const Broadcast = () => {
   const { id } = useParams<{ id: string }>();
   const [broadcast, setBroadcast] = useState<BroadcastContent | null>(null);
+  const [totalPage, setTotalPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const PAGE_SIZE = 9;
 
   useEffect(() => {
     const loadBroadcast = async () => {
       try {
-        const data = await fetchBroadCastInfo(0, 100); // 모든 데이터 중 id로 찾음
-        const found = data.data.content.find((item) => item.id?.toString() === id);
-        setBroadcast(found || null);
+        const broadcastInfo = await fetchBroadCastInfo(currentPage, PAGE_SIZE); // 모든 데이터 중 id로 찾음
+        const fetchedTotalPages = broadcastInfo.data.totalPages;
+
+        console.log(fetchedTotalPages);
+        setTotalPage(fetchedTotalPages);
+        console.log(broadcastInfo.data.content);
+        setBroadcast(broadcastInfo.data.content);
       } catch (err) {
         console.error('방송 데이터를 불러오는 데 실패했습니다.', err);
       } finally {
@@ -22,7 +30,7 @@ const Broadcast = () => {
     };
 
     loadBroadcast();
-  }, [id]);
+  }, [id, currentPage]);
 
   if (loading) {
     return <div className='p-6 text-gray-500 text-sm'>로딩 중...</div>;
@@ -33,24 +41,33 @@ const Broadcast = () => {
   }
 
   return (
-    <main className='max-w-3xl mx-auto px-6 py-12'>
-      <section className='space-y-6'>
-        <h1 className='text-2xl font-bold text-mju-primary'>{broadcast.title}</h1>
-
-        <iframe
-          className='w-full aspect-video rounded-md'
-          src={`https://www.youtube.com/embed/${extractYoutubeId(broadcast.url)}`}
-          title={broadcast.title}
-          allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-          allowFullScreen
-        />
-
-        <p className='text-sm text-gray-500'>{formatDate(broadcast.publishedAt)}</p>
-
-        <div className='mt-4 text-sm text-gray-700 leading-relaxed'>
-          유튜브 내에 적힌 설명이 어쩌구저쩌구 들어갑니다. (실제 설명이 있으면 여기에 넣을 수 있음)
-        </div>
+    <main className='max-w-5xl mx-auto px-6 py-12'>
+      <section className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {broadcast.map((item) => {
+          const vid = extractYoutubeId(item.url);
+          return (
+            <article key={vid} className='border rounded-md overflow-hidden'>
+              <iframe
+                className='w-full aspect-video'
+                src={`https://www.youtube.com/embed/${vid}`}
+                title={item.title}
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                allowFullScreen
+              />
+              <div className='p-3'>
+                <h2 className='text-sm font-semibold line-clamp-2'>{item.title}</h2>
+                <p className='text-xs text-gray-500'>{formatDate(item.publishedAt)}</p>
+              </div>
+            </article>
+          );
+        })}
       </section>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPage}
+        onChange={setCurrentPage}
+        window={5} // 가운데 점 개수 (스크린샷처럼 5개)
+      />
     </main>
   );
 };
@@ -58,11 +75,15 @@ const Broadcast = () => {
 export default Broadcast;
 
 const extractYoutubeId = (url: string): string => {
-  const match = url.match(/v=([^&]+)/);
-  return match ? match[1] : '';
+  let match = url.match(/v=([^&]+)/);
+  if (match) return match[1];
+
+  match = url.match(/youtu\.be\/([^?]+)/);
+  if (match) return match[1];
+
+  return '';
 };
 
-// 날짜 포맷
 const formatDate = (isoDate: string): string => {
   const date = new Date(isoDate);
   return `${date.getFullYear()}.${(date.getMonth() + 1)
