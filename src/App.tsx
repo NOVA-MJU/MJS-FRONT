@@ -16,6 +16,9 @@ import DepartmentDetail from './pages/department/detail';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/admin';
+import AdminNotice from './pages/admin/notice';
+import AdminNoticeDetail from './pages/admin/notice/detail';
+import BoardEdit from './pages/board/edit';
 
 const App = () => {
   return (
@@ -26,7 +29,7 @@ const App = () => {
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
-        <Route path='/board/edit/:uuid' element={<BoardWrite />} />
+        <Route path='/board/edit/:uuid' element={<BoardEdit />} />
 
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
@@ -44,6 +47,8 @@ const App = () => {
         <Route path='/search' element={<Search />} />
 
         <Route path='/admin/:uuid' element={<Admin />} />
+        <Route path='/admin/:uuid/notice' element={<AdminNotice />} />
+        <Route path='/admin/:uuid/notice/:uuid' element={<AdminNoticeDetail />} />
       </Route>
     </Routes>
   );
