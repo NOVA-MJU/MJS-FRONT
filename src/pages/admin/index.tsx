@@ -1,34 +1,54 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '../../components/atoms/Typography';
 import Divider from '../../components/atoms/Divider';
 import CalendarGrid from '../../components/organisms/CalendarGrid';
 import CalendarList from '../../components/organisms/CalendarList';
-import MarkdownEditor from '../../components/organisms/MarkdownEditor';
 import clsx from 'clsx';
 import { IoIosClose } from 'react-icons/io';
+import { useCreateBlockNote } from '@blocknote/react';
+import { BlockNoteView } from '@blocknote/mantine';
+import '@blocknote/mantine/style.css';
+import '@blocknote/core/fonts/inter.css';
 
 export default function Admin() {
   const { uuid } = useParams<{ uuid: string }>();
-  const [eventsGrid, setEventsGrid] = useState(xgrid);
-  const [eventsList, setEventsList] = useState(xlist);
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [eventsGrid] = useState([]);
+  const [eventsList] = useState(xlist);
+  const [, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [isOpened, setIsOpened] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
+  const [isFinished] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventStartDate, setNewEventStartDate] = useState('');
-  const [newEventEndDate, setNewEventEndDate] = useState('');
-  const [newEventDescription, setNewEventDescription] = useState('');
+  const [, setNewEventDescription] = useState('');
+  const editor = useCreateBlockNote();
+  const [, setHtmlOutput] = useState<string>('');
 
   /**
    * uuid에 따라 학과별 페이지를 로드합니다
    */
   useEffect(() => {}, [uuid]);
 
-  async function handleSubmitEvent() {}
+  async function handleSubmitEvent() {
+    exportJSON();
+    exportHTML();
+  }
+
+  function exportJSON() {
+    // 에디터 문서를 비파괴 형식 JSON 문자열로 직렬화
+    const json = JSON.stringify(editor.document);
+    setNewEventDescription(json);
+    console.log(json);
+    console.log(typeof json);
+  }
+
+  async function exportHTML() {
+    // 전체 블록 구조와 스타일을 포함한 HTML 문자열로 반환
+    const html = await editor.blocksToFullHTML(editor.document);
+    setHtmlOutput(html);
+    console.log(html);
+  }
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
@@ -107,11 +127,16 @@ export default function Admin() {
                 <Typography variant='title02' className='text-mju-primary'>
                   내용
                 </Typography>
-                <MarkdownEditor
+                {/**
+                 * TODO
+                 * 에디터 컴포넌트 만들고 코드 수정해야함
+                 */}
+                <BlockNoteView editor={editor} />
+                {/* <MarkdownEditor
                   onContentChanged={function (content: string): void {
                     throw new Error('Function not implemented.');
                   }}
-                />
+                /> */}
               </div>
             </div>
           </div>
