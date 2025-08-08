@@ -2,7 +2,7 @@ import LoginForm from '../../components/organisms/LoginForm';
 
 const Login = () => {
   return (
-    <div className='w-full h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
+    <div className='w-full py-[30%] h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
       {/* 제목: 왼쪽 정렬 */}
 
       {/* 가운데 정렬 영역 */}

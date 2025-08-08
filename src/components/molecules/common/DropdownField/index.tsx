@@ -34,7 +34,9 @@ const DropdownField: React.FC<Props> = ({
     <div className='relative w-full h-[90px] flex flex-col gap-2'>
       {/* 라벨 + 라인 */}
       <div className='flex items-center gap-6'>
-        <label className='text-blue-10 text-xl font-semibold whitespace-nowrap'>{label}</label>
+        <label className='text-blue-10 text-md md:text-xl font-semibold whitespace-nowrap'>
+          {label}
+        </label>
         <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
       </div>
 
@@ -47,7 +49,7 @@ const DropdownField: React.FC<Props> = ({
         )}
         onClick={() => setOpen(!open)}
       >
-        <span className={clsx('text-base', selected ? 'text-grey-40' : 'text-grey-20')}>
+        <span className={clsx('text-sm md:text-base', selected ? 'text-grey-40' : 'text-grey-20')}>
           {selectedLabel || placeholder}
         </span>
         <img src={ArrowDown} alt='dropdownBtn' className='w-4 h-4' />
@@ -55,7 +57,7 @@ const DropdownField: React.FC<Props> = ({
 
       {/* 옵션 리스트 */}
       {open && (
-        <ul className='absolute top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto text-grey-40'>
+        <ul className='absolute text-sm md:text-base top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto text-grey-40'>
           {options.map((item) => (
             <li
               key={item.value}

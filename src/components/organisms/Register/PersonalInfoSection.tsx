@@ -51,9 +51,9 @@ const PersonalInfoSection: React.FC<Props> = ({
 }) => {
   return (
     <section>
-      <p className='text-3xl font-bold mb-6'>개인 정보</p>
-      <div className='flex flex-col bg-white p-6 rounded-xl gap-12'>
-        <div className='flex flex-col mx-auto gap-12 w-[440px] my-6'>
+      <p className='text-xl md:text-3xl font-bold my-6 text-mju-primary'>개인 정보</p>
+      <div className='flex flex-col bg-white min-h-[540px] p-6 rounded-xl gap-12'>
+        <div className='flex flex-col md:mx-auto gap-6 md:gap-12 my-6'>
           <ProfileImageUploader onChange={setProfileImageFile} />
           <NameInputField name={name} setName={setName} />
           <NicknameFieldWithVerify

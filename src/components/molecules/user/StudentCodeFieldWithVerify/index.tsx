@@ -32,6 +32,7 @@ const StudentCodeFieldWithVerify: React.FC<Props> = ({
         <Button
           type='button'
           shape='rounded'
+          size='sm'
           disabled={isSending || !isStudentCodeValid || isStuCodeChecked}
           onClick={handleVerifyStudentCode}
           fullWidth={false}
@@ -44,7 +45,7 @@ const StudentCodeFieldWithVerify: React.FC<Props> = ({
                   ? 'greyLight'
                   : 'main'
           }
-          className='w-34 h-12 p-2'
+          className='ml-4 w-20 h-10 md:w-[120px] md:h-[48px]'
         >
           {!studentCode
             ? '중복 확인'

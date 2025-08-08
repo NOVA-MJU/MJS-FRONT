@@ -29,7 +29,7 @@ const InputField: React.FC<InputFieldProps> = ({
   disabled = false,
 }) => {
   return (
-    <div className='flex flex-col gap-2 w-full'>
+    <div className='flex flex-col gap-2 w-full mx-auto'>
       <div className='flex items-center gap-4 md:gap-6'>
         <label
           className={`text-md md:text-xl whitespace-nowrap ${
@@ -40,7 +40,7 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
         {showHr && (
           <hr
-            className={`w-full flex-1 border-t-2 rounded-xl ${
+            className={`w-full border-t-2 rounded-xl ${
               disabled ? 'border-grey-40' : 'border-blue-10'
             }`}
           />
@@ -58,7 +58,7 @@ const InputField: React.FC<InputFieldProps> = ({
           autoComplete={autoComplete}
           disabled={disabled}
         />
-        {rightElement && <div className='ml-4'>{rightElement}</div>}
+        {rightElement && <div className='mt-2 md:ml-4'>{rightElement}</div>}
       </div>
     </div>
   );

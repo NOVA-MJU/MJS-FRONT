@@ -59,7 +59,10 @@ const RegisterForm: React.FC = () => {
     gender;
 
   return (
-    <form className='flex flex-col gap-12 w-[672px] mt-6' onSubmit={handleSubmit}>
+    <form
+      className='flex flex-col gap-6 md:gap-12 w-full md:w-[672px] mt-6'
+      onSubmit={handleSubmit}
+    >
       <RequiredInfoSection
         id={id}
         setId={setId}

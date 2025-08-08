@@ -32,7 +32,9 @@ const ProfileImageUploader: React.FC<Props> = ({
   return (
     <div className='w-full'>
       <div className='flex items-center gap-6'>
-        <label className='text-blue-10 text-xl font-semibold whitespace-nowrap'>{label}</label>
+        <label className='text-blue-10 text-md md:text-xl font-semibold whitespace-nowrap'>
+          {label}
+        </label>
         <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
       </div>
       <ImageInput imageUrl={preview} onImageChange={handleChange} />
