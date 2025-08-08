@@ -2,7 +2,8 @@ import { fetchMealInfo } from '../../../api/main/meal-api';
 import type { MealInfo } from '../../../types/meal/mealInfo';
 import MealComponent from '../../molecules/mainpage/Meal';
 import { useEffect, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
+import { FiPlus } from 'react-icons/fi';
 const getCurrentMealTime = () => {
   const hour = new Date().getHours();
   if (hour < 10) return '아침';
@@ -18,8 +19,13 @@ const getTodayString = () => {
   const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][today.getDay()];
   return `${mm}.${day} ( ${dayOfWeek} )`;
 };
+
 const MealSection = () => {
   const current = getCurrentMealTime();
+  const navigator = useNavigate();
+  const handlePlusClick = () => {
+    navigator('/menu');
+  };
 
   const [todayMeals, setTodayMeals] = useState<Record<'아침' | '점심' | '저녁', string[]>>({
     아침: [],
@@ -27,10 +33,17 @@ const MealSection = () => {
     저녁: [],
   });
 
+  //주말인 경우의 예외처리로직
+  const isWeekend = () => {
+    const day = new Date().getDay();
+    return day === 0 || day === 6;
+  };
+
   useEffect(() => {
     const fetchingMealSection = async () => {
       try {
         const response = await fetchMealInfo();
+        console.log(response.data);
         const todayStr = getTodayString();
         const meals = response.data.filter((item) => item.date === todayStr);
 
@@ -59,20 +72,22 @@ const MealSection = () => {
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold text-mju-primary mb-4'>학식</h1>
         <span>
-          {/* <FiPlus size={20} /> 더보기 유라님이 만드신 학식 상세 경로에 라우팅 로직 필요 */}
+          <FiPlus onClick={handlePlusClick} size={20} />
         </span>
       </div>
 
-      <div className='flex flex-col md:flex-row gap-4 justify-start'>
-        {(['아침', '점심', '저녁'] as const).map((meal) => (
+      {isWeekend() ? (
+        <div className='text-gray-400 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
+      ) : (
+        <div className='w-full md:flex-row gap-4 justify-start'>
           <MealComponent
-            key={meal}
-            title={meal}
-            items={todayMeals[meal]}
-            highlight={current === meal}
+            key={current}
+            title={current}
+            items={todayMeals[current]}
+            highlight={true}
           />
-        ))}
-      </div>
+        </div>
+      )}
     </section>
   );
 };

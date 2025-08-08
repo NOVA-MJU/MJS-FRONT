@@ -1,10 +1,17 @@
 import { useEffect, useState } from 'react';
 import { fetchNewsInfo } from '../../../api/news';
 import type { NewsInfo } from '../../../types/news/newsInfo';
+import { FiPlus } from 'react-icons/fi';
 import { NewsCategoryLabel } from '../../../constants/news';
+import { useNavigate } from 'react-router-dom';
 const NewsSection = () => {
+  const navigator = useNavigate();
   const [categoryTab, setCategoryTab] = useState<'REPORT' | 'SOCIETY'>('REPORT');
   const [fetchedNews, setFetchedNews] = useState<NewsInfo[]>([]);
+
+  const handlePlusClick = () => {
+    navigator('/news');
+  };
 
   useEffect(() => {
     const fetchingNews = async () => {
@@ -19,9 +26,12 @@ const NewsSection = () => {
   }, [categoryTab]);
 
   return (
-    <section className='w-full mt-5'>
+    <section className='w-full mt-7'>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold text-mju-primary mb-4'>명대신문</h1>
+        <span>
+          <FiPlus onClick={handlePlusClick} size={20} />
+        </span>
       </div>
       <div className='flex space-x-6 border-b border-gray-200 mb-6'>
         {(['REPORT', 'SOCIETY'] as const).map((category) => (

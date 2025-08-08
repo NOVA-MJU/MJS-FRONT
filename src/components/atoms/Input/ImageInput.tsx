@@ -11,13 +11,13 @@ const ImageInput: React.FC<ProfileImageInputProps> = ({ imageUrl, onImageChange 
     <div className='flex flex-col'>
       <label htmlFor='profile-image' className='cursor-pointer'>
         <div
-          className='w-32 h-32 rounded-xl overflow-hidden border-2 mt-3'
+          className='w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden border-2 mt-3'
           style={{ borderColor: colors.grey10 }}
         >
           {imageUrl && imageUrl !== '' ? (
             <img src={imageUrl} alt='프로필' className='w-full h-full object-cover' />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-sm text-grey-20'>
+            <div className='w-full h-full flex items-center justify-center text-xs md:text-sm text-grey-20'>
               이미지 업로드
             </div>
           )}

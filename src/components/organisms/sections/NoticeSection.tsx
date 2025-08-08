@@ -2,12 +2,18 @@ import { useEffect, useState } from 'react';
 import TabComponent from '../../molecules/mainpage/Tab';
 import { fetchNotionInfo } from '../../../api/main/notice-api';
 import type { NoticeItem } from '../../../types/notice/noticeInfo';
+import { useNavigate } from 'react-router-dom';
+import { FiPlus } from 'react-icons/fi';
 
 const NoticeSection = () => {
   const [selectedTab, setSelectedTab] = useState('general');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const selectedCategory = selectedTab;
   const recentYear = new Date().getFullYear();
+  const navigator = useNavigate();
+  const handleClickPlus = () => {
+    navigator('/notice');
+  };
 
   useEffect(() => {
     const fetchingData = async () => {
@@ -22,10 +28,10 @@ const NoticeSection = () => {
   }, [selectedTab]);
   return (
     <div>
-      <div className='flex justify-between'>
-        <h1 className='text-xl font-bold text-mju-primary mb-4'>공지사항</h1>
+      <div className='flex justify-between mt-4'>
+        <h1 className='text-xl font-bold text-mju-primary mb-4 '>공지사항</h1>
         <span>
-          {/* <FiPlus size={20} /> 더보기 공지사항 유라님이 만드신 경로에 라우팅 로직 필요 */}
+          <FiPlus onClick={handleClickPlus} size={20} />
         </span>
       </div>
       <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab}></TabComponent>
