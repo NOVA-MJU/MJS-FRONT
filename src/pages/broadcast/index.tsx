@@ -3,6 +3,23 @@ import { useEffect, useState } from 'react';
 import { fetchBroadCastInfo } from '../../api/main/broadcast-api';
 import type { BroadcastContent } from '../../types/broadcast/broadcastInfo';
 import Pagination from '../../components/molecules/pagination';
+const extractYoutubeId = (url: string): string => {
+  let match = url.match(/v=([^&]+)/);
+  if (match) return match[1];
+
+  match = url.match(/youtu\.be\/([^?]+)/);
+  if (match) return match[1];
+
+  return '';
+};
+
+const formatDate = (isoDate: string): string => {
+  const date = new Date(isoDate);
+  return `${date.getFullYear()}.${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+};
+
 const Broadcast = () => {
   const { id } = useParams<{ id: string }>();
   const [broadcast, setBroadcast] = useState<BroadcastContent | null>(null);
@@ -41,54 +58,40 @@ const Broadcast = () => {
   }
 
   return (
-    <main className='max-w-5xl mx-auto px-6 py-12'>
-      <section className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {broadcast.map((item) => {
-          const vid = extractYoutubeId(item.url);
-          return (
-            <article key={vid} className='border rounded-md overflow-hidden'>
-              <iframe
-                className='w-full aspect-video'
-                src={`https://www.youtube.com/embed/${vid}`}
-                title={item.title}
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                allowFullScreen
-              />
-              <div className='p-3'>
-                <h2 className='text-sm font-semibold line-clamp-2'>{item.title}</h2>
-                <p className='text-xs text-gray-500'>{formatDate(item.publishedAt)}</p>
-              </div>
-            </article>
-          );
-        })}
-      </section>
-      <div className='mt-6'>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPage}
-          onChange={(p) => setCurrentPage(p)}
-          window={10} // 가운데 점
-        />
-      </div>
-    </main>
+    <div className=' w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
+      <p className='text-4xl font-bold text-mju-primary'>명대방송</p>
+      <main className='max-w-5xl mx-auto px-6 py-12'>
+        <section className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+          {broadcast.map((item) => {
+            const vid = extractYoutubeId(item.url);
+            return (
+              <article key={vid} className='border rounded-md overflow-hidden'>
+                <iframe
+                  className='w-full aspect-video'
+                  src={`https://www.youtube.com/embed/${vid}`}
+                  title={item.title}
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                  allowFullScreen
+                />
+                <div className='p-3'>
+                  <h2 className='text-sm font-semibold line-clamp-2'>{item.title}</h2>
+                  <p className='text-xs text-gray-500'>{formatDate(item.publishedAt)}</p>
+                </div>
+              </article>
+            );
+          })}
+        </section>
+        <div className='mt-6'>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPage}
+            onChange={(p) => setCurrentPage(p)}
+            window={10} // 가운데 점의 갯수.
+          />
+        </div>
+      </main>
+    </div>
   );
 };
 
 export default Broadcast;
-
-const extractYoutubeId = (url: string): string => {
-  let match = url.match(/v=([^&]+)/);
-  if (match) return match[1];
-
-  match = url.match(/youtu\.be\/([^?]+)/);
-  if (match) return match[1];
-
-  return '';
-};
-
-const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  return `${date.getFullYear()}.${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
-};
