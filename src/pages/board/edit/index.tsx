@@ -1,19 +1,39 @@
 import { Typography } from '../../../components/atoms/Typography';
-import { useCallback, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { postBoard } from '../../../api/board';
+import { getBoardDetail, postBoard } from '../../../api/board';
 
-export default function BoardWrite() {
+export default function BoardEdit() {
+  const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [title, setTitle] = useState('');
+  const [initialContent, setInitialContent] = useState('');
+
+  /**
+   * 게시글이 수정 모드인 경우 현재 uuid와 content를 editor에 반영합니다
+   */
+  useEffect(() => {
+    if (uuid) getCurrentData(uuid);
+
+    async function getCurrentData(postUuid: string) {
+      try {
+        const res = await getBoardDetail(postUuid);
+        setInitialContent(res.content);
+        setTitle(res.title);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [uuid]);
 
   /**
    * 에디터 인스턴스를 불러옵니다.
@@ -28,11 +48,11 @@ export default function BoardWrite() {
   const handleUploadPost = async () => {
     if (isLoading) return;
 
-    const title = titleRef.current?.value.trim() ?? '';
+    const parsedTitle = title.trim() ?? '';
     const content = JSON.stringify(editorRef.current?.document);
     const contentPreview = getBlockTextEditorContentPreview(content);
 
-    if (!title) {
+    if (!parsedTitle) {
       alert('제목을 입력하세요');
       return;
     }
@@ -44,7 +64,7 @@ export default function BoardWrite() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await postBoard(title, content, contentPreview);
+      const newPostUuid = await postBoard(parsedTitle, content, contentPreview);
       navigate(newPostUuid);
     } catch (e) {
       console.error('BoardWrite.tsx', e);
@@ -73,10 +93,11 @@ export default function BoardWrite() {
       <input
         className='p-3 placeholder-grey-20 font-bold text-[28px] focus:outline-none'
         placeholder='제목을 입력하세요'
+        onChange={(e) => setTitle(e.target.value)}
         ref={titleRef}
       />
       <div
-        className='w-[768px] flex-1 cursor-text'
+        className='flex-1 cursor-text'
         onClick={(e) => {
           /**
            * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
@@ -97,7 +118,7 @@ export default function BoardWrite() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} />
+          <BlockTextEditor onEditorReady={handleEditorReady} initialContent={initialContent} />
         </div>
       </div>
     </div>
