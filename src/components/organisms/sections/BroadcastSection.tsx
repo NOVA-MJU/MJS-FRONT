@@ -20,7 +20,7 @@ const BroadcastSection = () => {
     const loadData = async () => {
       try {
         const data = await fetchBroadCastInfo(page, size);
-        console.log(data.data.content);
+        console.log('mbs 관련 data', data.data.content);
         setBroadcasts(data.data.content);
       } catch (err) {
         console.error('방송 데이터를 불러오는 데 실패했습니다.', err);
