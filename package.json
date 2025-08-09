@@ -11,10 +11,16 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@blocknote/core": "^0.35.0",
+    "@blocknote/mantine": "^0.35.0",
+    "@blocknote/react": "^0.35.0",
     "@tailwindcss/vite": "^4.1.10",
     "@tanstack/react-query": "^5.81.5",
+    "@types/dompurify": "^3.0.5",
     "axios": "^1.10.0",
     "clsx": "^2.1.1",
+    "dompurify": "^3.2.6",
+    "jsdom": "^26.1.0",
     "pretendard": "^1.3.9",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

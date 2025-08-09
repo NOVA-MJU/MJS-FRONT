@@ -1,5 +1,5 @@
 export const DEPARTMENT_OPTIONS = [
-  { label: '인문대', value: 'HUMANITIES_COLLEGE' },
+  { label: '인문대학', value: 'HUMANITIES_COLLEGE' },
   { label: '중어중문학과', value: 'CHINESE_LITERATURE' },
   { label: '일어일문학과', value: 'JAPANESE_LITERATURE' },
   { label: '아랍지역학과', value: 'ARABIC_STUDIES' },
@@ -12,7 +12,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: '글로벌문화콘텐츠학전공', value: 'CULTURAL_CONTENT_STUDIES' },
   { label: '철학과', value: 'PHILOSOPHY' },
 
-  { label: '사과대', value: 'SOCIAL_SCIENCES' },
+  { label: '사회과학대학', value: 'SOCIAL_SCIENCES' },
   { label: '행정학과', value: 'PUBLIC_ADMINISTRATION' },
   { label: '정치외교학과', value: 'POLITICAL_DIPLOMACY' },
   { label: '법학과', value: 'LAW' },
@@ -30,7 +30,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: '청소년지도학과', value: 'YOUTH_GUIDANCE_STUDIES' },
   { label: '아동학과', value: 'CHILD_STUDIES' },
 
-  { label: '인소대', value: 'AI_SOFTWARE' },
+  { label: '인공지능소프트웨어융합대학', value: 'AI_SOFTWARE' },
   { label: '융합소프트웨어학부', value: 'CONVERGENT_SOFTWARE_STUDIES' },
   { label: '디지털콘텐츠디자인학과', value: 'DIGITAL_CONTENT_DESIGN_STUDIES' },
   { label: '데이터사이언스학과', value: 'DATA_SCIENCE' },

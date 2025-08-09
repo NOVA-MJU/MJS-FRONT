@@ -1,27 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import Divider from '../../components/atoms/Divider';
 import { Typography } from '../../components/atoms/Typography';
-import CalendarListItem from '../../components/molecules/CalendarListItem';
-import Calendar from '../../components/organisms/Calendar';
-import { getAcademicEvents, type CalendarEventItem } from '../../api/calendar';
+import CalendarGrid, { type CalendarEventItem } from '../../components/organisms/CalendarGrid';
+import { getAcademicEvents } from '../../api/calendar';
+import CalendarList from '../../components/organisms/CalendarList';
 
 export default function AcademicCalendar() {
-  const [isLoading, setIsLoading] = useState(false);
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [events, setEvents] = useState<CalendarEventItem[] | null>(null);
 
   useEffect(() => {
     const getEvents = async () => {
-      setIsLoading(true);
-
       try {
-        const res = getAcademicEvents({ year: currentYear });
+        const res = await getAcademicEvents({ year: currentYear });
         console.log(res);
+        setEvents(res);
       } catch (err) {
         console.error(err);
-      } finally {
-        setIsLoading(false);
       }
     };
     getEvents();
@@ -34,21 +30,15 @@ export default function AcademicCalendar() {
       </Typography>
       <Divider />
       <div className='flex gap-6'>
-        {/* 캘린더 컨테이너 */}
-        <Calendar events={events} />
-
-        {/* 전체 학사일정 컨테이너 */}
+        <div className='flex-2/3'>
+          <CalendarGrid
+            events={events}
+            onYearChange={setCurrentYear}
+            onMonthChange={setCurrentMonth}
+          />
+        </div>
         <div className='flex-1/3'>
-          <div className='px-6 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl'>
-            <Typography variant='title02' className='text-mju-primary'>
-              전체 학사일정
-            </Typography>
-            <Divider variant='thin' />
-            <CalendarListItem />
-            <CalendarListItem />
-            <CalendarListItem />
-            <CalendarListItem />
-          </div>
+          <CalendarList events={events} month={currentMonth} />
         </div>
       </div>
     </div>
