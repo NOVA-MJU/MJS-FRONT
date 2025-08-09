@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Avatar from '../../atoms/Avatar';
 import { Typography } from '../../atoms/Typography';
+import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { HiDotsVertical } from 'react-icons/hi';
+import { formatToElapsedTime } from '../../../utils';
 
 interface CommentProps {
   key: string;
@@ -50,7 +53,7 @@ export default function Comment({
               {authorName}
             </Typography>
             <Typography variant='caption02' className='text-grey-40'>
-              {formatDate(createdAt)}
+              {formatToElapsedTime(createdAt)}
             </Typography>
           </div>
         </div>
@@ -59,7 +62,7 @@ export default function Comment({
           onClick={() => setMenuOpen((prev) => !prev)}
         >
           <Typography variant='caption02' className='text-black'>
-            ☒
+            <HiDotsVertical />
           </Typography>
         </button>
         {menuOpen && (
@@ -88,18 +91,14 @@ export default function Comment({
           className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
           onClick={() => setShowReplyForm((prev) => !prev)}
         >
-          <Typography variant='caption02' className='text-black'>
-            ☒
-          </Typography>
-          <Typography variant='caption02' className='text-blue-35'>
-            댓글
+          <Typography variant='caption02' className='text-blue-35 flex gap-1 items-center'>
+            <IoIosChatbubbles />
+            {'댓글'}
           </Typography>
         </button>
         <button className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'>
-          <Typography variant='caption02' className='text-black'>
-            ☒
-          </Typography>
-          <Typography variant='caption02' className='text-blue-35'>
+          <Typography variant='caption02' className='text-blue-35 flex gap-1 items-center'>
+            <IoIosHeart />
             공감
           </Typography>
         </button>
@@ -131,45 +130,4 @@ export default function Comment({
       )}
     </div>
   );
-}
-
-// function timeAgo(isoDate: string): string {
-//   const now = Date.now();
-//   const then = new Date(isoDate).getTime();
-//   const diffSec = Math.floor((now - then) / 1000);
-
-//   const MIN = 60;
-//   const HOUR = 60 * MIN;
-//   const DAY = 24 * HOUR;
-//   const MONTH = 30 * DAY;
-//   const YEAR = 365 * DAY;
-
-//   if (diffSec < MIN) {
-//     return '방금 전';
-//   } else if (diffSec < HOUR) {
-//     const m = Math.floor(diffSec / MIN);
-//     return `${m}분 전`;
-//   } else if (diffSec < DAY) {
-//     const h = Math.floor(diffSec / HOUR);
-//     return `${h}시간 전`;
-//   } else if (diffSec < MONTH) {
-//     const d = Math.floor(diffSec / DAY);
-//     return `${d}일 전`;
-//   } else if (diffSec < YEAR) {
-//     const mo = Math.floor(diffSec / MONTH);
-//     return `${mo}개월 전`;
-//   } else {
-//     const y = Math.floor(diffSec / YEAR);
-//     return `${y}년 전`;
-//   }
-// }
-
-function formatDate(input: string): string {
-  const d = new Date(input);
-  const Y = d.getFullYear();
-  const M = String(d.getMonth() + 1).padStart(2, '0');
-  const D = String(d.getDate()).padStart(2, '0');
-  const h = String(d.getHours()).padStart(2, '0');
-  const m = String(d.getMinutes()).padStart(2, '0');
-  return `${Y}.${M}.${D} ${h}:${m}`;
 }

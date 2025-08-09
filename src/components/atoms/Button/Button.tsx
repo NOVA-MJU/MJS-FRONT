@@ -7,8 +7,8 @@ const Button = ({
   size = 'md',
   shape = 'pill',
   children,
-  disabled,
-  fullWidth,
+  disabled = false,
+  fullWidth = false,
   fontWeight,
 
   ...props
@@ -31,6 +31,7 @@ const Button = ({
     transition: 'all 0.2s ease-in-out',
     width: fullWidth ? '100%' : undefined,
     ...sizeClassMap[size],
+    cursor: disabled ? '' : 'pointer',
   };
 
   return (

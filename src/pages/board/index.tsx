@@ -6,6 +6,9 @@ import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Divider from '../../components/atoms/Divider';
+import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { RxDividerVertical } from 'react-icons/rx';
+import { formatToElapsedTime } from '../../utils';
 
 export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
@@ -80,14 +83,18 @@ export default function Board() {
                   <Typography variant='body02'>{content.title}</Typography>
                   <Typography variant='body03'>{content.previewContent}</Typography>
                   <div className='flex items-center'>
-                    <Typography variant='body03' className='text-grey-40'>
-                      ☒ {content.likeCount} | ☒ {content.commentCount}
+                    <Typography variant='body03' className='text-grey-40 flex gap-1 items-center'>
+                      <IoIosHeart />
+                      {content.likeCount}
+                      <RxDividerVertical />
+                      <IoIosChatbubbles />
+                      {content.commentCount}
                     </Typography>
                   </div>
                 </div>
                 <div className='flex items-center justify-center'>
                   <Typography variant='body03' className='text-grey-40'>
-                    {content.publishedAt}
+                    {formatToElapsedTime(content.publishedAt)}
                   </Typography>
                 </div>
               </Link>
