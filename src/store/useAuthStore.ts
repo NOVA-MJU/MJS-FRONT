@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { AuthState, UserInfo } from '../types/auth';
 
 export const useAuthStore = create<AuthState>()(
@@ -11,6 +11,12 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoggedIn: true, user });
       },
       logout: () => {
+        try {
+          sessionStorage.clear();
+        } catch (e) {
+          // 브라우저 환경 아닐 때 예외처리
+          console.warn('sessionStorage clear failed:', e);
+        }
         set({ isLoggedIn: false, user: null });
       },
       setUser: (user: UserInfo) => {
@@ -19,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         isLoggedIn: state.isLoggedIn,
         user: state.user,
