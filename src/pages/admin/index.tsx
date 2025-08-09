@@ -1,4 +1,3 @@
- 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '../../components/atoms/Typography';
