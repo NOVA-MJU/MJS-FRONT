@@ -29,7 +29,9 @@ const Navbar = () => {
         {/* 데스크톱 메뉴 */}
         <ul className='hidden md:flex gap-3 list-none text-white text-sm font-medium'>
           <li>
-            <span className='px-3 py-2 rounded cursor-default text-white/60'>학과정보</span>
+            <Link to='/department'>
+              <span className='px-3 py-2'>학과정보</span>
+            </Link>
           </li>
           <li>
             <Link to='/menu' className='p-3'>

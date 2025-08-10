@@ -86,51 +86,50 @@ export const postBoard = async (
   title: string,
   content: string,
   contentPreview: string,
+  published = true,
 ): Promise<string> => {
   const res = await apiClient.post<ApiResponse<{ uuid: string }>>('/boards', {
     title,
     content,
     contentPreview,
+    published,
   });
   return res.data.data.uuid;
 };
 
 /**
- * 이미지 폴더 신규 발급
- */
-export const getTempImageFolderUuid = async (): Promise<ApiResponse<string>> => {
-  const res = await apiClient.get<ApiResponse<string>>('/boards/temp-uuid');
-  return res.data;
-};
-
-/**
  * 게시글 상세 조회
+ *
+ * @param uuid 조회할 게시글의 uuid를 입력하세요
  */
 export const getBoardDetail = async (uuid: string) => {
-  try {
-    const response = await apiClient.get<{
-      status: string;
-      data: BoardDetailRes;
-    }>(`/boards/${uuid}`);
-    return response.data.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || '게시글 상세 조회 실패!');
-  }
+  const response = await apiClient.get<ApiResponse<GetBoardDetailRes>>(`/boards/${uuid}`);
+  return response.data.data;
 };
+
+interface GetBoardDetailRes {
+  title: string;
+  content: string;
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
 
 /**
  * 게시글 댓글 조회
  */
 export const getBoardComments = async (boardUuid: string) => {
-  try {
-    const response = await apiClient.get<{
-      status: string;
-      data: CommentRes[];
-    }>(`/boards/${boardUuid}/comments`);
-    return response.data.data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || '댓글 상세 조회 실패!');
-  }
+  const response = await apiClient.get<{
+    status: string;
+    data: CommentRes[];
+  }>(`/boards/${boardUuid}/comments`);
+  return response.data.data;
 };
 
 /**
@@ -193,4 +192,13 @@ export const uploadImage = async (file: File, folderUuid: string) => {
   } catch (err: any) {
     throw new Error(err.response?.data?.message || '이미지 업로드 실패!');
   }
+};
+
+/**
+ * @deprecated 서버에서 비활성화된 `api`이므로 요청 시 오류가 발생할 수 있습니다.
+ * 이미지 폴더 신규 발급
+ */
+export const getTempImageFolderUuid = async (): Promise<ApiResponse<string>> => {
+  const res = await apiClient.get<ApiResponse<string>>('/boards/temp-uuid');
+  return res.data;
 };

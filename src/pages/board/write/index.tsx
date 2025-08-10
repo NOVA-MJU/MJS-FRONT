@@ -45,7 +45,7 @@ export default function BoardWrite() {
     setIsLoading(true);
     try {
       const newPostUuid = await postBoard(title, content, contentPreview);
-      navigate(newPostUuid);
+      navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
