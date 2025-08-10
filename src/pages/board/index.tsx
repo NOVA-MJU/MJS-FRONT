@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -14,35 +14,47 @@ export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
-  const [totalPages, setTotalPages] = useState(10);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [totalPages, setTotalPages] = useState(0);
+  const initializedRef = useRef(false);
 
   /**
-   * 게시글 목록 로드
+   * 페이지네이션 초기화
    */
   useEffect(() => {
-    const p = parseInt(searchParams.get('page') ?? '0', 10);
-    if (p !== page) {
-      setPage(p);
-    }
-
-    const getData = async () => {
+    (async () => {
       setIsLoading(true);
+
       try {
-        const response = await getBoards(p, size);
-        console.log(response);
-        setContents(response.content);
-        setTotalPages(response.totalPages);
-      } catch (err) {
-        // TODO 권한 오류 발생 시 로그인 페이지로 이동하도록 해야함
-        console.error(err);
+        const res = await getBoards(0);
+        setContents(res.content);
+        setTotalPages(res.totalPages);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+        initializedRef.current = true;
+      }
+    })();
+  }, []);
+
+  /**
+   * 페이지네이션 게시글 목록 로드
+   */
+  useEffect(() => {
+    (async () => {
+      if (!initializedRef.current) return;
+      setIsLoading(true);
+
+      try {
+        const res = await getBoards(page);
+        setContents(res.content);
+      } catch (e) {
+        console.error(e);
       } finally {
         setIsLoading(false);
       }
-    };
-    getData();
-  }, [searchParams, size]);
+    })();
+  }, [page]);
 
   return (
     <div className='w-full h-full px-9 py-12 flex flex-col gap-6'>
@@ -100,14 +112,7 @@ export default function Board() {
               </Link>
             ))}
           </div>
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onChange={(next) => {
-              setPage(next);
-              setSearchParams({ page: next.toString(), size: size.toString() });
-            }}
-          />
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </>
       )}
     </div>
