@@ -3,7 +3,7 @@ import { BlockNoteView } from '@blocknote/mantine';
 import { useCreateBlockNote } from '@blocknote/react';
 import { useEffect } from 'react';
 import { ko } from '@blocknote/core/locales';
-import { uploadS3 } from '../../../api/s3upload';
+import { uploadS3, type UploadDomain } from '../../../api/s3upload';
 import imageCompression from 'browser-image-compression';
 import heic2any from 'heic2any';
 
@@ -49,6 +49,11 @@ interface BlockTextEditor {
    * 게시글 수정 모드 또는 읽기 모드인 경우 initialContent를 입력하세요. initialContent는 `json`형식이고 `string`타입이어야합니다.
    */
   initialContent?: string;
+
+  /**
+   * 게시글의 도메인을 선택합니다. 커뮤니티 게이글, 학과 일정 게시글, 학과 공지 게시글 중 하나를 선택합니다. `COMMUNITY_POST` `enum`을 이용하세요. 읽기 전용 모드인 경우 입력하지 마세요.
+   */
+  domain?: UploadDomain;
 }
 
 /**
@@ -65,6 +70,7 @@ export default function BlockTextEditor({
   onEditorReady,
   readOnly = false,
   initialContent,
+  domain,
 }: BlockTextEditor) {
   /**
    * 파일 업로드 함수입니다. 업로드할 수 있는 파일의 최대 용량은 `1MB` 입니다.
@@ -75,30 +81,30 @@ export default function BlockTextEditor({
    */
   async function uploadFile(file: File) {
     /**
-     * 사진 파일 압축 처리
+     * 사진 파일의 용량이 1mb보다 크면 압축 처리
      */
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith('image/') && file.size / 1024 / 1024 >= 1) {
       /**
        * heic이미지는 별도처리
        */
       if (file.type === 'image/heic' || file.type === 'image/heif') {
         const blob = (await heic2any({
           blob: file,
-          toType: 'image/png',
+          toType: 'image/jpeg',
           quality: 1,
         })) as Blob;
 
-        file = new File([blob], file.name.replace(/\.[^/.]+$/, '.png'), {
-          type: 'image/png',
+        file = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpeg'), {
+          type: 'image/jpeg',
         });
       }
 
       const options = {
         maxSizeMB: 1,
-        maxWidthOrHeight: 2560,
+        maxWidthOrHeight: 3840,
         useWebWorker: true, // 백그라운드 스레드 사용 여부
         preserveExif: false, // 이미지 메타데이터 유지 여부
-        fileType: 'image/webp', // 출력 이미지 형식
+        fileType: 'image/jpeg', // 출력 이미지 형식
       };
 
       const compressedImageFile = await imageCompression(file, options);
@@ -111,7 +117,7 @@ export default function BlockTextEditor({
       return await uploadS3(compressedImageFile, 'COMMUNITY_POST');
     }
 
-    return await uploadS3(file, 'COMMUNITY_POST');
+    return await uploadS3(file, domain);
   }
 
   /**

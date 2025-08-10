@@ -11,6 +11,7 @@ import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
 import BlockTextEditor from '../../components/organisms/BlockTextEditor';
 import { BlockNoteEditor } from '@blocknote/core';
+import { DOMAIN_VALUES } from '../../api/s3upload';
 
 export default function Admin() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -133,7 +134,7 @@ export default function Admin() {
                   내용
                 </Typography>
                 <div className='border-2 rounded-lg border-blue-05'>
-                  <BlockTextEditor onEditorReady={handleEditorReady} />
+                  <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[3]} />
                 </div>
               </div>
             </div>

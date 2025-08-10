@@ -7,6 +7,7 @@ import NavigationUp from '../../../components/molecules/NavigationUp';
 import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
 import { postBoard } from '../../../api/board';
+import { DOMAIN_VALUES } from '../../../api/s3upload';
 
 export default function BoardWrite() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ export default function BoardWrite() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} />
+          <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
       </div>
     </div>

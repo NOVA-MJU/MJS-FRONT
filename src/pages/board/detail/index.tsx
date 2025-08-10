@@ -9,8 +9,8 @@ import {
   getBoardDetail,
   likePost,
   postComment,
-  type BoardDetailRes,
   type CommentRes,
+  type GetBoardDetailRes,
 } from '../../../api/board';
 import Button from '../../../components/atoms/Button';
 import LoadingIndicator from '../../../components/atoms/LoadingIndicator';
@@ -35,19 +35,22 @@ interface BoardDetail {
 export default function BoardDetail() {
   const navigate = useNavigate();
   const { uuid } = useParams<{ uuid: string }>();
-  const [content, setContent] = useState<BoardDetailRes | null>(null);
+  const [content, setContent] = useState<GetBoardDetailRes | null>(null);
   const [comments, setComments] = useState<CommentRes[] | null>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
 
+  /**
+   * 페이지 로드 함수
+   */
   useEffect(() => {
     if (!uuid) return;
-    getContent(uuid);
+    else getContent(uuid);
   }, [uuid]);
 
   /**
-   * 페이지 로드 함수
+   * 게시글 데이터 로드 함수
    */
   const getContent = async (uuid: string) => {
     setIsLoading(true);
