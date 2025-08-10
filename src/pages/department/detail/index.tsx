@@ -1,4 +1,4 @@
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowForward } from 'react-icons/io';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Typography } from '../../../components/atoms/Typography';
@@ -12,6 +12,7 @@ import {
 import DepartmentNoticeBoard, {
   type DepartmentNoticeBoardItem,
 } from '../../../components/organisms/DepartmentNoticeBoard';
+import NavigationUp from '../../../components/molecules/NavigationUp';
 
 export default function DepartmentDetail() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -110,15 +111,7 @@ export default function DepartmentDetail() {
 
   return (
     <div className='flex-1 p-7 flex flex-col gap-12'>
-      <button
-        className='h-12 flex items-center gap-2.5 cursor-pointer'
-        onClick={() => navigate(-1)}
-      >
-        <IoIosArrowBack className='text-blue-10 text-xl' />
-        <Typography variant='body03' className='text-blue-10'>
-          이전
-        </Typography>
-      </button>
+      <NavigationUp onClick={() => navigate(-1)} />
       {!isLoading && !isError && (
         <>
           <div className='flex gap-6'>

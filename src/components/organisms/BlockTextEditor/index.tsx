@@ -1,9 +1,13 @@
-import type { BlockNoteEditor } from '@blocknote/core';
+import { filterSuggestionItems, type BlockNoteEditor } from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/mantine';
-import { useCreateBlockNote } from '@blocknote/react';
+import {
+  getDefaultReactSlashMenuItems,
+  SuggestionMenuController,
+  useCreateBlockNote,
+} from '@blocknote/react';
 import { useEffect } from 'react';
 import { ko } from '@blocknote/core/locales';
-import { uploadS3, type UploadDomain } from '../../../api/s3upload';
+import { DOMAIN_VALUES, uploadS3, type UploadDomain } from '../../../api/s3upload';
 import imageCompression from 'browser-image-compression';
 import heic2any from 'heic2any';
 
@@ -70,7 +74,7 @@ export default function BlockTextEditor({
   onEditorReady,
   readOnly = false,
   initialContent,
-  domain,
+  domain = DOMAIN_VALUES[0],
 }: BlockTextEditor) {
   /**
    * 파일 업로드 함수입니다. 업로드할 수 있는 파일의 최대 용량은 `1MB` 입니다.
@@ -114,7 +118,7 @@ export default function BlockTextEditor({
         `${(file.size / 1024 / 1024).toFixed(2)} MB -> ${(compressedImageFile.size / 1024 / 1024).toFixed(2)} MB`,
       );
 
-      return await uploadS3(compressedImageFile, 'COMMUNITY_POST');
+      return await uploadS3(compressedImageFile, domain);
     }
 
     return await uploadS3(file, domain);
@@ -153,5 +157,21 @@ export default function BlockTextEditor({
     }
   }, [editor, onEditorReady]);
 
-  return <BlockNoteView editor={editor} editable={!readOnly} theme='light' />;
+  /**
+   * 에디터의 `/` 메뉴를 커스터마이징합니다
+   */
+  const hiddenItems = ['비디오', '오디오', '파일', 'Video', 'Audio', 'File'];
+
+  return (
+    <BlockNoteView editor={editor} editable={!readOnly} theme='light' slashMenu={false}>
+      <SuggestionMenuController
+        triggerCharacter='/'
+        getItems={async (query) => {
+          const defaultItems = getDefaultReactSlashMenuItems(editor);
+          const filteredItems = defaultItems.filter((item) => !hiddenItems.includes(item.title));
+          return filterSuggestionItems(filteredItems, query);
+        }}
+      />
+    </BlockNoteView>
+  );
 }
