@@ -7,10 +7,10 @@ interface PaginationProps {
 }
 const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) => {
   const visibleCount = 5;
-  const numberIndex = (page - 1) % visibleCount;
+  const numberIndex = page % visibleCount;
   return (
     <nav className='flex items-center justify-center gap-2 text-sm text-grey-40'>
-      <button disabled={page === 1} onClick={() => onChange(page - 1)} className='cursor-pointer'>
+      <button disabled={page === 0} onClick={() => onChange(page - 1)} className='cursor-pointer'>
         &lt; 이전
       </button>
       {Array.from({ length: visibleCount }).map((_, i) => (
@@ -23,12 +23,12 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
                           : 'bg-blue-10 w-2 h-2'
                       }`}
         >
-          {i === numberIndex ? page : ''}
+          {i === numberIndex ? page + 1 : ''}
         </button>
       ))}
 
       <button
-        disabled={page === totalPages}
+        disabled={page === totalPages - 1}
         onClick={() => onChange(page + 1)}
         className='cursor-pointer'
       >

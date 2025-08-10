@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '../../components/atoms/Typography';
 import Divider from '../../components/atoms/Divider';
@@ -7,9 +7,11 @@ import CalendarList from '../../components/organisms/CalendarList';
 import clsx from 'clsx';
 import { IoIosClose } from 'react-icons/io';
 import { useCreateBlockNote } from '@blocknote/react';
-import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
+import BlockTextEditor from '../../components/organisms/BlockTextEditor';
+import { BlockNoteEditor } from '@blocknote/core';
+import { DOMAIN_VALUES } from '../../api/s3upload';
 
 export default function Admin() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -23,6 +25,7 @@ export default function Admin() {
   const [, setNewEventDescription] = useState('');
   const editor = useCreateBlockNote();
   const [, setHtmlOutput] = useState<string>('');
+  const editorRef = useRef<BlockNoteEditor | null>(null);
 
   /**
    * uuid에 따라 학과별 페이지를 로드합니다
@@ -48,6 +51,10 @@ export default function Admin() {
     setHtmlOutput(html);
     console.log(html);
   }
+
+  const handleEditorReady = useCallback((editor: BlockNoteEditor) => {
+    editorRef.current = editor;
+  }, []);
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
@@ -126,16 +133,9 @@ export default function Admin() {
                 <Typography variant='title02' className='text-mju-primary'>
                   내용
                 </Typography>
-                {/**
-                 * TODO
-                 * 에디터 컴포넌트 만들고 코드 수정해야함
-                 */}
-                <BlockNoteView editor={editor} />
-                {/* <MarkdownEditor
-                  onContentChanged={function (content: string): void {
-                    throw new Error('Function not implemented.');
-                  }}
-                /> */}
+                <div className='border-2 rounded-lg border-blue-05'>
+                  <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[3]} />
+                </div>
               </div>
             </div>
           </div>

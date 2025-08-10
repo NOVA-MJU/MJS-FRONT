@@ -7,6 +7,7 @@ import NavigationUp from '../../../components/molecules/NavigationUp';
 import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
 import { postBoard } from '../../../api/board';
+import { DOMAIN_VALUES } from '../../../api/s3upload';
 
 export default function BoardWrite() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function BoardWrite() {
     setIsLoading(true);
     try {
       const newPostUuid = await postBoard(title, content, contentPreview);
-      navigate(newPostUuid);
+      navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
@@ -76,7 +77,7 @@ export default function BoardWrite() {
         ref={titleRef}
       />
       <div
-        className='w-[768px] flex-1 cursor-text'
+        className='flex-1 cursor-text'
         onClick={(e) => {
           /**
            * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
@@ -97,7 +98,7 @@ export default function BoardWrite() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} />
+          <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import BoardWrite from './pages/board/write';
 import Notice from './pages/notice';
 import Broadcast from './pages/broadcast';
 import News from './pages/news';
-import Main from './pages/main';
+import Main from './pages';
 import Layout from './components/templates/Layout';
 import Menu from './pages/menu';
 import AcademicCalendar from './pages/academic-calendar';
