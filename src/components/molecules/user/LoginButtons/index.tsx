@@ -30,7 +30,7 @@ const LoginButtons: React.FC<LoginButtonsProps> = ({
       {/* 2) 회원가입 버튼 */}
       <Button
         type='button'
-        variant='greyLight'
+        variant='blue20'
         size='lg'
         shape='rounded'
         disabled={false}

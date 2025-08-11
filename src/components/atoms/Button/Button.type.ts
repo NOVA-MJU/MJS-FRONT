@@ -2,6 +2,7 @@ export type ButtonVariant =
   | 'main'
   | 'sub'
   | 'basic'
+  | 'blue20'
   | 'blue35'
   | 'danger'
   | 'grey'
