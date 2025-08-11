@@ -1,9 +1,8 @@
-import NoticeSection from '../components/organisms/sections/NoticeSection';
-import MealSection from '../components/organisms/sections/MealSection';
-import NewsSection from '../components/organisms/sections/NewsSection';
 import LayoutForMain from '../components/templates/LayoutForMain';
-import BroadcastSection from '../components/organisms/sections/BroadcastSection';
-
+import MealSection from '../components/organisms/Sections/MealSection';
+import NoticeSection from '../components/organisms/Sections/NoticeSection';
+import NewsSection from '../components/organisms/Sections/NewsSection';
+import BroadcastSection from '../components/organisms/Sections/BroadcastSection';
 const Main = () => {
   return (
     <LayoutForMain>
