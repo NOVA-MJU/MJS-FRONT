@@ -121,9 +121,9 @@ export default function BoardDetail() {
   const handleLikePost = async () => {
     if (!uuid || !content || isLoading) return;
 
+    setIsLoading(true);
     try {
-      const response = await likePost(uuid);
-      console.log(response);
+      await likePost(uuid);
 
       setContent((prev) => {
         if (!prev) return null;
@@ -136,6 +136,8 @@ export default function BoardDetail() {
     } catch (err) {
       console.error(err);
       alert(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
