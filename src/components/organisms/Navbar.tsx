@@ -27,7 +27,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='bg-[#002f6c] h-14 w-full z-50 shadow-sm overflow-hidden'>
+    <nav className='bg-mju-primary h-14 w-full z-50 shadow-sm overflow-hidden'>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full gap-3'>
