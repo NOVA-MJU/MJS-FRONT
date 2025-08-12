@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -9,6 +9,8 @@ import Divider from '../../components/atoms/Divider';
 import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
 import { RxDividerVertical } from 'react-icons/rx';
 import { formatToElapsedTime } from '../../utils';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
@@ -17,6 +19,16 @@ export default function Board() {
   const [totalPages, setTotalPages] = useState(0);
   const initializedRef = useRef(false);
 
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      navigate('/', { replace: true, state: { from: location.pathname } });
+    }
+  }, [isLoggedIn, navigate, location.pathname]);
   /**
    * 페이지네이션 초기화
    */
