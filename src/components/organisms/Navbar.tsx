@@ -4,7 +4,7 @@ import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/useAuthStore';
-
+import toast from 'react-hot-toast';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuthStore();
@@ -17,10 +17,18 @@ const Navbar = () => {
   };
   const closeMenu = () => setIsOpen(false);
 
+  const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault(); //Link tag의 Default Event를 방지.
+
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+    }
+  };
+
   return (
     <nav className='bg-[#002f6c] h-14 w-full z-50 shadow-sm overflow-hidden'>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
-        {/* 브랜드 */}
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full gap-3'>
             <img src={logo} alt='Logo' className='w-8 h-8 block' />
@@ -80,6 +88,7 @@ const Navbar = () => {
             <Link
               to='/board'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={handleBoardClick}
             >
               검색게시판
             </Link>

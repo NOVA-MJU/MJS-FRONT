@@ -25,7 +25,7 @@ export default function Board() {
 
   useEffect(() => {
     if (!isLoggedIn) {
-      toast.error('검색게시판을 조회할 권한이 없습니다.');
+      toast.error('로그인이 필요한 서비스입니다.');
       navigate('/', { replace: true, state: { from: location.pathname } });
     }
   }, [isLoggedIn, navigate, location.pathname]);
