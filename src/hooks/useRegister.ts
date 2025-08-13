@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+
 import {
   checkEmailValidation,
   emailVerification,
@@ -10,7 +12,29 @@ import {
 } from '../api/user';
 import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
+import { MAX_FILE_SIZE_MB } from '../constants/maxFileSize';
+import heic2any from 'heic2any';
+import imageCompression from 'browser-image-compression';
 
+/**
+ * 회원가입 관련 상태와 이벤트 핸들러를 제공하는 커스텀 훅
+ *
+ * 이 훅은 회원가입 시 필요한 api를 한 번에 처리합니다.
+ * 이메일 인증, 닉네임/학번 중복 확인, 프로필 이미지 변환 및 압축,
+ * 회원가입 요청 처리 로직을 포함합니다.
+ *
+ * @example
+ * const {
+ *   handleSendCode,
+ *   handleSubmit
+ * } = useRegisterHandlers({ id, nickname, studentCode, profileImageFile, pw, name, gender, department });
+ *
+ * // 인증 메일 발송
+ * await handleSendCode();
+ *
+ * // 회원가입 제출
+ * await handleSubmit(e);
+ */
 export const useRegisterHandlers = ({
   id,
   nickname,
@@ -55,10 +79,11 @@ export const useRegisterHandlers = ({
       setIsEmailChecked(true);
       setIsSending(true);
       await emailVerification(fullEmail);
-      alert('인증 메일을 발송했습니다. 메일함을 확인하세요!');
+      toast('인증 메일을 발송했습니다. 메일함을 확인하세요!');
       setShowCodeInput(true);
     } catch (err: unknown) {
       handleError(err, '이메일 중복 확인 또는 인증 메일 발송 실패');
+      toast.error('이메일 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -70,10 +95,8 @@ export const useRegisterHandlers = ({
       const ok = await verifyEmailCode(fullEmail, code.trim());
       if (ok) {
         setEmailVerified(true);
-        alert('이메일 인증이 완료되었습니다.');
-      } else {
-        alert('인증에 실패했습니다. 인증번호를 다시 확인하세요.');
       }
+      toast(ok ? '이메일 인증에 성공했습니다!' : '인증에 실패했습니다. 다시 시도해주세요.');
     } catch (err: unknown) {
       handleError(err, '인증 요청 실패');
     } finally {
@@ -85,11 +108,18 @@ export const useRegisterHandlers = ({
   const handleVerifyNickname = async () => {
     try {
       setIsSending(true);
-      const res = await checkNicknameValidation(nickname);
+      await checkNicknameValidation(nickname);
+      toast.success('사용 가능한 닉네임입니다!');
       setIsNicknameChecked(true);
-      alert(res.data);
     } catch (err: unknown) {
-      handleError(err, '닉네임 중복 검증 실패');
+      const ax = err as AxiosError<{ status?: number; error?: string; message?: string }>;
+
+      if (ax.response?.status === 400 && ax.response?.data?.error === 'DUPLICATE_NICKNAME') {
+        toast.error('이미 존재하는 닉네임입니다.');
+        setIsNicknameChecked(false);
+        return;
+      }
+      handleError(err, '닉네임 중복 검증에 실패했습니다.');
     } finally {
       setIsSending(false);
     }
@@ -99,11 +129,12 @@ export const useRegisterHandlers = ({
   const handleVerifyStudentCode = async () => {
     try {
       setIsSending(true);
-      const res = await checkStuCodeValidation(studentCode.trim());
+      await checkStuCodeValidation(studentCode.trim());
       setIsStuCodeChecked(true);
-      alert(res.data);
+      toast.success('사용 가능한 학번입니다!');
     } catch (err: unknown) {
       handleError(err, '학번 중복 확인 또는 인증 메일 발송 실패');
+      toast.error('학번 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -114,7 +145,44 @@ export const useRegisterHandlers = ({
     e.preventDefault();
 
     try {
-      const uploadedUrl = profileImageFile ? await uploadProfileImage(profileImageFile) : null;
+      let uploadFile = profileImageFile;
+
+      if (uploadFile) {
+        // HEIC/HEIF → JPEG 변환
+        if (uploadFile.type === 'image/heic' || uploadFile.type === 'image/heif') {
+          const blob = (await heic2any({
+            blob: uploadFile,
+            toType: 'image/jpeg',
+            quality: 0.9,
+          })) as Blob;
+
+          uploadFile = new File([blob], uploadFile.name.replace(/\.[^/.]+$/, '.jpg'), {
+            type: 'image/jpeg',
+          });
+        }
+
+        // 1MB 이상만 압축
+        const limitMB = MAX_FILE_SIZE_MB;
+        const maxBytes = limitMB * 1024 * 1024;
+
+        if (uploadFile.size > maxBytes) {
+          uploadFile = await imageCompression(uploadFile, {
+            maxSizeMB: limitMB,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            preserveExif: false,
+            fileType: 'image/jpeg',
+          });
+
+          if (uploadFile.size > maxBytes) {
+            toast.error(`프로필 이미지를 ${limitMB}MB 이하로 줄여주세요.`);
+            return;
+          }
+        }
+      }
+
+      const uploadedUrl = uploadFile ? await uploadProfileImage(uploadFile) : null;
+
       const req = {
         name,
         email: fullEmail,
@@ -126,10 +194,11 @@ export const useRegisterHandlers = ({
         profileImageUrl: uploadedUrl,
       };
       await registerMember(req);
-      alert('회원가입이 완료되었습니다!');
+      toast.success('회원가입이 완료되었습니다!');
       navigator('/login');
     } catch (err: unknown) {
       handleError(err, '회원가입 실패');
+      toast.error('회원가입에 실패했습니다. 다시 시도해주세요 :');
     }
   };
 
