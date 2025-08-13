@@ -35,8 +35,8 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className='w-[648px] min-h-[770px] bg-white flex flex-col justify-center items-center rounded-2xl'>
-      <div className='w-[440px] flex flex-col gap-12 '>
+    <div className='w-full md:w-[648px] min-h-[770px] bg-white flex flex-col justify-center items-center rounded-2xl'>
+      <div className='w-[80%] md:w-[440px] flex flex-col gap-12 '>
         <ProfileImageUploader
           defaultImg={user?.profileImageUrl}
           onChange={(file) => {
