@@ -4,6 +4,7 @@ import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,8 +26,14 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isOpen) root.classList.add('overflow-hidden');
+    else root.classList.remove('overflow-hidden');
+    return () => root.classList.remove('overflow-hidden');
+  }, [isOpen]);
   return (
-    <nav className={`bg-mju-primary w-full z-50 shadow-sm ${isOpen ? 'h-auto' : 'h-14'}`}>
+    <nav className={`bg-mju-primary w-full  z-50 shadow-sm ${isOpen ? 'h-auto' : 'h-14'}`}>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full gap-3'>
