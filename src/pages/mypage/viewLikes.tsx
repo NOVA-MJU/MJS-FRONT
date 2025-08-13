@@ -48,7 +48,7 @@ const ViewLikedPosts = () => {
     <div className='w-full flex-1 bg-grey-05 flex flex-col px-7 py-12 gap-6'>
       <NavigationUp onClick={() => navigate(-1)} />
       <Typography variant='heading01' className='text-mju-primary'>
-        내가 쓴 댓글
+        찜한 글
       </Typography>
       {contents ? (
         <div className='bg-white p-3 flex flex-col gap-3 rounded-xl'>

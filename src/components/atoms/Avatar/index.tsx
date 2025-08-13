@@ -14,7 +14,7 @@ const Avatar = ({
 }: AvatarProps) => {
   return (
     <img
-      src={src}
+      src={src ?? defaultAvatar}
       alt={alt}
       style={{
         width: size,

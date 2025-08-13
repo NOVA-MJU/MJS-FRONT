@@ -1,10 +1,11 @@
 import React from 'react';
 import { colors } from '../../../styles/color';
+import defaultAvatar from '../../../assets/avatar-default.jpeg';
 
 /**
  * 기본 프로필 아이콘 경로를 입력하세요
  */
-const DEFAULT_IMAGE_URL = '/public/default-thumbnail.png';
+const DEFAULT_IMAGE_URL = defaultAvatar;
 
 interface ImageViewerProps {
   imageUrl: string | undefined;
