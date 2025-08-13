@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ImageInput from '../../../atoms/Input/ImageInput';
-import { MAX_FILE_SIZE_MB } from '../../../../constants/maxFileSize';
 
 interface Props {
   onChange: (file: File) => void;
@@ -18,12 +17,6 @@ const ProfileImageUploader: React.FC<Props> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const maxBytes = MAX_FILE_SIZE_MB * 1024 * 1024;
-    if (file.size > maxBytes) {
-      alert(`파일 크기는 최대 ${MAX_FILE_SIZE_MB}MB까지 업로드할 수 있습니다.`);
-      return;
-    }
     const objectURL = URL.createObjectURL(file);
     setPreview(objectURL);
     onChange(file);

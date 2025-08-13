@@ -62,7 +62,7 @@ const EmailFieldWithVerification: React.FC<Props> = ({
               : isSending
                 ? '전송 중...'
                 : isEmailChecked
-                  ? '확인 완료'
+                  ? '전송 완료'
                   : '인증 요청'}
           </Button>
         </div>
