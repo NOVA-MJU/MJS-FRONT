@@ -14,8 +14,10 @@ const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({
   const user = useAuthStore();
   return (
     <div>
-      <p className='w-[600px] text-mju-primary text-3xl font-bold m-auto mb-6'>나의 활동</p>
-      <div className='flex gap-4'>
+      <p className='w-full md:w-[600px] text-mju-primary text-xl md:text-3xl font-bold m-auto mb-6'>
+        나의 활동
+      </p>
+      <div className='flex gap-2 md:gap-4'>
         <ActivityBox
           label={'내가 쓴 게시물'}
           count={postCount}
