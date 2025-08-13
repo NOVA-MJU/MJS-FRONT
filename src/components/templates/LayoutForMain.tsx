@@ -7,33 +7,40 @@ import SearchBar from '../atoms/SearchBar';
 import ProfileComponent from '../organisms/ProfileComponent';
 import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
+
 interface LayoutProps {
   children: ReactNode;
 }
+
 const LayoutForMain = ({ children }: LayoutProps) => {
   const location = useLocation();
   const hideHeaderRoutes = ['/login', '/register', '/notice', '/news'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
-    <div className='flex flex-col w-screen min-h-screen items-center'>
+    <div className='flex flex-col w-screen min-h-screen'>
       <Navbar />
 
-      <main className='flex-1 w-[1280px] mx-auto flex flex-col'>
+      <main className='flex-1 w-full max-w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
         {shouldShowHeader && <Header />}
 
         <div className='flex flex-col md:flex-row gap-4 mt-6'>
-          <div className='w-full md:w-2/3 flex flex-col gap-3'>
+          {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
+
+          <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
             <SearchBar />
             {children}
           </div>
 
-          <div className='w-full md:w-1/3 flex flex-col gap-3'>
+          {/* 우 컬럼: 프로필 + 날씨 */}
+          {/* ✅ 모바일에서도 세로 스택. 줄바꿈 허용을 위해 min-w-0 */}
+          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
             <ProfileComponent />
             <WeatherComponent />
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );
