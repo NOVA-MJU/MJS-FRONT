@@ -24,12 +24,12 @@ const MyViewLayout = ({
 }: MyViewProps) => {
   const user = useAuthStore();
   return (
-    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
+    <div className='bg-grey-05 md:w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
       <Link to={`/mypage/${user?.user?.uuid}`} className='text-[#17171b] hover:underline'>
         <p className='text-blue-10 font-normal mb-6'>&lt; 이전</p>
       </Link>
-      <p className='text-4xl font-bold text-blue-900 text-mju-primary'>{title}</p>
-      <div className='w-full flex flex-col justify-center items-center mt-10 gap-12'>
+      <p className='text-2xl md:text-4xl font-bold text-blue-900 text-mju-primary'>{title}</p>
+      <div className='w-full flex flex-col justify-center items-center mt-6 md:mt-10 gap-6 md:gap-12'>
         <MyList items={items} itemsPerPage={itemsPerPage} isComment={isComment} page={page} />
       </div>
       <div className='mt-6'>

@@ -5,7 +5,7 @@ interface LabelButtonProps {
 }
 const LabelButton: React.FC<LabelButtonProps> = ({ label, onClick, emphasized = false }) => {
   const textClass = emphasized
-    ? 'text-mju-primary text-sm md:text-xl font-semibold'
+    ? 'text-mju-primary text-base md:text-xl font-semibold'
     : 'text-black font-normal font-medium';
   const widthClass = emphasized ? 'w-20 md:w-36' : 'w-full';
   return (
