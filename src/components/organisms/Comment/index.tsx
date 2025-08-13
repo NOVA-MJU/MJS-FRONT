@@ -98,7 +98,6 @@ export default function Comment({
     setIsLoading(true);
     try {
       const res = await postCommentReply(boardUuid, commentUuid, newReplyContent.trim());
-      console.log(res);
       setNewReplyContent('');
       setRepliesLocal(repliesLocal.concat(res));
     } catch (e) {

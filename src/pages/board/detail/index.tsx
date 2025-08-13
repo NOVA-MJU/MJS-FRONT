@@ -104,8 +104,7 @@ export default function BoardDetail() {
     if (!window.confirm('삭제하시겠습니까?')) return;
     setIsLoading(true);
     try {
-      const response = await deletePost(uuid);
-      console.log(response);
+      await deletePost(uuid);
       navigate(-1);
     } catch (err) {
       console.error(err);

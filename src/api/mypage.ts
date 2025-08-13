@@ -1,34 +1,22 @@
 import apiClient from './apiClient';
 import { type ApiResponse } from './types';
 
+/**
+ * 회원 통계 정보
+ */
+export const getProfileStats = async (): Promise<ProfileStatsRes> => {
+  const res = await apiClient.get('/profile');
+  return res.data.data;
+};
 export interface ProfileStatsRes {
   postCount: number;
   commentCount: number;
   likedPostCount: number;
 }
 
-export interface Content {
-  uuid: string;
-  title: string;
-  previewContent: string;
-  viewCount: number;
-  published: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  likeCount: number;
-  commentCount: number;
-  author: string;
-  liked: boolean;
-}
-
-/** 회원 통계 정보 **/
-export const getProfileStats = async (): Promise<ProfileStatsRes> => {
-  const res = await apiClient.get('/profile');
-  return res.data.data;
-};
-
-/** 내 댓글 조회 **/
+/**
+ * 내 댓글 조회
+ */
 export const getMyComments = async () => {
   const res = await apiClient.get('/profile/comments');
   console.log('댓글 조회:', res.data.data);
@@ -86,11 +74,20 @@ export const getMyCommentedPosts = async () => {
   return res.data.data;
 };
 export interface MyCommentedPostItem {
-  boardUuid: string;
-  boardTitle: string;
+  author: string;
+  boardCreatedAt: string;
+  boardIsLiked: boolean;
+  boardLikeCount: number;
   boardPreviewContent: string;
-  commentUuid: string;
+  boardPublished: boolean;
+  boardTitle: string;
+  boardUuid: string;
+  boardViewCount: number;
+  commentCreatedAt: string;
+  commentIsLiked: boolean;
+  commentLikeCount: number;
   commentPreviewContent: string;
+  commentUuid: string;
 }
 
 /**
@@ -108,9 +105,22 @@ export const getMyLikedPosts = async () => {
  */
 export const getMyPost = async (): Promise<Content[]> => {
   const res = await apiClient.get('/profile/posts');
-  console.log('게시글 조회:', res.data.data);
   return res.data.data; // Content[] 형태
 };
+export interface Content {
+  uuid: string;
+  title: string;
+  previewContent: string;
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
 
 /**
  * @deprecated getMyLikedPosts를 사용하세요
@@ -118,6 +128,5 @@ export const getMyPost = async (): Promise<Content[]> => {
  */
 export const getMyLikes = async () => {
   const res = await apiClient.get('/profile/liked_posts');
-  console.log('좋아요 조회:', res.data.data);
   return res.data.data;
 };

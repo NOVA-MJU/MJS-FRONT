@@ -58,18 +58,16 @@ const ViewComments = () => {
               id={content.boardUuid}
               title={content.boardTitle}
               contentPreview={content.boardPreviewContent}
-              commentCount={content.commentCount}
-              likeCount={content.likeCount}
-              publishedDate={formatToElapsedTime(content.publishedAt)}
+              commentCount={content.boardViewCount}
+              likeCount={content.boardLikeCount}
+              publishedDate={formatToElapsedTime(content.boardCreatedAt)}
               commentPreview={content.commentPreviewContent}
               isLast={index === contents.length - 1}
             />
           ))}
         </div>
       ) : (
-        <>
-          <Typography variant='body01'>아직 작성한 게시글이 없습니다</Typography>
-        </>
+        <Typography variant='body01'>아직 작성한 게시글이 없습니다</Typography>
       )}
     </div>
   );
