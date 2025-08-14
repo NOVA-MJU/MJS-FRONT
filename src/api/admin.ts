@@ -63,3 +63,16 @@ interface GetDepartmentNoticeDetailRes {
   thumbnailUrl: string;
   createAt: string;
 }
+
+/**
+ * 학과 공지사항을 삭제합니다.
+ * @param departmentUuid 현재 관리하고있는 학과의 uuid를 입력하세요.
+ * @param noticeUuid 삭제할 공지사항의 uuid를 입력하세요.
+ * @returns
+ */
+export const deleteDepartmentNotice = async (departmentUuid: string, noticeUuid: string) => {
+  const res = await apiClient.delete<ApiResponse<string>>(
+    `/admin/departments/${departmentUuid}/notices/${noticeUuid}`,
+  );
+  return res.data.data;
+};

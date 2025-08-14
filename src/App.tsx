@@ -25,6 +25,7 @@ import ViewComments from './pages/mypage/viewComments';
 import ViewLikes from './pages/mypage/viewLikes';
 import AdminNoticeWrite from './pages/admin/notice/write';
 import AdminNoticeEdit from './pages/admin/notice/edit';
+import GlobalErrorPage from './pages/error';
 
 const App = () => {
   return (
@@ -65,6 +66,8 @@ const App = () => {
           path='/admin/:departmentUuid/notice/edit/:noticeUuid'
           element={<AdminNoticeEdit />}
         />
+
+        <Route path='*' element={<GlobalErrorPage />} />
       </Route>
     </Routes>
   );

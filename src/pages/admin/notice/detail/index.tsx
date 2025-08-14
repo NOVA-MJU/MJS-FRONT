@@ -3,9 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Divider from '../../../../components/atoms/Divider';
 import NavigationUp from '../../../../components/molecules/NavigationUp';
 import { useEffect, useState } from 'react';
-import { getDepartmentNoticeDetail } from '../../../../api/admin';
+import { deleteDepartmentNotice, getDepartmentNoticeDetail } from '../../../../api/admin';
 import { formatToElapsedTime, formatToLocalTime } from '../../../../utils';
 import BlockTextEditor from '../../../../components/organisms/BlockTextEditor';
+import GlobalErrorPage from '../../../error';
+
 export default function AdminNoticeDetail() {
   const { departmentUuid, noticeUuid } = useParams<{
     departmentUuid: string;
@@ -50,12 +52,13 @@ export default function AdminNoticeDetail() {
   /**
    * 공지사항 삭제 버튼 클릭 핸들러
    */
-  const handleDeleteNotice = () => {
-    if (!noticeUuid || isLoading) return;
+  const handleDeleteNotice = async () => {
+    if (!departmentUuid || !noticeUuid || isLoading) return;
     if (!window.confirm('공지사항을 삭제하시겠습니까?')) return;
     setIsLoading(true);
     try {
-      // await deletePost(uuid);
+      await deleteDepartmentNotice(departmentUuid, noticeUuid);
+      alert('공지사항이 삭제되었습니다.');
       navigate(-1);
     } catch (err) {
       console.error(err);
@@ -65,12 +68,7 @@ export default function AdminNoticeDetail() {
     }
   };
 
-  if (isError)
-    return (
-      <div className='w-full h-full flex-1 flex items-center justify-center'>
-        <Typography variant='title02'>문제가 발생했습니다</Typography>
-      </div>
-    );
+  if (isError) return <GlobalErrorPage />;
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
