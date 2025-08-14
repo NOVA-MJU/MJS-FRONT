@@ -50,10 +50,10 @@ const Mypage: React.FC = () => {
   }, []);
 
   return (
-    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col mx-auto p-12'>
-      <p className='text-4xl font-bold text-blue-900 text-mju-primary'>마이페이지</p>
+    <div className='bg-grey-05 w-full md:w-[1280px] min-h-screen flex flex-col mx-auto p-6 md:p-12'>
+      <p className='text-2xl md:text-4xl font-bold text-blue-900 text-mju-primary'>마이페이지</p>
 
-      <div className='w-full flex flex-col justify-center items-center mt-10 gap-12'>
+      <div className='w-full flex flex-col justify-center items-center md:mt-10 gap-6 md:gap-12'>
         <ProfileSection />
         <ActivitiesSection
           postCount={stateData?.postCount || 0}
@@ -61,7 +61,7 @@ const Mypage: React.FC = () => {
           likedCount={stateData?.likedPostCount || 0}
         />
         <InfoSection />
-        <div className='w-[600px]'>
+        <div className='w-full md:w-[600px]'>
           <Button
             variant='borderRed'
             disabled={false}

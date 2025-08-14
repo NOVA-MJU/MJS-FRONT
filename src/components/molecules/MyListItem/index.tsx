@@ -13,19 +13,19 @@ const MyListItem = ({ title, content, date, link, variant = 'default' }: MyListI
     <div className='w-full h-auto flex justify-between p-4'>
       <div className='flex flex-col'>
         <a href={link} className='flex flex-col gap-2'>
-          <h3 className='font-semibold text-lg'>{title}</h3>
-          <p className='text-sm text-black font-normal'>{content}</p>
+          <h3 className='font-semibold text-sm md:text-lg'>{title}</h3>
+          <p className='text-xs md:text-sm text-black font-normal'>{content}</p>
         </a>
-        <div className='flex gap-2 mt-2 text-grey-40'>
+        <div className='flex text-xs md:text-base gap-2 mt-2 text-grey-40'>
           <span>❤️ 00</span>
           <span>|</span>
           <span>💬 00</span>
         </div>
 
         {variant === 'comment' && (
-          <div className='text-sm text-gray-800 mt-4'>
+          <div className='text-xs md:text-sm text-gray-800 mt-4'>
             <div className='border-l-2 border-blue-10 pl-4'>
-              <div className='bg-blue-05 text-blue-35 font-semibold w-[76px] rounded text-center px-2 py-1 mb-2'>
+              <div className='bg-blue-05 text-blue-35 font-semibold w-30 md:w-[76px] rounded text-center px-2 py-1 mb-2'>
                 나의 댓글
               </div>
               <p>{content}</p>
@@ -34,7 +34,9 @@ const MyListItem = ({ title, content, date, link, variant = 'default' }: MyListI
         )}
       </div>
 
-      <div className='flex items-center mr-4 text-grey-40'>{date || '0000.00.00'}</div>
+      <div className='flex items-center text-[10px] md:text-base mr-2 md:mr-4 text-grey-40'>
+        {date || '0000.00.00'}
+      </div>
     </div>
   );
 };

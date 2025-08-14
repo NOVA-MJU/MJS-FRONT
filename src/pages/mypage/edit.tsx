@@ -58,13 +58,15 @@ const Edit: React.FC = () => {
   }, [user]);
 
   return (
-    <div className='bg-grey-05 w-[1280px] min-h-screen flex flex-col justify-center items-center mx-auto p-12'>
-      <p className='w-full self-start text-4xl font-bold text-blue-900 text-mju-primary'>
+    <div className='bg-grey-05 w-full md:w-[1280px] min-h-screen flex flex-col justify-center items-center mx-auto p-6 md:p-12'>
+      <p className='w-full self-start text-2xl md:text-4xl font-bold text-mju-primary'>
         프로필 수정
       </p>
-      <div className='w-[648px] flex flex-col mt-10 gap-12'>
+      <div className='w-full md:w-[648px] flex flex-col mt-10 gap-6 md:gap-12'>
         <div>
-          <p className='w-[40.50rem] text-3xl font-semibold text-mju-primary mb-6'>필수 정보</p>
+          <p className='w-full text-xl md:text-3xl font-semibold text-mju-primary mb-6'>
+            필수 정보
+          </p>
           <RequiredInfo
             currentPw={currentPw}
             setCurrentPw={setCurrentPw}
@@ -77,7 +79,9 @@ const Edit: React.FC = () => {
           />
         </div>
         <div>
-          <p className='w-[40.50rem] text-3xl font-semibold text-mju-primary mb-6'>개인 정보</p>
+          <p className='w-full text-xl md:text-3xl font-semibold text-mju-primary mb-6'>
+            개인 정보
+          </p>
           <PersonalInfo
             nickname={nickname}
             setNickname={setNickname}

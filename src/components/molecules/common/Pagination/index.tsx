@@ -9,7 +9,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
   const visibleCount = 5;
   const numberIndex = page % visibleCount;
   return (
-    <nav className='flex items-center justify-center gap-2 text-sm text-grey-40'>
+    <nav className='flex items-center justify-center gap-2 text-xs md:text-sm text-grey-40'>
       <button disabled={page === 0} onClick={() => onChange(page - 1)} className='cursor-pointer'>
         &lt; 이전
       </button>
