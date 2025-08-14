@@ -29,14 +29,21 @@ const LayoutForMain = ({ children }: LayoutProps) => {
 
           <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
             <SearchBar />
+            <div className='md:hidden'>
+              <ProfileComponent />
+            </div>
+
             {children}
           </div>
 
           {/* 우 컬럼: 프로필 + 날씨 */}
-          {/* ✅ 모바일에서도 세로 스택. 줄바꿈 허용을 위해 min-w-0 */}
           <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
-            <ProfileComponent />
-            <WeatherComponent />
+            <div className='hidden'>
+              <ProfileComponent />
+            </div>
+            <div className='hidden'>
+              <WeatherComponent />
+            </div>
           </div>
         </div>
       </main>
