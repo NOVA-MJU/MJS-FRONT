@@ -6,7 +6,7 @@ import apiClient from './apiClient';
 import { type ApiResponse } from './types';
 
 /**
- * 학과 공지사항을 새롭게 등록합니다
+ * 학과 공지사항을 새롭게 등록합니다.
  * @param departmentUuid 현재 관리하고있는 학과의 uuid를 입력하세요.
  * @param title 새롭게 등록할 공지사항의 제목을 입력하세요.
  * @param content 새롭게 등록할 공지사항의 본문을 입력하세요.
@@ -34,6 +34,28 @@ export const writeDepartmentNotice = async (
 };
 
 interface WriteDepartmentNoticeRes {
+  uuid: string;
+  title: string;
+  content: string;
+  contentPreview: string;
+  thumbnailUrl: string;
+  createAt: string;
+}
+
+/**
+ * 학과 공지사항을 상세조회합니다.
+ * @param departmentUuid 현재 관리하고있는 학과의 uuid를 입력하세요.
+ * @param noticeUuid 조회할 공지사항의 uuid를 입력하세요.
+ * @returns
+ */
+export const getDepartmentNoticeDetail = async (departmentUuid: string, noticeUuid: string) => {
+  const res = await apiClient.get<ApiResponse<GetDepartmentNoticeDetailRes>>(
+    `/admin/departments/${departmentUuid}/notices/${noticeUuid}`,
+  );
+  return res.data.data;
+};
+
+interface GetDepartmentNoticeDetailRes {
   uuid: string;
   title: string;
   content: string;

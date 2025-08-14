@@ -24,6 +24,7 @@ import ViewPosts from './pages/mypage/viewPosts';
 import ViewComments from './pages/mypage/viewComments';
 import ViewLikes from './pages/mypage/viewLikes';
 import AdminNoticeWrite from './pages/admin/notice/write';
+import AdminNoticeEdit from './pages/admin/notice/edit';
 
 const App = () => {
   return (
@@ -60,6 +61,10 @@ const App = () => {
         <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
         <Route path='/admin/:departmentUuid/notice/:noticeUuid' element={<AdminNoticeDetail />} />
         <Route path='/admin/:departmentUuid/notice/write' element={<AdminNoticeWrite />} />
+        <Route
+          path='/admin/:departmentUuid/notice/edit/:noticeUuid'
+          element={<AdminNoticeEdit />}
+        />
       </Route>
     </Routes>
   );
