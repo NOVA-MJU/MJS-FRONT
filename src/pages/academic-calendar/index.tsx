@@ -14,7 +14,6 @@ export default function AcademicCalendar() {
     const getEvents = async () => {
       try {
         const res = await getAcademicEvents({ year: currentYear });
-        console.log(res);
         setEvents(res);
       } catch (err) {
         console.error(err);

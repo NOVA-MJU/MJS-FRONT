@@ -3,7 +3,6 @@ import { type ApiResponse, type Paginated } from './types';
 
 /**
  * 게시글 목록을 조회합니다.
- *
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
  */

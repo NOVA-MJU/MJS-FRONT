@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import { Link } from 'react-router-dom';
@@ -15,39 +15,18 @@ export default function Board() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const initializedRef = useRef(false);
-
-  /**
-   * 페이지네이션 초기화
-   */
-  useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-
-      try {
-        const res = await getBoards(0);
-        setContents(res.content);
-        setTotalPages(res.totalPages);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsLoading(false);
-        initializedRef.current = true;
-      }
-    })();
-  }, []);
 
   /**
    * 페이지네이션 게시글 목록 로드
    */
   useEffect(() => {
     (async () => {
-      if (!initializedRef.current) return;
       setIsLoading(true);
 
       try {
         const res = await getBoards(page);
         setContents(res.content);
+        if (page === 0) setTotalPages(res.totalPages);
       } catch (e) {
         console.error(e);
       } finally {

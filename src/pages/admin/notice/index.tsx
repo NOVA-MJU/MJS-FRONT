@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../../../components/atoms/SearchBar';
 import { Typography } from '../../../components/atoms/Typography';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Divider from '../../../components/atoms/Divider';
+import { getDepartmentNotices, type DepartmentNoticeItem } from '../../../api/departments';
+import Pagination from '../../../components/molecules/common/Pagination';
+
+const PAGINATION_LENGTH = 10;
 
 export default function AdminNotice() {
+  const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [, setSearchParams] = useSearchParams();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [deleteMode, setDeleteMode] = useState(false);
-  const [contents] = useState(x);
+  const [contents, setContents] = useState<DepartmentNoticeItem[]>([]);
+  const [, setIsLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   /**
    * 검색을 수행할 함수 작성
@@ -18,6 +26,26 @@ export default function AdminNotice() {
     if (!trimmed) return;
     setSearchParams({ search: trimmed });
   }
+
+  /**
+   * 공지사항 목록의 첫 페이지를 조회합니다
+   */
+  useEffect(() => {
+    (async () => {
+      if (!departmentUuid) return;
+      setIsLoading(true);
+      try {
+        const res = await getDepartmentNotices(departmentUuid, page, PAGINATION_LENGTH);
+        console.log(res);
+        setContents(res.content);
+        setTotalPage(res.totalPages);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [departmentUuid, page]);
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
@@ -42,11 +70,11 @@ export default function AdminNotice() {
                 편집
               </Typography>
             </button>
-            <button className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer'>
+            <Link className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer text-center' to='write'>
               <Typography variant='body02' className='text-white'>
                 작성
               </Typography>
-            </button>
+            </Link>
           </div>
         ) : (
           <div className='flex gap-6'>
@@ -77,7 +105,7 @@ export default function AdminNotice() {
           />
         ))}
       </div>
-      {/* <Pagination /> */}
+      <Pagination page={page} totalPages={totalPage} onChange={setPage} />
     </div>
   );
 }
@@ -107,41 +135,3 @@ const NoticeItem = ({ index, title, content, date }: NoticeItemProps) => {
     </button>
   );
 };
-
-const x = [
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-];

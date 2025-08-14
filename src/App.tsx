@@ -23,6 +23,7 @@ import BoardEdit from './pages/board/edit';
 import ViewPosts from './pages/mypage/viewPosts';
 import ViewComments from './pages/mypage/viewComments';
 import ViewLikes from './pages/mypage/viewLikes';
+import AdminNoticeWrite from './pages/admin/notice/write';
 
 const App = () => {
   return (
@@ -55,9 +56,10 @@ const App = () => {
 
         <Route path='/search' element={<Search />} />
 
-        <Route path='/admin/:uuid' element={<Admin />} />
-        <Route path='/admin/:uuid/notice' element={<AdminNotice />} />
-        <Route path='/admin/:uuid/notice/:uuid' element={<AdminNoticeDetail />} />
+        <Route path='/admin/:departmentUuid' element={<Admin />} />
+        <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
+        <Route path='/admin/:departmentUuid/notice/:noticeUuid' element={<AdminNoticeDetail />} />
+        <Route path='/admin/:departmentUuid/notice/write' element={<AdminNoticeWrite />} />
       </Route>
     </Routes>
   );

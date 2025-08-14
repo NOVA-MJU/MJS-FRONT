@@ -92,15 +92,15 @@ export const getDepartmentNotices = async (
   departmentUuid: string,
   page: number,
   size: number,
-): Promise<Paginated<NoticeItem>> => {
-  const res = await apiClient.get<ApiResponse<Paginated<NoticeItem>>>(
+): Promise<Paginated<DepartmentNoticeItem>> => {
+  const res = await apiClient.get<ApiResponse<Paginated<DepartmentNoticeItem>>>(
     `/departments/${departmentUuid}/notices`,
     { params: { page, size } },
   );
   return res.data.data;
 };
 
-interface NoticeItem {
+export interface DepartmentNoticeItem {
   createdAt: string;
   noticeUuid: string;
   previewContent: string;

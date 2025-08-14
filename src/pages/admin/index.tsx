@@ -14,7 +14,7 @@ import { BlockNoteEditor } from '@blocknote/core';
 import { DOMAIN_VALUES } from '../../api/s3upload';
 
 export default function Admin() {
-  const { uuid } = useParams<{ uuid: string }>();
+  const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [eventsGrid] = useState([]);
   const [eventsList] = useState(xlist);
   const [, setCurrentYear] = useState(new Date().getFullYear());
@@ -30,7 +30,7 @@ export default function Admin() {
   /**
    * uuid에 따라 학과별 페이지를 로드합니다
    */
-  useEffect(() => {}, [uuid]);
+  useEffect(() => {}, [departmentUuid]);
 
   async function handleSubmitEvent() {
     exportJSON();
