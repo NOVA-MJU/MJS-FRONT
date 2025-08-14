@@ -1,5 +1,5 @@
 /**********************************
- *********** 어드민 페이지 ***********
+ *           어드민 페이지           *
  **********************************/
 
 import apiClient from './apiClient';
@@ -23,12 +23,7 @@ export const writeDepartmentNotice = async (
 ) => {
   const res = await apiClient.post<ApiResponse<WriteDepartmentNoticeRes>>(
     `/admin/departments/${departmentUuid}/notices`,
-    {
-      title: title,
-      content: content,
-      contentPreview: contentPreview,
-      thumbnailUrl: thumbnailUrl,
-    },
+    { title, content, contentPreview, thumbnailUrl },
   );
   return res.data.data;
 };
@@ -73,6 +68,31 @@ interface GetDepartmentNoticeDetailRes {
 export const deleteDepartmentNotice = async (departmentUuid: string, noticeUuid: string) => {
   const res = await apiClient.delete<ApiResponse<string>>(
     `/admin/departments/${departmentUuid}/notices/${noticeUuid}`,
+  );
+  return res.data.data;
+};
+
+/**
+ * 학과 공지사항을 수정합니다.
+ * @param departmentUuid 현재 관리하고있는 학과의 uuid를 입력하세요.
+ * @param noticeUuid 수정할 공지사항의 uuid를 입력하세요.
+ * @param title 업데이트할 공지사항의 제목을 입력하세요.
+ * @param content 업데이트할 공지사항의 본문을 입력하세요.
+ * @param contentPreview 업데이트할 공지사항의 컨텐츠 미리보기를 입력하세요.
+ * @param thumbnailUrl 업데이트할 공지사항의 썸네일을 입력하세요.
+ * @returns
+ */
+export const updateDepartmentNotice = async (
+  departmentUuid: string,
+  noticeUuid: string,
+  title: string,
+  content: string,
+  contentPreview: string,
+  thumbnailUrl: string,
+) => {
+  const res = await apiClient.patch<ApiResponse<WriteDepartmentNoticeRes>>(
+    `/admin/departments/${departmentUuid}/notices/${noticeUuid}`,
+    { title, content, contentPreview, thumbnailUrl },
   );
   return res.data.data;
 };

@@ -6,7 +6,8 @@ import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { getBoardDetail, postBoard } from '../../../api/board';
+import { getBoardDetail, updatePost } from '../../../api/board';
+import { DOMAIN_VALUES } from '../../../api/s3upload';
 
 export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -43,10 +44,10 @@ export default function BoardEdit() {
   }, []);
 
   /**
-   * 게시글 업로드 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
+   * 게시글 수정 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
    */
   const handleUploadPost = async () => {
-    if (isLoading) return;
+    if (isLoading || !uuid) return;
 
     const parsedTitle = title.trim() ?? '';
     const content = JSON.stringify(editorRef.current?.document);
@@ -64,8 +65,8 @@ export default function BoardEdit() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await postBoard(parsedTitle, content, contentPreview);
-      navigate(newPostUuid);
+      const newPostUuid = await updatePost(uuid, parsedTitle, content, contentPreview);
+      navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
@@ -118,7 +119,11 @@ export default function BoardEdit() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} initialContent={initialContent} />
+          <BlockTextEditor
+            onEditorReady={handleEditorReady}
+            domain={DOMAIN_VALUES[0]}
+            initialContent={initialContent}
+          />
         </div>
       </div>
     </div>

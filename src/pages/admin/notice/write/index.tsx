@@ -50,14 +50,14 @@ export default function AdminNoticeWrite() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await writeDepartmentNotice(
+      const res = await writeDepartmentNotice(
         departmentUuid,
         title,
         content,
         contentPreview,
         thumbnail,
       );
-      navigate(`/admin/${departmentUuid}/notice/${newPostUuid}`, { replace: true });
+      navigate(`/admin/${departmentUuid}/notice/${res.uuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
@@ -102,7 +102,7 @@ export default function AdminNoticeWrite() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
+          <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[4]} />
         </div>
       </div>
     </div>
