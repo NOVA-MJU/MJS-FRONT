@@ -96,3 +96,43 @@ export const updateDepartmentNotice = async (
   );
   return res.data.data;
 };
+
+/**********************************
+ *           어드민 캘린더           *
+ **********************************/
+
+/**
+ * 학과의 새로운 일정을 추가합니다.
+ * @param departmentUuid 현재 관리하고있는 학과의 uuid를 입력하세요.
+ * @param scheduleUuid 새롭게 등록할 일정의 uuid를 입력하세요.
+ * @param title 새롭게 등록할 일정의 제목을 입력하세요.
+ * @param content 새롭게 등록할 일정의 본문을 입력하세요.
+ * @param colorCode 새롭게 등록할 일정의 리본 색을 입력하세요.
+ * @param startDate 새롭게 등록할 일정의 시작 날짜를 입력하세요.
+ * @param endDate 새롭게 등록할 일정의 종료 날짜를 입력하세요.
+ * @returns 새롭게 등록된 일정의 정보가 return 됩니다.
+ */
+export const postDepartmentSchedule = async (
+  departmentUuid: string,
+  scheduleUuid: string,
+  title: string,
+  content: string,
+  colorCode: string,
+  startDate: string,
+  endDate: string,
+) => {
+  const res = await apiClient.post<ApiResponse<PostDepartmentScheduleRes>>(
+    `/admin/department/${departmentUuid}/schedules/${scheduleUuid}`,
+    { title, content, colorCode, startDate, endDate },
+  );
+  return res.data.data;
+};
+
+interface PostDepartmentScheduleRes {
+  departmentScheduleUuid: string;
+  title: string;
+  content: string;
+  colorCode: string;
+  startDate: string;
+  endDate: string;
+}

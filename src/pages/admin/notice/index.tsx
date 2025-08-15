@@ -78,6 +78,11 @@ export default function AdminNotice() {
             thumbnailUrl={content.thumbnailUrl}
           />
         ))}
+        {contents.length === 0 && (
+          <div className='flex-1 flex justify-center items-center'>
+            <Typography variant='title02'>아직 작성된 공지사항이 없습니다</Typography>
+          </div>
+        )}
       </div>
       <Pagination page={page} totalPages={totalPage} onChange={setPage} />
     </div>

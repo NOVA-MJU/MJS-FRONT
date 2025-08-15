@@ -54,15 +54,8 @@ export default function BoardEdit() {
     const content = JSON.stringify(editorRef.current?.document);
     const contentPreview = getBlockTextEditorContentPreview(content);
 
-    if (!parsedTitle) {
-      alert('제목을 입력하세요');
-      return;
-    }
-
-    if (editorRef.current?.isEmpty) {
-      alert('본문을 입력하세요');
-      return;
-    }
+    if (!parsedTitle) return alert('제목을 입력하세요');
+    if (editorRef.current?.isEmpty) return alert('본문을 입력하세요');
 
     setIsLoading(true);
     try {

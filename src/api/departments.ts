@@ -59,20 +59,14 @@ export interface DepartmentDetailRes {
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 일정 목록 반환
  */
-export const getDepartmentSchedules = async (
-  departmentUuid: string,
-): Promise<DepartmentSchedulesRes> => {
-  const res = await apiClient.get<ApiResponse<DepartmentSchedulesRes>>(
+export const getDepartmentSchedules = async (departmentUuid: string) => {
+  const res = await apiClient.get<ApiResponse<{ schedules: DepartmentSchedule[] }>>(
     `/departments/${departmentUuid}/schedules`,
   );
   return res.data.data;
 };
 
-export interface DepartmentSchedulesRes {
-  schedules: DepartmentSchedule[];
-}
-
-interface DepartmentSchedule {
+export interface DepartmentSchedule {
   departmentScheduleUuid: string;
   title: string;
   startDateTime: string;
