@@ -7,33 +7,47 @@ import SearchBar from '../atoms/SearchBar';
 import ProfileComponent from '../organisms/ProfileComponent';
 import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
+
 interface LayoutProps {
   children: ReactNode;
 }
+
 const LayoutForMain = ({ children }: LayoutProps) => {
   const location = useLocation();
   const hideHeaderRoutes = ['/login', '/register', '/notice', '/news'];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
-    <div className='flex flex-col w-screen min-h-screen items-center'>
+    <div className='flex flex-col w-screen min-h-screen'>
       <Navbar />
 
-      <main className='flex-1 w-[1280px] mx-auto flex flex-col'>
-        {shouldShowHeader && <Header />}
+      <main className='flex-1 w-full max-w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
+        <div className='hidden md:block'>{shouldShowHeader && <Header />}</div>
 
         <div className='flex flex-col md:flex-row gap-4 mt-6'>
-          <div className='w-full md:w-2/3 flex flex-col gap-3'>
+          {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
+
+          <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
             <SearchBar />
+            <div className='md:hidden'>
+              <ProfileComponent />
+            </div>
+
             {children}
           </div>
 
-          <div className='w-full md:w-1/3 flex flex-col gap-3'>
-            <ProfileComponent />
-            <WeatherComponent />
+          {/* 우 컬럼: 프로필 + 날씨 */}
+          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
+            <div className='hidden'>
+              <ProfileComponent />
+            </div>
+            <div className='hidden'>
+              <WeatherComponent />
+            </div>
           </div>
         </div>
       </main>
+
       <Footer />
     </div>
   );

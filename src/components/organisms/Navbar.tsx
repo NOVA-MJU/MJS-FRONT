@@ -4,6 +4,7 @@ import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,16 +19,21 @@ const Navbar = () => {
   const closeMenu = () => setIsOpen(false);
 
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault(); //Link tag의 Default Event를 방지.
-
     if (!isLoggedIn) {
+      e.preventDefault(); //Link tag의 Default Event를 방지.
       toast.error('로그인이 필요한 서비스입니다.');
       navigate('/login');
     }
   };
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isOpen) root.classList.add('overflow-hidden');
+    else root.classList.remove('overflow-hidden');
+    return () => root.classList.remove('overflow-hidden');
+  }, [isOpen]);
   return (
-    <nav className='bg-mju-primary h-14 w-full z-50 shadow-sm overflow-hidden'>
+    <nav className={`bg-mju-primary w-full  z-50 shadow-sm ${isOpen ? 'h-auto' : 'h-14'}`}>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full gap-3'>
