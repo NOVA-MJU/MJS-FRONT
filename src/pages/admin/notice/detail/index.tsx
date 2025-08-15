@@ -46,7 +46,7 @@ export default function AdminNoticeDetail() {
    * 공지사항 수정 버튼 클릭 핸들러
    */
   const handleEditNotice = () => {
-    navigate(`/admin/${departmentUuid}/notice/edit/${noticeUuid}`);
+    navigate(`/admin/${departmentUuid}/notice/edit/${noticeUuid}`, { state: { from: 'detail' } });
   };
 
   /**

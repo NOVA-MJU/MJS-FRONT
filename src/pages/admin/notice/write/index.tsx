@@ -69,7 +69,9 @@ export default function AdminNoticeWrite() {
     <div className='flex-1 flex flex-col p-6 gap-6'>
       <div className='flex items-center justify-between gap-6'>
         <NavigationUp onClick={() => navigate(-1)} />
-        <Button onClick={handleUploadPost}>저장</Button>
+        <Button variant='blue35' shape='rounded' onClick={handleUploadPost}>
+          저장
+        </Button>
       </div>
       <Typography variant='heading01' className='text-mju-primary'>
         공지사항 작성

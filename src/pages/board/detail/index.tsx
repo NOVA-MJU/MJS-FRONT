@@ -155,7 +155,7 @@ export default function BoardDetail() {
         <NavigationUp onClick={() => navigate(-1)} />
         {content && (
           <div className='flex items-center gap-6'>
-            <Link to={`/board/edit/${uuid}`}>
+            <Link to={`/board/edit/${uuid}`} state={{ from: 'detail' }}>
               <Button className='p-3 w-46' variant='greyBlack' shape='rounded'>
                 수정
               </Button>

@@ -12,7 +12,6 @@ export default function AdminNotice() {
   const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [, setSearchParams] = useSearchParams();
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [deleteMode, setDeleteMode] = useState(false);
   const [contents, setContents] = useState<DepartmentNoticeItem[]>([]);
   const [, setIsLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -60,48 +59,23 @@ export default function AdminNotice() {
       />
       <Divider />
       <div className='w-full h-fit flex justify-end'>
-        {!deleteMode ? (
-          <div className='flex gap-6'>
-            <button
-              className='w-45 p-3 bg-grey-10 rounded-xl cursor-pointer'
-              onClick={() => setDeleteMode(true)}
-            >
-              <Typography variant='body02' className='text-black'>
-                편집
-              </Typography>
-            </button>
-            <Link className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer text-center' to='write'>
-              <Typography variant='body02' className='text-white'>
-                작성
-              </Typography>
-            </Link>
-          </div>
-        ) : (
-          <div className='flex gap-6'>
-            <button
-              className='w-45 p-3 bg-grey-10 rounded-xl cursor-pointer'
-              onClick={() => setDeleteMode(false)}
-            >
-              <Typography variant='body02' className='text-black'>
-                취소
-              </Typography>
-            </button>
-            <button className='w-45 p-3 bg-error rounded-xl cursor-pointer'>
-              <Typography variant='body02' className='text-white'>
-                삭제
-              </Typography>
-            </button>
-          </div>
-        )}
+        <div className='flex gap-6'>
+          <Link className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer text-center' to='write'>
+            <Typography variant='body02' className='text-white'>
+              작성
+            </Typography>
+          </Link>
+        </div>
       </div>
       <div className='w-full flex-1 p-3 flex flex-col gap-3'>
-        {contents.map((content, index) => (
+        {contents.map((content) => (
           <NoticeItem
             key={content.noticeUuid}
-            index={index}
+            uuid={content.noticeUuid}
             title={content.title}
             content={content.previewContent}
             date={content.createdAt}
+            thumbnailUrl={content.thumbnailUrl}
           />
         ))}
       </div>
@@ -111,27 +85,29 @@ export default function AdminNotice() {
 }
 
 interface NoticeItemProps {
-  index: number;
+  uuid: string;
   title: string;
   content: string;
   date: string;
+  thumbnailUrl?: string;
 }
 
-const NoticeItem = ({ index, title, content, date }: NoticeItemProps) => {
+const NoticeItem = ({ uuid, title, content, date, thumbnailUrl }: NoticeItemProps) => {
   return (
-    <button className='w-full h-fit p-3 flex cursor-pointer rounded-lg hover:bg-grey-05'>
-      <div className='flex-1 h-fit flex flex-col gap-6 items-start'>
-        <Typography variant='body03'>{index}</Typography>
-        <div className='w-full h-fit flex flex-col gap-3 items-start'>
-          <Typography variant='body02'>{title}</Typography>
-          <Typography variant='body03'>{content}</Typography>
-        </div>
-      </div>
-      <div className='px-3'>
-        <Typography variant='body03' className='text-grey-40'>
-          {date.slice(0, 10)}
+    <Link
+      className='p-3 flex items-center gap-8 cursor-pointer rounded-lg hover:bg-grey-05'
+      to={uuid}
+    >
+      {thumbnailUrl && <img className='aspect-square max-w-24 rounded-lg' src={thumbnailUrl} />}
+      <div className='flex-1 flex flex-col gap-3 items-start'>
+        <Typography variant='body02'>{title}</Typography>
+        <Typography variant='body03' className='line-clamp-2 break-all'>
+          {content}
         </Typography>
       </div>
-    </button>
+      <Typography variant='body03' className='text-grey-40'>
+        {date.slice(0, 10)}
+      </Typography>
+    </Link>
   );
 };

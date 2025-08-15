@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography } from '../../components/atoms/Typography';
-import Divider from '../../components/atoms/Divider';
-import CalendarGrid from '../../components/organisms/CalendarGrid';
-import CalendarList from '../../components/organisms/CalendarList';
+import { Typography } from '../../../components/atoms/Typography';
+import Divider from '../../../components/atoms/Divider';
+import CalendarGrid from '../../../components/organisms/CalendarGrid';
+import CalendarList from '../../../components/organisms/CalendarList';
 import clsx from 'clsx';
 import { IoIosClose } from 'react-icons/io';
-import { useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/mantine/style.css';
 import '@blocknote/core/fonts/inter.css';
-import BlockTextEditor from '../../components/organisms/BlockTextEditor';
+import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import { BlockNoteEditor } from '@blocknote/core';
-import { DOMAIN_VALUES } from '../../api/s3upload';
+import { DOMAIN_VALUES } from '../../../api/s3upload';
+import GlobalErrorPage from '../../error';
+import Button from '../../../components/atoms/Button';
+
+const CALENDAR_COLORS = ['#6898DE', '#DE6898', '#DEAE68', '#98DE68', '#68D3DE', '#7368DE'];
 
 export default function Admin() {
   const { departmentUuid } = useParams<{ departmentUuid: string }>();
@@ -20,41 +23,51 @@ export default function Admin() {
   const [, setCurrentYear] = useState(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [isOpened, setIsOpened] = useState(false);
-  const [isFinished] = useState(false);
   const [selectedColor, setSelectedColor] = useState('');
-  const [, setNewEventDescription] = useState('');
-  const editor = useCreateBlockNote();
-  const [, setHtmlOutput] = useState<string>('');
   const editorRef = useRef<BlockNoteEditor | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [newEventTitle, setNewEventTitle] = useState('');
 
   /**
    * uuid에 따라 학과별 페이지를 로드합니다
    */
-  useEffect(() => {}, [departmentUuid]);
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log();
+      } catch (e) {
+        console.error(e);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [departmentUuid]);
 
-  async function handleSubmitEvent() {
-    exportJSON();
-    exportHTML();
-  }
+  /**
+   * 새로운 일정 추가 핸들러
+   */
+  const handleSubmitEvent = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      console.log();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  function exportJSON() {
-    // 에디터 문서를 비파괴 형식 JSON 문자열로 직렬화
-    const json = JSON.stringify(editor.document);
-    setNewEventDescription(json);
-    console.log(json);
-    console.log(typeof json);
-  }
-
-  async function exportHTML() {
-    // 전체 블록 구조와 스타일을 포함한 HTML 문자열로 반환
-    const html = await editor.blocksToFullHTML(editor.document);
-    setHtmlOutput(html);
-    console.log(html);
-  }
-
+  /**
+   * 에디터 인스턴스를 불러옵니다.
+   */
   const handleEditorReady = useCallback((editor: BlockNoteEditor) => {
     editorRef.current = editor;
   }, []);
+
+  if (isError) return <GlobalErrorPage />;
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
@@ -80,7 +93,9 @@ export default function Admin() {
           />
         </div>
       </div>
-
+      {/**
+       * 일정 추가 모달
+       */}
       {isOpened && (
         <div className='fixed inset-0 z-50 p-10 flex items-center justify-center bg-[#0008]'>
           <div className='bg-white rounded-lg w-full h-fit'>
@@ -91,24 +106,16 @@ export default function Admin() {
                     <IoIosClose />
                   </Typography>
                 </button>
-                <button
-                  className={clsx(
-                    'w-46 h-12 rounded-lg',
-                    isFinished ? 'bg-blue-35 cursor-pointer' : 'bg-grey-20',
-                  )}
-                  onClick={handleSubmitEvent}
-                >
-                  <Typography variant='body03' className='text-white'>
-                    완료
-                  </Typography>
-                </button>
+                <Button variant='blue35' shape='rounded' onClick={handleSubmitEvent}>
+                  완료
+                </Button>
               </div>
               <div className='flex flex-col gap-3'>
                 <Typography variant='title02' className='text-mju-primary'>
                   학과일정
                 </Typography>
                 <div className='flex gap-3'>
-                  {colors.map((color) => (
+                  {CALENDAR_COLORS.map((color) => (
                     <button
                       key={color}
                       className={clsx(
@@ -119,16 +126,22 @@ export default function Admin() {
                     />
                   ))}
                 </div>
-                <Input placeholder='학과일정을 입력하세요' />
+                <input
+                  className='w-full h-fit p-3 outline-none rounded-lg border-2 border-blue-05 bg-transparent placeholder:text-grey-20 placeholder:text-[16px]'
+                  placeholder='학과일정을 입력하세요'
+                  value={newEventTitle}
+                  onChange={(e) => setNewEventTitle(e.target.value)}
+                />
               </div>
-
               <div className='flex flex-col gap-3'>
                 <Typography variant='title02' className='text-mju-primary'>
                   날짜
                 </Typography>
-                <Input placeholder='시작일' />
+                <input
+                  className='w-full h-fit p-3 outline-none rounded-lg border-2 border-blue-05 bg-transparent placeholder:text-grey-20 placeholder:text-[16px]'
+                  placeholder='시작일'
+                />
               </div>
-
               <div className='flex flex-col gap-3'>
                 <Typography variant='title02' className='text-mju-primary'>
                   내용
@@ -144,17 +157,6 @@ export default function Admin() {
     </div>
   );
 }
-
-function Input({ placeholder = '' }) {
-  return (
-    <input
-      className='w-full h-fit p-3 outline-none rounded-lg border-2 border-blue-05 bg-transparent placeholder:text-grey-20 placeholder:text-[16px]'
-      placeholder={placeholder}
-    />
-  );
-}
-
-const colors = ['#6898DE', '#DE6898', '#DEAE68', '#98DE68', '#68D3DE', '#7368DE'];
 
 const xlist = [
   {

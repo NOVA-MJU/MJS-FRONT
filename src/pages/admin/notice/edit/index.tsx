@@ -5,7 +5,7 @@ import { Typography } from '../../../../components/atoms/Typography';
 import NavigationUp from '../../../../components/molecules/NavigationUp';
 import BlockTextEditor from '../../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   getBlockTextEditorContentPreview,
   getBlockTextEditorImageThumbnail,
@@ -20,6 +20,7 @@ export default function AdminNoticeEdit() {
     noticeUuid: string;
   }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,7 +80,7 @@ export default function AdminNoticeEdit() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await updateDepartmentNotice(
+      await updateDepartmentNotice(
         departmentUuid,
         noticeUuid,
         title,
@@ -87,7 +88,8 @@ export default function AdminNoticeEdit() {
         contentPreview,
         thumbnail,
       );
-      navigate(`/admin/${departmentUuid}/notice/${newPostUuid}`, { replace: true });
+      if (location.state?.from === 'detail') navigate(-1);
+      else navigate(`/admin/${departmentUuid}/notice/${noticeUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
@@ -101,7 +103,9 @@ export default function AdminNoticeEdit() {
     <div className='flex-1 flex flex-col p-6 gap-6'>
       <div className='flex items-center justify-between gap-6'>
         <NavigationUp onClick={() => navigate(-1)} />
-        <Button onClick={handleUpdatePost}>저장</Button>
+        <Button variant='blue35' shape='rounded' onClick={handleUpdatePost}>
+          저장
+        </Button>
       </div>
       <Typography variant='heading01' className='text-mju-primary'>
         공지사항 작성

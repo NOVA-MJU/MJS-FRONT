@@ -1,6 +1,6 @@
 import { Typography } from '../../../components/atoms/Typography';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
@@ -12,6 +12,7 @@ import { DOMAIN_VALUES } from '../../../api/s3upload';
 export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
@@ -66,7 +67,8 @@ export default function BoardEdit() {
     setIsLoading(true);
     try {
       const newPostUuid = await updatePost(uuid, parsedTitle, content, contentPreview);
-      navigate(`/board/${newPostUuid}`, { replace: true });
+      if (location.state?.from === 'detail') navigate(-1);
+      else navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {

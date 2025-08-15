@@ -16,7 +16,7 @@ import Department from './pages/department';
 import DepartmentDetail from './pages/department/detail';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Admin from './pages/admin';
+import Admin from './pages/admin/calendar';
 import AdminNotice from './pages/admin/notice';
 import AdminNoticeDetail from './pages/admin/notice/detail';
 import BoardEdit from './pages/board/edit';
