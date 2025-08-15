@@ -3,6 +3,7 @@ import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from '../atoms/Avatar';
 import { useAuthStore } from '../../store/useAuthStore';
 import Button from '../atoms/Button';
+import toast from 'react-hot-toast';
 
 interface ProfileComponentProps {
   className?: string;
@@ -36,7 +37,9 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
     // 2) persist에 저장된 값까지 제거 (localStorage/sessionStorage 어디든)
     try {
       useAuthStore.persist.clearStorage();
+      toast.success('정상적으로 로그아웃되었습니다.');
     } catch (e) {
+      toast.error('로그아웃 오류 발생하였습니다. 관리자에게 문의해주십시오');
       console.warn('persist clearStorage failed:', e);
     }
   };
@@ -52,19 +55,15 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
             <div className='flex flex-col'>
               <div>
                 <span className='font-bold'>{user?.name}</span>
-                <button
-                  disabled={false}
-                  onClick={handleLogout}
-                  className='ml-4 text-sm text-grey-40 cursor-pointer hover:underline'
-                >
-                  로그아웃
-                </button>
               </div>
               <span className='text-sm text-gray-500'>{user?.email}</span>
             </div>
           </div>
 
-          <FaExternalLinkAlt className='text-gray-600 text-base cursor-pointer' />
+          <FaExternalLinkAlt
+            onClick={handleLogout}
+            className='text-gray-600 text-base cursor-pointer'
+          />
         </div>
 
         <div className='w-full h-px bg-gray-300 my-3' />
