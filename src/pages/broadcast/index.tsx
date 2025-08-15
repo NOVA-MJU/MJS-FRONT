@@ -126,7 +126,7 @@ const Broadcast = () => {
             currentPage={currentPage}
             totalPages={totalPage}
             onChange={(p) => setCurrentPage(p)}
-            window={6} // 모바일에서 더 컴팩트하게
+            window={6}
           />
         </div>
       </main>
