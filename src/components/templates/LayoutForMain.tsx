@@ -36,12 +36,11 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             {children}
           </div>
 
-          {/* 우 컬럼: 프로필 + 날씨 */}
           <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
-            <div className='hidden'>
+            <div className='hidden md:block'>
               <ProfileComponent />
             </div>
-            <div className='hidden'>
+            <div className='hidden md:block'>
               <WeatherComponent />
             </div>
           </div>
