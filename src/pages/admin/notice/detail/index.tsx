@@ -76,13 +76,13 @@ export default function AdminNoticeDetail() {
         <NavigationUp onClick={() => navigate(-1)} />
         <div className='flex gap-3'>
           <button
-            className='w-46 h-12 p-3 cursor-pointer bg-grey-10 rounded-xl'
+            className='py-3 px-8 md:px-16 p-3 cursor-pointer bg-grey-10 rounded-xl'
             onClick={handleEditNotice}
           >
             <Typography variant='body02'>수정</Typography>
           </button>
           <button
-            className='w-46 h-12 p-3 cursor-pointer bg-error rounded-xl'
+            className='py-3 px-8 md:px-16 p-3 cursor-pointer bg-error rounded-xl'
             onClick={handleDeleteNotice}
           >
             <Typography variant='body02' className='text-white'>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import clsx from 'clsx';
 
 export interface CalendarListItemProps {
+  uuid: string;
   description: string;
   startDate: string;
   endDate: string;
@@ -12,6 +13,7 @@ export interface CalendarListItemProps {
 }
 
 export default function CalendarListItem({
+  // uuid,
   description,
   startDate,
   endDate,
@@ -19,6 +21,21 @@ export default function CalendarListItem({
   handleSelectDelete,
 }: CalendarListItemProps) {
   const [isOpened, setIsOpened] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+
+  /**
+   * 일정 삭제하기 핸들러
+   */
+  // const handleDeleteEvent = async () => {
+  //   if (isLoading) return alert('잠시 후 다시 시도해보세요');
+  //   try {
+  //     setIsLoading(true);
+  //   } catch (e) {
+  //     console.error(e);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <>

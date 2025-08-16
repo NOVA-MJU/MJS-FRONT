@@ -202,7 +202,7 @@ export default function Comment({
               </Typography>
             </div>
             <button
-              className='w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
+              className='w-16 md:w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
               onClick={handleCommentReply}
             >
               <Typography variant='body02' className='text-white'>

@@ -150,18 +150,18 @@ export default function BoardDetail() {
     );
 
   return (
-    <div className='w-full flex-1 flex flex-col px-9 py-12 gap-6'>
+    <div className='w-full flex-1 flex flex-col p-4 md:p-12 gap-6'>
       <div className='w-full flex justify-between'>
         <NavigationUp onClick={() => navigate(-1)} />
         {content && (
-          <div className='flex items-center gap-6'>
+          <div className='flex items-center gap-2 md:gap-4'>
             <Link to={`/board/edit/${uuid}`} state={{ from: 'detail' }}>
-              <Button className='p-3 w-46' variant='greyBlack' shape='rounded'>
+              <Button className='p-3 md:w-46' variant='greyBlack' shape='rounded'>
                 수정
               </Button>
             </Link>
             <Button
-              className='p-3 w-46'
+              className='p-3 md:w-46'
               variant='danger'
               shape='rounded'
               onClick={handleDeletePost}
@@ -194,13 +194,13 @@ export default function BoardDetail() {
           {/**
            * 컨텐츠 본문을 표시합니다
            */}
-          <div className='w-full flex-1 min-h-64 px-29 py-3 break-all'>
+          <div className='w-full flex-1 min-h-64 py-3 break-all'>
             <BlockTextEditor readOnly initialContent={content.content} />
           </div>
           {/**
            * 좋아요 버튼을 표시합니다
            */}
-          <div className='flex px-3'>
+          <div className='flex md:px-3'>
             <button
               className='cursor-pointer hover:bg-grey-05 rounded-xl px-3 py-2 transition'
               onClick={handleLikePost}
@@ -241,7 +241,7 @@ export default function BoardDetail() {
               </div>
             </div>
             <button
-              className='w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
+              className='w-16 md:w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
               onClick={handleCommentUpload}
             >
               <Typography variant='body02' className='text-white'>

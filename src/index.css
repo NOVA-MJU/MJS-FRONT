@@ -65,3 +65,14 @@
   padding: 0 2px;
   border-radius: 2px;
 }
+
+/**
+ * BlockNote.js가 모바일 화면에서 구동될 때 좌우 padding을 제거합니다
+ */
+@media (max-width: 768px) {
+  .bn-editor {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+}

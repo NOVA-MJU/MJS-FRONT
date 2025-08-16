@@ -60,7 +60,10 @@ export default function AdminNotice() {
       <Divider />
       <div className='w-full h-fit flex justify-end'>
         <div className='flex gap-6'>
-          <Link className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer text-center' to='write'>
+          <Link
+            className='py-3 px-8 md:px-16 bg-blue-35 rounded-xl cursor-pointer text-center'
+            to='write'
+          >
             <Typography variant='body02' className='text-white'>
               작성
             </Typography>
@@ -100,11 +103,11 @@ interface NoticeItemProps {
 const NoticeItem = ({ uuid, title, content, date, thumbnailUrl }: NoticeItemProps) => {
   return (
     <Link
-      className='p-3 flex items-center gap-8 cursor-pointer rounded-lg hover:bg-grey-05'
+      className='p-3 flex items-center gap-4 md:gap-8 cursor-pointer rounded-lg hover:bg-grey-05'
       to={uuid}
     >
-      {thumbnailUrl && <img className='aspect-square max-w-24 rounded-lg' src={thumbnailUrl} />}
-      <div className='flex-1 flex flex-col gap-3 items-start'>
+      {thumbnailUrl && <img className='aspect-square w-20 md:w-24 rounded-lg' src={thumbnailUrl} />}
+      <div className='flex-1 flex flex-col gap-1 md:gap-3 items-start'>
         <Typography variant='body02'>{title}</Typography>
         <Typography variant='body03' className='line-clamp-2 break-all'>
           {content}

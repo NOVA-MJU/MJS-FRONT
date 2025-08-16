@@ -136,3 +136,16 @@ interface PostDepartmentScheduleRes {
   startDate: string;
   endDate: string;
 }
+
+/**
+ * 학과에 등록되어있는 일정을 삭제합니다.
+ * @param departmentUuid 관리하고있는 학과의 uuid를 입력하세요.
+ * @param scheduleUuid 삭제할 일정의 uuid를 입력하세요.
+ * @returns 실행 결과가 return됩니다.
+ */
+export const deleteDepartmentSchedule = async (departmentUuid: string, scheduleUuid: string) => {
+  const res = await apiClient.delete<ApiResponse<string>>(
+    `/admin/department/${departmentUuid}/schedules/${scheduleUuid}`,
+  );
+  return res.data.data;
+};

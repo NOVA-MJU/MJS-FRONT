@@ -70,7 +70,7 @@ export default function BoardEdit() {
   };
 
   return (
-    <div className='w-full flex-1 px-9 py-12 gap-6 flex flex-col'>
+    <div className='w-full flex-1 p-4 md:p-8 gap-4 md:gap-6 flex flex-col'>
       <Typography variant='heading01' className='text-mju-primary'>
         게시글 작성
       </Typography>

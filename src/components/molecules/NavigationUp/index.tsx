@@ -12,7 +12,7 @@ interface NavigationUpProps {
 export default function NavigationUp({ onClick }: NavigationUpProps) {
   return (
     <button
-      className='w-fit h-fit p-3 rounded-xl flex gap-3 items-center cursor-pointer duration-200 hover:bg-grey-05'
+      className='w-fit h-fit ps-1.5 pe-3 py-2.5 rounded-xl flex gap-3 items-center cursor-pointer duration-200 hover:bg-grey-05'
       onClick={onClick}
     >
       <IoIosArrowBack className='text-lg text-blue-10' />

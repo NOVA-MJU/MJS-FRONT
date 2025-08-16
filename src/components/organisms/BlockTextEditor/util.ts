@@ -17,7 +17,7 @@ export function getBlockTextEditorContentPreview(content: string) {
       .trim();
     if (line) return line;
   }
-  return '';
+  return '미리보기가 없습니다';
 }
 
 /**

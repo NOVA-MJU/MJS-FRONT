@@ -5,10 +5,12 @@ import { type ApiResponse, type Paginated } from './types';
  * 게시글 목록을 조회합니다.
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
+ * @param sortBy 정렬 기준을 입력하세요.
+ * @param direction 정렬 순서를 입력하세요.
  */
-export const getBoards = async (page = 0, size = 10) => {
+export const getBoards = async (page = 0, size = 10, sortBy = 'createdAt', direction = 'DESC') => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
-    params: { page, size },
+    params: { page, size, sortBy, direction },
   });
   return data.data;
 };

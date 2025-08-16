@@ -8,7 +8,6 @@ interface CalendarListProps {
   month: number;
   administrator?: boolean;
   handleAddEvent?: () => void;
-  handleDeleteEvent?: (uuid: string) => void;
 }
 
 export default function CalendarList({
