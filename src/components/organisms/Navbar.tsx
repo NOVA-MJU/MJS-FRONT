@@ -21,7 +21,12 @@ const Navbar = () => {
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!isLoggedIn) {
       e.preventDefault(); //Link tag의 Default Event를 방지.
-      toast.error('로그인이 필요한 서비스입니다.');
+
+      toast.error('로그인이 필요한 서비스입니다.', {
+        autoClose: 2000, // 2초 후 자동 닫힘
+        pauseOnHover: true,
+        onClose: () => navigate('/login'), // 닫힌 뒤 이동
+      });
       navigate('/login');
     }
   };
