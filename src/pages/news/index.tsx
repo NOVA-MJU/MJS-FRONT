@@ -9,7 +9,7 @@ import NewsCard from './NewsCard';
 import SkeletonCard from './SkeletonCard';
 const ITEMS_PER_PAGE = 8;
 
-const News: React.FC = () => {
+const News = () => {
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);

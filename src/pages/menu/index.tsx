@@ -4,13 +4,11 @@ import { Typography } from '../../components/atoms/Typography';
 import WeeklyMenuTable from '../../components/organisms/WeeklyMenuTable';
 import { getMenus } from '../../api/menu';
 import type { MenuItem } from '../../api/menu';
+import toast from 'react-hot-toast';
 
 export default function Menu() {
   const [contents, setContents] = useState<MenuItem[]>([]);
 
-  /**
-   * 오늘 날짜를 표시합니다
-   */
   const todayString = useMemo(() => {
     const today = new Date();
     const month = today.getMonth() + 1;
@@ -18,31 +16,31 @@ export default function Menu() {
     return `${month}월 ${day}일`;
   }, []);
 
-  /**
-   * 식단 정보를 서버에서 불러옵니다
-   */
   useEffect(() => {
-    const getData = async () => {
+    const getMealData = async () => {
       try {
-        const res = await getMenus();
-        setContents(res.data);
+        const response = await getMenus();
+        setContents(response.data);
       } catch (e) {
-        console.error(e);
+        toast.error('식단을 불러오는 중 오류가 발생했습니다!', e);
       }
     };
-    getData();
+    getMealData();
   }, []);
 
   return (
-    <div className='flex flex-col px-7 py-12 gap-12'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        학식
-      </Typography>
-      <Divider />
-      <Typography variant='heading02' className='text-center text-mju-primary'>
-        {todayString}
-      </Typography>
-      <WeeklyMenuTable menus={contents} />
+    <div className='px-4 py-8 md:px-7 md:py-12'>
+      <div className='mx-auto w-full max-w-[1200px] flex flex-col gap-8 md:gap-12'>
+        <Typography variant='heading01' className='text-mju-primary'>
+          학식
+        </Typography>
+        <Divider />
+        <Typography variant='heading02' className='text-center text-mju-primary'>
+          {todayString}
+        </Typography>
+
+        <WeeklyMenuTable menus={contents} />
+      </div>
     </div>
   );
 }
