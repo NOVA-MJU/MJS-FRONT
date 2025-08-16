@@ -8,7 +8,6 @@ interface CalendarListProps {
   month: number;
   administrator?: boolean;
   handleAddEvent?: () => void;
-  handleDeleteEvent?: (uuid: string) => void;
 }
 
 export default function CalendarList({
@@ -35,6 +34,11 @@ export default function CalendarList({
           deleteMode={deleteMode}
         />
       ))}
+      {filteredEvents.length === 0 && (
+        <div className='p-4 flex justify-center items-center'>
+          <Typography variant='body02'>등록된 일정이 없습니다</Typography>
+        </div>
+      )}
       {administrator &&
         (!deleteMode ? (
           <>

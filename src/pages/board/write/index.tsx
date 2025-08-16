@@ -54,16 +54,35 @@ export default function BoardWrite() {
     }
   };
 
+  /**
+   * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
+   */
+  const handleFocusEditor = (e: React.MouseEvent<HTMLDivElement>) => {
+    const editor = editorRef.current;
+
+    if (!editor) return;
+    if (editorWrapperRef.current?.contains(e.target as Node)) return;
+
+    const blocks = editor.document;
+
+    if (blocks.length > 0) {
+      const lastBlock = blocks[blocks.length - 1];
+      editor.setTextCursorPosition(lastBlock.id, 'end');
+    }
+
+    editor.focus();
+  };
+
   return (
-    <div className='w-full flex-1 px-9 py-12 gap-6 flex flex-col'>
+    <div className='flex-1 p-4 md:p-8 gap-6 flex flex-col'>
       <Typography variant='heading01' className='text-mju-primary'>
         게시글 작성
       </Typography>
       <Divider />
-      <div className='w-full flex justify-between items-center'>
+      <div className='flex justify-between items-center'>
         <NavigationUp onClick={() => navigate(-1)} />
         <button
-          className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
+          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
           onClick={handleUploadPost}
         >
           <Typography variant='body02' className='text-black'>
@@ -76,27 +95,7 @@ export default function BoardWrite() {
         placeholder='제목을 입력하세요'
         ref={titleRef}
       />
-      <div
-        className='flex-1 cursor-text'
-        onClick={(e) => {
-          /**
-           * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
-           */
-          const editor = editorRef.current;
-
-          if (!editor) return;
-          if (editorWrapperRef.current?.contains(e.target as Node)) return;
-
-          const blocks = editor.document;
-
-          if (blocks.length > 0) {
-            const lastBlock = blocks[blocks.length - 1];
-            editor.setTextCursorPosition(lastBlock.id, 'end');
-          }
-
-          editor.focus();
-        }}
-      >
+      <div className='flex-1 cursor-text' onClick={handleFocusEditor}>
         <div ref={editorWrapperRef}>
           <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>

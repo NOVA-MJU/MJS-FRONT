@@ -9,7 +9,7 @@ interface MyListProps {
 
 const MyList = ({ items, isComment, page = 1, itemsPerPage }: MyListProps) => {
   return (
-    <section className='w-full bg-white border border-gray-200 rounded-2xl overflow-hidden'>
+    <section className='w-full flex-1 bg-white border border-gray-200 rounded-2xl overflow-hidden'>
       {items.map((item, index) => (
         <div key={index}>
           <MyListItem

@@ -16,13 +16,16 @@ import Department from './pages/department';
 import DepartmentDetail from './pages/department/detail';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Admin from './pages/admin';
+import Admin from './pages/admin/calendar';
 import AdminNotice from './pages/admin/notice';
 import AdminNoticeDetail from './pages/admin/notice/detail';
 import BoardEdit from './pages/board/edit';
 import ViewPosts from './pages/mypage/viewPosts';
 import ViewComments from './pages/mypage/viewComments';
 import ViewLikes from './pages/mypage/viewLikes';
+import AdminNoticeWrite from './pages/admin/notice/write';
+import AdminNoticeEdit from './pages/admin/notice/edit';
+import GlobalErrorPage from './pages/error';
 
 const App = () => {
   return (
@@ -55,9 +58,16 @@ const App = () => {
 
         <Route path='/search' element={<Search />} />
 
-        <Route path='/admin/:uuid' element={<Admin />} />
-        <Route path='/admin/:uuid/notice' element={<AdminNotice />} />
-        <Route path='/admin/:uuid/notice/:uuid' element={<AdminNoticeDetail />} />
+        <Route path='/admin/:departmentUuid' element={<Admin />} />
+        <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
+        <Route path='/admin/:departmentUuid/notice/:noticeUuid' element={<AdminNoticeDetail />} />
+        <Route path='/admin/:departmentUuid/notice/write' element={<AdminNoticeWrite />} />
+        <Route
+          path='/admin/:departmentUuid/notice/edit/:noticeUuid'
+          element={<AdminNoticeEdit />}
+        />
+
+        <Route path='*' element={<GlobalErrorPage />} />
       </Route>
     </Routes>
   );

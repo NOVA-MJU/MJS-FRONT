@@ -1,47 +1,22 @@
 import apiClient from './apiClient';
+import { type ApiResponse } from './types';
 
+/**
+ * 회원 통계 정보
+ */
+export const getProfileStats = async (): Promise<ProfileStatsRes> => {
+  const res = await apiClient.get('/profile');
+  return res.data.data;
+};
 export interface ProfileStatsRes {
   postCount: number;
   commentCount: number;
   likedPostCount: number;
 }
 
-export interface Content {
-  uuid: string;
-  title: string;
-  previewContent: string;
-  viewCount: number;
-  published: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  likeCount: number;
-  commentCount: number;
-  author: string;
-  liked: boolean;
-}
-
-/** 회원 통계 정보 **/
-export const getProfileStats = async (): Promise<ProfileStatsRes> => {
-  const res = await apiClient.get('/profile');
-  return res.data.data;
-};
-
-/** 내 게시글 조회 **/
-
-export const getMyPost = async (): Promise<Content[]> => {
-  const res = await apiClient.get('/profile/posts');
-  console.log('게시글 조회:', res.data.data);
-  return res.data.data; // Content[] 형태
-};
-/** 내 좋아요 조회 **/
-export const getMyLikes = async () => {
-  const res = await apiClient.get('/profile/liked_posts');
-  console.log('좋아요 조회:', res.data.data);
-  return res.data.data;
-};
-
-/** 내 댓글 조회 **/
+/**
+ * 내 댓글 조회
+ */
 export const getMyComments = async () => {
   const res = await apiClient.get('/profile/comments');
   console.log('댓글 조회:', res.data.data);
@@ -65,4 +40,93 @@ export const updateMemberInfo = async (body: {
 export const changePassword = async (pw: string, newPw: string) => {
   const res = await apiClient.patch('/members/info/password', { password: pw, newPassword: newPw });
   return res.data;
+};
+
+/**
+ * 내가 쓴 게시글 목록을 조회합니다.
+ * @returns 게시글 목록을 반환합니다.
+ */
+export const getMyPosts = async () => {
+  const res = await apiClient.get<ApiResponse<MyPostItem[]>>('/profile/posts');
+  return res.data.data;
+};
+export interface MyPostItem {
+  uuid: string;
+  title: string;
+  previewContent: string;
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
+
+/**
+ * 내가 댓글 단 게시글을 조회합니다.
+ * @returns 게시글 목록을 반환합니다.
+ */
+export const getMyCommentedPosts = async () => {
+  const res = await apiClient.get<ApiResponse<MyCommentedPostItem[]>>('/profile/comments');
+  return res.data.data;
+};
+export interface MyCommentedPostItem {
+  author: string;
+  boardCreatedAt: string;
+  boardIsLiked: boolean;
+  boardLikeCount: number;
+  boardPreviewContent: string;
+  boardPublished: boolean;
+  boardTitle: string;
+  boardUuid: string;
+  boardViewCount: number;
+  commentCreatedAt: string;
+  commentIsLiked: boolean;
+  commentLikeCount: number;
+  commentPreviewContent: string;
+  commentUuid: string;
+}
+
+/**
+ * 내가 좋아요 누른 게시글을 조회합니다.
+ * @returns 게시글 목록을 반환합니다.
+ */
+export const getMyLikedPosts = async () => {
+  const res = await apiClient.get<ApiResponse<MyPostItem[]>>('/profile/liked_posts');
+  return res.data.data;
+};
+
+/**
+ * @deprecated getMyPosts를 사용하세요
+ * 내 게시글 조회
+ */
+export const getMyPost = async (): Promise<Content[]> => {
+  const res = await apiClient.get('/profile/posts');
+  return res.data.data; // Content[] 형태
+};
+export interface Content {
+  uuid: string;
+  title: string;
+  previewContent: string;
+  viewCount: number;
+  published: boolean;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  likeCount: number;
+  commentCount: number;
+  author: string;
+  liked: boolean;
+}
+
+/**
+ * @deprecated getMyLikedPosts를 사용하세요
+ * 내 좋아요 조회
+ */
+export const getMyLikes = async () => {
+  const res = await apiClient.get('/profile/liked_posts');
+  return res.data.data;
 };

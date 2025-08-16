@@ -3,13 +3,14 @@ import { type ApiResponse, type Paginated } from './types';
 
 /**
  * 게시글 목록을 조회합니다.
- *
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
+ * @param sortBy 정렬 기준을 입력하세요.
+ * @param direction 정렬 순서를 입력하세요.
  */
-export const getBoards = async (page = 0, size = 10) => {
+export const getBoards = async (page = 0, size = 10, sortBy = 'createdAt', direction = 'DESC') => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
-    params: { page, size },
+    params: { page, size, sortBy, direction },
   });
   return data.data;
 };
@@ -114,6 +115,14 @@ export const deletePost = async (boardUuid: string) => {
 };
 
 /**
+ * 게시글 좋아요 표시
+ */
+export const likePost = async (boardUuid: string) => {
+  const response = await apiClient.post(`/boards/${boardUuid}/like`);
+  return response.data;
+};
+
+/**
  * 게시글 댓글 조회
  *
  * @param boardUuid 댓글을 조회할 게시글의 uuid를 입력하세요
@@ -133,7 +142,8 @@ export interface CommentRes {
   likeCount: number;
   createdAt: string;
   liked: boolean;
-  replies: Comment[];
+  replies: CommentRes[];
+  profileImageUrl?: string;
 }
 
 /**
@@ -145,18 +155,55 @@ export const postComment = async (boardUuid: string, content: string) => {
 };
 
 /**
- * 게시글 좋아요 표시
+ * 게시글 댓글 삭제
+ * @param boardUuid 게시글의 uuid를 입력하세요
+ * @param commentUuid 댓글의 uuid를 입력하세요
+ * @returns 서버 메시지가 표시됩니다
  */
-export const likePost = async (boardUuid: string) => {
-  const response = await apiClient.post(`/boards/${boardUuid}/like`);
-  return response.data;
+export const deleteComment = async (boardUuid: string, commentUuid: string) => {
+  const res = await apiClient.delete<ApiResponse<string>>(
+    `/boards/${boardUuid}/comments/${commentUuid}`,
+  );
+  return res.data.data;
+};
+
+/**
+ * 게시글 댓글 좋아요 표시
+ * @param boardUuid 게시글의 uuid를 입력하세요
+ * @param commentUuid 댓글의 uuid를 입력하세요
+ * @returns 서버 메시지가 표시됩니다
+ */
+export const toggleLikeComment = async (boardUuid: string, commentUuid: string) => {
+  const res = await apiClient.post<ApiResponse<string>>(
+    `/boards/${boardUuid}/comments/${commentUuid}/like`,
+  );
+  return res.data.data;
+};
+
+/**
+ * 게시글 댓글에 대댓글을 작성합니다
+ * @param boardUUID 게시글의 uuid를 입력하세요
+ * @param parentCommentUUID 부모 댓글의 uuid를 입력하세요
+ * @param content 새롭게 등록할 대댓글의 content를 입력하세요
+ * @returns 등록된 대댓글 정보를 return합니다
+ */
+export const postCommentReply = async (
+  boardUUID: string,
+  parentCommentUUID: string,
+  content: string,
+) => {
+  const res = await apiClient.post<ApiResponse<CommentRes>>(
+    `/boards/${boardUUID}/comments/${parentCommentUUID}/reply`,
+    {
+      content,
+    },
+  );
+  return res.data.data;
 };
 
 /**
  * @deprecated 서버에서 비활성화된 `api`이므로 요청 시 오류가 발생할 수 있습니다.
- *
  * 이미지를 s3 버킷에 업로드하는 요청 함수입니다. 이미지는 폼 데이터 형식으로 전달됩니다.
- *
  * @param file 업로드할 이미지를 입력하세요.
  * @param folderUuid 업로드할 이미지 폴더를 입력하세요.
  * @returns 업로드한 이미지의 s3 주소를 반환합니다.

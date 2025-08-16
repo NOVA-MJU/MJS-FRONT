@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 
 export interface CalendarEventItem {
+  uuid: string;
   year: number;
   startDate: string;
   endDate: string;

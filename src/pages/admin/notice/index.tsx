@@ -1,14 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../../../components/atoms/SearchBar';
 import { Typography } from '../../../components/atoms/Typography';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Divider from '../../../components/atoms/Divider';
+import { getDepartmentNotices, type DepartmentNoticeItem } from '../../../api/departments';
+import Pagination from '../../../components/molecules/common/Pagination';
+
+const PAGINATION_LENGTH = 10;
 
 export default function AdminNotice() {
+  const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [, setSearchParams] = useSearchParams();
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [deleteMode, setDeleteMode] = useState(false);
-  const [contents] = useState(x);
+  const [contents, setContents] = useState<DepartmentNoticeItem[]>([]);
+  const [, setIsLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   /**
    * 검색을 수행할 함수 작성
@@ -18,6 +25,26 @@ export default function AdminNotice() {
     if (!trimmed) return;
     setSearchParams({ search: trimmed });
   }
+
+  /**
+   * 공지사항 목록의 첫 페이지를 조회합니다
+   */
+  useEffect(() => {
+    (async () => {
+      if (!departmentUuid) return;
+      setIsLoading(true);
+      try {
+        const res = await getDepartmentNotices(departmentUuid, page, PAGINATION_LENGTH);
+        console.log(res);
+        setContents(res.content);
+        setTotalPage(res.totalPages);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [departmentUuid, page]);
 
   return (
     <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
@@ -32,116 +59,63 @@ export default function AdminNotice() {
       />
       <Divider />
       <div className='w-full h-fit flex justify-end'>
-        {!deleteMode ? (
-          <div className='flex gap-6'>
-            <button
-              className='w-45 p-3 bg-grey-10 rounded-xl cursor-pointer'
-              onClick={() => setDeleteMode(true)}
-            >
-              <Typography variant='body02' className='text-black'>
-                편집
-              </Typography>
-            </button>
-            <button className='w-45 p-3 bg-blue-35 rounded-xl cursor-pointer'>
-              <Typography variant='body02' className='text-white'>
-                작성
-              </Typography>
-            </button>
-          </div>
-        ) : (
-          <div className='flex gap-6'>
-            <button
-              className='w-45 p-3 bg-grey-10 rounded-xl cursor-pointer'
-              onClick={() => setDeleteMode(false)}
-            >
-              <Typography variant='body02' className='text-black'>
-                취소
-              </Typography>
-            </button>
-            <button className='w-45 p-3 bg-error rounded-xl cursor-pointer'>
-              <Typography variant='body02' className='text-white'>
-                삭제
-              </Typography>
-            </button>
-          </div>
-        )}
+        <div className='flex gap-6'>
+          <Link
+            className='py-3 px-8 md:px-16 bg-blue-35 rounded-xl cursor-pointer text-center'
+            to='write'
+          >
+            <Typography variant='body02' className='text-white'>
+              작성
+            </Typography>
+          </Link>
+        </div>
       </div>
       <div className='w-full flex-1 p-3 flex flex-col gap-3'>
-        {contents.map((content, index) => (
+        {contents.map((content) => (
           <NoticeItem
             key={content.noticeUuid}
-            index={index}
+            uuid={content.noticeUuid}
             title={content.title}
             content={content.previewContent}
             date={content.createdAt}
+            thumbnailUrl={content.thumbnailUrl}
           />
         ))}
+        {contents.length === 0 && (
+          <div className='flex-1 flex justify-center items-center'>
+            <Typography variant='title02'>아직 작성된 공지사항이 없습니다</Typography>
+          </div>
+        )}
       </div>
-      {/* <Pagination /> */}
+      <Pagination page={page} totalPages={totalPage} onChange={setPage} />
     </div>
   );
 }
 
 interface NoticeItemProps {
-  index: number;
+  uuid: string;
   title: string;
   content: string;
   date: string;
+  thumbnailUrl?: string;
 }
 
-const NoticeItem = ({ index, title, content, date }: NoticeItemProps) => {
+const NoticeItem = ({ uuid, title, content, date, thumbnailUrl }: NoticeItemProps) => {
   return (
-    <button className='w-full h-fit p-3 flex cursor-pointer rounded-lg hover:bg-grey-05'>
-      <div className='flex-1 h-fit flex flex-col gap-6 items-start'>
-        <Typography variant='body03'>{index}</Typography>
-        <div className='w-full h-fit flex flex-col gap-3 items-start'>
-          <Typography variant='body02'>{title}</Typography>
-          <Typography variant='body03'>{content}</Typography>
-        </div>
-      </div>
-      <div className='px-3'>
-        <Typography variant='body03' className='text-grey-40'>
-          {date.slice(0, 10)}
+    <Link
+      className='p-3 flex items-center gap-4 md:gap-8 cursor-pointer rounded-lg hover:bg-grey-05'
+      to={uuid}
+    >
+      {thumbnailUrl && <img className='aspect-square w-20 md:w-24 rounded-lg' src={thumbnailUrl} />}
+      <div className='flex-1 flex flex-col gap-1 md:gap-3 items-start'>
+        <Typography variant='body02'>{title}</Typography>
+        <Typography variant='body03' className='line-clamp-2 break-all'>
+          {content}
         </Typography>
       </div>
-    </button>
+      <Typography variant='body03' className='text-grey-40'>
+        {date.slice(0, 10)}
+      </Typography>
+    </Link>
   );
 };
-
-const x = [
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-  {
-    noticeUuid: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    title: 'string',
-    previewContent: 'string',
-    thumbnailUrl: 'string',
-    createdAt: '2025-08-04T03:11:08.982Z',
-  },
-];

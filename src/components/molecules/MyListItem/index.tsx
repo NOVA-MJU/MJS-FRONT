@@ -1,43 +1,68 @@
+import { Link } from 'react-router-dom';
+import { Typography } from '../../atoms/Typography';
+import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { RxDividerVertical } from 'react-icons/rx';
+import Divider from '../../atoms/Divider';
+
 export interface MyListItemProps {
-  id: number;
+  id: string;
   title: string;
-  content: string;
-  date?: string;
-  link: string;
-  variant?: 'default' | 'comment';
-  isLast: boolean;
+  contentPreview: string;
+  commentCount: number;
+  likeCount: number;
+  publishedDate: string;
+  commentPreview?: string;
+  isLast?: boolean;
 }
 
-const MyListItem = ({ title, content, date, link, variant = 'default' }: MyListItemProps) => {
+const MyListItem = ({
+  id,
+  title,
+  contentPreview,
+  commentCount,
+  likeCount,
+  publishedDate,
+  commentPreview,
+  isLast = false,
+}: MyListItemProps) => {
   return (
-    <div className='w-full h-auto flex justify-between p-4'>
-      <div className='flex flex-col'>
-        <a href={link} className='flex flex-col gap-2'>
-          <h3 className='font-semibold text-sm md:text-lg'>{title}</h3>
-          <p className='text-xs md:text-sm text-black font-normal'>{content}</p>
-        </a>
-        <div className='flex text-xs md:text-base gap-2 mt-2 text-grey-40'>
-          <span>❤️ 00</span>
-          <span>|</span>
-          <span>💬 00</span>
+    <>
+      <Link to={`/board/${id}`} className='w-full h-fit flex flex-col gap-3'>
+        <div className='w-full h-fit p-3 flex gap-6'>
+          <div className='flex-1 h-fit flex flex-col gap-3'>
+            <Typography variant='body02'>{title}</Typography>
+            <Typography variant='body03'>{contentPreview}</Typography>
+            <div className='flex gap2'>
+              <Typography variant='body03' className='text-grey-40 flex gap-1 items-center'>
+                <IoIosHeart />
+                {likeCount}
+                <RxDividerVertical />
+                <IoIosChatbubbles />
+                {commentCount}
+              </Typography>
+            </div>
+          </div>
+          <div className='w-fit h-fit px-3 flex items-center'>
+            <Typography variant='body03' className='text-grey-40'>
+              {publishedDate}
+            </Typography>
+          </div>
         </div>
-
-        {variant === 'comment' && (
-          <div className='text-xs md:text-sm text-gray-800 mt-4'>
-            <div className='border-l-2 border-blue-10 pl-4'>
-              <div className='bg-blue-05 text-blue-35 font-semibold w-30 md:w-[76px] rounded text-center px-2 py-1 mb-2'>
-                나의 댓글
-              </div>
-              <p>{content}</p>
+        {commentPreview && (
+          <div className='w-full h-fit p-3'>
+            <div className='w-full h-fit flex flex-col gap-3 pl-6 border-l-2 border-blue-10 '>
+              <span className='w-fit px-2 py-1 rounded-sm bg-blue-05'>
+                <Typography variant='body02' className='text-blue-35'>
+                  나의 댓글
+                </Typography>
+              </span>
+              <Typography variant='body03'>{commentPreview}</Typography>
             </div>
           </div>
         )}
-      </div>
-
-      <div className='flex items-center text-[10px] md:text-base mr-2 md:mr-4 text-grey-40'>
-        {date || '0000.00.00'}
-      </div>
-    </div>
+      </Link>
+      {!isLast && <Divider variant='thin' />}
+    </>
   );
 };
 

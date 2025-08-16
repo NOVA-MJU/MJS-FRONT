@@ -1,16 +1,18 @@
 import { Typography } from '../../../components/atoms/Typography';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { getBoardDetail, postBoard } from '../../../api/board';
+import { getBoardDetail, updatePost } from '../../../api/board';
+import { DOMAIN_VALUES } from '../../../api/s3upload';
 
 export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
@@ -43,29 +45,23 @@ export default function BoardEdit() {
   }, []);
 
   /**
-   * 게시글 업로드 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
+   * 게시글 수정 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
    */
   const handleUploadPost = async () => {
-    if (isLoading) return;
+    if (isLoading || !uuid) return;
 
     const parsedTitle = title.trim() ?? '';
     const content = JSON.stringify(editorRef.current?.document);
     const contentPreview = getBlockTextEditorContentPreview(content);
 
-    if (!parsedTitle) {
-      alert('제목을 입력하세요');
-      return;
-    }
-
-    if (editorRef.current?.isEmpty) {
-      alert('본문을 입력하세요');
-      return;
-    }
+    if (!parsedTitle) return alert('제목을 입력하세요');
+    if (editorRef.current?.isEmpty) return alert('본문을 입력하세요');
 
     setIsLoading(true);
     try {
-      const newPostUuid = await postBoard(parsedTitle, content, contentPreview);
-      navigate(newPostUuid);
+      const newPostUuid = await updatePost(uuid, parsedTitle, content, contentPreview);
+      if (location.state?.from === 'detail') navigate(-1);
+      else navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
     } finally {
@@ -74,7 +70,7 @@ export default function BoardEdit() {
   };
 
   return (
-    <div className='w-full flex-1 px-9 py-12 gap-6 flex flex-col'>
+    <div className='w-full flex-1 p-4 md:p-8 gap-4 md:gap-6 flex flex-col'>
       <Typography variant='heading01' className='text-mju-primary'>
         게시글 작성
       </Typography>
@@ -118,7 +114,11 @@ export default function BoardEdit() {
         }}
       >
         <div ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} initialContent={initialContent} />
+          <BlockTextEditor
+            onEditorReady={handleEditorReady}
+            domain={DOMAIN_VALUES[0]}
+            initialContent={initialContent}
+          />
         </div>
       </div>
     </div>
