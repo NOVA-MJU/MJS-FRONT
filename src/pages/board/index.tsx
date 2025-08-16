@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -10,12 +10,49 @@ import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
 import { RxDividerVertical } from 'react-icons/rx';
 import { formatToElapsedTime } from '../../utils';
 import clsx from 'clsx';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Board() {
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const initializedRef = useRef(false);
+
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  /**
+   * 로그인이 되어있지 않은 경우 튕겨냄
+   */
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      navigate('/', { replace: true, state: { from: location.pathname } });
+    }
+  }, [isLoggedIn, navigate, location.pathname]);
+
+  /**
+   * 페이지네이션 초기화
+   */
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+
+      try {
+        const res = await getBoards(0);
+        setContents(res.content);
+        setTotalPages(res.totalPages);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+        initializedRef.current = true;
+      }
+    })();
+  }, []);
 
   /**
    * 페이지네이션 게시글 목록 로드

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import Button from '../../atoms/Button/Button';
 
 import { genderOptions } from '../../../constants/gender';
 import { useRegisterHandlers } from '../../../hooks/useRegister';
 import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
+import Button from '../../atoms/Button/Button';
 
 const RegisterForm: React.FC = () => {
   const [id, setId] = useState('');

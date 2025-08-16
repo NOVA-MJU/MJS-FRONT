@@ -9,13 +9,15 @@ const DEFAULT_IMAGE_URL = defaultAvatar;
 
 interface ImageViewerProps {
   imageUrl: string | undefined;
-  width?: string;
-  height?: string;
+  className?: string;
 }
 
-const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl }) => {
+const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl, className }) => {
   return (
-    <div style={{ borderColor: colors.grey10 }} className='w-48 h-48 rounded-xl overflow-hidden'>
+    <div
+      style={{ borderColor: colors.grey10 }}
+      className={`rounded-xl overflow-hidden ${className}`}
+    >
       <img src={imageUrl || DEFAULT_IMAGE_URL} alt='img' className='w-full h-full object-cover' />
     </div>
   );

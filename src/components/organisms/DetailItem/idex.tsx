@@ -41,13 +41,13 @@ const DetailItem: React.FC<ListItemProps> = ({
           href={link}
           target='_blank'
           rel='noopener noreferrer'
-          className='flex gap-8 py-6 cursor-pointer'
+          className='flex md:gap-4 py-6 cursor-pointer'
         >
           {imgSrc && (
             <img
               src={imgSrc || '/default-thumbnail.png'}
               alt={title}
-              className='min-w-[152px] h-[114px] object-cover rounded-xl'
+              className='md:min-w-[152px] h-[114px] object-cover rounded-xl'
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = '/default-thumbnail.png';
@@ -70,7 +70,7 @@ const DetailItem: React.FC<ListItemProps> = ({
     <>
       <div className='flex justify-between items-center gap-2 py-6'>
         <div>
-          <span className='w-[1000px] flex items-center mb-6'>
+          <span className='md:w-[1000px] flex items-center mb-4 md:mb-6'>
             <p className='font-light mr-4'>{String(id).padStart(2, '0')}</p>
             <Badge text={layout === 'notice' ? categoryLabel[category] || category : category} />
           </span>
@@ -80,11 +80,10 @@ const DetailItem: React.FC<ListItemProps> = ({
             rel='noopener noreferrer'
             className='flex flex-col gap-2 cursor-pointer'
           >
-            <p className='text-base font-medium'>{title}</p>
-            <p className='text-base font-light'>{content}</p>
+            <p className='w-50 md:w-full text-sm md:text-base font-medium'>{title}</p>
           </a>
         </div>
-        <p className='text-sm text-grey-40 flex'> {date?.split('T')[0]}</p>
+        <p className='text-xs md:text-sm text-grey-40 flex'> {date?.split('T')[0]}</p>
       </div>
       <hr className='border-grey-20' />
     </>

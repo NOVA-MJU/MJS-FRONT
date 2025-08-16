@@ -55,11 +55,11 @@ const RequiredInfo: React.FC<RequiredInfoProps> = ({
   };
   return (
     <div
-      className={`w-[648px] ${
+      className={`w-full md:w-[648px] ${
         openForm ? 'h-[718px]' : 'h-[308px]'
       } bg-white flex flex-col justify-center items-center rounded-2xl`}
     >
-      <div className='w-[440px] flex flex-col gap-12 '>
+      <div className='w-[80%] md:w-[440px] flex flex-col gap-12 '>
         <InputField
           label={'이메일'}
           placeholder={`${user?.email ?? ''}`}

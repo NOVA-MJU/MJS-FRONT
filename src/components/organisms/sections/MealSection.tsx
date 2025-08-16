@@ -11,7 +11,6 @@ const getCurrentMealTime = () => {
   return '저녁';
 };
 
-//서버에서 제공해주는 date : 07.07 (월)에 sync Format
 const getTodayString = () => {
   const today = new Date();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -33,7 +32,7 @@ const MealSection = () => {
     저녁: [],
   });
 
-  //주말인 경우의 예외처리로직
+  //주말인 경우의 예외처리 로직
   const isWeekend = () => {
     const day = new Date().getDay();
     return day === 0 || day === 6;
@@ -68,7 +67,7 @@ const MealSection = () => {
   }, []);
 
   return (
-    <section className='w-full px-1 py-6'>
+    <section className='w-full px-1 py-6 '>
       <div className='flex justify-between'>
         <h1 className='text-xl font-bold text-mju-primary mb-4'>학식</h1>
         <span>
@@ -77,7 +76,7 @@ const MealSection = () => {
       </div>
 
       {isWeekend() ? (
-        <div className='text-gray-400 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
+        <div className=' text-gray-400 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
       ) : (
         <div className='w-full md:flex-row gap-4 justify-start'>
           <MealComponent

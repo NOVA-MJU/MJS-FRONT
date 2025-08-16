@@ -43,8 +43,8 @@ const Notice: React.FC = () => {
   }, [selectedCategory, page]);
 
   return (
-    <div className='w-[1280px] min-h-screen flex flex-col p-12 gap-6 mx-auto'>
-      <p className='text-4xl font-bold text-mju-primary'>공지사항</p>
+    <div className='w-full md:w-[1280px] min-h-screen flex flex-col p-4 md:p-12 gap-6 mx-auto'>
+      <p className='text-2xl md:text-4xl font-bold text-mju-primary'>공지사항</p>
       <SearchBar />
       <CategoryFilter
         categories={Notices}
