@@ -15,6 +15,7 @@ const MealComponent = ({ title, items, highlight }: MealComponentProps) => {
         >
           {title}
         </h2>
+        \{' '}
       </div>
       <ul className='px-4 py-2 text-sm text-black-40 space-y-1'>
         {items.map((item, idx) => (
