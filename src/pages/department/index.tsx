@@ -30,19 +30,17 @@ export default function Department() {
       <Divider />
       <div className='w-full overflow-x-auto no-scrollbar'>
         <div className='w-max flex gap-6 px-2'>
-          <Chip
-            text='전체'
-            primary
-            selected={selectedCollege === ''}
-            onClick={() => setSelectedCollege('')}
-          />
+          <Chip selected={selectedCollege === ''} onClick={() => setSelectedCollege('')}>
+            전체
+          </Chip>
           {COLLEGE_OPTIONS.map((item) => (
             <Chip
               key={item.value}
-              text={item.label}
               selected={selectedCollege === item.value}
               onClick={() => setSelectedCollege(item.value)}
-            />
+            >
+              {item.label}
+            </Chip>
           ))}
         </div>
       </div>
