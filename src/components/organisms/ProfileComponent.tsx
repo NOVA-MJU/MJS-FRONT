@@ -31,15 +31,18 @@ interface ProfileComponentProps {
  */
 const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
   const { isLoggedIn, user, logout } = useAuthStore();
+
+  /**
+   * 로그아웃 핸들러
+   */
   const handleLogout = () => {
     // 1) zustand 상태 초기화 + sessionStorage.clear()
     logout();
     // 2) persist에 저장된 값까지 제거 (localStorage/sessionStorage 어디든)
     try {
       useAuthStore.persist.clearStorage();
-      toast.success('정상적으로 로그아웃되었습니다.');
+      toast.success('로그아웃되었습니다.');
     } catch (e) {
-      toast.error('로그아웃 오류 발생하였습니다. 관리자에게 문의해주십시오');
       console.warn('persist clearStorage failed:', e);
     }
   };
@@ -47,14 +50,14 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
   if (isLoggedIn) {
     return (
       <div
-        className={`w-full  flex flex-col border border-grey-05 rounded-md p-4 font-sans ${className}`}
+        className={`w-full flex flex-col border border-grey-05 rounded-md p-4 font-sans ${className}`}
       >
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-4'>
-            <Avatar size={50} />
+            <Avatar src={user?.profileImageUrl} />
             <div className='flex flex-col'>
               <div>
-                <span className='font-bold'>{user?.name}</span>
+                <span className='font-bold'>{user?.nickname}</span>
               </div>
               <span className='text-sm text-gray-500'>{user?.email}</span>
             </div>

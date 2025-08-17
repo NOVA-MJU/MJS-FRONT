@@ -113,7 +113,7 @@ export default function Comment({
     <div key={commentUuid} className='gap-3 flex flex-col'>
       <div className='relative flex justify-between'>
         <div className='gap-3 flex'>
-          <Avatar size={40} src={profileImageUrl} />
+          <Avatar src={profileImageUrl} />
           <div className='flex flex-col gap-[2px]'>
             <Typography variant='body02' className='text-black'>
               {authorName}

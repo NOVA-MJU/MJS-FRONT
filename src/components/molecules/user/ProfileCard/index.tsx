@@ -1,8 +1,9 @@
-import ProfileImage from '../../../atoms/ImageViewer';
 import Button from '../../../atoms/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../../store/useAuthStore';
 import { getDepartmentLabel } from '../../../../utils/department';
+import Avatar from '../../../atoms/Avatar';
+import { Typography } from '../../../atoms/Typography';
 
 const ProfileCard = () => {
   const user = useAuthStore((state) => state.user);
@@ -14,24 +15,22 @@ const ProfileCard = () => {
   if (!user) return null;
 
   return (
-    <div className='bg-white h-48 md:h-[242px] flex justify-center items-center rounded-2xl'>
-      <ProfileImage imageUrl={user.profileImageUrl} className='w-36 h-36 md:w-48 md:h-48' />
-      <div id='contentbox' className='flex flex-col mb-4 gap-4 mt-1 ml-2 md:ml-8'>
-        <div className='w-40 md:w-78 flex flex-col border-2 border-grey-05 md:px-4.5 md:py-4 rounded-xl px-2 py-2'>
-          <p className='text-lg md:text-3xl font-medium'>{user.nickname}</p>
-          <div className='w-full flex gap-2 text-xs md:text-base'>
-            <p className='text-black'>{departmentLabel}</p>
-            <p className='text-grey-40'>|</p>
-            <p className='text-black '>{user.studentNumber}</p>
-          </div>
-          <p className='text-grey-40 text-xs md:text-base'>{user.email}</p>
+    <div className='bg-white p-4 md:p-6 gap-4 md:gap-6 flex items-center rounded-lg'>
+      <Avatar src={user.profileImageUrl} className='w-20 h-20 md:w-40 md:h-40' />
+      <div id='contentbox' className='flex-1 flex flex-col gap-4'>
+        <div className='gap-0.5 md:gap-1 p-2 md:p-4 flex flex-col border-2 border-grey-05 rounded-lg'>
+          <Typography variant='heading02'>{user.nickname}</Typography>
+          <Typography variant='body02'>{departmentLabel}</Typography>
+          <Typography variant='body02'>{user.studentNumber}</Typography>
+          <Typography variant='body03' className='text-grey-40'>
+            {user.email}
+          </Typography>
         </div>
         <div className='hidden md:block'>
           <Button
             variant='blue35'
             size='lg'
-            disabled={false}
-            fullWidth={true}
+            fullWidth
             shape='rounded'
             onClick={() => navigate(`/mypage/${user.uuid}/edit`)}
           >

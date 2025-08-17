@@ -10,12 +10,9 @@ interface ActivityBoxProps {
 
 const ActivityBox = ({ label, count, link }: ActivityBoxProps) => {
   return (
-    <Link
-      to={link}
-      className='w-48 h-28 bg-white flex flex-col justify-center items-start rounded-2xl px-6 py-4 gap-2'
-    >
+    <Link to={link} className='w-full min-h-28 bg-white flex flex-col rounded-lg px-6 py-4 gap-2'>
       <Typography
-        variant='title01'
+        variant='title02'
         className='w-full text-mju-primary flex justify-between items-center'
       >
         {label}
