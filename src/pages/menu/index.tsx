@@ -17,30 +17,26 @@ export default function Menu() {
   }, []);
 
   useEffect(() => {
-    const getMealData = async () => {
+    (async () => {
       try {
         const response = await getMenus();
         setContents(response.data);
       } catch (e) {
         toast.error('식단을 불러오는 중 오류가 발생했습니다!', e);
       }
-    };
-    getMealData();
+    })();
   }, []);
 
   return (
-    <div className='px-4 py-8 md:px-7 md:py-12'>
-      <div className='mx-auto w-full max-w-[1200px] flex flex-col gap-8 md:gap-12'>
-        <Typography variant='heading01' className='text-mju-primary'>
-          학식
-        </Typography>
-        <Divider />
-        <Typography variant='heading02' className='text-center text-mju-primary'>
-          {todayString}
-        </Typography>
-
-        <WeeklyMenuTable menus={contents} />
-      </div>
+    <div className='flex flex-col p-4 md:p-8 gap-4 md:gap-12'>
+      <Typography variant='heading01' className='text-mju-primary'>
+        학식
+      </Typography>
+      <Divider />
+      <Typography variant='heading02' className='text-center text-mju-primary'>
+        {todayString}
+      </Typography>
+      <WeeklyMenuTable menus={contents} />
     </div>
   );
 }
