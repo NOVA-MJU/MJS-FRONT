@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from './apiClient';
+import type { ApiResponse } from './types';
 
 export interface MenuItem {
   date: string;
@@ -8,13 +8,6 @@ export interface MenuItem {
 }
 
 export const getMenus = async () => {
-  try {
-    const { data } = await apiClient.get<{
-      status: string;
-      data: MenuItem[];
-    }>('/menus');
-    return data;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || '식단표 조회 실패');
-  }
+  const res = await apiClient.get<ApiResponse<MenuItem[]>>('/menus');
+  return res.data.data;
 };

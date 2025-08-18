@@ -20,6 +20,7 @@ import { RxDividerVertical } from 'react-icons/rx';
 import Divider from '../../../components/atoms/Divider';
 import { formatToElapsedTime } from '../../../utils';
 import { IoChatbubbles } from 'react-icons/io5';
+import GlobalErrorPage from '../../error';
 
 const MAX_REPLY_LEN = 100;
 
@@ -139,15 +140,7 @@ export default function BoardDetail() {
     }
   };
 
-  if (isError)
-    return (
-      <div className='flex-1 flex flex-col justify-center items-center gap-3'>
-        <Typography variant='heading01'>페이지를 찾을 수 없습니다</Typography>
-        <Button shape='rounded' onClick={() => navigate(-1)}>
-          뒤로 가기
-        </Button>
-      </div>
-    );
+  if (isError) return <GlobalErrorPage />;
 
   return (
     <div className='w-full flex-1 flex flex-col p-4 md:p-12 gap-6'>

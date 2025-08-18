@@ -23,7 +23,7 @@ export default function CalendarGridItem({
   return (
     <div
       className={clsx(
-        'w-full h-40 flex flex-col gap-3',
+        'w-full h-24 md:h-40 flex flex-col gap-0.5 md:gap-1.5',
         outdated && 'text-grey-40',
         focused && 'text-blue-35',
         weekend && 'text-error',
@@ -49,8 +49,8 @@ interface CalendarEventRibbonProps {
 
 function CalendarEventRibbon({ event }: CalendarEventRibbonProps) {
   return (
-    <div className={`h-6 px-3 bg-blue-10`}>
-      <Typography variant='caption01' className='text-white'>
+    <div className={`px-0.5 md:px-1.5 md:py-0.5 bg-blue-10`}>
+      <Typography variant='caption01' className='text-white line-clamp-1'>
         {event}
       </Typography>
     </div>

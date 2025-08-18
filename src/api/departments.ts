@@ -33,7 +33,7 @@ export interface DepartmentRes {
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 상세 정보를 반환합니다
  */
-export const getDepartmentDetail = async (departmentUuid: string): Promise<DepartmentDetailRes> => {
+export const getDepartmentDetail = async (departmentUuid: string) => {
   const res = await apiClient.get<ApiResponse<DepartmentDetailRes>>(
     `/departments/info/${departmentUuid}`,
   );

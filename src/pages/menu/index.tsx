@@ -19,8 +19,8 @@ export default function Menu() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await getMenus();
-        setContents(response.data);
+        const res = await getMenus();
+        setContents(res);
       } catch (e) {
         toast.error('식단을 불러오는 중 오류가 발생했습니다!', e);
       }

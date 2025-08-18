@@ -7,3 +7,14 @@ export const COLLEGE_OPTIONS = [
   { label: '아너칼리지', value: 'HONOR' },
   { label: '기타', value: 'OTHER' },
 ];
+
+/**
+ * value를 입력하면 label을 반환하는 함수입니다.
+ *
+ * `사용예시`
+ *
+ * ```javascript
+ * collegeMap.get(collegeName)
+ * ```
+ */
+export const collegeMap = new Map(COLLEGE_OPTIONS.map((option) => [option.value, option.label]));
