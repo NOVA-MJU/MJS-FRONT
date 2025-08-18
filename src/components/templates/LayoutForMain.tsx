@@ -8,6 +8,7 @@ import ProfileComponent from '../organisms/ProfileComponent';
 import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
 import AdCarousel from '../molecules/mainpage/Advertise';
+import RealtimeRank from '../molecules/mainpage/RealTimeRank';
 
 interface LayoutProps {
   children: ReactNode;
@@ -47,7 +48,9 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden md:block'>
               <AdCarousel />
             </div>
-            <div className='hidden md:block'>{/* 실시간 검색 컴포넌트 */}</div>
+            <div className='hidden md:block'>
+              <RealtimeRank />
+            </div>
           </div>
         </div>
       </main>
