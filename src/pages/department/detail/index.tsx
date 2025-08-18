@@ -5,7 +5,6 @@ import { Typography } from '../../../components/atoms/Typography';
 import CalendarGrid, { type CalendarEventItem } from '../../../components/organisms/CalendarGrid';
 import {
   getDepartmentDetail,
-  type DepartmentDetailRes,
   getDepartmentSchedules,
   getDepartmentNotices,
 } from '../../../api/departments';
@@ -13,6 +12,9 @@ import DepartmentNoticeBoard, {
   type DepartmentNoticeBoardItem,
 } from '../../../components/organisms/DepartmentNoticeBoard';
 import NavigationUp from '../../../components/molecules/NavigationUp';
+import { departmentMap } from '../../../constants/departments';
+import GlobalErrorPage from '../../error';
+import { collegeMap } from '../../../constants/colleges';
 
 export default function DepartmentDetail() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -20,13 +22,20 @@ export default function DepartmentDetail() {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'학과일정' | '학생회 공지사항'>('학과일정');
-  const [department, setDepartment] = useState<DepartmentDetailRes | null>(null);
   const [schedules, setSchedules] = useState<CalendarEventItem[]>([]);
   const [noticeItems, setNoticeItems] = useState<DepartmentNoticeBoardItem[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [, setCurrentMonth] = useState(0);
   const [, setCurrentYear] = useState(0);
+
+  const [collegeName, setCollegeName] = useState('');
+  const [departmentName, setDepartmentNamne] = useState('');
+  const [departmentImage, setDepartmentImage] = useState<string | null>('');
+  const [departmentSlogan, setDepartmentSlogan] = useState('');
+  const [departmentDescription, setDepartmentDescription] = useState('');
+  const [departmentInstagramUrl, setDepartmentInstagramUrl] = useState('');
+  const [departmentLink, setDepartmentLink] = useState('');
 
   useEffect(() => {
     const getData = async () => {
@@ -37,7 +46,16 @@ export default function DepartmentDetail() {
         /**
          * 학과 정보를 불러옵니다
          */
-        setDepartment(await getDepartmentDetail(uuid));
+        const departmentRes = await getDepartmentDetail(uuid);
+        setCollegeName(collegeMap.get(departmentRes.college) ?? departmentRes.college);
+        setDepartmentNamne(
+          departmentMap.get(departmentRes.departmentName) ?? departmentRes.departmentName,
+        );
+        setDepartmentImage(departmentRes.studentCouncilLogo);
+        setDepartmentSlogan(departmentRes.slogan);
+        setDepartmentDescription(departmentRes.description);
+        setDepartmentInstagramUrl(departmentRes.instagramUrl);
+        setDepartmentLink(departmentRes.homepageUrl);
 
         /**
          * 학과 캘린더 정보를 불러옵니다
@@ -69,8 +87,8 @@ export default function DepartmentDetail() {
         setPage(0);
         setTotalPages(res.totalPages);
       } catch (e) {
-        setIsError(true);
         console.error(e);
+        setIsError(true);
       } finally {
         setIsLoading(false);
       }
@@ -109,39 +127,53 @@ export default function DepartmentDetail() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
+  if (isError) return <GlobalErrorPage />;
+
   return (
-    <div className='flex-1 p-7 flex flex-col gap-12'>
+    <div className='flex-1 p-4 md:p-8 flex flex-col gap-4 md:gap-8'>
       <NavigationUp onClick={() => navigate(-1)} />
-      {!isLoading && !isError && (
+      {!isLoading && (
         <>
           <div className='flex gap-6'>
-            {department?.studentCouncilLogo && (
+            {departmentImage && (
               <img
-                src={department.studentCouncilLogo}
+                src={departmentImage}
                 alt='학과이미지'
-                className='w-46 h-46 rounded-full object-cover'
+                className='hidden md:block w-46 h-46 rounded-full object-cover'
+                onError={() => setDepartmentImage(null)}
               />
             )}
             <div className='flex-1 flex flex-col gap-6'>
-              <div className='flex flex-col gap-3'>
-                <button className='w-fit px-2 py-0.5 rounded-sm bg-blue-05'>
-                  <Typography variant='body03' className='text-blue-20'>
-                    {department?.college}
-                  </Typography>
-                </button>
-                <div className='flex items-center gap-6'>
-                  <Typography variant='heading01'>{department?.departmentName}</Typography>
-                  <div className='w-0.5 h-8 bg-blue-05' />
-                  <Typography variant='body01'>{department?.slogan}</Typography>
+              <div className='flex flex-col gap-2 md:gap-3'>
+                <div className='flex flex-row md:flex-col gap-4 md:gap-3'>
+                  {departmentImage && (
+                    <img
+                      src={departmentImage}
+                      alt='학과이미지'
+                      className='md:hidden w-24 h-24 rounded-full object-cover'
+                      onError={() => setDepartmentImage(null)}
+                    />
+                  )}
+                  <div className='flex flex-col gap-2 md:gap-3'>
+                    <button className='w-fit px-2 py-0.5 rounded-sm bg-blue-05'>
+                      <Typography variant='body03' className='text-blue-20'>
+                        {collegeName}
+                      </Typography>
+                    </button>
+                    <div className='flex flex-col md:flex-row md:items-center gap-2 md:gap-6'>
+                      <Typography variant='heading01'>{departmentName}</Typography>
+                      <Typography variant='body01'>{departmentSlogan}</Typography>
+                    </div>
+                  </div>
                 </div>
                 <div className='p-6 gap-2.5 bg-grey-05 rounded-xl'>
                   <Typography variant='body03' className='text-grey-40'>
-                    {department?.description}
+                    {departmentDescription}
                   </Typography>
                 </div>
-                <div className='flex gap-6'>
+                <div className='flex flex-col md:flex-row gap-4 md:gap-6'>
                   <a
-                    href={department?.instagramUrl}
+                    href={departmentInstagramUrl}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='flex-1 px-5 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl cursor-pointer'
@@ -155,7 +187,7 @@ export default function DepartmentDetail() {
                     </Typography>
                   </a>
                   <a
-                    href={department?.homepageUrl}
+                    href={departmentLink}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='flex-1 px-5 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl cursor-pointer'
@@ -187,7 +219,7 @@ export default function DepartmentDetail() {
               ))}
             </div>
             {activeTab === '학과일정' ? (
-              <div className='p-6'>
+              <div className='md:p-6'>
                 <CalendarGrid
                   events={schedules}
                   onYearChange={setCurrentYear}
@@ -195,7 +227,7 @@ export default function DepartmentDetail() {
                 />
               </div>
             ) : (
-              <div className='p-3'>
+              <div className='md:p-3'>
                 <DepartmentNoticeBoard
                   items={noticeItems}
                   totalPages={totalPages}
@@ -205,11 +237,6 @@ export default function DepartmentDetail() {
             )}
           </div>
         </>
-      )}
-      {isError && (
-        <div className='flex-1 flex justify-center items-center'>
-          <Typography variant='heading01'>문제가 발생했습니다</Typography>
-        </div>
       )}
     </div>
   );

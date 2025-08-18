@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Typography } from '../../atoms/Typography';
 import { IoIosArrowForward } from 'react-icons/io';
-import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
+import { departmentMap } from '../../../constants/departments';
+import { collegeMap } from '../../../constants/colleges';
 
 interface DepartmentButtonProps {
   uuid: string;
@@ -28,12 +29,14 @@ export default function DepartmentButton({
     >
       <div className='w-fit px-2 py-0.5 bg-blue-05 rounded-sm'>
         <Typography variant='caption02' className='text-blue-20'>
-          {DEPARTMENT_OPTIONS.find((o) => o.value === college)?.label ?? college}
+          {collegeMap.get(college) ?? college}
         </Typography>
       </div>
       <div className='w-full flex items-center justify-between'>
         <div className='flex-1 flex gap-2 items-start'>
-          <Typography variant='title02'>{departmentName}</Typography>
+          <Typography variant='title02'>
+            {departmentMap.get(departmentName) ?? departmentName}
+          </Typography>
           {/* {studentCouncilName && (
             <>
               <span aria-hidden className='h-6 w-0.5 py-0.5 bg-grey-40' />

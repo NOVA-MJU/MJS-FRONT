@@ -1,16 +1,16 @@
 import clsx from 'clsx';
-import { Typography } from '../Typography';
+import { Typography, type TypographyVariant } from '../Typography';
 
 interface ChipProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  text: string;
+  children: React.ReactNode;
+  variant?: TypographyVariant;
   selected?: boolean;
-  primary?: boolean;
 }
 
 export default function Chip({
-  text,
+  children,
+  variant = 'body03',
   selected = false,
-  primary = false,
   className,
   ...props
 }: ChipProps) {
@@ -18,13 +18,12 @@ export default function Chip({
     <button
       {...props}
       className={clsx(
-        'h-12 px-6 rounded-full cursor-pointer',
+        'px-3 py-1 md:px-4 md:py-2 rounded-lg cursor-pointer shrink-0',
         selected ? 'bg-mju-primary text-white' : 'bg-grey-05 hover:bg-blue-05',
-        primary && 'w-46',
         className,
       )}
     >
-      <Typography variant='body03'>{text}</Typography>
+      <Typography variant={variant}>{children}</Typography>
     </button>
   );
 }

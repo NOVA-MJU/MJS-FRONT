@@ -42,7 +42,6 @@ const MealSection = () => {
     const fetchingMealSection = async () => {
       try {
         const response = await fetchMealInfo();
-        console.log(response.data);
         const todayStr = getTodayString();
         const meals = response.data.filter((item) => item.date === todayStr);
 

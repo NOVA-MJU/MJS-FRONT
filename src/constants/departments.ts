@@ -40,3 +40,16 @@ export const DEPARTMENT_OPTIONS = [
   { label: '아너칼리지(자유전공학부)', value: 'HONOR' },
   { label: '기타', value: 'OTHER' },
 ];
+
+/**
+ * value를 입력하면 label을 반환하는 함수입니다.
+ *
+ * `사용예시`
+ *
+ * ```javascript
+ * departmentMap.get(departmentName)
+ * ```
+ */
+export const departmentMap = new Map(
+  DEPARTMENT_OPTIONS.map((option) => [option.value, option.label]),
+);

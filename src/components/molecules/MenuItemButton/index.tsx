@@ -11,7 +11,7 @@ export default function MenuItemButton({ time, menus, focused }: MenuItemButtonP
   return (
     <div
       className={clsx(
-        'flex flex-col px-6 py-4 gap-3 rounded-xl border-2 border-grey-05',
+        'flex flex-col px-6 py-4 gap-3 rounded-lg border-2 border-grey-05',
         focused && 'bg-blue-05',
       )}
     >

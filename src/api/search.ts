@@ -34,3 +34,15 @@ export const getSearchOverview = async (keyword: string): Promise<SearchOverview
   });
   return res.data.data;
 };
+
+/**
+ * 검색어 자동완성 요청.
+ * @param keyword 검색어를 입력하세요.
+ * @returns 자동완성 키워드 배열을 return 합니다.
+ */
+export const getSearchWordcompletion = async (keyword: string) => {
+  const res = await apiClient.get<ApiResponse<string[]>>('/search/suggest', {
+    params: { keyword },
+  });
+  return res.data.data;
+};

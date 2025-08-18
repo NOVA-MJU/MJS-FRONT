@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import ProfileSection from '../../components/organisms/Mypage/ProfileSection';
 import ActivitiesSection from '../../components/organisms/Mypage/ActivitiesSection';
-import InfoSection from '../../components/organisms/Mypage/InfoSection';
 import Button from '../../components/atoms/Button/Button';
 import { getProfileStats, type ProfileStatsRes } from '../../api/mypage';
 import { deleteUser } from '../../api/user';
 import InputModal from '../../components/molecules/Modal/InputModal';
+import { Typography } from '../../components/atoms/Typography';
+import ProfileCard from '../../components/molecules/user/ProfileCard';
+import LabelButton from '../../components/atoms/Button/LabelButton';
 
 const Mypage: React.FC = () => {
   const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
@@ -50,18 +51,35 @@ const Mypage: React.FC = () => {
   }, []);
 
   return (
-    <div className='bg-grey-05 w-full md:w-[1280px] min-h-screen flex flex-col mx-auto p-6 md:p-12'>
-      <p className='text-2xl md:text-4xl font-bold text-blue-900 text-mju-primary'>마이페이지</p>
-
-      <div className='w-full flex flex-col justify-center items-center md:mt-10 gap-6 md:gap-12'>
-        <ProfileSection />
-        <ActivitiesSection
-          postCount={stateData?.postCount || 0}
-          commentCount={stateData?.commentCount || 0}
-          likedCount={stateData?.likedPostCount || 0}
-        />
-        <InfoSection />
-        <div className='w-full md:w-[600px]'>
+    <div className='w-full flex-1 bg-grey-05 flex flex-col p-6 md:p-12 gap-8'>
+      <Typography variant='heading01' className='text-mju-primary'>
+        마이페이지
+      </Typography>
+      <div className='flex justify-center'>
+        <div className='w-full max-w-192 flex flex-col gap-8'>
+          <div className='flex flex-col gap-2'>
+            <Typography variant='title02' className='text-mju-primary'>
+              프로필
+            </Typography>
+            <ProfileCard />
+          </div>
+          <ActivitiesSection
+            postCount={stateData?.postCount || 0}
+            commentCount={stateData?.commentCount || 0}
+            likedCount={stateData?.likedPostCount || 0}
+          />
+          <div className='flex flex-col gap-2'>
+            <Typography variant='title02' className='text-mju-primary'>
+              정보
+            </Typography>
+            <div className='min-h-32 flex flex-col justify-center bg-white rounded-lg p-8 gap-8 '>
+              <LabelButton label='커뮤니티 이용 규칙' />
+              <hr className='text-grey-10 border-1' />
+              <LabelButton label='서비스 이용 약관' />
+              <hr className='text-grey-10 border-1' />
+              <LabelButton label='개인정보 처리 방침' />
+            </div>
+          </div>
           <Button
             variant='borderRed'
             disabled={false}
@@ -73,7 +91,6 @@ const Mypage: React.FC = () => {
           </Button>
         </div>
       </div>
-
       {/*  비밀번호 입력 모달 */}
       <InputModal
         isOpen={isModalOpen}

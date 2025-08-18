@@ -1,31 +1,24 @@
+import React from 'react';
 import defaultAvatar from '../../../assets/avatar-default.jpeg';
+
 interface AvatarProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
-  alt?: string;
-  size?: number;
+  className?: string;
 }
 
-const Avatar = ({
-  src = defaultAvatar,
-  alt = 'UserAvatar',
-  size = 32,
-  style,
-  ...props
-}: AvatarProps) => {
+export default function Avatar({ src, className, ...props }: AvatarProps) {
+  /**
+   * 이미지 로딩 실패 시 기본 아바타 이미지로 대체합니다.
+   */
+  const [imgSrc, setImgSrc] = React.useState(src ?? defaultAvatar);
+
   return (
     <img
-      src={src ?? defaultAvatar}
-      alt={alt}
-      style={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        objectFit: 'cover',
-        ...style,
-      }}
+      src={imgSrc}
+      alt='프로필 이미지'
+      className={`w-12 h-12 aspect-square rounded-full object-cover ${className ?? ''}`}
+      onError={() => setImgSrc(defaultAvatar)}
       {...props}
     />
   );
-};
-
-export default Avatar;
+}

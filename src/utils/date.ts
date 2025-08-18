@@ -31,6 +31,9 @@ export const formatToElapsedTime = (dateString: string): string => {
   const MONTH = DAY * 30;
   const YEAR = DAY * 365;
 
+  if (diffInSeconds < 30) {
+    return '방금 전';
+  }
   if (diffInSeconds < MINUTE) {
     return `${diffInSeconds}초 전`;
   }

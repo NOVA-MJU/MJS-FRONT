@@ -25,7 +25,7 @@ export default function DepartmentNoticeBoard({
   const [page, setPage] = useState(0);
 
   return (
-    <div className='w-full h-fit flex flex-col gap-3'>
+    <div className='w-full h-fit flex flex-col gap-1 md:gap-3'>
       {items ? (
         <>
           {items.map((item) => (
@@ -49,7 +49,7 @@ export default function DepartmentNoticeBoard({
       ) : (
         <div className='min-h-10 flex justify-center items-center'>
           <Typography variant='heading01' className='text-black'>
-            아직 등록된 공지 사항이 없습니다
+            아직 등록된 공지사항이 없습니다
           </Typography>
         </div>
       )}

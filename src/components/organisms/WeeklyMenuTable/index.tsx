@@ -122,7 +122,7 @@ export default function WeeklyMenuTable({ menus }: { menus: MenuItem[] }) {
 
         return (
           <React.Fragment key={date}>
-            <div className='sticky left-0 z-10 bg-white/80 backdrop-blur-md px-0 py-0'>
+            <div className='sticky left-0 z-10 px-0 py-0'>
               <MenuDayButton label={weekdayLabel} focused={isToday} aria-current={isToday} />
             </div>
 
@@ -160,16 +160,14 @@ export default function WeeklyMenuTable({ menus }: { menus: MenuItem[] }) {
         return (
           <section
             key={date}
-            className={`rounded-2xl border shadow-sm ${
-              isToday ? 'border-mju-primary/60' : 'border-gray-200'
-            }`}
+            className='rounded-lg border-2 border-grey-05 flex flex-col gap-4 p-4'
           >
-            <div className='flex items-center justify-between px-3 py-2 border-b bg-white/60 backdrop-blur-sm rounded-t-2xl'>
+            <div className='flex items-center justify-between'>
               <MenuDayButton label={weekdayLabel} focused={isToday} aria-current={isToday} />
               <span className='text-xs text-gray-500'>{date}</span>
             </div>
 
-            <div className='grid grid-cols-1 gap-2 p-3'>
+            <div className='grid grid-cols-1 gap-2'>
               {fullRow.map((item, idx) =>
                 item ? (
                   <MenuItemButton
