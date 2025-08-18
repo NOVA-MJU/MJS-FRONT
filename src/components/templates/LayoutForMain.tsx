@@ -40,7 +40,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             {children}
           </div>
 
-          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
+          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-5'>
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
