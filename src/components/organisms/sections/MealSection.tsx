@@ -4,6 +4,7 @@ import MealComponent from '../../molecules/mainpage/Meal';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
+
 const getCurrentMealTime = () => {
   const hour = new Date().getHours();
   if (hour < 10) return '아침';

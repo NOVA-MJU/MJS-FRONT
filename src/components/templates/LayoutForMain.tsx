@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router-dom';
-
 import Footer from '../organisms/Footer';
 import Navbar from '../organisms/Navbar';
 import Header from '../organisms/Header';

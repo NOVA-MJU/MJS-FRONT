@@ -4,6 +4,7 @@ import type { NewsInfo } from '../../../types/news/newsInfo';
 import { FiPlus } from 'react-icons/fi';
 import { NewsCategoryLabel } from '../../../constants/news';
 import { useNavigate } from 'react-router-dom';
+
 const NewsSection = () => {
   const navigator = useNavigate();
   const [categoryTab, setCategoryTab] = useState<'REPORT' | 'SOCIETY'>('REPORT');
