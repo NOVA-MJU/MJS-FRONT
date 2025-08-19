@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import SearchBar from '../../components/molecules/common/SearchBar';
+import SearchBar from '../../components/atoms/SearchBar';
 import Pagination from '../../components/molecules/common/Pagination';
 import CategoryFilter from '../../components/molecules/common/CategoryFilter';
 import { NewsCategory } from '../../constants/news';
