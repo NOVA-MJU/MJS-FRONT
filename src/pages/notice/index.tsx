@@ -1,4 +1,4 @@
-import SearchBar from '../../components/molecules/common/SearchBar';
+import SearchBar from '../../components/atoms/SearchBar';
 import Pagination from '../../components/molecules/common/Pagination';
 import { useEffect, useState, useMemo } from 'react';
 import CategoryFilter from '../../components/molecules/common/CategoryFilter';
