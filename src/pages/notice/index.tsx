@@ -1,14 +1,13 @@
 import SearchBar from '../../components/molecules/common/SearchBar';
 import Pagination from '../../components/molecules/common/Pagination';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import CategoryFilter from '../../components/molecules/common/CategoryFilter';
 import { Notices } from '../../constants/notices';
 import NoticeList from '../../components/organisms/CommonList';
 import { fetchNotices } from '../../api/notice';
 import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
 
-const categoryMapping: Record<string, string | undefined> = {
-  전체: undefined,
+const categoryMapping: Record<string, string> = {
   일반공지: 'general',
   학사공지: 'academic',
   장학공지: 'scholarship',
@@ -20,16 +19,21 @@ const categoryMapping: Record<string, string | undefined> = {
 const ITEMS_PER_PAGE = 8;
 
 const Notice: React.FC = () => {
+  // '전체' 제거된 카테고리 목록
+  const CATEGORY_LIST = useMemo(() => Notices.filter((c) => c !== '전체'), []);
+
+  // 기본값을 첫 카테고리로
+  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_LIST[0] ?? '일반공지');
   const [page, setPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
   const [items, setItems] = useState<ListItemProps[]>([]);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     (async () => {
       try {
+        const categoryKey = categoryMapping[selectedCategory] ?? 'general';
         const data = await fetchNotices({
-          category: categoryMapping[selectedCategory] ?? 'general', // fallback
+          category: categoryKey, // 항상 단일 카테고리로 호출
           page: page - 1,
           size: ITEMS_PER_PAGE,
           sort: 'desc',
@@ -47,16 +51,16 @@ const Notice: React.FC = () => {
       <p className='text-2xl md:text-4xl font-bold text-mju-primary'>공지사항</p>
       <SearchBar />
       <CategoryFilter
-        categories={Notices}
+        categories={CATEGORY_LIST} // '전체' 빠진 목록 전달
         current={selectedCategory}
         onChange={(category) => {
           setSelectedCategory(category);
-          setPage(1); // 카테고리 바뀌면 첫 페이지로
+          setPage(1);
         }}
       />
       <hr className='w-full border-blue-05 border-2' />
       <NoticeList items={items} category='notice' />
-      <Pagination page={page} totalPages={totalPages} onChange={(next) => setPage(next)} />
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
     </div>
   );
 };
