@@ -101,7 +101,7 @@ const Navbar = () => {
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
               onClick={handleBoardClick}
             >
-              검색게시판
+              자유게시판
             </Link>
           </li>
           <li>

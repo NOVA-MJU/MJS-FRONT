@@ -7,6 +7,10 @@ import SearchBar from '../atoms/SearchBar';
 import ProfileComponent from '../organisms/ProfileComponent';
 import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
+import AdCarousel from '../molecules/mainpage/Advertise';
+import RealtimeRank from '../molecules/mainpage/RealTimeRank';
+import AcademicSchedulePanel from '../molecules/mainpage/AcademicSchedulePanel/index.tsx';
+import HotBoardList from '../molecules/mainpage/HotBoardList.tsx';
 
 interface LayoutProps {
   children: ReactNode;
@@ -36,12 +40,24 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             {children}
           </div>
 
-          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-3'>
+          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-5'>
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
             <div className='hidden md:block'>
               <WeatherComponent />
+            </div>
+            <div className='hidden md:block'>
+              <AdCarousel />
+            </div>
+            <div className='hidden md:block'>
+              <RealtimeRank />
+            </div>
+            <div className='hidden md:block '>
+              <AcademicSchedulePanel />
+            </div>
+            <div className='hidden md:block'>
+              <HotBoardList />
             </div>
           </div>
         </div>
