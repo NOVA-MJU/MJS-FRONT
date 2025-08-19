@@ -171,10 +171,10 @@ export default function AcademicSchedulePanel({
       className={`w-full rounded-2xl border border-grey-40 bg-white shadow-sm px-4 py-5 md:px-6 md:py-6 ${className}`}
       aria-label='학사일정'
     >
-      <h3 className='text-base font-semibold text-grey-40 mb-5'> 학사일정</h3>
+      <h3 className='text-2xl font-bold text-mju-primary mb-4'>학사일정</h3>
 
       {/* 상단 월 선택 바 */}
-      <div className='rounded-xl  border-grey-40 px-3 py-2 md:px-4 md:py-3'>
+      <div className='px-3 py-2 md:px-4 md:py-3 border-b border-gray-200'>
         <div className='flex items-center justify-between'>
           <button
             onClick={prevMonth}
@@ -201,14 +201,11 @@ export default function AcademicSchedulePanel({
       </div>
 
       {/* 리스트 영역 */}
-      <div className='mt-4 space-y-3 md:space-y-4'>
+      <div className='mt-4'>
         {loading && (
-          <ul className='space-y-3 md:space-y-4'>
+          <ul className='space-y-3'>
             {Array.from({ length: maxItems }).map((_, i) => (
-              <li
-                key={i}
-                className='h-16 rounded-xl border-2 border-dashed border-mju-primary/40 bg-gray-50 animate-pulse'
-              />
+              <li key={i} className='h-4 rounded bg-gray-100 animate-pulse' />
             ))}
           </ul>
         )}
@@ -216,40 +213,27 @@ export default function AcademicSchedulePanel({
         {!loading && err && <p className='text-sm text-red-600'>{err}</p>}
 
         {!loading && !err && monthItems.length === 0 && (
-          <p className='text-sm text-gray-500'>해당 월의 일정이 없습니다.</p>
+          <div className='text-sm text-gray-500'>해당 월의 일정이 없습니다.</div>
         )}
 
         {!loading && !err && monthItems.length > 0 && (
-          <ol className='space-y-3 md:space-y-4'>
+          <ol className='divide-y divide-gray-100'>
             {monthItems.map((ev, idx) => {
               const s = toDate(ev.startDate);
               const e = toDate(ev.endDate);
               const ongoing = isOngoing(ev);
               const isHoliday = /휴일|공휴일|휴무|방학/i.test(ev.description ?? '');
 
+              const titleClass =
+                (ongoing ? 'text-mju-primary ' : 'text-gray-900 ') +
+                'text-[15px] md:text-base font-semibold';
+              const dateClass =
+                'mt-1 text-sm ' + (isHoliday ? 'text-error font-medium' : 'text-gray-500');
+
               return (
-                <li key={`${ev.startDate}-${ev.endDate}-${idx}`}>
-                  <div
-                    className={[
-                      'rounded-xl border-2 border-dashed border-mju-primary/40 px-4 py-3 md:px-5 md:py-4',
-                      'transition-colors',
-                      ongoing ? 'bg-mju-primary/10' : 'bg-white',
-                    ].join(' ')}
-                  >
-                    <div className='text-[15px] md:text-base font-semibold text-gray-900'>
-                      {ev.description}
-                    </div>
-                    <div className='mt-1 text-sm'>
-                      <span className={isHoliday ? 'text-error font-medium' : 'text-gray-500'}>
-                        {fmtRange(s, e)}
-                      </span>
-                      {ongoing && (
-                        <span className='ml-2 inline-block rounded-md border border-mju-primary/30 bg-mju-primary/10 px-2 py-0.5 text-xs font-semibold text-mju-primary align-middle'>
-                          현재 진행 중
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                <li key={`${ev.startDate}-${ev.endDate}-${idx}`} className='py-4'>
+                  <div className={titleClass}>{ev.description}</div>
+                  <div className={dateClass}>{fmtRange(s, e)}</div>
                 </li>
               );
             })}
