@@ -2,13 +2,28 @@ import apiClient from './apiClient';
 import { type ApiResponse, type Paginated } from './types';
 
 /**
+ *     ____                       __
+ *    / __ )____  ____ __________/ /
+ *   / __  / __ \/ __ `/ ___/ __  /
+ *  / /_/ / /_/ / /_/ / /  / /_/ /
+ * /_____/\____/\__,_/_/   \__,_/
+ */
+
+/**
  * 게시글 목록을 조회합니다.
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
- * @param sortBy 정렬 기준을 입력하세요.
+ * @param sortBy 정렬 기준을 입력하세요. 기본값을 'createdAt' 입니다.
  * @param direction 정렬 순서를 입력하세요.
  */
-export const getBoards = async (page = 0, size = 10, sortBy = 'createdAt', direction = 'DESC') => {
+type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
+
+export const getBoards = async (
+  page = 0,
+  size = 10,
+  sortBy: BoardSortBy = 'createdAt',
+  direction = 'DESC',
+) => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
     params: { page, size, sortBy, direction },
   });
@@ -77,6 +92,8 @@ export interface GetBoardDetailRes {
   commentCount: number;
   author: string;
   liked: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 /**
@@ -118,9 +135,17 @@ export const deletePost = async (boardUuid: string) => {
  * 게시글 좋아요 표시
  */
 export const likePost = async (boardUuid: string) => {
-  const response = await apiClient.post(`/boards/${boardUuid}/like`);
+  const response = await apiClient.post<ApiResponse<string>>(`/boards/${boardUuid}/like`);
   return response.data;
 };
+
+/**
+ *     ____                       __   ______                                     __
+ *    / __ )____  ____ __________/ /  / ____/___  ____ ___  ____ ___  ___  ____  / /_
+ *   / __  / __ \/ __ `/ ___/ __  /  / /   / __ \/ __ `__ \/ __ `__ \/ _ \/ __ \/ __/
+ *  / /_/ / /_/ / /_/ / /  / /_/ /  / /___/ /_/ / / / / / / / / / / /  __/ / / / /_
+ * /_____/\____/\__,_/_/   \__,_/   \____/\____/_/ /_/ /_/_/ /_/ /_/\___/_/ /_/\__/
+ */
 
 /**
  * 게시글 댓글 조회
@@ -139,11 +164,12 @@ export interface CommentRes {
   commentUUID: string;
   content: string;
   nickname: string;
+  profileImageUrl?: string;
   likeCount: number;
   createdAt: string;
   liked: boolean;
   replies: CommentRes[];
-  profileImageUrl?: string;
+  commentIsAuthor: boolean;
 }
 
 /**
@@ -152,6 +178,27 @@ export interface CommentRes {
 export const postComment = async (boardUuid: string, content: string) => {
   const response = await apiClient.post(`/boards/${boardUuid}/comments`, { content });
   return response.data.data;
+};
+
+/**
+ * 게시글 댓글에 대댓글을 작성합니다
+ * @param boardUUID 게시글의 uuid를 입력하세요
+ * @param parentCommentUUID 부모 댓글의 uuid를 입력하세요
+ * @param content 새롭게 등록할 대댓글의 content를 입력하세요
+ * @returns 등록된 대댓글 정보를 return합니다
+ */
+export const postCommentReply = async (
+  boardUUID: string,
+  parentCommentUUID: string,
+  content: string,
+) => {
+  const res = await apiClient.post<ApiResponse<CommentRes>>(
+    `/boards/${boardUUID}/comments/${parentCommentUUID}/reply`,
+    {
+      content,
+    },
+  );
+  return res.data.data;
 };
 
 /**
@@ -181,25 +228,13 @@ export const toggleLikeComment = async (boardUuid: string, commentUuid: string) 
 };
 
 /**
- * 게시글 댓글에 대댓글을 작성합니다
- * @param boardUUID 게시글의 uuid를 입력하세요
- * @param parentCommentUUID 부모 댓글의 uuid를 입력하세요
- * @param content 새롭게 등록할 대댓글의 content를 입력하세요
- * @returns 등록된 대댓글 정보를 return합니다
+ *        __                                __           __
+ *   ____/ /__  ____  ________  _________ _/ /____  ____/ /
+ *  / __  / _ \/ __ \/ ___/ _ \/ ___/ __ `/ __/ _ \/ __  /
+ * / /_/ /  __/ /_/ / /  /  __/ /__/ /_/ / /_/  __/ /_/ /
+ * \__,_/\___/ .___/_/   \___/\___/\__,_/\__/\___/\__,_/
+ *          /_/
  */
-export const postCommentReply = async (
-  boardUUID: string,
-  parentCommentUUID: string,
-  content: string,
-) => {
-  const res = await apiClient.post<ApiResponse<CommentRes>>(
-    `/boards/${boardUUID}/comments/${parentCommentUUID}/reply`,
-    {
-      content,
-    },
-  );
-  return res.data.data;
-};
 
 /**
  * @deprecated 서버에서 비활성화된 `api`이므로 요청 시 오류가 발생할 수 있습니다.

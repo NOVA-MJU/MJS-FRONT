@@ -64,7 +64,7 @@ const Notice: React.FC = () => {
     if (keyword)
       (async () => {
         try {
-          const res = await getSearchResult(keyword, 'NOTICE', page, ITEMS_PER_PAGE);
+          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, ITEMS_PER_PAGE);
           console.log(res);
           const parsed: ListItemProps[] = res.content.map((item, index) => ({
             id: index,

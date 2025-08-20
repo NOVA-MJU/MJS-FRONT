@@ -13,7 +13,6 @@ export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,20 +20,19 @@ export default function BoardEdit() {
   const [initialContent, setInitialContent] = useState('');
 
   /**
-   * 게시글이 수정 모드인 경우 현재 uuid와 content를 editor에 반영합니다
+   * 게시글이 수정 모드여야하고, 현재 uuid와 content를 editor에 반영합니다
    */
   useEffect(() => {
-    if (uuid) getCurrentData(uuid);
-
-    async function getCurrentData(postUuid: string) {
+    if (!uuid) return;
+    (async () => {
       try {
-        const res = await getBoardDetail(postUuid);
+        const res = await getBoardDetail(uuid);
         setInitialContent(res.content);
         setTitle(res.title);
       } catch (e) {
         console.error(e);
       }
-    }
+    })();
   }, [uuid]);
 
   /**
@@ -89,8 +87,8 @@ export default function BoardEdit() {
       <input
         className='p-3 placeholder-grey-20 font-bold text-[28px] focus:outline-none'
         placeholder='제목을 입력하세요'
+        value={title}
         onChange={(e) => setTitle(e.target.value)}
-        ref={titleRef}
       />
       <div
         className='flex-1 cursor-text'

@@ -48,7 +48,7 @@ const News = () => {
     if (keyword)
       (async () => {
         try {
-          const res = await getSearchResult(keyword, 'NEWS', page, ITEMS_PER_PAGE);
+          const res = await getSearchResult(keyword, 'NEWS', 'relevance', page, ITEMS_PER_PAGE);
           const parsed: NewsInfo[] = res.content.map((item) => ({
             title: item.highlightedTitle,
             date: item.date,

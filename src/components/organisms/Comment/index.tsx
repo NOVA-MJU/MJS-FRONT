@@ -24,6 +24,7 @@ interface CommentProps {
   liked: boolean;
   replies: CommentRes[];
   isReply?: boolean;
+  isAuthor: boolean;
 }
 
 export default function Comment({
@@ -37,6 +38,7 @@ export default function Comment({
   liked,
   replies,
   isReply = false,
+  isAuthor = false,
 }: CommentProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,7 +89,7 @@ export default function Comment({
   const handleCommentReply = async () => {
     if (isLoading) return;
 
-    if (newReplyContent.trim().length <= 2) {
+    if (newReplyContent.trim().length < 2) {
       alert('댓글을 2글자 이상 작성해 주세요');
       return;
     } else if (newReplyContent.trim().length > 100) {
@@ -124,17 +126,19 @@ export default function Comment({
           </div>
         </div>
         <div className='flex items-center gap-3'>
-          <button
-            className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
-            onClick={handleDeleteComment}
-          >
-            <Typography variant='caption02' className='text-blue-35 flex gap-1 items-center'>
-              {'삭제'}
-            </Typography>
-          </button>
+          {isAuthor && (
+            <button
+              className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
+              onClick={handleDeleteComment}
+            >
+              <Typography variant='caption02' className='text-blue-35 flex gap-1 items-center'>
+                삭제
+              </Typography>
+            </button>
+          )}
           <button className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'>
             <Typography variant='caption02' className='text-blue-35 flex gap-1 items-center'>
-              {'신고'}
+              신고
             </Typography>
           </button>
         </div>
@@ -181,6 +185,7 @@ export default function Comment({
               liked={comment.liked}
               replies={comment.replies}
               isReply
+              isAuthor={comment.commentIsAuthor}
             />
           ))}
         {showReplyForm && (
