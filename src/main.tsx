@@ -9,7 +9,18 @@ createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <App />
-      <Toaster position='top-center' />
+      <Toaster
+        position='top-center'
+        toastOptions={{
+          duration: 2000,
+          success: {
+            duration: 2000,
+          },
+          error: {
+            duration: 2000,
+          },
+        }}
+      />
     </QueryClientProvider>
   </BrowserRouter>,
 );
