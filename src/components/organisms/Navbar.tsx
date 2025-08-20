@@ -13,8 +13,10 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const handleAuthClick = () => {
-    if (isLoggedIn) logout();
-    else navigate('/login');
+    if (isLoggedIn) {
+      logout();
+      toast.success('로그아웃 되었습니다.');
+    } else navigate('/login');
   };
   const closeMenu = () => setIsOpen(false);
 
@@ -42,7 +44,7 @@ const Navbar = () => {
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full'>
-            <img src='/logo/MJS_darkLogo.svg' alt='MJS' className='w-17 h-auto' />
+            <img src='/logo/MJS_darkLmogo.svg' alt='MJS' className='w-17 h-auto' />
           </div>
         </Link>
 
