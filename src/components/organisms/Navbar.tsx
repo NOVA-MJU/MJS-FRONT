@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../assets/schoolLogo.png';
+
 import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
@@ -42,7 +42,6 @@ const Navbar = () => {
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full'>
-            <img src={logo} alt='Logo' className='w-10 h-10 block' />
             <img src='/logo/MJS_darkLogo.svg' alt='MJS' className='w-17 h-auto' />
           </div>
         </Link>
