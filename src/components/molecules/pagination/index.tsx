@@ -5,6 +5,9 @@ type Props = {
   window?: number;
 };
 
+/**
+ * @deprecated components/molecules/common/pagination을 사용하세요
+ */
 export default function Pagination({ currentPage, totalPages, onChange, window = 5 }: Props) {
   if (totalPages <= 1) return null;
 

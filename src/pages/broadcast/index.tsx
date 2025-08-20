@@ -1,8 +1,11 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchBroadCastInfo } from '../../api/main/broadcast-api';
 import type { BroadcastContent } from '../../types/broadcast/broadcastInfo';
-import Pagination from '../../components/molecules/pagination';
+import Pagination from '../../components/molecules/common/Pagination';
+import { Typography } from '../../components/atoms/Typography';
+import LoadingIndicator from '../../components/atoms/LoadingIndicator';
+import GlobalErrorPage from '../error';
 
 const extractYoutubeId = (url: string): string => {
   let match = url.match(/v=([^&]+)/);
@@ -25,42 +28,46 @@ const PAGE_SIZE = 9;
 const Broadcast = () => {
   const { id } = useParams<{ id: string }>();
   const [broadcast, setBroadcast] = useState<BroadcastContent | null>(null);
-  const [totalPage, setTotalPage] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [playingId, setPlayingId] = useState<string | null>(null); // ✅ 클릭 시 해당 카드만 임베드
+  const [totalPage, setTotalPage] = useState(1);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     const loadBroadcast = async () => {
       try {
-        setLoading(true);
-        const res = await fetchBroadCastInfo(currentPage, PAGE_SIZE);
+        setIsLoading(true);
+        const res = await fetchBroadCastInfo(page, PAGE_SIZE);
         setTotalPage(res.data.totalPages);
         setBroadcast(res.data.content);
         setPlayingId(null); // 페이지 바뀌면 재생 초기화
       } catch (err) {
-        console.error('방송 데이터를 불러오는 데 실패했습니다.', err);
+        console.error(err);
+        setIsError(true);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     loadBroadcast();
-  }, [id, currentPage]);
+  }, [id, page]);
 
-  if (loading) {
-    return <div className='p-6 text-gray-500 text-sm'>로딩 중...</div>;
-  }
+  if (isLoading) return <LoadingIndicator />;
+  if (isError) return <GlobalErrorPage />;
 
   if (!broadcast || broadcast.length === 0) {
     return <div className='p-6 text-red-500 text-sm'>해당 방송을 찾을 수 없습니다.</div>;
   }
 
   return (
-    <div className='w-full max-w-[1280px] min-h-screen flex flex-col mx-auto px-4 md:px-6 py-8'>
-      <p className='text-2xl md:text-4xl font-bold text-mju-primary'>명대방송</p>
-
-      <main className='mx-auto w-full'>
-        <section className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3  gap-3 md:gap-6 mt-6'>
+    <div className='flex-1 flex flex-col gap-4 md:gap-8 p-4 md:p-8'>
+      <Link to='/broadcast'>
+        <Typography variant='heading01' className='text-mju-primary'>
+          명대방송
+        </Typography>
+      </Link>
+      <main className='flex-1 w-full'>
+        <section className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6'>
           {broadcast.map((item) => {
             const vid = extractYoutubeId(item.url);
             const key = vid || item.url;
@@ -120,16 +127,8 @@ const Broadcast = () => {
             );
           })}
         </section>
-
-        <div className='mt-4 md:mt-6'>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPage}
-            onChange={(p) => setCurrentPage(p)}
-            window={6}
-          />
-        </div>
       </main>
+      <Pagination page={page} totalPages={totalPage} onChange={setPage} />
     </div>
   );
 };
