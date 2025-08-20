@@ -6,87 +6,118 @@ import { NewsCategory } from '../../constants/news';
 import { fetchNewsInfo } from '../../api/news';
 import type { NewsInfo } from '../../types/news/newsInfo';
 import NewsCard from './NewsCard';
-import SkeletonCard from './SkeletonCard';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Typography } from '../../components/atoms/Typography';
+import { getSearchResult } from '../../api/search';
+import GlobalErrorPage from '../error';
 const ITEMS_PER_PAGE = 8;
 
 const News = () => {
-  const [page, setPage] = useState(1);
+  /**
+   * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
+   */
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword');
+  const [initialContent, setInitialContent] = useState('');
+
+  /**
+   * 주소에 search parameter 값이 있으면 검색바에 반영합니다
+   */
+  useEffect(() => {
+    (async () => {
+      if (!keyword) return;
+      setInitialContent(keyword);
+      try {
+        // await handleSearch(keyword);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, [keyword]);
+
+  const [page, setPage] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const loadNews = async () => {
-    try {
-      setLoading(true);
-      const categoryParam = NewsCategory[selectedCategory] ?? 'REPORT';
-      const data = await fetchNewsInfo(categoryParam, page - 1, ITEMS_PER_PAGE);
-      setNewsList(data.data.content);
-      setTotalPages(data.data.totalPages || 1);
-    } catch (error) {
-      console.error('[news page API 오류]', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    loadNews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, page]);
+    /**
+     * search parameter가 있는 경우 검색을 수행합니다
+     */
+    if (keyword)
+      (async () => {
+        try {
+          const res = await getSearchResult(keyword, 'NEWS', page, ITEMS_PER_PAGE);
+          const parsed: NewsInfo[] = res.content.map((item) => ({
+            title: item.highlightedTitle,
+            date: item.date,
+            reporter: item.type,
+            imageUrl: item.imageUrl,
+            summary: item.highlightedContent,
+            link: item.link,
+            category: item.category,
+          }));
+
+          setNewsList(parsed);
+          setTotalPages(res.totalPages);
+        } catch (e) {
+          console.error(e);
+          setIsError(true);
+        }
+      })();
+    /**
+     * search parameter가 없는 경우 모든 결과를 출력합니다
+     */ else
+      (async () => {
+        try {
+          const categoryParam = NewsCategory[selectedCategory] ?? 'REPORT';
+          const data = await fetchNewsInfo(categoryParam, page, ITEMS_PER_PAGE);
+          setNewsList(data.data.content);
+          setTotalPages(data.data.totalPages);
+        } catch (e) {
+          console.error(e);
+          setIsError(true);
+        }
+      })();
+  }, [keyword, selectedCategory, page]);
+
+  if (isError) return <GlobalErrorPage />;
 
   return (
-    <div className='mx-auto w-full max-w-[1280px] min-h-screen px-4 pb-16 pt-6 md:px-6 lg:px-8 lg:pt-10'>
-      <header className='mb-4 flex flex-col gap-3 md:mb-6 md:flex-row md:items-end md:justify-between'>
-        <h1 className='text-2xl font-extrabold tracking-tight text-mju-primary md:text-3xl lg:text-4xl'>
+    <div className='flex-1 p-4 md:p-8 flex flex-col gap-4 md:gap-6'>
+      <Link to='/news'>
+        <Typography variant='heading01' className='text-mju-primary'>
           명대신문
-        </h1>
-        <div className='md:w-1/2 lg:w-2/5'>
-          <SearchBar />
-        </div>
-      </header>
-
-      <div className='sticky top-0 z-10 -mx-4 mb-4 border-grey-10 bg-white/80 px-4 py-2 backdrop-blur md:static md:z-auto md:mx-0 md:mb-6 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-0'>
-        <div className='no-scrollbar -mx-2 overflow-x-auto px-2 md:overflow-visible'>
-          <CategoryFilter
-            categories={Object.keys(NewsCategory)}
-            current={selectedCategory}
-            onChange={(category) => {
-              setSelectedCategory(category);
-              setPage(1);
-            }}
-          />
-        </div>
+        </Typography>
+      </Link>
+      <SearchBar domain='news' initialContent={initialContent} />
+      <div className='no-scrollbar -mx-2 overflow-x-auto px-2 md:overflow-visible'>
+        <CategoryFilter
+          categories={Object.keys(NewsCategory)}
+          current={selectedCategory}
+          onChange={(category) => {
+            setSelectedCategory(category);
+            setPage(0);
+          }}
+        />
       </div>
-
-      {/* 그리드 영역 */}
-      {loading ? (
-        <section
-          aria-label='뉴스 로딩 중'
-          className='grid grid-cols-1 gap-4 md:gap-6
-                     md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        >
-          {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-            <SkeletonCard key={i} />
+      <div className='flex-1 flex flex-col'>
+        <div className='grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+          {newsList.map((news, index) => (
+            <NewsCard key={index} news={news} />
           ))}
-        </section>
-      ) : newsList.length === 0 ? (
-        <p className='py-24 text-center text-gray-500'>표시할 뉴스가 없습니다.</p>
-      ) : (
-        <section
-          aria-label='뉴스 목록'
-          className='grid grid-cols-1 gap-4 md:gap-6
-                     md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-        >
-          {newsList.map((news, idx) => (
-            <NewsCard key={news.link ?? idx} news={news} index={idx} page={page} />
-          ))}
-        </section>
-      )}
-
-      <div className='mt-8 flex justify-center md:mt-10'>
-        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        </div>
+        {/**
+         * 키워드를 입력했는데 검색 결과가 없는 경우
+         */}
+        {keyword && newsList.length === 0 && (
+          <div className='flex-1 text-center content-center'>
+            <Typography variant='title02'>검색 결과가 없습니다</Typography>
+          </div>
+        )}
       </div>
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
     </div>
   );
 };

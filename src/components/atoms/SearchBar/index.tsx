@@ -7,11 +7,24 @@ import { Link, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 
 interface SearchBarProps {
+  /**
+   * domain을 설정하면, 검색 수행 시 해당 domain에 맞는 페이지로 이동됩니다
+   */
+  domain?: 'search' | 'notice' | 'news' | 'board';
+
+  /**
+   * initialContent를 설정하면 검색바가 렌더링될 때 해당 content가 입력된 상태로 렌더링됩니다
+   */
   initialContent?: string;
+
   className?: string;
 }
 
-export default function SearchBar({ initialContent, className }: SearchBarProps) {
+export default function SearchBar({
+  domain = 'search',
+  initialContent,
+  className,
+}: SearchBarProps) {
   const navigate = useNavigate();
   const [value, setValue] = useState('');
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
@@ -40,7 +53,6 @@ export default function SearchBar({ initialContent, className }: SearchBarProps)
     (async () => {
       try {
         const res = await getSearchWordcompletion(value.trim());
-        console.log(res);
         if (res.length !== 0) setSuggestedKeywords(res);
       } catch (e) {
         console.error(e);
@@ -66,10 +78,15 @@ export default function SearchBar({ initialContent, className }: SearchBarProps)
    * 검색 수행 핸들러 (엔터 클릭 시)
    */
   const handleSubmitSearch = () => {
-    navigate({
-      pathname: '/search',
-      search: `?keyword=${encodeURIComponent(value.trim())}`,
-    });
+    if (value)
+      navigate({
+        pathname: `/${domain}`,
+        search: `?keyword=${encodeURIComponent(value.trim())}`,
+      });
+    else
+      navigate({
+        pathname: `/${domain}`,
+      });
   };
 
   return (
