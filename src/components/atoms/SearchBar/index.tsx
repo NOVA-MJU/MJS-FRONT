@@ -5,6 +5,7 @@ import { getSearchWordcompletion } from '../../../api/search';
 import clsx from 'clsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 interface SearchBarProps {
   /**
@@ -44,21 +45,24 @@ export default function SearchBar({
   /**
    * 검색어 자동완성
    */
+  const debounced = useDebounce(value, 100);
+
   useEffect(() => {
-    if (!value.trim()) return;
+    if (!debounced.trim()) return;
     if (!initialized.current) {
       initialized.current = true;
       return;
     }
     (async () => {
       try {
-        const res = await getSearchWordcompletion(value.trim());
+        const res = await getSearchWordcompletion(debounced.trim());
+        console.log(res);
         if (res.length !== 0) setSuggestedKeywords(res);
       } catch (e) {
         console.error(e);
       }
     })();
-  }, [value]);
+  }, [debounced]);
 
   /**
    * 검색어를 지울 경우 검색어 자동완성 닫기
