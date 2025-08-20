@@ -39,7 +39,7 @@ export default function AdminNoticeWrite() {
     const contentPreview = getBlockTextEditorContentPreview(content);
     const thumbnail = getBlockTextEditorImageThumbnail(content);
     if (!title) {
-      alert('공시자항 제목을 입력하세요');
+      alert('공지사항 제목을 입력하세요');
       return;
     }
 

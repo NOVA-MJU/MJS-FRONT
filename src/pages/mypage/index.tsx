@@ -7,6 +7,7 @@ import InputModal from '../../components/molecules/Modal/InputModal';
 import { Typography } from '../../components/atoms/Typography';
 import ProfileCard from '../../components/molecules/user/ProfileCard';
 import LabelButton from '../../components/atoms/Button/LabelButton';
+import toast from 'react-hot-toast';
 
 const Mypage: React.FC = () => {
   const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
@@ -18,7 +19,7 @@ const Mypage: React.FC = () => {
     try {
       const status = await deleteUser(pw);
       if (status === 200) {
-        alert('회원 탈퇴가 완료되었습니다.');
+        toast.success('회원 탈퇴가 완료되었습니다.');
         localStorage.removeItem('accessToken');
         // logout();
         window.location.href = '/';
