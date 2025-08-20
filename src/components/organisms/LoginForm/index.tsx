@@ -5,6 +5,7 @@ import LoginButtons from '../../molecules/user/LoginButtons';
 import { useNavigate } from 'react-router-dom';
 import { login, saveUserInfo } from '../../../api/user';
 import { useAuthStore } from '../../../store/useAuthStore';
+import toast from 'react-hot-toast';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
@@ -31,7 +32,7 @@ const LoginForm: React.FC = () => {
       navigate('/');
     } catch (err: any) {
       console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
-      alert('로그인 또는 회원정보 요청 중 오류 발생');
+      toast.error('로그인 또는 회원정보 요청 중 오류 발생');
     }
   };
   return (

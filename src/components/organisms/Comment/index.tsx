@@ -10,6 +10,7 @@ import {
   type CommentRes,
 } from '../../../api/board';
 import { IoChatbubbles, IoChatbubblesOutline } from 'react-icons/io5';
+import toast from 'react-hot-toast';
 
 export const MAX_REPLY_LEN = 100;
 
@@ -88,10 +89,10 @@ export default function Comment({
     if (isLoading) return;
 
     if (newReplyContent.trim().length <= 2) {
-      alert('댓글을 2글자 이상 작성해 주세요');
+      toast.error('댓글을 2글자 이상 작성해 주세요');
       return;
     } else if (newReplyContent.trim().length > 100) {
-      alert('100자 이내로 작성해주세요');
+      toast.error('100자 이내로 작성해주세요');
       return;
     }
 

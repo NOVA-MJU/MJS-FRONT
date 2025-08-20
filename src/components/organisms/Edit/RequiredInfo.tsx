@@ -4,6 +4,7 @@ import Label from '../../atoms/Label';
 import Button from '../../atoms/Button';
 import { changePassword } from '../../../api/mypage';
 import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
 
 type RequiredInfoProps = {
   currentPw: string;
@@ -32,17 +33,17 @@ const RequiredInfo: React.FC<RequiredInfoProps> = ({
 
   const handlePwChange = async () => {
     if (!currentPw || !pw || !confirmPw) {
-      alert('모든 비밀번호 항목을 입력해주세요.');
+      toast.error('모든 비밀번호 항목을 입력해주세요.');
       return;
     }
     if (!isPwMatch) {
-      alert('[MJS] 새 비밀번호가 일치하지 않습니다.');
+      toast.error('[MJS] 새 비밀번호가 일치하지 않습니다.');
       return;
     }
 
     try {
       await changePassword(currentPw, pw);
-      alert('[MJS] 비밀번호가 변경되었습니다.');
+      toast.success('[MJS] 비밀번호가 변경되었습니다.');
       setOpenForm(false);
       setCurrentPw('');
       setPw('');
@@ -50,7 +51,7 @@ const RequiredInfo: React.FC<RequiredInfoProps> = ({
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       const message = axiosError.response?.data?.message ?? '비밀번호 변경에 실패했습니다.';
-      alert(message);
+      toast.error(message);
     }
   };
   return (

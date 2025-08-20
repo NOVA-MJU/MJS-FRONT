@@ -41,12 +41,9 @@ const Navbar = () => {
     <nav className={`bg-mju-primary w-full  z-50 shadow-sm ${isOpen ? 'h-auto' : 'h-14'}`}>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
-          <div className='flex items-center h-full gap-3'>
-            <img src={logo} alt='Logo' className='w-8 h-8 block' />
-            <div className='flex text-white text-xl font-bold leading-none'>
-              <span>MJ</span>
-              <span className='text-sky-300'>S</span>
-            </div>
+          <div className='flex items-center h-full'>
+            <img src={logo} alt='Logo' className='w-10 h-10 block' />
+            <img src='/logo/MJS_darkLogo.svg' alt='MJS' className='w-17 h-auto' />
           </div>
         </Link>
 
