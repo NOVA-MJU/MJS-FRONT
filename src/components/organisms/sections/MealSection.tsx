@@ -76,7 +76,7 @@ const MealSection = () => {
       </div>
 
       {isWeekend() ? (
-        <div className=' text-gray-400 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
+        <div className=' text-grey-40 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
       ) : (
         <div className='w-full md:flex-row gap-4 justify-start'>
           <MealComponent

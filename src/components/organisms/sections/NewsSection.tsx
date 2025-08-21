@@ -18,7 +18,16 @@ const NewsSection = () => {
     const fetchingNews = async () => {
       try {
         const response = await fetchNewsInfo(categoryTab);
-        setFetchedNews(response.data.content);
+        const items = response.data.content ?? [];
+
+        const toTS = (d?: string) => {
+          const t = d ? Date.parse(d) : NaN;
+          return Number.isNaN(t) ? 0 : t;
+        };
+
+        const sorted = [...items].sort((a: NewsInfo, b: NewsInfo) => toTS(b.date) - toTS(a.date));
+
+        setFetchedNews(sorted);
       } catch (e) {
         console.error('[뉴스 조회 오류 발생]', e);
       }

@@ -6,6 +6,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { updateMemberInfo } from '../../api/mypage';
 import { saveUserInfo } from '../../api/user';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Edit: React.FC = () => {
   const user = useAuthStore((state) => state.user);
@@ -40,11 +41,11 @@ const Edit: React.FC = () => {
       });
       const updatedUserInfo = await saveUserInfo();
       setUser(updatedUserInfo);
-      alert('회원 정보가 수정되었습니다.');
+      toast.success('회원 정보가 수정되었습니다.');
       navigator(`/mypage/${user?.uuid}`);
     } catch (error) {
       console.error('[오류] 정보 수정 중 오류 발생:', error);
-      alert('정보 수정 중 오류가 발생했습니다.');
+      toast.error('정보 수정 중 오류가 발생했습니다.');
     }
   };
 
