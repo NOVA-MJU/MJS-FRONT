@@ -64,7 +64,15 @@ const Navbar = () => {
               to='/department'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
             >
-              학과정보
+              학과별정보
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/academic-calendar'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+            >
+              학사일정
             </Link>
           </li>
           <li>
