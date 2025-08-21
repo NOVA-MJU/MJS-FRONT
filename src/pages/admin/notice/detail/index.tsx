@@ -7,6 +7,7 @@ import { deleteDepartmentNotice, getDepartmentNoticeDetail } from '../../../../a
 import { formatToElapsedTime, formatToLocalTime } from '../../../../utils';
 import BlockTextEditor from '../../../../components/organisms/BlockTextEditor';
 import GlobalErrorPage from '../../../error';
+import toast from 'react-hot-toast';
 
 export default function AdminNoticeDetail() {
   const { departmentUuid, noticeUuid } = useParams<{
@@ -58,7 +59,7 @@ export default function AdminNoticeDetail() {
     setIsLoading(true);
     try {
       await deleteDepartmentNotice(departmentUuid, noticeUuid);
-      alert('공지사항이 삭제되었습니다.');
+      toast.success('공지사항이 삭제되었습니다.');
       navigate(-1);
     } catch (err) {
       console.error(err);

@@ -1,5 +1,3 @@
-import logo from '../../assets/schoolLogoWithNewColor.png';
-
 const Footer = () => {
   const handleContactClick = () => {
     const email = 'mjsearch2025@gmail.com';
@@ -13,11 +11,8 @@ const Footer = () => {
 
   return (
     <footer className='min-w-[375px] md:min-w-[1280px] w-full bg-blue-05 md:py-4 mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
-      <div className='flex items-center gap-2'>
-        <img src={logo} alt='Logo' className='w-10 h-10' />
-        <span className='text-lg font-bold text-gray-800'>
-          MJ<span className='text-sky-400'>S</span> NOVA
-        </span>
+      <div className='flex items-center '>
+        <img src='/logo/MJS_lightLogo.svg' alt='mjs' className='h-auto w-14' />
       </div>
 
       <ul className='flex gap-6 text-sm text-gray-800'>
@@ -31,7 +26,7 @@ const Footer = () => {
         </li>
       </ul>
 
-      <p className='text-center text-xs text-gray-400 md:text-right w-full md:w-auto'>
+      <p className='text-center text-s text-gray-400 md:text-right w-full md:w-auto'>
         © 2025 MJS. All rights reserved.
       </p>
     </footer>

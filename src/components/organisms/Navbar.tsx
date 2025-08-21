@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../../assets/schoolLogo.png';
+
 import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
@@ -13,8 +13,10 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const handleAuthClick = () => {
-    if (isLoggedIn) logout();
-    else navigate('/login');
+    if (isLoggedIn) {
+      logout();
+      toast.success('로그아웃 되었습니다.');
+    } else navigate('/login');
   };
   const closeMenu = () => setIsOpen(false);
 
@@ -41,12 +43,8 @@ const Navbar = () => {
     <nav className={`bg-mju-primary w-full  z-50 shadow-sm ${isOpen ? 'h-auto' : 'h-14'}`}>
       <div className='mx-auto md:max-w-[1200px] w-[90%] h-full px-4 flex items-center justify-between'>
         <Link to='/' className='h-full'>
-          <div className='flex items-center h-full gap-3'>
-            <img src={logo} alt='Logo' className='w-8 h-8 block' />
-            <div className='flex text-white text-xl font-bold leading-none'>
-              <span>MJ</span>
-              <span className='text-sky-300'>S</span>
-            </div>
+          <div className='flex items-center h-full'>
+            <img src='/logo/MJS_darkLogo.svg' alt='MJS' className='w-17 h-auto' />
           </div>
         </Link>
 
@@ -66,7 +64,15 @@ const Navbar = () => {
               to='/department'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
             >
-              학과정보
+              학과별정보
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/academic-calendar'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+            >
+              학사일정
             </Link>
           </li>
           <li>

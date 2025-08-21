@@ -70,7 +70,7 @@ export const useRegisterHandlers = ({
   const handleError = (err: unknown, defaultMsg = '알 수 없는 오류') => {
     const axiosError = err as AxiosError<{ message: string }>;
     console.error(axiosError?.response?.data?.message || defaultMsg);
-    alert(axiosError?.response?.data?.message || defaultMsg);
+    toast.error(axiosError?.response?.data?.message || defaultMsg);
   };
 
   const handleSendCode = async () => {

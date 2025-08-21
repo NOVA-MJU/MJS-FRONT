@@ -6,6 +6,7 @@ import { Notices } from '../../constants/notices';
 import NoticeList from '../../components/organisms/CommonList';
 import { fetchNotices } from '../../api/notice';
 import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
+import toast from 'react-hot-toast';
 
 const categoryMapping: Record<string, string> = {
   일반공지: 'general',
@@ -41,7 +42,7 @@ const Notice: React.FC = () => {
         setItems(data.content);
         setTotalPages(data.totalPages);
       } catch {
-        alert('공지사항을 불러오지 못했습니다.');
+        toast.error('공지사항을 불러오지 못했습니다.');
       }
     })();
   }, [selectedCategory, page]);
