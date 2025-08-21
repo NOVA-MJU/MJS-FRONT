@@ -2,20 +2,18 @@ import Divider from '../../components/atoms/Divider';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import SearchResultItem from '../../components/molecules/SearchResultItem';
-import Chip from '../../components/atoms/Chip';
 import { useEffect, useState } from 'react';
 import { getSearchOverview, type SearchResultItemRes } from '../../api/search';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 export default function Search() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
   const [initialContent, setInitialContent] = useState('');
 
-  const keyword = searchParams.get('keyword') ?? searchParams.get('search');
+  const keyword = searchParams.get('keyword');
 
   /**
    * 검색어 초기값 반영 (search parameter 반영)
@@ -42,32 +40,9 @@ export default function Search() {
     setNewsItems(res.news);
   }
 
-  /** 검색바 제출 시: URL 쿼리 갱신 → useEffect 재실행 */
-  const handleSubmitFromSearchBar = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-    setSearchParams({ keyword: trimmed });
-  };
-
-  /** 더보기 클릭 시: 섹션별 상세 페이지로 이동 (현재 검색어 유지) */
-  const handleSeeMore = (type: 'notice' | 'board' | 'news') => {
-    const q = (searchParams.get('keyword') ?? searchParams.get('search') ?? initialContent).trim();
-    const qs = q ? `?keyword=${encodeURIComponent(q)}&search=${encodeURIComponent(q)}` : '';
-    const to = type === 'notice' ? '/notice' : type === 'board' ? '/boards' : '/news';
-    navigate(`${to}${qs}`);
-  };
-
   return (
     <div className='p-4 md:p-8 flex flex-col gap-4 md:gap-12'>
-      <SearchBar initialContent={initialContent} onSubmit={handleSubmitFromSearchBar} />
-      <div className='flex gap-3 md:gap-6 overflow-auto no-scrollbar'>
-        <Chip selected>전체</Chip>
-        <Chip>공지사항</Chip>
-        <Chip>명대신문</Chip>
-        <Chip>자유게시판</Chip>
-        <Chip>제휴</Chip>
-        <Chip>취업후기</Chip>
-      </div>
+      <SearchBar initialContent={initialContent} />
       <Divider variant='default' />
       <div className='flex flex-col gap-12 md:gap-24'>
         {/*
@@ -97,12 +72,15 @@ export default function Search() {
             )}
           </div>
           {noticeItems.length === 5 && (
-            <button
-              onClick={() => handleSeeMore('notice')}
+            <Link
+              to={{
+                pathname: `/notice`,
+                search: `?keyword=${initialContent}`,
+              }}
               className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg cursor-pointer'
             >
               <Typography variant='body03'>더보기</Typography>
-            </button>
+            </Link>
           )}
         </div>
         {/*
@@ -133,12 +111,15 @@ export default function Search() {
             )}
           </div>
           {boardItems.length === 5 && (
-            <button
-              onClick={() => handleSeeMore('board')}
-              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg cursor-pointer'
+            <Link
+              to={{
+                pathname: `/board`,
+                search: `?keyword=${initialContent}`,
+              }}
+              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg'
             >
               <Typography variant='body03'>더보기</Typography>
-            </button>
+            </Link>
           )}
         </div>
         {/*
@@ -170,12 +151,15 @@ export default function Search() {
             )}
           </div>
           {newsItems.length === 5 && (
-            <button
-              onClick={() => handleSeeMore('news')}
-              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg cursor-pointer'
+            <Link
+              to={{
+                pathname: `/news`,
+                search: `?keyword=${initialContent}`,
+              }}
+              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg'
             >
               <Typography variant='body03'>더보기</Typography>
-            </button>
+            </Link>
           )}
         </div>
       </div>

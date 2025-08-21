@@ -1,10 +1,10 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 import { getBoards } from '../../../../api/board';
 import type { BoardItem } from '../../../../api/board';
 import { useAuthStore } from '../../../../store/useAuthStore';
-import { FaRegThumbsUp, FaRegCommentDots } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { Typography } from '../../../atoms/Typography';
 
 type Status = 'loading' | 'success' | 'error';
 
@@ -37,12 +37,7 @@ function getErrorMessage(e: unknown): string {
   return e instanceof Error ? e.message : '자유게시판 HOT 목록을 불러오지 못했어요.';
 }
 
-export default function HotBoardList({
-  limit = 5,
-  hrefBuilder = (uuid) => `/boards/${uuid}`,
-  loginHref = '/login',
-  onLoginClick,
-}: Props) {
+export default function HotBoardList({ limit = 5, loginHref = '/login', onLoginClick }: Props) {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
 
   const [status, setStatus] = useState<Status>('loading');
@@ -93,7 +88,7 @@ export default function HotBoardList({
       <div className='mb-4 flex items-center justify-between'>
         <h3 className='text-base font-semibold text-mju-primary'>HOT 게시물</h3>
         <a
-          href={isLoggedIn ? '/boards' : loginHref}
+          href={isLoggedIn ? '/board' : loginHref}
           onClick={!isLoggedIn ? onLoginClick : undefined}
           className={`text-xs no-underline ${isLoggedIn ? 'text-mju-primary hover:opacity-80' : 'text-gray-400 hover:text-grey-40'}`}
         >
@@ -146,25 +141,30 @@ export default function HotBoardList({
                         <span className={`w-6 text-right font-semibold ${rankColor}`}>{rank}</span>
 
                         {/* 항목 (밑줄 제거) */}
-                        <a
-                          href={hrefBuilder(post.uuid)}
+                        <Link
+                          to={`/board/${post.uuid}`}
                           className='group flex flex-1 items-center gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 no-underline'
                         >
                           <span className='flex-1 text-sm text-gray-900 truncate no-underline'>
                             {post.title}
                           </span>
-
                           <span className='text-xs text-gray-400 shrink-0 inline-flex items-center gap-3'>
-                            <span className='inline-flex items-center gap-1'>
-                              <FaRegThumbsUp aria-label='좋아요' />
+                            <Typography
+                              variant='caption02'
+                              className='text-grey-40 flex items-center gap-0.5'
+                            >
+                              <IoIosHeart />
                               {post.likeCount}
-                            </span>
-                            <span className='inline-flex items-center gap-1'>
-                              <FaRegCommentDots aria-label='댓글' />
+                            </Typography>
+                            <Typography
+                              variant='caption02'
+                              className='text-grey-40 flex items-center gap-0.5'
+                            >
+                              <IoIosChatbubbles aria-label='댓글' />
                               {post.commentCount}
-                            </span>
+                            </Typography>
                           </span>
-                        </a>
+                        </Link>
                       </li>
                     );
                   })}

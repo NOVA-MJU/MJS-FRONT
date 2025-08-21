@@ -44,13 +44,18 @@ export default function BoardDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [newComment, setNewComment] = useState('');
   const [isError, setIsError] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
 
   /**
    * 페이지 로드 함수
    */
   useEffect(() => {
     if (!uuid) return;
-    else getContent(uuid);
+    else {
+      getContent(uuid);
+      getComments(uuid);
+    }
   }, [uuid]);
 
   /**
@@ -59,13 +64,28 @@ export default function BoardDetail() {
   const getContent = async (uuid: string) => {
     setIsLoading(true);
     try {
-      const contentRes = await getBoardDetail(uuid);
-      const commentsRes = await getBoardComments(uuid);
+      const res = await getBoardDetail(uuid);
+      setContent(res);
+      setCanEdit(res.canEdit);
+      setCanDelete(res.canDelete);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      setContent(contentRes);
+  /**
+   * 댓글 데이터 로드 함수
+   */
+  const getComments = async (uuid: string) => {
+    setIsLoading(true);
+    try {
+      const commentsRes = await getBoardComments(uuid);
       setComments(commentsRes);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -78,7 +98,7 @@ export default function BoardDetail() {
   const handleCommentUpload = async () => {
     if (!uuid || isLoading) return;
 
-    if (newComment.trim().length <= 2) {
+    if (newComment.trim().length < 2) {
       toast.error('댓글을 2글자 이상 작성해 주세요');
       return;
     } else if (newComment.trim().length > 100) {
@@ -89,7 +109,7 @@ export default function BoardDetail() {
     try {
       setIsLoading(true);
       await postComment(uuid, newComment);
-      await getContent(uuid);
+      await getComments(uuid);
       setNewComment('');
     } catch (err) {
       console.error(err);
@@ -149,19 +169,23 @@ export default function BoardDetail() {
         <NavigationUp onClick={() => navigate(-1)} />
         {content && (
           <div className='flex items-center gap-2 md:gap-4'>
-            <Link to={`/board/edit/${uuid}`} state={{ from: 'detail' }}>
-              <Button className='p-3 md:w-46' variant='greyBlack' shape='rounded'>
-                수정
+            {canEdit && (
+              <Link to={`/board/edit/${uuid}`} state={{ from: 'detail' }}>
+                <Button className='p-3 md:w-46' variant='greyBlack' shape='rounded'>
+                  수정
+                </Button>
+              </Link>
+            )}
+            {canDelete && (
+              <Button
+                className='p-3 md:w-46'
+                variant='danger'
+                shape='rounded'
+                onClick={handleDeletePost}
+              >
+                삭제
               </Button>
-            </Link>
-            <Button
-              className='p-3 md:w-46'
-              variant='danger'
-              shape='rounded'
-              onClick={handleDeletePost}
-            >
-              삭제
-            </Button>
+            )}
           </div>
         )}
       </div>
@@ -218,7 +242,7 @@ export default function BoardDetail() {
             <div className='flex-1 flex flex-col items-end gap-1'>
               <input
                 className='w-full p-3 border-2 border-grey-05 rounded-xl placeholder-grey-20'
-                placeholder='PlaceHolder'
+                placeholder='댓글을 입력해주세요'
                 type='text'
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
@@ -257,6 +281,7 @@ export default function BoardDetail() {
                   likeCount={comment.likeCount}
                   liked={comment.liked}
                   replies={comment.replies}
+                  isAuthor={comment.commentIsAuthor}
                 />
               ))}
             </div>

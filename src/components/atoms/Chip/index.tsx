@@ -18,7 +18,7 @@ export default function Chip({
     <button
       {...props}
       className={clsx(
-        'px-3 py-1 md:px-4 md:py-2 rounded-lg cursor-pointer shrink-0',
+        'px-3 py-1 rounded-lg cursor-pointer shrink-0',
         selected ? 'bg-mju-primary text-white' : 'bg-grey-05 hover:bg-blue-05',
         className,
       )}

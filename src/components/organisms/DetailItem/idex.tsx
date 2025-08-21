@@ -1,4 +1,6 @@
+import DOMPurify from 'dompurify';
 import Badge from '../../atoms/Badge';
+import { Typography } from '../../atoms/Typography';
 
 export interface ListItemProps {
   id: number;
@@ -30,6 +32,26 @@ const DetailItem: React.FC<ListItemProps> = ({
   imgSrc,
   variant,
 }) => {
+  /**
+   * 검색어 highlight를 위해 텍스트를 sanitize 하고, em 태그를 허용합니다.
+   */
+  const safeTitle = DOMPurify.sanitize(title, {
+    ALLOWED_TAGS: ['em', 'strong', 'u'],
+    ALLOWED_ATTR: [],
+  });
+  const safeContent = DOMPurify.sanitize(content ?? '', {
+    ALLOWED_TAGS: ['em', 'strong', 'u'],
+    ALLOWED_ATTR: [],
+  });
+
+  const renderText = (html: string, variant: Parameters<typeof Typography>[0]['variant']) => (
+    <Typography
+      variant={variant}
+      className='search-result__highlight line-clamp-2'
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+
   /* --- variant가 없으면 date 유무로 판단 --- */
   const layout: 'notice' | 'news' = variant ?? (date ? 'notice' : 'news');
 
@@ -56,8 +78,8 @@ const DetailItem: React.FC<ListItemProps> = ({
           )}
 
           <div className='flex flex-col gap-2'>
-            <p className='text-base font-medium line-clamp-1'>{title}</p>
-            <p className='text-base font-light line-clamp-2'>{content}</p>
+            {renderText(safeTitle, 'title02')}
+            {renderText(safeContent, 'body02')}
           </div>
         </a>
         <hr className='border-grey-20' />
@@ -80,7 +102,7 @@ const DetailItem: React.FC<ListItemProps> = ({
             rel='noopener noreferrer'
             className='flex flex-col gap-2 cursor-pointer'
           >
-            <p className='w-50 md:w-full text-sm md:text-base font-medium'>{title}</p>
+            {renderText(safeTitle, 'body02')}
           </a>
         </div>
         <p className='text-xs md:text-sm text-grey-40 flex'> {date?.split('T')[0]}</p>
