@@ -14,7 +14,7 @@ interface PaginationProps {
  * @returns
  */
 const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) => {
-  const visibleCount = 5;
+  const visibleCount = Math.min(5, totalPages);
   const numberIndex = page % visibleCount;
   return (
     <nav className='flex items-center justify-center gap-2 text-xs md:text-sm text-grey-40'>
@@ -34,7 +34,6 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
           {i === numberIndex ? page + 1 : ''}
         </button>
       ))}
-
       <button
         disabled={page === totalPages - 1}
         onClick={() => onChange(page + 1)}

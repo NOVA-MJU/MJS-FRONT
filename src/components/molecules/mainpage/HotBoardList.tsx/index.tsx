@@ -88,7 +88,7 @@ export default function HotBoardList({ limit = 5, loginHref = '/login', onLoginC
       <div className='mb-4 flex items-center justify-between'>
         <h3 className='text-base font-semibold text-mju-primary'>HOT 게시물</h3>
         <a
-          href={isLoggedIn ? '/boards' : loginHref}
+          href={isLoggedIn ? '/board' : loginHref}
           onClick={!isLoggedIn ? onLoginClick : undefined}
           className={`text-xs no-underline ${isLoggedIn ? 'text-mju-primary hover:opacity-80' : 'text-gray-400 hover:text-grey-40'}`}
         >
