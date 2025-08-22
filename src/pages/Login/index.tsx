@@ -2,7 +2,7 @@ import LoginForm from '../../components/organisms/LoginForm';
 
 const Login = () => {
   return (
-    <div className='w-full  py-[30%] md:py-10 h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
+    <div className='w-full py-[30%] md:py-10 h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
       <p className='text-2xl mb-4 md:text-4xl font-bold text-mju-primary'>로그인</p>
       <div className='w-full mx-auto flex justify-center items-center'>
         <div className='w-[375px] flex flex-col md:gap-6 md:w-[672px]'>

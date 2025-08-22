@@ -26,6 +26,7 @@ import ViewLikes from './pages/mypage/viewLikes';
 import AdminNoticeWrite from './pages/admin/notice/write';
 import AdminNoticeEdit from './pages/admin/notice/edit';
 import GlobalErrorPage from './pages/error';
+import FindPw from './pages/findPw';
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/broadcast' element={<Broadcast />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/find-pw' element={<FindPw />} />
         <Route path='/mypage/:uuid' element={<MyPage />} />
         <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
 

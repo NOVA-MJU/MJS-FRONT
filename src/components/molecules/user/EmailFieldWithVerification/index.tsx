@@ -1,4 +1,3 @@
-import React from 'react';
 import InputField from '../../common/InputField';
 import Button from '../../../atoms/Button/Button';
 
@@ -17,7 +16,7 @@ interface Props {
   handleVerifyCode: () => void;
 }
 
-const EmailFieldWithVerification: React.FC<Props> = ({
+const EmailFieldWithVerification = ({
   id,
   setId,
   code,
@@ -30,7 +29,7 @@ const EmailFieldWithVerification: React.FC<Props> = ({
   setIsEmailChecked,
   handleSendCode,
   handleVerifyCode,
-}) => (
+}: Props) => (
   <div className='min-h-[110px]'>
     <InputField
       label='이메일'

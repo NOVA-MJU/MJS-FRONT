@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { genderOptions } from '../../../constants/gender';
 import { useRegisterHandlers } from '../../../hooks/useRegister';
@@ -6,7 +6,7 @@ import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
 import Button from '../../atoms/Button/Button';
 
-const RegisterForm: React.FC = () => {
+const RegisterForm = () => {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
