@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import LoginForm from '../../components/organisms/LoginForm';
 
 const Login = () => {
@@ -13,7 +14,9 @@ const Login = () => {
           <div className='w-[375px] md:w-full mt-4 flex justify-center gap-4 md:gap-20 text-sm md:text-md'>
             <p className='font-normal text-[#999999]'>아이디 찾기</p>
             <p className='font-normal text-[#999999]'>|</p>
-            <p className='font-normal text-[#999999]'>비밀번호 찾기</p>
+            <Link to={'/find-pw'}>
+              <p className='font-normal text-[#999999]'>비밀번호 찾기</p>
+            </Link>
           </div>
         </div>
       </div>
