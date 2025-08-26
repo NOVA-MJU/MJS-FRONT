@@ -1,0 +1,172 @@
+import { useState } from 'react';
+import InputField from '../../molecules/common/InputField';
+import Button from '../../atoms/Button/Button';
+import UserFormButtons from '../../molecules/user/UserFormButtons';
+import { useNavigate } from 'react-router-dom';
+
+const FindPwForm = () => {
+  const navigate = useNavigate();
+
+  const [id, setId] = useState(''); // 이메일 입력값
+  const [code, setCode] = useState(''); // 인증코드
+  const [isSending, setIsSending] = useState(false);
+  const [showCodeInput, setShowCodeInput] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [isEmailChecked, setIsEmailChecked] = useState(false);
+
+  const isMjuEmail = (email: string) => /@mju\.ac\.kr$/i.test(email);
+
+  const handleSendCode = async () => {
+    if (!isMjuEmail(id)) return;
+    setIsSending(true);
+    try {
+      // TODO: 인증코드 전송 API 호출
+      // await api.sendResetCode(id);
+      setShowCodeInput(true);
+      setIsEmailChecked(true);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!code.trim()) return;
+    setIsVerifying(true);
+    try {
+      // 인증코드 검증 API 호출 로직 연결 예정
+      const ok = true; // 임시 코드
+      if (ok) setEmailVerified(true);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  return (
+    <form
+      className='flex h-auto flex-col w-full md:w-[90%] md:py-12 items-center justify-center'
+      onSubmit={(e) => e.preventDefault()}
+    >
+      <div className='md:p-12 rounded-2xl flex flex-col gap-6 md:gap-12 w-full'>
+        <div>
+          <InputField
+            label='이메일'
+            type='text'
+            autoComplete='email'
+            placeholder='이메일을 입력하세요'
+            value={id}
+            onChange={(e) => {
+              setId(e.target.value);
+              setIsEmailChecked(false);
+            }}
+            error={!!id && !isMjuEmail(id)}
+            rightElement={
+              <div className='hidden md:flex items-center gap-3'>
+                <p className='font-light ml-2'>@mju.ac.kr</p>
+                <Button
+                  type='button'
+                  shape='rounded'
+                  size='sm'
+                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+                  onClick={handleSendCode}
+                  fullWidth={false}
+                  variant={emailVerified || isSending ? 'grey' : 'main'}
+                  className='w-24 h-10 md:w-34 md:h-12'
+                >
+                  {emailVerified
+                    ? '완료'
+                    : isSending
+                      ? '전송 중...'
+                      : isEmailChecked
+                        ? '전송 완료'
+                        : '인증 요청'}
+                </Button>
+              </div>
+            }
+          />
+
+          {/* 모바일 세로 배치 */}
+          <div className='w-full mt-3 flex items-center justify-between md:hidden'>
+            <p className='font-light text-sm mr-2'>@mju.ac.kr</p>
+            <Button
+              type='button'
+              shape='rounded'
+              size='sm'
+              disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+              onClick={handleSendCode}
+              fullWidth={false}
+              variant={emailVerified || isSending ? 'grey' : 'main'}
+              className='w-24 h-10'
+            >
+              {emailVerified
+                ? '완료'
+                : isSending
+                  ? '전송 중...'
+                  : isEmailChecked
+                    ? '전송 완료'
+                    : '인증 요청'}
+            </Button>
+          </div>
+          <p className='block text-xs font-normal text-grey-40 mt-3 ml-1'>
+            @mju.ac.kr 형식의 이메일만 지원
+          </p>
+        </div>
+        {showCodeInput && (
+          <>
+            <InputField
+              label='인증번호 입력'
+              type='text'
+              placeholder='인증번호'
+              value={code}
+              onChange={(e) => setCode(e.target.value.trim())}
+              showHr={true}
+              rightElement={
+                // 데스크톱 전용: 인풋 오른쪽
+                <div className='hidden md:flex items-center gap-3'>
+                  <Button
+                    type='button'
+                    variant='main'
+                    disabled={isVerifying || emailVerified || !code.trim()}
+                    onClick={handleVerifyCode}
+                    fullWidth={false}
+                    size='sm'
+                    shape='rounded'
+                    className='w-28 h-10 md:w-34 md:h-12'
+                  >
+                    {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
+                  </Button>
+                </div>
+              }
+            />
+
+            {/* 모바일 세로 배치 */}
+            <div className='flex md:hidden justify-end'>
+              <Button
+                type='button'
+                variant='main'
+                disabled={isVerifying || emailVerified || !code.trim()}
+                onClick={handleVerifyCode}
+                fullWidth={false}
+                size='sm'
+                shape='rounded'
+                className='w-28 h-10'
+              >
+                {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
+              </Button>
+            </div>
+            <div className='w-full'>
+              <UserFormButtons
+                label='확인'
+                loading={false}
+                onSignUp={() => navigate('/register')}
+                disabled={false}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </form>
+  );
+};
+
+export default FindPwForm;

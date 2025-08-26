@@ -7,7 +7,7 @@ import axios from 'axios';
 import { login, saveUserInfo } from '../../../api/user';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
-import LoginButtons from '../../molecules/user/LoginButtons';
+import UserFormButtons from '../../molecules/user/UserFormButtons';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
@@ -75,7 +75,6 @@ const LoginForm = () => {
       console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
 
       setFormError('로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-
     }
   };
 
@@ -113,7 +112,12 @@ const LoginForm = () => {
       )}
 
       <div className='flex flex-col gap-y-6'>
-        <LoginButtons loading={false} onSignUp={() => navigate('/register')} disabled={false} />
+        <UserFormButtons
+          label='로그인'
+          loading={false}
+          onSignUp={() => navigate('/register')}
+          disabled={false}
+        />
       </div>
     </form>
   );
