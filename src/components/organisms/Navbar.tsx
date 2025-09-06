@@ -4,11 +4,15 @@ import { HiMenu, HiX } from 'react-icons/hi';
 import { useState } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useNavTracking } from '../../hooks/gtm/useNavTracking';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuthStore();
+  const { trackNavClick } = useNavTracking();
+
   const navigate = useNavigate();
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -22,13 +26,14 @@ const Navbar = () => {
 
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!isLoggedIn) {
-      e.preventDefault(); //Link tag의 Default Event를 방지.
+      e.preventDefault();
 
       toast.error('로그인이 필요한 서비스입니다.', {
-        autoClose: 2000, // 2초 후 자동 닫힘
-        pauseOnHover: true,
-        onClose: () => navigate('/login'), // 닫힌 뒤 이동
+        duration: 2000, // 2초 후 자동 닫힘
+        // pauseOnHover: true,
+        // onClose: () => navigate('/login'), // 닫힌 뒤 이동
       });
+      trackNavClick('borad');
       navigate('/login');
     }
   };
@@ -63,6 +68,7 @@ const Navbar = () => {
             <Link
               to='/department'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('department')}
             >
               학과별정보
             </Link>
@@ -71,6 +77,7 @@ const Navbar = () => {
             <Link
               to='/academic-calendar'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('calendar')}
             >
               학사일정
             </Link>
@@ -79,17 +86,24 @@ const Navbar = () => {
             <Link
               to='/menu'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('meal')}
             >
               식단
             </Link>
           </li>
           <li>
-            <span className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'>
+            <span
+              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
+              onClick={() => trackNavClick('market')}
+            >
               벼룩시장
             </span>
           </li>
           <li>
-            <span className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'>
+            <span
+              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
+              onClick={() => trackNavClick('partnership')}
+            >
               제휴
             </span>
           </li>
@@ -97,6 +111,7 @@ const Navbar = () => {
             <Link
               to='/notice'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('notice')}
             >
               공지사항
             </Link>
@@ -111,7 +126,10 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <span className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'>
+            <span
+              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
+              onClick={() => trackNavClick('job')}
+            >
               취업후기
             </span>
           </li>
@@ -121,6 +139,7 @@ const Navbar = () => {
               target='_blank'
               rel='noopener noreferrer'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('wiki')}
             >
               띵지위키
             </a>

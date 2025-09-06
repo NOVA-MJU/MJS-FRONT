@@ -5,6 +5,8 @@ import { useAuthStore } from '../../../store/useAuthStore';
 
 import axios from 'axios';
 import { login, saveUserInfo } from '../../../api/user';
+import { useLoginTracking } from '../../../hooks/gtm/useLoginTracking';
+
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
@@ -45,7 +47,13 @@ const LoginForm = () => {
     setFormError('');
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  /** GTM hook **/
+  const { markStart, onSubmitCapture, markSuccess } = useLoginTracking({
+    method: 'email',
+  });
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    onSubmitCapture(e);
     e.preventDefault();
     if (id.trim() === '') {
       setFormError('아이디를 입력해 주세요');
@@ -65,6 +73,7 @@ const LoginForm = () => {
       await login(id, pw);
       const userInfo = await saveUserInfo();
       useAuthStore.getState().login(userInfo);
+      markSuccess();
       navigate('/');
     } catch (err: any) {
       /**  401 처리 (아이디/비번 불일치) **/
@@ -88,6 +97,7 @@ const LoginForm = () => {
         onChange={(e) => {
           setId(e.target.value);
           clearErrors();
+          markStart();
         }}
         error={emailError}
         helperText={''}
@@ -101,6 +111,7 @@ const LoginForm = () => {
         onChange={(e) => {
           setPw(e.target.value);
           clearErrors();
+          markStart();
         }}
       />
 
