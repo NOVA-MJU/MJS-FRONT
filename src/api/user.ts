@@ -30,10 +30,9 @@ export const saveUserInfo = async () => {
 export const registerMember = async (userData: RegisterReq) => {
   try {
     const response = await apiClient.post('/members', userData);
-
     return response.data;
   } catch (err: any) {
-    throw err.response?.data || { message: '회원가입 요청 실패' };
+    throw err.response?.data || { message: '회원가입 요청 실패', code: 'unknown' };
   }
 };
 
