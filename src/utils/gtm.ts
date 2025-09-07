@@ -1,0 +1,10 @@
+import type { GTMEvent } from '../types/gtm';
+
+export function gtmPush(payload: GTMEvent): void {
+  window.dataLayer = window.dataLayer || [];
+  const isDev = import.meta.env.MODE !== 'production';
+  window.dataLayer.push({
+    ...payload,
+    ...(payload.debug_mode === undefined ? { debug_mode: isDev } : null),
+  } as GTMEvent);
+}
