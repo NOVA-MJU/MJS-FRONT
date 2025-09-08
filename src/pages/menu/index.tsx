@@ -20,6 +20,7 @@ export default function Menu() {
     (async () => {
       try {
         const res = await getMenus();
+        console.log(res);
         setContents(res);
       } catch (e) {
         toast.error('식단을 불러오는 중 오류가 발생했습니다!', e);
