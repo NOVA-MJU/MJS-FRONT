@@ -1,17 +1,19 @@
+import { useEffect, useState, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import SearchBar from '../../components/atoms/SearchBar';
 import Pagination from '../../components/molecules/common/Pagination';
-import { useEffect, useState, useMemo } from 'react';
 import CategoryFilter from '../../components/molecules/common/CategoryFilter';
 import { Notices } from '../../constants/notices';
 import NoticeList from '../../components/organisms/CommonList';
-import { fetchNotices } from '../../api/notice';
-import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
-import { Link, useSearchParams } from 'react-router-dom';
-import { getSearchResult } from '../../api/search';
+import { fetchNotionInfo } from '../../api/main/notice-api';
+import { getSearchResult, type GetSearchResultRes } from '../../api/search';
 import { Typography } from '../../components/atoms/Typography';
-import toast from 'react-hot-toast';
+import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
+import type { NoticeItem } from '../../types/notice/noticeInfo';
 
+/** 카테고리 매핑 */
 const categoryMapping: Record<string, string> = {
+  전체: 'all',
   일반공지: 'general',
   학사공지: 'academic',
   장학공지: 'scholarship',
@@ -22,85 +24,92 @@ const categoryMapping: Record<string, string> = {
 
 const ITEMS_PER_PAGE = 8;
 
+/**
+ * Notice (공지사항 페이지)
+ *
+ * - 검색어(keyword)가 있으면 검색 API(getSearchResult) 호출
+ * - 검색어가 없으면 카테고리별 공지사항 API(fetchNotionInfo) 호출
+ * - "전체" 탭 선택 시 category=all 로 모든 공지를 최신순 조회
+ * - Pagination 은 0-base 로 동작 (백엔드 스펙)
+ */
 const Notice: React.FC = () => {
-  /**
-   * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
-   */
+  /** 검색  */
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const [initialContent, setInitialContent] = useState('');
 
-  /**
-   * 주소에 search parameter 값이 있으면 검색바에 반영합니다
-   */
-  useEffect(() => {
-    (async () => {
-      if (!keyword) return;
-      setInitialContent(keyword);
-      try {
-        // await handleSearch(keyword);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, [keyword]);
+  /** 카테고리 */
+  const CATEGORY_LIST = useMemo(() => Notices, []);
+  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_LIST[0] ?? '전체');
 
-  /**
-   * '전체' 제거된 카테고리 목록
-   */
-  const CATEGORY_LIST = useMemo(() => Notices.filter((c) => c !== '전체'), []);
-
-  /**
-   * 기본값을 첫 카테고리로
-   */
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_LIST[0] ?? '일반공지');
+  /** 리스트 */
   const [items, setItems] = useState<ListItemProps[]>([]);
+
+  /** 페이지  */
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  /** 검색어 변경 시 검색창 초기화 */
   useEffect(() => {
-    /**
-     * search parameter가 있는 경우 검색을 수행합니다
-     */
-    if (keyword)
+    if (keyword) setInitialContent(keyword);
+  }, [keyword]);
+
+  /** 데이터 fetch (검색 / 목록) */
+  useEffect(() => {
+    if (keyword) {
+      // --- 검색 모드 ---
       (async () => {
         try {
           const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, ITEMS_PER_PAGE);
-          console.log(res);
-          const parsed: ListItemProps[] = res.content.map((item, index) => ({
-            id: index,
-            category: item.category,
-            title: item.highlightedTitle ?? '',
-            content: item.highlightedContent ?? '',
-            date: item.date ?? '',
-            link: item.link,
-            imgSrc: item.imageUrl ?? undefined,
-            variant: 'notice',
-          }));
+          const parsed: ListItemProps[] = res.content.map(
+            (item: GetSearchResultRes, idx: number) => ({
+              id: idx,
+              category: item.category as
+                | 'general'
+                | 'academic'
+                | 'scholarship'
+                | 'career'
+                | 'activity'
+                | 'rule',
+              title: item.highlightedTitle ?? '',
+              content: item.highlightedContent ?? '',
+              date: item.date ?? '',
+              link: item.link,
+              imgSrc: item.imageUrl,
+              variant: 'notice',
+            }),
+          );
           setItems(parsed);
           setTotalPages(res.totalPages);
         } catch (e) {
-          console.error(e);
+          console.error('검색 결과 fetch 실패:', e);
         }
       })();
-    /**
-     * search parameter가 없는 경우 모든 결과를 출력합니다
-     */ else
+    } else {
+      // --- 목록 모드 ---
       (async () => {
         try {
           const categoryKey = categoryMapping[selectedCategory] ?? 'general';
-          const data = await fetchNotices({
-            category: categoryKey, // 항상 단일 카테고리로 호출
-            page: page,
-            size: ITEMS_PER_PAGE,
-            sort: 'desc',
-          });
-          setItems(data.content);
-          setTotalPages(data.totalPages);
+          const data = await fetchNotionInfo(categoryKey, undefined, page, ITEMS_PER_PAGE, 'desc');
+
+          const parsed: ListItemProps[] = (data?.content ?? []).map(
+            (item: NoticeItem, idx: number) => ({
+              id: idx,
+              category: item.category,
+              title: item.title ?? '',
+              content: '',
+              date: item.date ?? '',
+              link: item.link,
+              variant: 'notice',
+            }),
+          );
+          setItems(parsed);
+          setTotalPages(data?.totalPages ?? 1);
         } catch (e) {
-          console.error(e);
+          console.error('공지사항 fetch 실패:', e);
         }
       })();
+    }
   }, [keyword, selectedCategory, page]);
 
   return (
@@ -116,12 +125,13 @@ const Notice: React.FC = () => {
         current={selectedCategory}
         onChange={(category) => {
           setSelectedCategory(category);
-          setPage(1);
+          setPage(0); // 카테고리 전환 시 첫 페이지로 이동
         }}
       />
+
       <hr className='w-full border-blue-05 border-2' />
       <div className='flex-1 flex flex-col'>
-        <NoticeList items={items} category='notice' />
+        <NoticeList items={items} category='notice' page={page + 1} itemsPerPage={ITEMS_PER_PAGE} />
         {keyword && items.length === 0 && (
           <div className='flex-1 text-center content-center'>
             <Typography variant='title02'>검색 결과가 없습니다</Typography>

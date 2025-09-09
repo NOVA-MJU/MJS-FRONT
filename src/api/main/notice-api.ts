@@ -3,14 +3,14 @@ import type { NoticeResponse } from '../../types/notice/noticeInfo';
 
 export const fetchNotionInfo = async (
   category: string,
-  year = new Date().getFullYear(),
+  year?: number,
   page = 0,
   size = 5,
   sort: 'asc' | 'desc' = 'desc',
 ): Promise<NoticeResponse> => {
   try {
     const response = await apiClient.get('/notices', {
-      params: { category, year, page, size, sort },
+      params: { category, page, size, sort, ...(year ? { year } : {}) },
     });
     return response.data;
   } catch (e) {
