@@ -1,39 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { getRealTimeSearch } from '../../../../api/main/real-time';
+import type { TopKeywordsResponse } from '../../../../api/main/real-time';
 
 type RankItem = { keyword: string };
 type Delta = 'up' | 'down' | 'new' | 'same';
 
 type RealtimeSearchProps = {
-  items?: RankItem[]; // 외부 데이터 주입 시 사용
   limit?: number; // 표시할 개수
   intervalMs?: number; // 갱신 주기 (ms)
   title?: string; // 상단 타이틀
 };
 
-const DUMMY: RankItem[] = [
-  { keyword: '장학금 신청' },
-  { keyword: '수강신청 오류' },
-  { keyword: '기숙사 추가모집' },
-  { keyword: '졸업요건' },
-  { keyword: '중고 아이패드' },
-  { keyword: '명대신문' },
-  { keyword: '방송국 리포터' },
-  { keyword: '근로장학생' },
-  { keyword: '시험 기출' },
-  { keyword: '채용 설명회' },
-];
-
-function shuffle<T>(arr: T[]) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 export default function RealtimeRank({
-  items,
   limit = 10,
   intervalMs = 10000,
   title = '실시간 검색 순위',
@@ -42,24 +20,44 @@ export default function RealtimeRank({
     typeof window !== 'undefined' &&
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-  const base = useMemo(() => (items?.length ? items : DUMMY).slice(0, limit), [items, limit]);
+  const [current, setCurrent] = useState<RankItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 현재/이전 순위 보관
-  const [current, setCurrent] = useState<RankItem[]>(base);
-  const prevRef = useRef<RankItem[]>(base);
+  // 이전 순위 보관
+  const prevRef = useRef<RankItem[]>([]);
 
-  // 10초마다 더미 갱신
+  // 서버 데이터 요청
+  const fetchKeywords = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res: TopKeywordsResponse = await getRealTimeSearch(limit);
+      if (!res?.data?.length) {
+        setCurrent([]);
+        setError('검색량이 부족합니다.');
+        return;
+      }
+      prevRef.current = current;
+      setCurrent(res.data.map((k) => ({ keyword: k })));
+    } catch (e) {
+      console.log('실시간 데이터 불러오기 오류', e);
+      setError('실시간 검색어 불러오기 실패');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 첫 로딩 + interval 주기적 갱신
   useEffect(() => {
     if (prefersReduced) return;
-    const t = setInterval(() => {
-      const next = shuffle(base).slice(0, limit);
-      prevRef.current = current;
-      setCurrent(next);
-    }, intervalMs);
+    fetchKeywords();
+    const t = setInterval(fetchKeywords, intervalMs);
     return () => clearInterval(t);
-  }, [base, limit, intervalMs, prefersReduced, current]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit, intervalMs, prefersReduced]);
 
-  // 키워드 → 인덱스 매핑으로 delta 계산
+  // delta 계산
   const deltas: Record<string, Delta> = useMemo(() => {
     const prevIndex = new Map(prevRef.current.map((it, i) => [it.keyword, i]));
     const map: Record<string, Delta> = {};
@@ -86,52 +84,57 @@ export default function RealtimeRank({
         <span className='text-xs text-gray-400'>데이터</span>
       </div>
 
-      <ol className='divide-y text-sm '>
-        {current.map((item, idx) => {
-          const delta = deltas[item.keyword] || 'same';
-          return (
-            <li key={item.keyword} className='flex items-center gap-3 py-2'>
-              <span
-                className={`w-6 h-6 shrink-0 grid place-items-center rounded-lg text-xs font-bold ${
-                  idx < 3 ? 'bg-mju-primary text-white' : 'bg-gray-100 text-grey-20'
-                }`}
-              >
-                {idx + 1}
-              </span>
+      {loading && <p className='text-sm text-gray-400'>불러오는 중...</p>}
+      {!loading && error && <p className='text-sm text-gray-400'>{error}</p>}
 
-              <span className='flex-1 truncate' title={item.keyword}>
-                {item.keyword}
-              </span>
+      {!loading && !error && (
+        <ol className='divide-y text-sm'>
+          {current.map((item, idx) => {
+            const delta = deltas[item.keyword] || 'same';
+            return (
+              <li key={item.keyword} className='flex items-center gap-3 py-2'>
+                <span
+                  className={`w-6 h-6 shrink-0 grid place-items-center rounded-lg text-xs font-bold ${
+                    idx < 3 ? 'bg-mju-primary text-white' : 'bg-gray-100 text-grey-20'
+                  }`}
+                >
+                  {idx + 1}
+                </span>
 
-              <span
-                className={`text-xs tabular-nums ${
-                  delta === 'up'
-                    ? 'text-green-600'
-                    : delta === 'down'
-                      ? 'text-red-600'
-                      : delta === 'new'
-                        ? 'text-blue-600'
-                        : 'text-gray-400'
-                }`}
-                aria-label={
-                  delta === 'up'
-                    ? '상승'
-                    : delta === 'down'
-                      ? '하락'
-                      : delta === 'new'
-                        ? '새 항목'
-                        : '변동 없음'
-                }
-              >
-                {delta === 'up' && '▲'}
-                {delta === 'down' && '▼'}
-                {delta === 'new' && 'NEW'}
-                {delta === 'same' && '—'}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+                <span className='flex-1 truncate' title={item.keyword}>
+                  {item.keyword}
+                </span>
+
+                <span
+                  className={`text-xs tabular-nums ${
+                    delta === 'up'
+                      ? 'text-green-600'
+                      : delta === 'down'
+                        ? 'text-red-600'
+                        : delta === 'new'
+                          ? 'text-blue-600'
+                          : 'text-gray-400'
+                  }`}
+                  aria-label={
+                    delta === 'up'
+                      ? '상승'
+                      : delta === 'down'
+                        ? '하락'
+                        : delta === 'new'
+                          ? '새 항목'
+                          : '변동 없음'
+                  }
+                >
+                  {delta === 'up' && '▲'}
+                  {delta === 'down' && '▼'}
+                  {delta === 'new' && 'NEW'}
+                  {delta === 'same' && '—'}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </section>
   );
 }
