@@ -44,7 +44,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
               <ProfileComponent />
             </div>
             <div className='hidden md:block'>
-              <WeatherComponent />
+              <AcademicSchedulePanel />
             </div>
             <div className='hidden md:block'>
               <AdCarousel />
@@ -53,7 +53,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
               <RealtimeRank />
             </div>
             <div className='hidden md:block '>
-              <AcademicSchedulePanel />
+              <WeatherComponent />
             </div>
             <div className='hidden md:block'>
               <HotBoardList />
