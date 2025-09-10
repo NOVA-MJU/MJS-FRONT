@@ -75,17 +75,17 @@ export default function RealtimeRank({
 
   return (
     <section
-      className='rounded-lg border-grey-40 mt-2 bg-white shadow-md px-4 py-4'
+      className='rounded-lg  border-grey-40 mt-2 bg-white shadow-md px-4 py-4'
       aria-live='polite'
       aria-label='실시간 검색 순위'
     >
-      <div className='mb-3 flex items-center justify-between'>
-        <h3 className='text-base font-semibold text-gray-800'>{title}</h3>
-        <span className='text-xs text-gray-400'>데이터</span>
+      <div className='mb-4 flex items-center justify-between'>
+        <h3 className=' font-bold text-mju-primary text-2xl'>{title}</h3>
+        <span className='text-xs text-grey-40'>데이터</span>
       </div>
 
-      {loading && <p className='text-sm text-gray-400'>불러오는 중...</p>}
-      {!loading && error && <p className='text-sm text-gray-400'>{error}</p>}
+      {loading && <p className='text-sm text-gray-40'>불러오는 중...</p>}
+      {!loading && error && <p className='text-sm text-grey-40'>{error}</p>}
 
       {!loading && !error && (
         <ol className='divide-y text-sm'>
@@ -95,7 +95,7 @@ export default function RealtimeRank({
               <li key={item.keyword} className='flex items-center gap-3 py-2'>
                 <span
                   className={`w-6 h-6 shrink-0 grid place-items-center rounded-lg text-xs font-bold ${
-                    idx < 3 ? 'bg-mju-primary text-white' : 'bg-gray-100 text-grey-20'
+                    idx < 3 ? 'bg-mju-primary text-white' : 'bg-grey-40 text-grey-20'
                   }`}
                 >
                   {idx + 1}
