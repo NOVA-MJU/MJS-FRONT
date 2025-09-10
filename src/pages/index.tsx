@@ -7,7 +7,9 @@ import BroadcastSection from '../components/organisms/sections/BroadcastSection'
 const Main = () => {
   return (
     <LayoutForMain>
-      <MealSection />
+      <div className='hidden md:block'>
+        <MealSection />
+      </div>
       <NoticeSection />
       <NewsSection />
       <BroadcastSection />
