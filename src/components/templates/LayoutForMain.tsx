@@ -25,7 +25,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
       <Navbar />
 
       <main className='flex-1 w-full max-w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
-        <div className='hidden md:block'>{shouldShowHeader && <Header />}</div>
+        <div className='block'>{shouldShowHeader && <Header />}</div>
 
         <div className='flex flex-col md:flex-row gap-4 mt-6'>
           {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
