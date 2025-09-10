@@ -34,7 +34,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden'>
               <SearchBar />
             </div>
-            <div className='md:hidden'>
+            <div className='hidden'>
               <ProfileComponent />
             </div>
 
