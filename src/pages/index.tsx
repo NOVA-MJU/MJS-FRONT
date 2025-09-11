@@ -3,7 +3,7 @@ import MealSection from '../components/organisms/sections/MealSection';
 import NoticeSection from '../components/organisms/sections/NoticeSection';
 import NewsSection from '../components/organisms/sections/NewsSection';
 import BroadcastSection from '../components/organisms/sections/BroadcastSection';
-
+import AcademicCalendar from './academic-calendar';
 const Main = () => {
   return (
     <LayoutForMain>
@@ -12,6 +12,9 @@ const Main = () => {
       </div>
       <NoticeSection />
       <NewsSection />
+      <div>
+        <AcademicCalendar />
+      </div>
       <BroadcastSection />
     </LayoutForMain>
   );
