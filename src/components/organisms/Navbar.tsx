@@ -7,6 +7,8 @@ import { useNavTracking } from '../../hooks/gtm/useNavTracking';
 import toast from 'react-hot-toast';
 import SearchBar from '../atoms/SearchBar';
 
+const CONTAINER = 'mx-auto w-[90%] md:max-w-[1200px] px-4';
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn, logout } = useAuthStore();
@@ -14,16 +16,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
+  const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
   const handleAuthClick = () => {
     if (isLoggedIn) {
       logout();
       toast.success('로그아웃 되었습니다.');
-    } else {
-      navigate('/login');
-    }
+    } else navigate('/login');
   };
 
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -46,9 +46,9 @@ const Navbar = () => {
   const showMobileSearch = !hideSearchRoutes.includes(location.pathname);
 
   return (
-    <nav className='sticky top-0 z-50 bg-mju-primary shadow-sm pt-[env(safe-area-inset-top)]'>
+    <nav className='sticky top-0 z-50 w-full bg-mju-primary shadow-sm pt-[env(safe-area-inset-top)]'>
       {/* 상단 바 */}
-      <div className='mx-auto md:max-w-[1200px] w-[90%] h-14 px-4 flex items-center justify-between'>
+      <div className={`${CONTAINER} h-14 flex items-center justify-between`}>
         <Link to='/' className='h-full'>
           <div className='flex items-center h-full'>
             <img src='/logo/MJS_darkLogo.svg' alt='MJS' className='w-17 h-auto' />
@@ -168,16 +168,18 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* 모바일 전용 검색바 (얇게 + 살짝 여백) */}
+      {/* ✅ 모바일 검색바: 동일 컨테이너 폭으로 감싸 정렬 맞춤 */}
       {showMobileSearch && (
-        <div className='md:hidden px-4  pb-2'>
-          <div className='[&input]:h-10 [&input]:text-sm'>
-            <SearchBar className='h-10' />
+        <div className='md:hidden'>
+          <div className={`${CONTAINER}`}>
+            <div className='mt-2 pb-2 [&input]:h-10 [&input]:text-sm'>
+              <SearchBar className='h-10' />
+            </div>
           </div>
         </div>
       )}
 
-      {/* 모바일 메뉴 (block 제거 → inline-flex 정렬) */}
+      {/* 모바일 메뉴 */}
       {isOpen && (
         <ul className='flex flex-col md:hidden bg-[#002f6c] text-white text-sm font-medium list-none px-4 py-2 gap-1 leading-none border-t border-white/10'>
           <li>
