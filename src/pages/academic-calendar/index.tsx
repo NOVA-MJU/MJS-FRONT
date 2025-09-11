@@ -23,8 +23,8 @@ export default function AcademicCalendar() {
 
   return (
     <div className='px-4 md:px-7 py-8 md:py-12 flex flex-col gap-4 md:gap-6'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        학사일정
+      <Typography variant='heading01' className='text-mju-primary '>
+        <span className='md:text-2xl text-xl'>학사일정</span>
       </Typography>
       <Divider />
 
