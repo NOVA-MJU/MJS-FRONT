@@ -30,7 +30,7 @@ const Navbar = () => {
     if (!isLoggedIn) {
       e.preventDefault();
       toast.error('로그인이 필요한 서비스입니다.', { duration: 2000 });
-      trackNavClick('borad');
+      trackNavClick('board');
       navigate('/login');
     }
   };
@@ -94,22 +94,6 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <span
-              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
-              onClick={() => trackNavClick('market')}
-            >
-              벼룩시장
-            </span>
-          </li>
-          <li>
-            <span
-              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
-              onClick={() => trackNavClick('partnership')}
-            >
-              제휴
-            </span>
-          </li>
-          <li>
             <Link
               to='/notice'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
@@ -128,12 +112,15 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <span
-              className='inline-flex items-center h-10 px-3 rounded-lg cursor-default text-white/60'
-              onClick={() => trackNavClick('job')}
+            <a
+              href='https://v0-university-career-data-platform.vercel.app/'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('mentor')}
             >
-              취업후기
-            </span>
+              멘토관 서비스
+            </a>
           </li>
           <li>
             <a
@@ -168,7 +155,7 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* ✅ 모바일 검색바: 동일 컨테이너 폭으로 감싸 정렬 맞춤 */}
+      {/* 모바일 검색바 */}
       {showMobileSearch && (
         <div className='md:hidden'>
           <div className={`${CONTAINER}`}>
@@ -183,9 +170,22 @@ const Navbar = () => {
       {isOpen && (
         <ul className='flex flex-col md:hidden bg-[#002f6c] text-white text-sm font-medium list-none px-4 py-2 gap-1 leading-none border-t border-white/10'>
           <li>
-            <span className='inline-flex items-center px-3 h-10 rounded-lg cursor-default text-white/60'>
-              학과정보
-            </span>
+            <Link
+              to='/department'
+              onClick={closeMenu}
+              className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
+            >
+              학과별정보
+            </Link>
+          </li>
+          <li>
+            <Link
+              to='/academic-calendar'
+              onClick={closeMenu}
+              className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
+            >
+              학사일정
+            </Link>
           </li>
           <li>
             <Link
@@ -195,16 +195,6 @@ const Navbar = () => {
             >
               식단
             </Link>
-          </li>
-          <li>
-            <span className='inline-flex items-center px-3 h-10 rounded-lg cursor-default text-white/60'>
-              벼룩시장
-            </span>
-          </li>
-          <li>
-            <span className='inline-flex items-center px-3 h-10 rounded-lg cursor-default text-white/60'>
-              제휴
-            </span>
           </li>
           <li>
             <Link
@@ -221,13 +211,19 @@ const Navbar = () => {
               onClick={closeMenu}
               className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
             >
-              검색게시판
+              자유게시판
             </Link>
           </li>
           <li>
-            <span className='inline-flex items-center px-3 h-10 rounded-lg cursor-default text-white/60'>
-              취업후기
-            </span>
+            <a
+              href='https://v0-university-career-data-platform.vercel.app/'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
+              onClick={closeMenu}
+            >
+              멘토관 서비스
+            </a>
           </li>
           <li>
             <a
