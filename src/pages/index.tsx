@@ -12,10 +12,13 @@ const Main = () => {
       </div>
       <NoticeSection />
       <NewsSection />
-      <div>
+
+      <div className='hidden md:block'>
+        <BroadcastSection />
+      </div>
+      <div className='md:block '>
         <AcademicCalendar />
       </div>
-      <BroadcastSection />
     </LayoutForMain>
   );
 };

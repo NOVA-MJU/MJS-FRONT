@@ -8,7 +8,7 @@ import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
 import AdCarousel from '../molecules/mainpage/Advertise';
 import RealtimeRank from '../molecules/mainpage/RealTimeRank';
-import AcademicSchedulePanel from '../molecules/mainpage/AcademicSchedulePanel/index.tsx';
+
 import HotBoardList from '../molecules/mainpage/HotBoardList.tsx';
 
 interface LayoutProps {
@@ -45,9 +45,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
-            <div className='hidden md:block'>
-              <AcademicSchedulePanel />
-            </div>
+
             <div className='hidden md:block'>
               <AdCarousel />
             </div>
