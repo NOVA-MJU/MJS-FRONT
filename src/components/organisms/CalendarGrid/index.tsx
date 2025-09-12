@@ -24,7 +24,15 @@ export default function CalendarGrid({ events, onYearChange, onMonthChange }: Ca
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth() + 1);
   const [currentDayIndex] = useState(() => new Date().getDay());
-  const weekdays = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  const weekdays = [
+    { short: '일', full: '일요일' },
+    { short: '월', full: '월요일' },
+    { short: '화', full: '화요일' },
+    { short: '수', full: '수요일' },
+    { short: '목', full: '목요일' },
+    { short: '금', full: '금요일' },
+    { short: '토', full: '토요일' },
+  ];
   const calendarDays = useMemo(() => generateCalendarDays(year, month), [year, month]);
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -86,7 +94,12 @@ export default function CalendarGrid({ events, onYearChange, onMonthChange }: Ca
                   : 'bg-blue-05 text-blue-10',
               )}
             >
-              <Typography variant='body02'>{day}</Typography>
+              <span className='hidden md:block'>
+                <Typography variant='body02'>{day.full}</Typography>
+              </span>
+              <span className='block md:hidden'>
+                <Typography variant='body02'>{day.short}</Typography>
+              </span>
             </button>
           ))}
         </div>

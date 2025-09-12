@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import Divider from '../../components/atoms/Divider';
 import { Typography } from '../../components/atoms/Typography';
 import CalendarGrid, { type CalendarEventItem } from '../../components/organisms/CalendarGrid';
-import { getAcademicEvents } from '../../api/calendar';
 import CalendarList from '../../components/organisms/CalendarList';
+import { getAcademicEvents } from '../../api/calendar';
 
 export default function AcademicCalendar() {
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
@@ -11,35 +11,44 @@ export default function AcademicCalendar() {
   const [events, setEvents] = useState<CalendarEventItem[] | null>(null);
 
   useEffect(() => {
-    const getEvents = async () => {
+    (async () => {
       try {
         const res = await getAcademicEvents({ year: currentYear });
         setEvents(res);
       } catch (err) {
         console.error(err);
       }
-    };
-    getEvents();
+    })();
   }, [currentYear]);
 
   return (
-    <div className='px-7 py-12 flex flex-col gap-6'>
+    <div className='px-4 md:px-7 py-8 md:py-12 flex flex-col gap-4 md:gap-6'>
       <Typography variant='heading01' className='text-mju-primary'>
-        학사일정
+        <span className='md:text-2xl text-xl md:hidden'>학사일정</span>
       </Typography>
-      <Divider />
-      <div className='flex gap-6'>
-        <div className='flex-2/3'>
+      <span className='md:hidden'>
+        <Divider />
+      </span>
+
+      <section
+        className='
+          grid gap-4 md:gap-6
+          grid-cols-1
+          md:grid-cols-[2fr_1fr]
+        '
+      >
+        <div className='w-full'>
           <CalendarGrid
             events={events}
             onYearChange={setCurrentYear}
             onMonthChange={setCurrentMonth}
           />
         </div>
-        <div className='flex-1/3'>
+
+        <aside className='hidden md:block w-full' aria-hidden={false}>
           <CalendarList events={events} month={currentMonth} />
-        </div>
-      </div>
+        </aside>
+      </section>
     </div>
   );
 }

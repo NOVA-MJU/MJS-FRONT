@@ -34,8 +34,9 @@ export default function TabComponent({ currentTab, setCurrentTab }: TabComponent
               aria-controls={`tab-panel-${value}`}
               onClick={() => setCurrentTab(value)}
               className={`
+                
                 relative pb-2 text-base transition-colors
-                ${active ? 'text-blue-20 font-semibold' : 'text-grey-20 hover:text-grey-40'}
+                ${active ? 'text-blue-15 font-semibold' : 'text-grey-20 '}
               `}
             >
               {label}
@@ -81,7 +82,7 @@ export default function TabComponent({ currentTab, setCurrentTab }: TabComponent
                   border transition-all
                   ${
                     active
-                      ? 'bg-mju-primary text-white border-blue-20 shadow-sm'
+                      ? 'bg-blue-20 text-white border-blue-20 shadow-sm'
                       : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                   }
                 `}

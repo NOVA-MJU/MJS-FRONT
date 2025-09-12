@@ -8,7 +8,7 @@ import WeatherComponent from '../molecules/mainpage/Weather';
 import type { ReactNode } from 'react';
 import AdCarousel from '../molecules/mainpage/Advertise';
 import RealtimeRank from '../molecules/mainpage/RealTimeRank';
-import AcademicSchedulePanel from '../molecules/mainpage/AcademicSchedulePanel/index.tsx';
+
 import HotBoardList from '../molecules/mainpage/HotBoardList.tsx';
 
 interface LayoutProps {
@@ -25,14 +25,16 @@ const LayoutForMain = ({ children }: LayoutProps) => {
       <Navbar />
 
       <main className='flex-1 w-full max-w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
-        <div className='hidden md:block'>{shouldShowHeader && <Header />}</div>
+        <div className='block'>{shouldShowHeader && <Header />}</div>
 
-        <div className='flex flex-col md:flex-row gap-4 mt-6'>
+        <div className='flex flex-col md:flex-row gap-4'>
           {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
 
           <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
-            <SearchBar />
-            <div className='md:hidden'>
+            <div className='hidden'>
+              <SearchBar />
+            </div>
+            <div className='hidden'>
               <ProfileComponent />
             </div>
 
@@ -43,9 +45,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
-            <div className='hidden md:block'>
-              <WeatherComponent />
-            </div>
+
             <div className='hidden md:block'>
               <AdCarousel />
             </div>
@@ -53,7 +53,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
               <RealtimeRank />
             </div>
             <div className='hidden md:block '>
-              <AcademicSchedulePanel />
+              <WeatherComponent />
             </div>
             <div className='hidden md:block'>
               <HotBoardList />
