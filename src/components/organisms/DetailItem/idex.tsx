@@ -22,6 +22,12 @@ const categoryLabel: Record<string, string> = {
   rule: '학칙개정',
 };
 
+const formatDate = (d?: string) => {
+  if (!d) return '';
+  if (d.includes('T')) return d.split('T')[0];
+  return d.replace(/\./g, '-');
+};
+
 const DetailItem: React.FC<ListItemProps> = ({
   id,
   category,
@@ -32,9 +38,7 @@ const DetailItem: React.FC<ListItemProps> = ({
   imgSrc,
   variant,
 }) => {
-  /**
-   * 검색어 highlight를 위해 텍스트를 sanitize 하고, em 태그를 허용합니다.
-   */
+  // 검색 하이라이트 보존
   const safeTitle = DOMPurify.sanitize(title, {
     ALLOWED_TAGS: ['em', 'strong', 'u'],
     ALLOWED_ATTR: [],
@@ -52,10 +56,9 @@ const DetailItem: React.FC<ListItemProps> = ({
     />
   );
 
-  /* --- variant가 없으면 date 유무로 판단 --- */
   const layout: 'notice' | 'news' = variant ?? (date ? 'notice' : 'news');
 
-  /* --- 명대신문 --- */
+  // 명대신문(뉴스)
   if (layout === 'news') {
     return (
       <div>
@@ -87,7 +90,7 @@ const DetailItem: React.FC<ListItemProps> = ({
     );
   }
 
-  /* --- 공지사항 --- */
+  // 공지사항
   return (
     <>
       <div className='flex justify-between items-center gap-2 py-6'>
@@ -105,7 +108,7 @@ const DetailItem: React.FC<ListItemProps> = ({
             {renderText(safeTitle, 'body02')}
           </a>
         </div>
-        <p className='text-xs md:text-sm text-grey-40 flex'> {date?.split('T')[0]}</p>
+        <p className='text-xs md:text-sm text-grey-40 flex'>{formatDate(date)}</p>
       </div>
       <hr className='border-grey-20' />
     </>
