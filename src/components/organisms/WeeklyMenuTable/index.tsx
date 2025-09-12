@@ -93,8 +93,8 @@ export default function WeeklyMenuTable({ menus }: { menus: MenuItem[] }) {
   // --- 주차 헤더 (공통 상단) ---
   // NEW: 데스크톱/모바일 모두 위에 노출되는 주차 헤더
   const WeekHeader = () => (
-    <div className='mb-3 md:mb-4 flex items-baseline justify-between'>
-      <h3 className='text-base md:text-lg font-semibold text-mju-primary'>
+    <div className='mb-3 md:mb-4 flex items-baseline gap-2 justify-center md:justify-start'>
+      <h3 className='text-base md:text-xl font-semibold text-mju-primary'>
         {/* 예: 8월 3주차 */}
         {monthLabel}월 {weekOfMonth}주차
       </h3>

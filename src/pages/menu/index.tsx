@@ -13,13 +13,14 @@ export default function Menu() {
     const today = new Date();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    return `${month}월 ${day}일`;
+    return `TODAY ${month}월 ${day}일`;
   }, []);
 
   useEffect(() => {
     (async () => {
       try {
         const res = await getMenus();
+        console.log(res);
         setContents(res);
       } catch (e) {
         toast.error('식단을 불러오는 중 오류가 발생했습니다!', e);
@@ -28,7 +29,7 @@ export default function Menu() {
   }, []);
 
   return (
-    <div className='flex flex-col p-4 md:p-8 gap-4 md:gap-12'>
+    <div className='flex flex-col p-4 md:p-8 gap-3 md:gap-12'>
       <Typography variant='heading01' className='text-mju-primary'>
         학식
       </Typography>
