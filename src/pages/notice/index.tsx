@@ -9,7 +9,6 @@ import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getSearchResult } from '../../api/search';
 import { Typography } from '../../components/atoms/Typography';
-import toast from 'react-hot-toast';
 
 const categoryMapping: Record<string, string> = {
   일반공지: 'general',
