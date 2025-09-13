@@ -31,7 +31,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
           {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
 
           <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
-            <div className='hidden'>
+            <div className='hidden md:block'>
               <SearchBar />
             </div>
             <div className='hidden'>
