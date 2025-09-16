@@ -31,6 +31,7 @@ export default function SearchBar({
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const initialized = useRef(true);
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
    * 검색어 초기값을 받을 경우
@@ -54,13 +55,23 @@ export default function SearchBar({
       initialized.current = true;
       return;
     }
+
+    abortControllerRef.current?.abort();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     (async () => {
       try {
         const res = await getSearchWordcompletion(debounced.trim());
-        console.log(res);
-        if (res.length !== 0) setSuggestedKeywords(res);
+        if (!controller.signal.aborted) {
+          console.log(res);
+          if (res.length !== 0) setSuggestedKeywords(res);
+        }
       } catch (e) {
-        console.error(e);
+        if (!controller.signal.aborted) {
+          console.error(e);
+        }
       }
     })();
   }, [debounced]);
@@ -82,14 +93,12 @@ export default function SearchBar({
       }
     };
 
-    // document에 mousedown 이벤트 리스너를 추가합니다.
     document.addEventListener('mousedown', handleClickOutside);
 
-    // 컴포넌트가 언마운트될 때 이벤트 리스너를 제거합니다. (메모리 누수 방지)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [searchBarRef]); // ref는 변경되지 않으므로 이 effect는 마운트 시 한 번만 실행됩니다.
+  }, [searchBarRef]);
 
   /**
    * 검색어 자동완성 창 닫기 버튼 핸들러
@@ -102,6 +111,9 @@ export default function SearchBar({
    * 검색 수행 핸들러 (엔터 클릭 시)
    */
   const handleSubmitSearch = () => {
+    abortControllerRef.current?.abort();
+    setSuggestedKeywords([]);
+
     if (value)
       navigate({
         pathname: `/${domain}`,
@@ -111,6 +123,7 @@ export default function SearchBar({
       navigate({
         pathname: `/${domain}`,
       });
+    setSuggestedKeywords([]);
   };
 
   return (
