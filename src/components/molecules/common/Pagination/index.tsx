@@ -1,4 +1,6 @@
+import clsx from 'clsx';
 import React from 'react';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
 interface PaginationProps {
   page: number;
@@ -15,31 +17,51 @@ interface PaginationProps {
  */
 const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) => {
   const visibleCount = Math.min(5, totalPages);
-  const numberIndex = page % visibleCount;
+  const startPage = Math.floor(page / visibleCount) * visibleCount;
   return (
-    <nav className='flex items-center justify-center gap-2 text-xs md:text-sm text-grey-40'>
-      <button disabled={page === 0} onClick={() => onChange(page - 1)} className='cursor-pointer'>
-        &lt; 이전
+    <nav className='flex items-center justify-center gap-4 text-xs md:text-sm text-grey-40'>
+      <button
+        disabled={page === 0}
+        onClick={() => onChange(page - 1)}
+        className={clsx(
+          'flex items-center gap-1 rounded-lg px-3 py-2',
+          'transition-colors duration-200',
+          'hover:bg-grey-05 cursor-pointer',
+          'disabled:opacity-50 disabled:hover:bg-transparent',
+        )}
+      >
+        <IoIosArrowBack />
+        이전
       </button>
-      {Array.from({ length: visibleCount }).map((_, i) => (
-        <button
-          key={i}
-          className={`flex items-center justify-center rounded-full
-                      ${
-                        i === numberIndex
-                          ? 'text-blue-10 font-semibold text-base w-5 h-5'
-                          : 'bg-blue-10 w-2 h-2'
-                      }`}
-        >
-          {i === numberIndex ? page + 1 : ''}
-        </button>
-      ))}
+      {Array.from({ length: visibleCount }).map((_, i) => {
+        const pageIndex = startPage + i;
+        const isCurrentPage = page === pageIndex;
+
+        return (
+          <button
+            key={pageIndex}
+            onClick={() => onChange(pageIndex)}
+            className={clsx(
+              isCurrentPage ? 'text-blue-10 font-semibold text-base' : 'cursor-pointer',
+            )}
+            disabled={isCurrentPage} // 현재 페이지는 클릭 비활성화
+          >
+            {pageIndex + 1}
+          </button>
+        );
+      })}
       <button
         disabled={page === totalPages - 1}
         onClick={() => onChange(page + 1)}
-        className='cursor-pointer'
+        className={clsx(
+          'flex items-center gap-1 rounded-lg px-3 py-2',
+          'transition-colors duration-200',
+          'hover:bg-grey-05 cursor-pointer',
+          'disabled:opacity-50 disabled:hover:bg-transparent',
+        )}
       >
-        다음 &gt;
+        다음
+        <IoIosArrowForward />
       </button>
     </nav>
   );
