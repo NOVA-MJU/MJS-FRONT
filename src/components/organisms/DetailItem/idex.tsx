@@ -93,23 +93,23 @@ const DetailItem: React.FC<ListItemProps> = ({
   // 공지사항
   return (
     <>
-      <div className='flex justify-between items-center gap-2 py-6'>
+      <a
+        className='flex justify-between items-center gap-2 py-6 cursor-pointer'
+        href={link}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
         <div>
           <span className='md:w-[1000px] flex items-center mb-4 md:mb-6'>
             <p className='font-light mr-4'>{String(id).padStart(2, '0')}</p>
             <Badge text={layout === 'notice' ? categoryLabel[category] || category : category} />
           </span>
-          <a
-            href={link}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='flex flex-col gap-2 cursor-pointer'
-          >
+          <div className='flex flex-col gap-2 cursor-pointer'>
             {renderText(safeTitle, 'body02')}
-          </a>
+          </div>
         </div>
         <p className='text-xs md:text-sm text-grey-40 flex'>{formatDate(date)}</p>
-      </div>
+      </a>
       <hr className='border-grey-20' />
     </>
   );

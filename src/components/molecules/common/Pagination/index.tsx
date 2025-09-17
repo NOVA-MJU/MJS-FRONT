@@ -37,6 +37,10 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
         const pageIndex = startPage + i;
         const isCurrentPage = page === pageIndex;
 
+        if (pageIndex >= totalPages) {
+          return null;
+        }
+
         return (
           <button
             key={pageIndex}
@@ -44,7 +48,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
             className={clsx(
               isCurrentPage ? 'text-blue-10 font-semibold text-base' : 'cursor-pointer',
             )}
-            disabled={isCurrentPage} // 현재 페이지는 클릭 비활성화
+            disabled={isCurrentPage}
           >
             {pageIndex + 1}
           </button>

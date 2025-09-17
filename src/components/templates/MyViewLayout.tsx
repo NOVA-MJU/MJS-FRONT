@@ -13,6 +13,7 @@ interface MyViewProps {
   totalPages: number;
   onChange: (page: number) => void;
 }
+
 const MyViewLayout = ({
   title,
   itemsPerPage,
