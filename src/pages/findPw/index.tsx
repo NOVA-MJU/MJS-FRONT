@@ -7,7 +7,7 @@ const FindPw = () => {
 
       <div className='w-full mx-auto flex justify-center items-center'>
         <div className='w-full flex flex-col md:gap-6 md:w-[672px]'>
-          <div className='mx-auto w-full md:min-h-[480px] bg-white p-6 rounded-xl flex justify-center items-center'>
+          <div className='mx-auto w-full md:min-h-[480px] bg-white p-6 rounded-xl flex justify-center items-start'>
             <FindPwForm />
           </div>
         </div>

@@ -1,53 +1,73 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InputField from '../../molecules/common/InputField';
 import Button from '../../atoms/Button/Button';
-import UserFormButtons from '../../molecules/user/UserFormButtons';
-import { useNavigate } from 'react-router-dom';
+import {
+  useSendRecoveryEmail,
+  useVerifyRecoveryCode,
+  useResetPassword,
+} from '../../../hooks/useFindPw';
+import toast from 'react-hot-toast';
 
 const FindPwForm = () => {
   const navigate = useNavigate();
 
-  const [id, setId] = useState(''); // 이메일 입력값
-  const [code, setCode] = useState(''); // 인증코드
-  const [isSending, setIsSending] = useState(false);
-  const [showCodeInput, setShowCodeInput] = useState(true);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  // 입력값 상태
+  const [id, setId] = useState(''); // 이메일(아이디)
+  const [code, setCode] = useState(''); // 인증번호
+  const [password, setPassword] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
 
-  const isMjuEmail = (email: string) => /@mju\.ac\.kr$/i.test(email);
+  // 훅 사용
+  const { send, loading: isSending, done: emailSent } = useSendRecoveryEmail();
+  const { verify, loading: isVerifying, verified } = useVerifyRecoveryCode();
+  const { reset, loading: isChanging } = useResetPassword();
 
+  // 파생 상태
+  const pwValid = useMemo(() => password.length >= 8, [password]);
+  const pwMatch = useMemo(() => password && password === passwordCheck, [password, passwordCheck]);
+
+  // 인증 메일 발송
   const handleSendCode = async () => {
-    if (!isMjuEmail(id)) return;
-    setIsSending(true);
+    if (!id || isSending) return;
     try {
-      // TODO: 인증코드 전송 API 호출
-      // await api.sendResetCode(id);
-      setShowCodeInput(true);
-      setIsEmailChecked(true);
-    } finally {
-      setIsSending(false);
+      await send(id);
+      toast.success('인증 메일이 발송되었습니다.');
+    } catch {
+      toast.error('인증 메일 발송 실패');
     }
   };
 
+  // 인증번호 검증
   const handleVerifyCode = async () => {
-    if (!code.trim()) return;
-    setIsVerifying(true);
+    if (!id || !code.trim() || isVerifying) return;
     try {
-      // 인증코드 검증 API 호출 로직 연결 예정
-      const ok = true; // 임시 코드
-      if (ok) setEmailVerified(true);
-    } finally {
-      setIsVerifying(false);
+      await verify(id, code.trim());
+      toast.success('인증이 완료되었습니다.');
+    } catch {
+      toast.error('인증번호가 올바르지 않습니다.');
+    }
+  };
+
+  // 비밀번호 재설정
+  const handleChangePassword = async () => {
+    if (!pwValid || !pwMatch || isChanging) return;
+    try {
+      await reset(id, password);
+      toast.success('비밀번호가 변경되었습니다.');
+      navigate('/login', { replace: true });
+    } catch {
+      toast.error('비밀번호 변경에 실패했습니다.');
     }
   };
 
   return (
     <form
-      className='flex h-auto flex-col w-full md:w-[90%] md:py-12 items-center justify-center'
+      className='flex h-auto flex-col w-full md:w-[90%] md:py-12 items-start justify-start'
       onSubmit={(e) => e.preventDefault()}
     >
-      <div className='md:p-12 rounded-2xl flex flex-col gap-6 md:gap-12 w-full'>
+      <div className='md:p-12 rounded-2xl flex flex-col  w-full'>
+        {/* 이메일 입력 */}
         <div>
           <InputField
             label='이메일'
@@ -55,11 +75,7 @@ const FindPwForm = () => {
             autoComplete='email'
             placeholder='이메일을 입력하세요'
             value={id}
-            onChange={(e) => {
-              setId(e.target.value);
-              setIsEmailChecked(false);
-            }}
-            error={!!id && !isMjuEmail(id)}
+            onChange={(e) => setId(e.target.value)}
             rightElement={
               <div className='hidden md:flex items-center gap-3'>
                 <p className='font-light ml-2'>@mju.ac.kr</p>
@@ -67,102 +83,100 @@ const FindPwForm = () => {
                   type='button'
                   shape='rounded'
                   size='sm'
-                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+                  disabled={isSending || !id || emailSent}
                   onClick={handleSendCode}
-                  fullWidth={false}
-                  variant={emailVerified || isSending ? 'grey' : 'main'}
-                  className='w-24 h-10 md:w-34 md:h-12'
+                  variant={emailSent || isSending ? 'grey' : 'main'}
+                  className='w-28 h-10 md:w-34 md:h-12'
                 >
-                  {emailVerified
-                    ? '완료'
-                    : isSending
-                      ? '전송 중...'
-                      : isEmailChecked
-                        ? '전송 완료'
-                        : '인증 요청'}
+                  {emailSent ? '전송 완료' : isSending ? '전송 중...' : '인증 요청'}
                 </Button>
               </div>
             }
           />
 
-          {/* 모바일 세로 배치 */}
+          {/* 모바일 버튼 */}
           <div className='w-full mt-3 flex items-center justify-between md:hidden'>
             <p className='font-light text-sm mr-2'>@mju.ac.kr</p>
             <Button
               type='button'
               shape='rounded'
               size='sm'
-              disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+              disabled={isSending || !id || emailSent}
               onClick={handleSendCode}
-              fullWidth={false}
-              variant={emailVerified || isSending ? 'grey' : 'main'}
-              className='w-24 h-10'
+              variant={emailSent || isSending ? 'grey' : 'main'}
+              className='w-28 h-10'
             >
-              {emailVerified
-                ? '완료'
-                : isSending
-                  ? '전송 중...'
-                  : isEmailChecked
-                    ? '전송 완료'
-                    : '인증 요청'}
+              {emailSent ? '전송 완료' : isSending ? '전송 중...' : '인증 요청'}
             </Button>
           </div>
+
           <p className='block text-xs font-normal text-grey-40 mt-3 ml-1'>
             @mju.ac.kr 형식의 이메일만 지원
           </p>
         </div>
-        {showCodeInput && (
-          <>
+
+        {/* 인증코드 입력 */}
+        {emailSent && !verified && (
+          <div className='flex items-center gap-4 mt-4'>
             <InputField
-              label='인증번호 입력'
+              label=''
               type='text'
-              placeholder='인증번호'
+              placeholder='인증번호 입력'
               value={code}
               onChange={(e) => setCode(e.target.value.trim())}
-              showHr={true}
-              rightElement={
-                // 데스크톱 전용: 인풋 오른쪽
-                <div className='hidden md:flex items-center gap-3'>
-                  <Button
-                    type='button'
-                    variant='main'
-                    disabled={isVerifying || emailVerified || !code.trim()}
-                    onClick={handleVerifyCode}
-                    fullWidth={false}
-                    size='sm'
-                    shape='rounded'
-                    className='w-28 h-10 md:w-34 md:h-12'
-                  >
-                    {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
-                  </Button>
-                </div>
-              }
+              showHr={false}
+            />
+            <Button
+              type='button'
+              variant='main'
+              disabled={isVerifying || verified || !code.trim()}
+              onClick={handleVerifyCode}
+              size='sm'
+              shape='rounded'
+              className='mt-4 md:mt-0 w-28 h-10 md:w-34 md:h-12'
+            >
+              {isVerifying ? '확인 중...' : '인증'}
+            </Button>
+          </div>
+        )}
+
+        {/* 새 비밀번호 입력 */}
+        {verified && (
+          <div className='flex flex-col gap-8 my-4'>
+            <InputField
+              label='새 비밀번호'
+              type='password'
+              placeholder='8자 이상 입력'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              error={!!password && !pwValid}
+              helperText={!pwValid && password ? '비밀번호는 8자 이상이어야 합니다.' : undefined}
             />
 
-            {/* 모바일 세로 배치 */}
-            <div className='flex md:hidden justify-end'>
+            <InputField
+              label='새 비밀번호 확인'
+              type='password'
+              placeholder='비밀번호를 다시 입력하세요'
+              value={passwordCheck}
+              onChange={(e) => setPasswordCheck(e.target.value)}
+              error={!!passwordCheck && !pwMatch}
+              helperText={!pwMatch && passwordCheck ? '비밀번호가 일치하지 않습니다.' : undefined}
+            />
+
+            <div className='flex justify-end'>
               <Button
                 type='button'
                 variant='main'
-                disabled={isVerifying || emailVerified || !code.trim()}
-                onClick={handleVerifyCode}
-                fullWidth={false}
-                size='sm'
+                disabled={!pwValid || !pwMatch || isChanging}
+                onClick={handleChangePassword}
+                fullWidth
+                size='lg'
                 shape='rounded'
-                className='w-28 h-10'
               >
-                {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
+                {isChanging ? '변경 중...' : '비밀번호 변경'}
               </Button>
             </div>
-            <div className='w-full'>
-              <UserFormButtons
-                label='확인'
-                loading={false}
-                onSignUp={() => navigate('/register')}
-                disabled={false}
-              />
-            </div>
-          </>
+          </div>
         )}
       </div>
     </form>
