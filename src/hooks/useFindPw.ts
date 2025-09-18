@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { AxiosError } from 'axios';
-import { sendEmailExists, checkExistCode, sendAuthority, changePassword } from '../api/user';
+import { sendEmailExists, sendAuthority, changePassword } from '../api/user';
 import { toFullEmail } from '../utils/email';
 import type { ApiResponse } from '../types/api';
 import { normalizeCode } from '../utils/code';
@@ -62,17 +62,7 @@ export function useVerifyRecoveryCode() {
 
       console.log('[useVerifyRecoveryCode] 요청 시작:', { fullEmail, safeCode });
 
-      // 2-1) 이메일 코드 일치 여부 체크
-      const matched = await checkExistCode(fullEmail, safeCode);
-      console.log('[useVerifyRecoveryCode] /member/email/check matched:', matched);
-
-      if (!matched) {
-        setVerified(false);
-        setError('인증번호가 올바르지 않습니다.');
-        return;
-      }
-
-      // 2-2) 내부 플래그 세팅 (최신코드/만료/계정미존재도 여기서 400로 통일될 수 있음)
+      // 내부 플래그 세팅
       const ok = await sendAuthority(fullEmail, safeCode);
       console.log('[useVerifyRecoveryCode] /members/recovery/verify-code ok:', ok);
       setVerified(ok);

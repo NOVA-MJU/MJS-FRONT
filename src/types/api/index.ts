@@ -10,7 +10,7 @@ export interface RegisterReq {
 }
 
 export interface ApiResponse<T = unknown> {
-  status: 'SUCCESS' | 'ERROR';
+  status?: 'SUCCESS' | 'ERROR';
   data?: T;
   error?: string;
   message?: string;

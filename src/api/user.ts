@@ -3,7 +3,6 @@ import apiClient from './apiClient';
 import type {
   ApiResponse,
   EmailVerifyResponse,
-  CheckCodeResponse,
   ResetPasswordResponse,
   RegisterReq,
 } from '../types/api';
@@ -122,15 +121,7 @@ export const deleteUser = async (password: string) => {
 export const sendEmailExists = async (email: string): Promise<boolean> => {
   const { data } = await apiClient.post<EmailVerifyResponse>('/member/email/verify', { email });
   console.log('[sendEmailExists] raw response:', data);
-  return !!data.data; // 메시지가 있으면 성공 처리
-};
-
-/** 비밀번호 찾기 시 이메일 인증코드 검증 */
-export const checkExistCode = async (email: string, code: string): Promise<boolean> => {
-  const payload = { email, code };
-
-  const { data } = await apiClient.post<CheckCodeResponse>('/member/email/check', payload);
-  return Boolean(data.data?.matched);
+  return !!data.data;
 };
 
 /** 회원 계정 복구 - 코드 검증 및 내부 플래그 세팅 */
