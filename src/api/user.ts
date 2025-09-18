@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import apiClient from './apiClient';
-
-export interface RegisterReq {
-  name: string;
-  email: string;
-  password: string;
-  gender: string;
-  nickname: string;
-  departmentName: string;
-  studentNumber: number;
-  profileImageUrl: string | null;
-}
+import type {
+  ApiResponse,
+  EmailVerifyResponse,
+  ResetPasswordResponse,
+  RegisterReq,
+} from '../types/api';
 
 /** 로그인 **/
 export const login = async (email: string, password: string) => {
@@ -120,4 +115,32 @@ export const deleteUser = async (password: string) => {
     console.error('[deleteUser API 오류]', error);
     throw error;
   }
+};
+
+/** 비밀번호 찾기 시 이메일 인증코드 발송 */
+export const sendEmailExists = async (email: string): Promise<boolean> => {
+  const { data } = await apiClient.post<EmailVerifyResponse>('/member/email/verify', { email });
+  console.log('[sendEmailExists] raw response:', data);
+  return !!data.data;
+};
+
+/** 회원 계정 복구 - 코드 검증 및 내부 플래그 세팅 */
+export const sendAuthority = async (email: string, code: string): Promise<boolean> => {
+  const payload = { email, code };
+
+  const res = await apiClient.post<ApiResponse<string>>('/members/recovery/verify-code', payload);
+  console.log('[sendAuthority] res:', res.status, res.data);
+  return (
+    res.status === 200 &&
+    (!!res.data.data || ['SUCCESS', 'API 요청 성공'].includes(res.data.status as any))
+  );
+};
+
+/** 회원 계정 복구 - 비밀번호 재설정 */
+export const changePassword = async (email: string, newPassword: string): Promise<boolean> => {
+  const { data } = await apiClient.post<ResetPasswordResponse>('/members/recovery/reset', {
+    email,
+    newPassword,
+  });
+  return data.status === 'SUCCESS';
 };

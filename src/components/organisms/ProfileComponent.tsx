@@ -47,6 +47,10 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
     }
   };
 
+  const handleFindId = () => {
+    toast.success('아이디는 MSI 아이디와 동일합니다.');
+  };
+
   if (isLoggedIn) {
     return (
       <div
@@ -126,12 +130,12 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
           </Button>
         </Link>
       </div>
-      <div className='flex gap-2 text-xs text-gray-400 font-medium mt-2'>
-        <Link to='/#'>
-          <button className='hover:underline'>아이디 찾기</button>
-        </Link>
+      <div className='flex gap-2 text-xs text-gray-400 font-medium mt-2 cursor-pointer'>
+        <button className='hover:underline' onClick={handleFindId}>
+          아이디 찾기
+        </button>
         <span>|</span>
-        <Link to='/#'>
+        <Link to='/find-pw'>
           <button className='hover:underline'>비밀번호 찾기</button>
         </Link>
       </div>
