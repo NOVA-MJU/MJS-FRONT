@@ -2,14 +2,6 @@ import apiClient from './apiClient';
 import { type ApiResponse, type Paginated } from './types';
 
 /**
- *     ____                       __
- *    / __ )____  ____ __________/ /
- *   / __  / __ \/ __ `/ ___/ __  /
- *  / /_/ / /_/ / /_/ / /  / /_/ /
- * /_____/\____/\__,_/_/   \__,_/
- */
-
-/**
  * 게시글 목록을 조회합니다.
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
@@ -140,14 +132,6 @@ export const likePost = async (boardUuid: string) => {
 };
 
 /**
- *     ____                       __   ______                                     __
- *    / __ )____  ____ __________/ /  / ____/___  ____ ___  ____ ___  ___  ____  / /_
- *   / __  / __ \/ __ `/ ___/ __  /  / /   / __ \/ __ `__ \/ __ `__ \/ _ \/ __ \/ __/
- *  / /_/ / /_/ / /_/ / /  / /_/ /  / /___/ /_/ / / / / / / / / / / /  __/ / / / /_
- * /_____/\____/\__,_/_/   \__,_/   \____/\____/_/ /_/ /_/_/ /_/ /_/\___/_/ /_/\__/
- */
-
-/**
  * 게시글 댓글 조회
  *
  * @param boardUuid 댓글을 조회할 게시글의 uuid를 입력하세요
@@ -225,42 +209,4 @@ export const toggleLikeComment = async (boardUuid: string, commentUuid: string) 
     `/boards/${boardUuid}/comments/${commentUuid}/like`,
   );
   return res.data.data;
-};
-
-/**
- *        __                                __           __
- *   ____/ /__  ____  ________  _________ _/ /____  ____/ /
- *  / __  / _ \/ __ \/ ___/ _ \/ ___/ __ `/ __/ _ \/ __  /
- * / /_/ /  __/ /_/ / /  /  __/ /__/ /_/ / /_/  __/ /_/ /
- * \__,_/\___/ .___/_/   \___/\___/\__,_/\__/\___/\__,_/
- *          /_/
- */
-
-/**
- * @deprecated 서버에서 비활성화된 `api`이므로 요청 시 오류가 발생할 수 있습니다.
- * 이미지를 s3 버킷에 업로드하는 요청 함수입니다. 이미지는 폼 데이터 형식으로 전달됩니다.
- * @param file 업로드할 이미지를 입력하세요.
- * @param folderUuid 업로드할 이미지 폴더를 입력하세요.
- * @returns 업로드한 이미지의 s3 주소를 반환합니다.
- */
-export const uploadImage = async (file: File, folderUuid: string) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('tempFolderUuid', folderUuid);
-
-  const response = await apiClient.post('/boards/images', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data.data;
-};
-
-/**
- * @deprecated 서버에서 비활성화된 `api`이므로 요청 시 오류가 발생할 수 있습니다.
- * 이미지 폴더 신규 발급
- */
-export const getTempImageFolderUuid = async (): Promise<ApiResponse<string>> => {
-  const res = await apiClient.get<ApiResponse<string>>('/boards/temp-uuid');
-  return res.data;
 };

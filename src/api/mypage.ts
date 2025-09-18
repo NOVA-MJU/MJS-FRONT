@@ -98,35 +98,3 @@ export const getMyLikedPosts = async () => {
   const res = await apiClient.get<ApiResponse<MyPostItem[]>>('/profile/liked_posts');
   return res.data.data;
 };
-
-/**
- * @deprecated getMyPosts를 사용하세요
- * 내 게시글 조회
- */
-export const getMyPost = async (): Promise<Content[]> => {
-  const res = await apiClient.get('/profile/posts');
-  return res.data.data; // Content[] 형태
-};
-export interface Content {
-  uuid: string;
-  title: string;
-  previewContent: string;
-  viewCount: number;
-  published: boolean;
-  publishedAt: string;
-  createdAt: string;
-  updatedAt: string;
-  likeCount: number;
-  commentCount: number;
-  author: string;
-  liked: boolean;
-}
-
-/**
- * @deprecated getMyLikedPosts를 사용하세요
- * 내 좋아요 조회
- */
-export const getMyLikes = async () => {
-  const res = await apiClient.get('/profile/liked_posts');
-  return res.data.data;
-};

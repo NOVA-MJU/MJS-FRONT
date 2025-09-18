@@ -1,12 +1,7 @@
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
 
-/**************************************************
- **************** 학과별 정보 조회 기능 ****************
- **************************************************/
-
 /**
- * /departments/info
  * 학과 목록을 조회합니다
  * @param college 필터링할 단과대학을 입력하세요
  * @returns Department[] 형태의 학과 목록을 반환합니다
@@ -28,7 +23,6 @@ export interface DepartmentRes {
 }
 
 /**
- * /departments/info/{departmentUuid}
  * 특정 학과의 학생회, 슬로전, 설명, SNS 정보 등 상세 정보를 조회합니다
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 상세 정보를 반환합니다
@@ -54,7 +48,6 @@ export interface DepartmentDetailRes {
 }
 
 /**
- * /departments/{departmentUuid}/schedules
  * 해당 학과에 등록된 전체 일정을 조회합니다. 각 일정은 제목, 기간, 내용 등의 정보를 포함합니다.
  * @param uuid 학과의 uuid를 입력하세요
  * @returns 학과 일정 목록 반환
@@ -75,7 +68,6 @@ export interface DepartmentSchedule {
 }
 
 /**
- * /departments/{departmentUuid}/notices
  * 특정 학과의 최신 공지사항 목록을 페이징 형태로 조회합니다. 기본 size는 5이며, 각 공지는 제목, 썸네일, 미리보기 내용, 등록일을 포함합니다.
  * @param uuid
  * @param page

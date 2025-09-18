@@ -2,7 +2,6 @@ import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
 
 /**
- * /search/overview
  * 카테고리별로 상위 검색 결과 5개를 표시합니다
  * @param keyword 검색 키워드를 입력하세요
  */
