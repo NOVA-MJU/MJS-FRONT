@@ -128,7 +128,13 @@ export default function BlockTextEditor({
    * 에디터 인스턴스를 생성합니다.
    */
   const editor = useCreateBlockNote({
-    dictionary: ko,
+    dictionary: {
+      ...ko,
+      placeholders: {
+        ...ko.placeholders,
+        // default: '"/" 기능을 사용해 보세요',
+      },
+    },
     uploadFile,
   });
 

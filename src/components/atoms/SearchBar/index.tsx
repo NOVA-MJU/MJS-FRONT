@@ -3,7 +3,7 @@ import { Typography } from '../Typography';
 import { useEffect, useRef, useState } from 'react';
 import { getSearchWordcompletion } from '../../../api/search';
 import clsx from 'clsx';
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '../../../hooks/useDebounce';
 
@@ -30,6 +30,8 @@ export default function SearchBar({
   const [value, setValue] = useState('');
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const initialized = useRef(true);
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   /**
    * 검색어 초기값을 받을 경우
@@ -53,13 +55,23 @@ export default function SearchBar({
       initialized.current = true;
       return;
     }
+
+    abortControllerRef.current?.abort();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     (async () => {
       try {
         const res = await getSearchWordcompletion(debounced.trim());
-        console.log(res);
-        if (res.length !== 0) setSuggestedKeywords(res);
+        if (!controller.signal.aborted) {
+          console.log(res);
+          if (res.length !== 0) setSuggestedKeywords(res);
+        }
       } catch (e) {
-        console.error(e);
+        if (!controller.signal.aborted) {
+          console.error(e);
+        }
       }
     })();
   }, [debounced]);
@@ -72,6 +84,23 @@ export default function SearchBar({
   }, [value]);
 
   /**
+   * 검색창 외부 클릭 시 자동완성 창 닫기
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+        handleCloseBox();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchBarRef]);
+
+  /**
    * 검색어 자동완성 창 닫기 버튼 핸들러
    */
   const handleCloseBox = () => {
@@ -82,6 +111,9 @@ export default function SearchBar({
    * 검색 수행 핸들러 (엔터 클릭 시)
    */
   const handleSubmitSearch = () => {
+    abortControllerRef.current?.abort();
+    setSuggestedKeywords([]);
+
     if (value)
       navigate({
         pathname: `/${domain}`,
@@ -91,10 +123,11 @@ export default function SearchBar({
       navigate({
         pathname: `/${domain}`,
       });
+    setSuggestedKeywords([]);
   };
 
   return (
-    <div className='relative'>
+    <div className='relative' ref={searchBarRef}>
       <div
         className={clsx(
           'flex items-center bg-white border-grey-05 p-4 gap-3',
@@ -133,7 +166,10 @@ export default function SearchBar({
                 <Keyword text={item} />
               ))}
             </div>
-            <a className='text-end py-2 px-4 text-grey-40' onClick={handleCloseBox}>
+            <a
+              className='w-fit self-end py-2 px-4 text-grey-40 cursor-pointer'
+              onClick={handleCloseBox}
+            >
               <Typography variant='caption02'>닫기</Typography>
             </a>
           </div>
@@ -143,24 +179,45 @@ export default function SearchBar({
   );
 }
 
+/**
+ * 자동완성 아이템
+ */
 interface KeywordProps {
   text: string;
 }
 
 function Keyword({ text }: KeywordProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const targetPathname = '/search';
+  const targetSearch = `?keyword=${encodeURIComponent(text)}`;
+  const targetUrl = targetPathname + targetSearch;
+
+  /**
+   * 자동완성 키워드 아이템 클릭
+   */
+  const handleClick = () => {
+    // 현재 경로와 클릭한 키워드의 목적지 경로가 같은지 확인
+    if (location.pathname === targetPathname && location.search === targetSearch) {
+      // 경로가 같다면 페이지를 새로고침하여 데이터를 다시 불러옴
+      window.location.reload();
+    } else {
+      // 경로가 다르다면 해당 경로로 이동
+      navigate(targetUrl);
+    }
+  };
+
   return (
-    <Link
-      to={{
-        pathname: '/search',
-        search: `?keyword=${encodeURIComponent(text)}`,
-      }}
-      className='px-5 py-3 flex gap-3 items-center'
+    <div
+      onClick={handleClick}
+      className='px-5 py-3 flex gap-3 items-center cursor-pointer hover:bg-gray-100' // 스타일링을 위해 cursor-pointer와 hover 효과 추가
     >
       <FaSearch className='text-grey-20 text-xl p-1 bg-grey-05 rounded-full' />
       <Typography variant='body03' className='flex-1'>
         {text}
       </Typography>
       <GoArrowUpRight />
-    </Link>
+    </div>
   );
 }

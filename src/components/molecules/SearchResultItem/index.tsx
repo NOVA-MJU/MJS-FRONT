@@ -11,6 +11,18 @@ interface NoticeItemProps {
   link: string;
 }
 
+const CATEGORY_MAP = {
+  all: '전체',
+  general: '일반공지',
+  academic: '학사공지',
+  scholarship: '장학공지',
+  career: '진로공지',
+  activity: '학생활동',
+  rule: '학칙개정',
+  REPORT: '리포트',
+  SOCIETY: '사회',
+};
+
 export default function SearchResultItem({
   variant = 'notice',
   title,
@@ -19,6 +31,8 @@ export default function SearchResultItem({
   content,
   link,
 }: NoticeItemProps) {
+  const koreanCategory = CATEGORY_MAP[category as keyof typeof CATEGORY_MAP] || category;
+
   /**
    * 검색어 highlight를 위해 텍스트를 sanitize 하고, em 태그를 허용합니다.
    */
@@ -52,7 +66,7 @@ export default function SearchResultItem({
         )}
         <div className='flex-1 py-3 flex flex-col gap-2 md:gap-3 items-start'>
           <Chip selected variant='caption02'>
-            {category}
+            {koreanCategory}
           </Chip>
           {renderText(safeTitle, 'title02')}
           {renderText(safeContent, 'body02')}
@@ -69,7 +83,7 @@ export default function SearchResultItem({
       >
         {category && (
           <Chip selected variant='caption02'>
-            {category}
+            {koreanCategory}
           </Chip>
         )}
         {renderText(safeTitle, 'body03')}

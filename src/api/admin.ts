@@ -1,7 +1,3 @@
-/**********************************
- *           어드민 페이지           *
- **********************************/
-
 import apiClient from './apiClient';
 import { type ApiResponse } from './types';
 
