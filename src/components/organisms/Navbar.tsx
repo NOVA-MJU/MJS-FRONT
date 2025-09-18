@@ -68,6 +68,15 @@ const Navbar = () => {
         <ul className='hidden md:flex items-center gap-1 list-none text-white text-sm font-medium leading-none'>
           <li>
             <Link
+              to='/notice'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
+              onClick={() => trackNavClick('notice')}
+            >
+              공지사항
+            </Link>
+          </li>
+          <li>
+            <Link
               to='/department'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
               onClick={() => trackNavClick('department')}
@@ -77,11 +86,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to='/academic-calendar'
+              to='/board'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
-              onClick={() => trackNavClick('calendar')}
+              onClick={handleBoardClick}
             >
-              학사일정
+              자유게시판
             </Link>
           </li>
           <li>
@@ -95,20 +104,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to='/notice'
+              to='/academic-calendar'
               className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
-              onClick={() => trackNavClick('notice')}
+              onClick={() => trackNavClick('calendar')}
             >
-              공지사항
-            </Link>
-          </li>
-          <li>
-            <Link
-              to='/board'
-              className='inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10'
-              onClick={handleBoardClick}
-            >
-              자유게시판
+              학사일정
             </Link>
           </li>
           <li>
@@ -131,6 +131,28 @@ const Navbar = () => {
               onClick={() => trackNavClick('wiki')}
             >
               띵지위키
+            </a>
+          </li>
+          <li>
+            <a
+              href='https://sso1.mju.ac.kr/login.do?redirect_uri=https://msi.mju.ac.kr/index_Myiweb.jsp'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:text-blue-10 hover:bg-white/10'
+              onClick={() => trackNavClick('wiki')}
+            >
+              MSI
+            </a>
+          </li>
+          <li>
+            <a
+              href='https://myicap.mju.ac.kr/site/main/index001?prevurl=https%3A%2F%2Fmyicap.mju.ac.kr%2F'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:text-blue-10 hover:bg-white/10'
+              onClick={() => trackNavClick('wiki')}
+            >
+              MYiCap
             </a>
           </li>
           <li>
@@ -171,6 +193,15 @@ const Navbar = () => {
         <ul className='flex flex-col md:hidden bg-[#002f6c] text-white text-sm font-medium list-none px-4 py-2 gap-1 leading-none border-t border-white/10'>
           <li>
             <Link
+              to='/notice'
+              onClick={closeMenu}
+              className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
+            >
+              공지사항
+            </Link>
+          </li>
+          <li>
+            <Link
               to='/department'
               onClick={closeMenu}
               className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
@@ -180,11 +211,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to='/academic-calendar'
+              to='/board'
               onClick={closeMenu}
               className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
             >
-              학사일정
+              자유게시판
             </Link>
           </li>
           <li>
@@ -198,20 +229,11 @@ const Navbar = () => {
           </li>
           <li>
             <Link
-              to='/notice'
+              to='/academic-calendar'
               onClick={closeMenu}
               className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
             >
-              공지사항
-            </Link>
-          </li>
-          <li>
-            <Link
-              to='/board'
-              onClick={closeMenu}
-              className='inline-flex items-center px-3 h-10 rounded-lg hover:bg-white/10'
-            >
-              자유게시판
+              학사일정
             </Link>
           </li>
           <li>
@@ -234,6 +256,28 @@ const Navbar = () => {
               onClick={closeMenu}
             >
               띵지위키
+            </a>
+          </li>
+          <li>
+            <a
+              href='https://sso1.mju.ac.kr/login.do?redirect_uri=https://msi.mju.ac.kr/index_Myiweb.jsp'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:text-blue-10 hover:bg-white/10'
+              onClick={() => trackNavClick('wiki')}
+            >
+              MSI
+            </a>
+          </li>
+          <li>
+            <a
+              href='https://myicap.mju.ac.kr/site/main/index001?prevurl=https%3A%2F%2Fmyicap.mju.ac.kr%2F'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-flex items-center h-10 px-3 rounded-lg hover:text-blue-10 hover:bg-white/10'
+              onClick={() => trackNavClick('wiki')}
+            >
+              MYiCap
             </a>
           </li>
           <li>
