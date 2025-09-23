@@ -1,6 +1,9 @@
 import React, { type JSX } from 'react';
 import clsx from 'clsx';
 
+/**
+ * @deprecated tailwind css 속성을 사용하세요
+ */
 export type TypographyVariant =
   | 'heading01'
   | 'heading02'
@@ -12,6 +15,9 @@ export type TypographyVariant =
   | 'caption01'
   | 'caption02';
 
+/**
+ * @deprecated tailwind css 속성을 사용하세요
+ */
 interface TypographyProps {
   variant?: TypographyVariant;
   className?: string;
@@ -19,6 +25,9 @@ interface TypographyProps {
   children?: React.ReactNode;
 }
 
+/**
+ * @deprecated tailwind css 속성을 사용하세요
+ */
 const variantConfig: Record<
   TypographyVariant,
   { tag: keyof JSX.IntrinsicElements; className: string }
@@ -34,6 +43,9 @@ const variantConfig: Record<
   caption02: { tag: 'span', className: 'font-normal text-[12px] leading-[150%]' },
 };
 
+/**
+ * @deprecated tailwind css 속성을 사용하세요
+ */
 export const Typography: React.FC<TypographyProps> = ({
   variant = 'body01',
   className,

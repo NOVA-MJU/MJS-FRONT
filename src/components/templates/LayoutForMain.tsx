@@ -23,13 +23,11 @@ const LayoutForMain = ({ children }: LayoutProps) => {
   return (
     <div className='flex flex-col w-screen min-h-screen'>
       <Navbar />
-
-      <main className='flex-1 w-full max-w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
+      <main className='flex-1 w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
         <div className='block'>{shouldShowHeader && <Header />}</div>
 
         <div className='flex flex-col md:flex-row gap-4'>
           {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
-
           <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
             <div className='hidden md:block'>
               <SearchBar />
@@ -37,7 +35,6 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden'>
               <ProfileComponent />
             </div>
-
             {children}
           </div>
 
@@ -45,7 +42,6 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
-
             <div className='hidden md:block'>
               <AdCarousel />
             </div>
@@ -61,7 +57,6 @@ const LayoutForMain = ({ children }: LayoutProps) => {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );
