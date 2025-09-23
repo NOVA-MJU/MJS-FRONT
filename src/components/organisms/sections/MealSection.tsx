@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiPlus } from 'react-icons/fi';
 import { getMenus } from '../../../api/menu';
-
-import MealComponent from '../../molecules/mainpage/Meal';
+import { IoIosArrowForward } from 'react-icons/io';
+import Divider from '../../atoms/Divider';
 
 type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
@@ -30,7 +29,7 @@ const normalizeLabel = (s: string) => s.replace(/\s+/g, '');
 const catToUiKey = (c: MenuCategory): UIMealKey =>
   c === 'BREAKFAST' ? '아침' : c === 'LUNCH' ? '점심' : '저녁';
 
-const MealSection = () => {
+export default function MealSection() {
   const current = getCurrentMealTime();
   const navigator = useNavigate();
 
@@ -69,26 +68,31 @@ const MealSection = () => {
     })();
   }, []);
 
+  if (isWeekend()) return <></>;
+
   return (
-    <section className='w-full px-1 py-6 '>
-      <div className='flex justify-between'>
-        <h1 className='text-xl font-bold text-mju-primary mb-4'>학식</h1>
+    <section className='w-full flex flex-col gap-3'>
+      <div className='px-3 flex justify-between items-center'>
+        <h1 className='text-heading02 text-mju-primary'>학식</h1>
         <span>
-          <FiPlus onClick={handlePlusClick} size={20} />
+          <IoIosArrowForward
+            className='text-blue-10 cursor-pointer'
+            onClick={handlePlusClick}
+            size={20}
+          />
         </span>
       </div>
-
-      {isWeekend() ? (
-        <div className='text-grey-40 text-sm'>주말에는 학식이 제공되지 않습니다.</div>
-      ) : (
-        <div className='w-full md:flex-row gap-4 justify-start'>
-          {/* 현재 끼만 보여줄 거면 아래 한 개만, 
-             세 끼 모두 보여주고 현재 끼만 하이라이트하려면 3개 렌더 + highlight 조건 분기 */}
-          <MealComponent key={current} title={current} items={todayMeals[current]} highlight />
-        </div>
-      )}
+      <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>
+        <h3 className='text-body02 text-mju-secondary'>{current}</h3>
+        <Divider variant='thin' />
+        <ul className='grid grid-cols-1 md:grid-cols-2 gap-y-3'>
+          {todayMeals[current].map((meal, index) => (
+            <li key={index} className='text-body03'>
+              {meal}
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
-};
-
-export default MealSection;
+}
