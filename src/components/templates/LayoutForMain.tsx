@@ -23,7 +23,7 @@ const LayoutForMain = ({ children }: LayoutProps) => {
   return (
     <div className='flex flex-col w-screen min-h-screen'>
       <Navbar />
-      <main className='flex-1 w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
+      <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
         <div className='block'>{shouldShowHeader && <Header />}</div>
 
         <div className='flex flex-col md:flex-row gap-4'>

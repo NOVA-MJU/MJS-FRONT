@@ -1,5 +1,4 @@
-'use client';
-import { useRef } from 'react';
+import clsx from 'clsx';
 
 interface TabComponentProps {
   currentTab: string;
@@ -15,84 +14,53 @@ const tabNameMap: Record<string, string> = {
   학칙개정: 'rule',
 };
 
-const tabs = Object.entries(tabNameMap); // [ [label, value], ... ]
+const tabs = Object.entries(tabNameMap);
 
 export default function TabComponent({ currentTab, setCurrentTab }: TabComponentProps) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-
   return (
-    <div className='border-b border-grey-20 pb-2'>
+    <>
       {/* 데스크톱: 라인 탭 */}
-      <div className='hidden md:flex justify-center gap-18'>
+      <div className='hidden px-3 md:flex justify-between border-b-1 border-grey-10'>
         {tabs.map(([label, value]) => {
-          const active = currentTab === value;
+          const isSelected = currentTab === value;
           return (
             <button
               key={value}
               role='tab'
-              aria-selected={active}
+              aria-selected={isSelected}
               aria-controls={`tab-panel-${value}`}
               onClick={() => setCurrentTab(value)}
               className={`
-                
-                relative pb-2 text-base transition-colors
-                ${active ? 'text-blue-15 font-semibold' : 'text-grey-20 '}
+                p-3 text-title02 cursor-pointer
+                ${isSelected ? 'text-blue-35 border-b-2 border-blue-35' : 'text-grey-40'}
               `}
             >
               {label}
-              <span
-                className={`
-                  absolute left-0 right-0 -bottom-[2px] h-[2px]
-                  transition-all duration-200
-                  ${active ? 'bg-mju-primary' : 'bg-transparent'}
-                `}
-              />
             </button>
           );
         })}
       </div>
 
       {/* 모바일: 캐러셀 탭 (필 스타일 + 센터 스냅) */}
-      <div className='md:hidden relative'>
-        {/* 캐러셀 스크롤 영역 */}
-        <div
-          ref={scrollerRef}
-          role='tablist'
-          aria-label='공지 탭'
-          className='
-            no-scrollbar
-            -mx-4 px-10  /* 버튼 영역 여백 확보 */
-            overflow-x-auto scroll-smooth
-            snap-x snap-mandatory whitespace-nowrap
-            flex gap-3 py-1
-          '
-        >
-          {tabs.map(([label, value]) => {
-            const active = currentTab === value;
-            return (
-              <button
-                key={value}
-                role='tab'
-                aria-selected={active}
-                aria-controls={`tab-panel-${value}`}
-                onClick={() => setCurrentTab(value)}
-                className={`
-                  snap-center shrink-0
-                  px-4 py-2 rounded-full text-sm
-                  border transition-all
-                  ${
-                    active
-                      ? 'bg-blue-20 text-white border-blue-20 shadow-sm'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                  }
-                `}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+      <div className='md:hidden no-scrollbar overflow-x-auto flex gap-1.5'>
+        {tabs.map(([label, value]) => {
+          const isSelected = currentTab === value;
+          return (
+            <button
+              key={value}
+              onClick={() => setCurrentTab(value)}
+              className={clsx(
+                'text-caption01 rounded-full px-3 py-1.5 cursor-pointer',
+                isSelected
+                  ? 'text-white bg-blue-35'
+                  : 'text-grey-20 border-1 border-grey-20 bg-white',
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </>
   );
 }

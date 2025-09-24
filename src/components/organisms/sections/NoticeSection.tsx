@@ -2,73 +2,81 @@ import { useEffect, useState } from 'react';
 import TabComponent from '../../molecules/mainpage/Tab';
 import { fetchNotionInfo } from '../../../api/main/notice-api';
 import type { NoticeItem } from '../../../types/notice/noticeInfo';
-import { useNavigate } from 'react-router-dom';
-import { FiPlus } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { IoIosArrowForward } from 'react-icons/io';
+import Divider from '../../atoms/Divider';
+import { formatToElapsedTime } from '../../../utils';
 
-const NoticeSection = () => {
+export default function NoticeSection() {
   const [selectedTab, setSelectedTab] = useState('general');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
-  const selectedCategory = selectedTab;
   const recentYear = new Date().getFullYear();
-  const navigator = useNavigate();
-
-  const handleClickPlus = () => navigator('/notice');
 
   useEffect(() => {
-    const fetchingData = async () => {
+    (async () => {
       try {
-        const fetchedNoticeData = await fetchNotionInfo(selectedCategory, recentYear);
+        const fetchedNoticeData = await fetchNotionInfo(selectedTab, recentYear);
         setSelectedInfo(fetchedNoticeData.content);
       } catch (e) {
-        console.log('FC 내부 NoticeData Fetching 실패', e);
+        console.error('NoticeSection.tsx::useEffect()', e);
       }
-    };
-    fetchingData();
+    })();
   }, [selectedTab]);
 
   return (
-    <div>
-      <div className='flex justify-between mt-4'>
-        <h1 className='text-xl font-bold text-mju-primary mb-4'>공지사항</h1>
-        <button
-          type='button'
-          onClick={handleClickPlus}
-          className='h-6 w-6 grid place-items-center rounded hover:bg-gray-100 active:bg-gray-200'
-          aria-label='공지사항 더보기'
-          title='공지사항 더보기'
-        >
-          <FiPlus size={20} />
-        </button>
-      </div>
+    <>
+      <section className='hidden md:flex flex-col gap-3'>
+        <div className='px-3 flex justify-between items-center'>
+          <h2 className='text-heading02 text-mju-primary'>공지사항</h2>
+          <Link to='/notice'>
+            <IoIosArrowForward className='text-blue-10' size={20} />
+          </Link>
+        </div>
+        <div className='px-3'>
+          <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+        </div>
+        <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
+          {selectedInfo.map((info, i) => (
+            <>
+              <a
+                href={info.link}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='p-3 cursor-pointer hover:bg-blue-05 transition flex justify-between rounded-xl'
+              >
+                <p className='text-body02'>{info.title}</p>
+                <span className='text-caption01'>{formatToElapsedTime(info.date)}</span>
+              </a>
+              {i < 4 && <Divider variant='thin' />}
+            </>
+          ))}
+        </div>
+      </section>
 
-      <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab} />
-
-      <div className='grid grid-cols-1 gap-2 mt-5'>
-        {selectedInfo.map((data, idx) => (
-          <div key={idx} className='bg-white'>
+      <section className='md:hidden flex flex-col gap-4'>
+        <div className='px-3 flex justify-between items-center'>
+          <h2 className='text-heading02 text-mju-primary'>공지사항</h2>
+          <Link to='/notice'>
+            <IoIosArrowForward className='text-blue-10' size={20} />
+          </Link>
+        </div>
+        <div className='px-3'>
+          <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+        </div>
+        <div className='flex flex-col gap-2'>
+          {selectedInfo.map((info) => (
             <a
-              href={data.link}
+              href={info.link}
               target='_blank'
               rel='noopener noreferrer'
-              className='
-                block p-4 border border-grey-10 rounded-xl shadow-sm
-                
-                md:hover:bg-grey-10 md:hover:shadow-md   /* 데스크톱 hover */
-                active:bg-grey-10                         /* 모바일/터치 press */
-                focus-visible:outline-none
-                focus-visible:ring-2 focus-visible:ring-mju-primary/30
-              '
+              className='p-4 flex flex-col gap-2 cursor-pointer hover:bg-blue-05 transition rounded-xl border-1 border-blue-05'
             >
-              <h3 className='text-lg font-semibold text-black truncate'>{data.title}</h3>
-              <div className='mt-2 text-sm text-gray-600'>
-                <span className='font-medium'>{new Date(data.date).toLocaleDateString()}</span>
-              </div>
+              <p className='text-body02 text-black'>{info.title}</p>
+              <span className='text-caption01 text-grey-20'>{formatToElapsedTime(info.date)}</span>
             </a>
-          </div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </section>
+    </>
   );
-};
-
-export default NoticeSection;
+}

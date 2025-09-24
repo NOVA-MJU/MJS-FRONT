@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getMenus } from '../../../api/menu';
 import { IoIosArrowForward } from 'react-icons/io';
 import Divider from '../../atoms/Divider';
@@ -31,9 +31,6 @@ const catToUiKey = (c: MenuCategory): UIMealKey =>
 
 export default function MealSection() {
   const current = getCurrentMealTime();
-  const navigator = useNavigate();
-
-  const handlePlusClick = () => navigator('/menu');
 
   const [todayMeals, setTodayMeals] = useState<Record<UIMealKey, string[]>>({
     아침: [],
@@ -74,13 +71,9 @@ export default function MealSection() {
     <section className='w-full flex flex-col gap-3'>
       <div className='px-3 flex justify-between items-center'>
         <h1 className='text-heading02 text-mju-primary'>학식</h1>
-        <span>
-          <IoIosArrowForward
-            className='text-blue-10 cursor-pointer'
-            onClick={handlePlusClick}
-            size={20}
-          />
-        </span>
+        <Link to='/menu'>
+          <IoIosArrowForward className='text-blue-10' size={20} />
+        </Link>
       </div>
       <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>
         <h3 className='text-body02 text-mju-secondary'>{current}</h3>
