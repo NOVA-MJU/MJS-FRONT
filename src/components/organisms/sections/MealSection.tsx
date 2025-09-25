@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getMenus } from '../../../api/menu';
 import { IoIosArrowForward } from 'react-icons/io';
 import Divider from '../../atoms/Divider';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
 type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
@@ -31,21 +32,23 @@ const catToUiKey = (c: MenuCategory): UIMealKey =>
 
 export default function MealSection() {
   const current = getCurrentMealTime();
-
   const [todayMeals, setTodayMeals] = useState<Record<UIMealKey, string[]>>({
     아침: [],
     점심: [],
     저녁: [],
   });
-
-  const isWeekend = () => {
-    const day = new Date().getDay();
-    return day === 0 || day === 6;
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
 
   useEffect(() => {
+    if (isWeekend) {
+      setIsLoading(false);
+      return;
+    }
+
     (async () => {
       try {
+        setIsLoading(true);
         // getMenus가 Axios라면: const list: MenuItem[] = (await getMenus()).data;
         const list: MenuItem[] = await getMenus();
 
@@ -60,12 +63,17 @@ export default function MealSection() {
 
         setTodayMeals(next);
       } catch (e) {
-        console.error('식단 불러오는 중 오류 발생', e);
+        console.error('MealSection.tsx::fetching meal data', e);
+      } finally {
+        setIsLoading(false);
       }
     })();
-  }, []);
+  }, [isWeekend]);
 
-  if (isWeekend()) return <></>;
+  /**
+   * 주말이면 식단을 표시하지 않습니다
+   */
+  if (isWeekend) return null;
 
   return (
     <section className='w-full flex flex-col gap-3'>
@@ -79,6 +87,7 @@ export default function MealSection() {
         <h3 className='text-body02 text-mju-secondary'>{current}</h3>
         <Divider variant='thin' />
         <ul className='grid grid-cols-1 md:grid-cols-2 gap-y-3'>
+          {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='w-48 h-6' />)}
           {todayMeals[current].map((meal, index) => (
             <li key={index} className='text-body03'>
               {meal}

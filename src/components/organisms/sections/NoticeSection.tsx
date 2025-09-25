@@ -6,22 +6,39 @@ import { Link } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io';
 import Divider from '../../atoms/Divider';
 import { formatToElapsedTime } from '../../../utils';
+import { Skeleton } from '@/components/atoms/Skeleton';
+
+const tabNameMap: Record<string, string> = {
+  일반공지: 'general',
+  학사공지: 'academic',
+  장학공지: 'scholarship',
+  진로공지: 'career',
+  학생활동: 'activity',
+  학칙개정: 'rule',
+};
 
 export default function NoticeSection() {
   const [selectedTab, setSelectedTab] = useState('general');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const recentYear = new Date().getFullYear();
+  const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * 공지사항 데이터 조회
+   */
   useEffect(() => {
     (async () => {
       try {
+        setIsLoading(true);
         const fetchedNoticeData = await fetchNotionInfo(selectedTab, recentYear);
         setSelectedInfo(fetchedNoticeData.content);
       } catch (e) {
         console.error('NoticeSection.tsx::useEffect()', e);
+      } finally {
+        setIsLoading(false);
       }
     })();
-  }, [selectedTab]);
+  }, [selectedTab, recentYear]);
 
   return (
     <>
@@ -33,9 +50,16 @@ export default function NoticeSection() {
           </Link>
         </div>
         <div className='px-3'>
-          <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+          <TabComponent tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
         </div>
         <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
+          {isLoading &&
+            [...Array(5)].map((_, i) => (
+              <>
+                <Skeleton key={i} className='h-12' />
+                {i < 4 && <Divider variant='thin' />}
+              </>
+            ))}
           {selectedInfo.map((info, i) => (
             <>
               <a
@@ -61,7 +85,7 @@ export default function NoticeSection() {
           </Link>
         </div>
         <div className='px-3'>
-          <TabComponent currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+          <TabComponent tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
         </div>
         <div className='flex flex-col gap-2'>
           {selectedInfo.map((info) => (

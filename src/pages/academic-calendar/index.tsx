@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Divider from '../../components/atoms/Divider';
-import { Typography } from '../../components/atoms/Typography';
 import CalendarGrid, { type CalendarEventItem } from '../../components/organisms/CalendarGrid';
 import CalendarList from '../../components/organisms/CalendarList';
 import { getAcademicEvents } from '../../api/calendar';
@@ -23,9 +22,7 @@ export default function AcademicCalendar() {
 
   return (
     <div className='px-4 md:px-7 py-8 md:py-12 flex flex-col gap-4 md:gap-6'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        <span className='md:text-2xl text-xl md:hidden'>학사일정</span>
-      </Typography>
+      <h2 className='text-heading01 text-mju-primary md:text-2xl text-xl md:hidden'>학사일정</h2>
       <span className='md:hidden'>
         <Divider />
       </span>
