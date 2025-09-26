@@ -1,80 +1,95 @@
-import { useWeatherQuery } from '../../../../hooks/useWeatherQuery';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/atoms/Skeleton';
+import { getWeather, type GetWeatherRes } from '@/api/weather';
 
-const WeatherComponent = () => {
-  const { data, isLoading, isError } = useWeatherQuery();
+export default function WeatherComponent() {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [weatherData, setWeatherData] = useState<GetWeatherRes | null>(null);
 
-  if (isLoading) {
-    return (
-      <div className='rounded-2xl border border-blue-05 bg-white shadow-sm w-full p-5 text-sm text-gray-500'>
-        날씨 정보를 불러오는 중...
-      </div>
-    );
-  }
+  useEffect(() => {
+    fetchWeatherData();
+  }, []);
 
-  if (isError || !data) {
-    return (
-      <div className='rounded-2xl border border-blue-05 bg-white shadow-sm w-full p-5 text-sm text-red-500'>
-        날씨 정보를 불러올 수 없습니다.
-      </div>
-    );
-  }
+  /**
+   * 날씨 데이터 불러오기
+   */
+  const fetchWeatherData = async () => {
+    try {
+      setIsLoading(true);
+      const res = await getWeather();
+      setWeatherData(res);
+      setIsError(false);
+    } catch (e) {
+      console.error('WeatherComponent.tsx::fetch weather data', e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // 안전 가공
+  /**
+   * 날씨 데이터 포맷팅
+   */
   const hour = new Date().getHours();
-  const temp = Math.round(data.temperature ?? 0);
-  const tMin = Math.round(data.minTemperature ?? 0);
-  const tMax = Math.round(data.maxTemperature ?? 0);
-  const feelsLike = Math.round(data.feelsLike ?? temp);
-  const humidity = Math.round(data.humidity ?? 0);
-  const pm10Cat = data.pm10Category ?? '-';
-  const pm25Cat = data.pm2_5Category ?? '-';
-  const icon = data.weatherIcon ?? '/placeholder-weather.png';
+  const temp = Math.round(weatherData?.temperature ?? 0);
+  const tMin = Math.round(weatherData?.minTemperature ?? 0);
+  const tMax = Math.round(weatherData?.maxTemperature ?? 0);
+  const feelsLike = Math.round(weatherData?.feelsLike ?? temp);
+  const humidity = Math.round(weatherData?.humidity ?? 0);
+  const pm10Cat = weatherData?.pm10Category ?? '-';
+  const pm25Cat = weatherData?.pm2_5Category ?? '-';
+  const icon = weatherData?.weatherIcon ?? '/placeholder-weather.png';
+  const location = weatherData?.location;
 
   return (
-    <div className='rounded-2xl border border-blue-05 bg-white shadow-sm w-full p-5 md:p-6'>
-      <div className='text-mju-primary font-bold text-xl md:text-2xl mb-3'>
-        {data.location} 날씨
-      </div>
-      <div className='flex'>
-        <span className='ml-auto text-grey-40'>{hour}시 기준</span>
-      </div>
-
-      {/* 상단: 아이콘 + 현재기온 / 최저|최고 */}
-      <div className='flex items-center gap-4 md:gap-6'>
-        <img
-          src={icon}
-          alt='날씨 아이콘'
-          className='w-20 h-20 rounded-xl object-cover flex-shrink-0'
-        />
-        <div>
-          <div className='text-2xl text-black font-bold tracking-tight'>{temp}°C</div>
-          <div className='text-grey-40 mt-1  text-xl md:text-lg'>
-            {tMin}°C <span className='mx-2'>|</span> {tMax}°C
+    <div className='px-6 py-4 rounded-xl flex flex-col gap-3 border-2 border-grey-05 bg-white'>
+      {isError ? (
+        <>
+          <span className='text-title02 text-mju-primary text-center'>문제가 발생했습니다</span>
+          <button
+            className='px-3 py-2 self-center text-caption01 cursor-pointer hover:bg-grey-05 rounded-xl transition'
+            onClick={fetchWeatherData}
+          >
+            다시 시도하기
+          </button>
+        </>
+      ) : isLoading ? (
+        <>
+          <Skeleton />
+          <Skeleton className='h-22' />
+          <Skeleton />
+        </>
+      ) : (
+        <>
+          <p className='text-mju-primary text-title02'>{`${location}날씨 ${hour}시`} </p>
+          <div className='flex items-center gap-3'>
+            <img src={icon} alt='날씨 아이콘' className='w-20 h-20 rounded-xl object-cover' />
+            <div className='flex flex-col gap-2'>
+              <p className='text-heading02 text-black'>{temp}°C</p>
+              <p className='text-body03 text-grey-40'>{`${tMin}°C | ${tMax}°C`}</p>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* 하단 지표: 강수확률 / 습도 / 미세먼지 / 초미세먼지 */}
-      <div className='mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm md:text-base text-gray-700'>
-        <div className='flex items-center gap-1'>
-          <span className='font-medium'>습도</span>
-          <span className='text-grey-40'>{humidity}%</span>
-        </div>
-        <div className='flex items-center gap-1'>
-          <span className='font-medium'>미세먼지</span>
-          <span className='text-grey-40'>{pm10Cat}</span>
-        </div>
-        <div className='flex items-center gap-1'>
-          <span className='font-medium'>초미세먼지</span>
-          <span className='text-grey-40'>{pm25Cat}</span>
-        </div>
-      </div>
-
-      <div className='flex'>
-        <div className='mt-2 text-xs text-black '>체감 온도 {feelsLike}°C</div>
-      </div>
+          <div className='flex gap-2'>
+            <div className='flex gap-1'>
+              <span className='text-caption01 text-black'>체감 온도</span>
+              <span className='text-caption02 text-grey-40'>{feelsLike}°C</span>
+            </div>
+            <div className='flex gap-1'>
+              <span className='text-caption01 text-black'>습도</span>
+              <span className='text-caption02 text-grey-40'>{humidity}%</span>
+            </div>
+            <div className='flex gap-1'>
+              <span className='text-caption01 text-black'>미세먼지</span>
+              <span className='text-caption02 text-grey-40'>{pm10Cat}</span>
+            </div>
+            <div className='flex gap-1'>
+              <span className='text-caption01 text-black'>초미세먼지</span>
+              <span className='text-caption02 text-grey-40'>{pm25Cat}</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
-};
-
-export default WeatherComponent;
+}

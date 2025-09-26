@@ -59,31 +59,32 @@ export default function NewsSection() {
               {i < 4 && <Divider variant='thin' />}
             </>
           ))}
-        {fetchedNews.slice(0, 5).map((news, i) => (
-          <>
-            <a
-              key={i}
-              href={news.link}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='w-full p-3 flex gap-6 rounded-xl cursor-pointer hover:bg-blue-05 transition'
-            >
-              <img
-                src={news.imageUrl?.trim() || '/default-thumbnail.png'}
-                alt={news.title}
-                className='w-46 h-34 object-cover rounded-xl'
-                onError={(e) => {
-                  e.currentTarget.src = '/default-thumbnail.png';
-                }}
-              />
-              <div className='flex-1 flex flex-col gap-3 justify-center'>
-                <h2 className='text-title02 text-black line-clamp-1'>{news.title}</h2>
-                <p className='text-body03 text-black line-clamp-3'>{news.summary}</p>
-              </div>
-            </a>
-            {i < 4 && <Divider variant='thin' />}
-          </>
-        ))}
+        {!isLoading &&
+          fetchedNews.slice(0, 5).map((news, i) => (
+            <>
+              <a
+                key={i}
+                href={news.link}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='w-full p-3 flex gap-6 rounded-xl cursor-pointer hover:bg-blue-05 transition'
+              >
+                <img
+                  src={news.imageUrl?.trim() || '/default-thumbnail.png'}
+                  alt={news.title}
+                  className='w-46 h-34 object-cover rounded-xl'
+                  onError={(e) => {
+                    e.currentTarget.src = '/default-thumbnail.png';
+                  }}
+                />
+                <div className='flex-1 flex flex-col gap-3 justify-center'>
+                  <h2 className='text-title02 text-black line-clamp-1'>{news.title}</h2>
+                  <p className='text-body03 text-black line-clamp-3'>{news.summary}</p>
+                </div>
+              </a>
+              {i < 4 && <Divider variant='thin' />}
+            </>
+          ))}
       </div>
     </section>
   );

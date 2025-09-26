@@ -1,75 +1,64 @@
 import { useEffect, useState } from 'react';
 import { fetchBroadCastInfo } from '../../../api/main/broadcast-api';
 import type { BroadcastContent } from '../../../types/broadcast/broadcastInfo';
-import { FiPlus } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { IoIosArrowForward } from 'react-icons/io';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
-const BroadcastSection = () => {
+export default function BroadcastSection() {
   const [broadcasts, setBroadcasts] = useState<BroadcastContent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const navigator = useNavigate();
-
-  const handlePlusClick = () => {
-    navigator('/broadcast');
-  };
+  const [isLoading, setIsLoading] = useState(true);
 
   const page = 0;
   const size = 9;
 
   useEffect(() => {
-    const loadData = async () => {
+    (async () => {
       try {
+        setIsLoading(true);
         const data = await fetchBroadCastInfo(page, size);
-        setBroadcasts(data.data.content);
+        setBroadcasts(data.content);
       } catch (err) {
-        console.error('방송 데이터를 불러오는 데 실패했습니다.', err);
+        console.error('BroadcastSection.tsx::fetch broadcast data', err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
-    };
-
-    loadData();
+    })();
   }, []);
 
   return (
-    <section className='p-4'>
-      <div className='flex justify-between'>
-        <h2 className='text-xl text-mju-primary font-bold mb-4'>명대방송</h2>
-        <span>
-          <FiPlus onClick={handlePlusClick} size={20} />
-        </span>
+    <section className='flex flex-col gap-3'>
+      <div className='flex justify-between px-3 items-center'>
+        <h2 className='text-heading02 text-mju-primary'>명대뉴스</h2>
+        <Link to='/broadcast'>
+          <IoIosArrowForward className='text-blue-10' size={20} />
+        </Link>
       </div>
-
-      {loading ? (
-        <p className='text-sm text-gray-500'>로딩 중...</p>
-      ) : (
-        <div className='flex gap-4 overflow-x-auto mt-4'>
-          {broadcasts.map((item, index) => (
-            <div key={index} className='min-w-[320px] bg-white rounded-lg shadow-sm border p-2'>
+      <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
+        {isLoading && <Skeleton className='w-full h-80 bg-white flex-shrink-0' />}
+        {!isLoading &&
+          broadcasts.map((item, index) => (
+            <div key={index} className='w-95 h-80 flex flex-col bg-white rounded-xl'>
               <iframe
-                className='w-full h-48 rounded'
+                className='h-54 rounded-t-xl'
                 src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
                 title={item.title}
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
                 allowFullScreen
-              ></iframe>
-
-              <div className='mt-2 px-2'>
-                <h3 className='text-sm font-semibold truncate'>{item.title}</h3>
-                <p className='text-xs text-gray-500 truncate'>
-                  유튜브내에 적힌 설명이 어쩌구저쩌구
+              />
+              <div className='p-3 flex flex-col gap-2 justify-between'>
+                <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
+                {/* <p className='text-body03'>유튜브내에 적힌 설명이 어쩌구저쩌구</p> */}
+                <p className='text-caption02 text-grey-40 text-end'>
+                  {formatDate(item.publishedAt)}
                 </p>
-                <p className='text-[10px] text-gray-400 mt-1'>{formatDate(item.publishedAt)}</p>
               </div>
             </div>
           ))}
-        </div>
-      )}
+      </div>
     </section>
   );
-};
-
-export default BroadcastSection;
+}
 
 const extractYoutubeId = (url: string): string => {
   const match = url.match(/v=([^&]+)/);

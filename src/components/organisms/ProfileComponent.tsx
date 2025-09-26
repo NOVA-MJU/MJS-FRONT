@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from '../atoms/Avatar';
 import { useAuthStore } from '../../store/useAuthStore';
-import Button from '../atoms/Button';
 import toast from 'react-hot-toast';
 
 interface ProfileComponentProps {
@@ -112,34 +111,37 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
   }
 
   return (
-    <div
-      className={`w-full  flex flex-col justify-center items-center gap-4 border border-grey-20 rounded-md p-6 font-sans ${className}`}
+    <section
+      className={`px-6 py-4 flex flex-col gap-6 items-center border-2 border-grey-05 rounded-xl ${className}`}
     >
-      <span className='text-sm font-semibold text-gray-700'>
-        커뮤니티 이용을 위한 <span className='text-blue-900'>로그인</span>이 필요합니다!
-      </span>
-      <div className='flex flex-col gap-2 w-full max-w-[250px]'>
-        <Link to='login'>
-          <Button variant='main' disabled={false} size='md' fullWidth>
-            로그인
-          </Button>
+      <div className='flex'>
+        <p className='text-body02 text-mju-primary'>로그인</p>
+        <p className='text-body03'>하고 MJS를 자유롭게 이용하세요!</p>
+      </div>
+      <div className='w-full flex flex-col gap-2'>
+        <Link
+          to='login'
+          className='w-full p-3 text-center bg-blue-35 hover:bg-blue-15 transition rounded-xl'
+        >
+          <p className='text-body02 text-white'>로그인</p>
         </Link>
-        <Link to='register'>
-          <Button variant='greyLight' disabled={false} size='md' fullWidth>
-            회원가입
-          </Button>
+        <Link
+          to='register'
+          className='w-full p-3 text-center bg-grey-10 hover:bg-grey-20 transition rounded-xl'
+        >
+          <p className='text-body02 text-black'>회원가입</p>
         </Link>
       </div>
-      <div className='flex gap-2 text-xs text-gray-400 font-medium mt-2 cursor-pointer'>
-        <button className='hover:underline' onClick={handleFindId}>
+      <div className='w-full flex'>
+        <button className='flex-1 text-body03 text-grey-40 cursor-pointer' onClick={handleFindId}>
           아이디 찾기
         </button>
-        <span>|</span>
-        <Link to='/find-pw'>
-          <button className='hover:underline'>비밀번호 찾기</button>
+        <span className='text-body03 text-grey-40'>|</span>
+        <Link to='/find-pw' className='flex-1 text-center text-body03 text-grey-40'>
+          비밀번호 찾기
         </Link>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -23,14 +23,13 @@ const LayoutForMain = ({ children }: LayoutProps) => {
   return (
     <div className='flex flex-col w-screen min-h-screen'>
       <Navbar />
-      <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-4 md:px-0'>
-        <div className='block'>{shouldShowHeader && <Header />}</div>
-
-        <div className='flex flex-col md:flex-row gap-4'>
+      <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-7 py-12 md:px-0'>
+        <div className='flex flex-col md:flex-row gap-6'>
           {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
-          <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-3'>
-            <div className='hidden md:block'>
+          <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-12 mb-12'>
+            <div className='hidden md:flex flex-col gap-3'>
               <SearchBar />
+              <div className='block'>{shouldShowHeader && <Header />}</div>
             </div>
             <div className='hidden'>
               <ProfileComponent />
@@ -38,18 +37,18 @@ const LayoutForMain = ({ children }: LayoutProps) => {
             {children}
           </div>
 
-          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-5'>
+          <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-12 mb-12'>
             <div className='hidden md:block'>
               <ProfileComponent />
             </div>
             <div className='hidden md:block'>
-              <AdCarousel />
+              <WeatherComponent />
             </div>
             <div className='hidden md:block'>
-              <RealtimeRank />
+              <AdCarousel />
             </div>
             <div className='hidden md:block '>
-              <WeatherComponent />
+              <RealtimeRank />
             </div>
             <div className='hidden md:block'>
               <HotBoardList />

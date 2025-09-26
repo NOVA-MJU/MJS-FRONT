@@ -60,20 +60,21 @@ export default function NoticeSection() {
                 {i < 4 && <Divider variant='thin' />}
               </>
             ))}
-          {selectedInfo.map((info, i) => (
-            <>
-              <a
-                href={info.link}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-3 cursor-pointer hover:bg-blue-05 transition flex justify-between rounded-xl'
-              >
-                <p className='text-body02'>{info.title}</p>
-                <span className='text-caption01'>{formatToElapsedTime(info.date)}</span>
-              </a>
-              {i < 4 && <Divider variant='thin' />}
-            </>
-          ))}
+          {!isLoading &&
+            selectedInfo.map((info, i) => (
+              <>
+                <a
+                  href={info.link}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='p-3 cursor-pointer hover:bg-blue-05 transition flex justify-between rounded-xl'
+                >
+                  <p className='text-body02'>{info.title}</p>
+                  <span className='text-caption01'>{formatToElapsedTime(info.date)}</span>
+                </a>
+                {i < 4 && <Divider variant='thin' />}
+              </>
+            ))}
         </div>
       </section>
 
