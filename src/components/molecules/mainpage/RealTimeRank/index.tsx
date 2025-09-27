@@ -1,28 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getRealTimeSearch } from '../../../../api/main/real-time';
 import type { TopKeywordsResponse } from '../../../../api/main/real-time';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
 type RankItem = { keyword: string };
 type Delta = 'up' | 'down' | 'new' | 'same';
 
-type RealtimeSearchProps = {
-  limit?: number; // 표시할 개수
-  intervalMs?: number; // 갱신 주기 (ms)
-  title?: string; // 상단 타이틀
-};
-
-export default function RealtimeRank({
-  limit = 10,
-  intervalMs = 10000,
-  title = '실시간 검색 순위',
-}: RealtimeSearchProps) {
+export default function RealtimeRank({ limit = 10, intervalMs = 10000 }) {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [current, setCurrent] = useState<RankItem[]>([]);
   const prefersReduced =
     typeof window !== 'undefined' &&
     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-  const [current, setCurrent] = useState<RankItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // 이전 순위 보관
   const prevRef = useRef<RankItem[]>([]);
@@ -30,21 +20,20 @@ export default function RealtimeRank({
   // 서버 데이터 요청
   const fetchKeywords = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setIsLoading(true);
       const res: TopKeywordsResponse = await getRealTimeSearch(limit);
       if (!res?.data?.length) {
         setCurrent([]);
-        setError('검색량이 부족합니다.');
         return;
       }
       prevRef.current = current;
       setCurrent(res.data.map((k) => ({ keyword: k })));
+      setIsError(false);
     } catch (e) {
-      console.log('실시간 데이터 불러오기 오류', e);
-      setError('실시간 검색어 불러오기 실패');
+      console.error('RealtimeRank.tsx::fetchKeywords()', e);
+      setIsError(true);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -74,22 +63,25 @@ export default function RealtimeRank({
   }, [current]);
 
   return (
-    <section
-      className='rounded-lg  border-grey-40 mt-2 bg-white shadow-md px-4 py-4'
-      aria-live='polite'
-      aria-label='실시간 검색 순위'
-    >
-      <div className='mb-4 flex items-center justify-between'>
-        <h3 className=' font-bold text-mju-primary text-2xl'>{title}</h3>
-        <span className='text-xs text-grey-40'>데이터</span>
+    <section className='flex flex-col gap-3' aria-live='polite' aria-label='실시간 검색 순위'>
+      <div className='px-3'>
+        <h2 className='text-title02 text-mju-primary'>실시간 검색 순위</h2>
       </div>
-
-      {loading && <p className='text-sm text-gray-40'>불러오는 중...</p>}
-      {!loading && error && <p className='text-sm text-grey-40'>{error}</p>}
-
-      {!loading && !error && (
-        <ol className='divide-y text-sm'>
-          {current.map((item, idx) => {
+      <div className='px-6 py-4 flex flex-col gap-2 rounded-xl border-2 border-grey-05'>
+        {isError ? (
+          <>
+            <span className='text-title02 text-mju-primary text-center'>문제가 발생했습니다</span>
+            <button
+              className='px-3 py-2 self-center text-caption01 cursor-pointer hover:bg-grey-05 rounded-xl transition'
+              onClick={fetchKeywords}
+            >
+              다시 시도하기
+            </button>
+          </>
+        ) : isLoading ? (
+          [...Array(10)].map((_, index) => <Skeleton key={index} className='h-8' />)
+        ) : (
+          current.map((item, idx) => {
             const delta = deltas[item.keyword] || 'same';
             return (
               <li key={item.keyword} className='flex items-center gap-3 py-2'>
@@ -100,11 +92,9 @@ export default function RealtimeRank({
                 >
                   {idx + 1}
                 </span>
-
                 <span className='flex-1 truncate' title={item.keyword}>
                   {item.keyword}
                 </span>
-
                 <span
                   className={`text-xs tabular-nums ${
                     delta === 'up'
@@ -132,9 +122,9 @@ export default function RealtimeRank({
                 </span>
               </li>
             );
-          })}
-        </ol>
-      )}
+          })
+        )}
+      </div>
     </section>
   );
 }

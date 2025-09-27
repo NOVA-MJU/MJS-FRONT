@@ -12,6 +12,9 @@ export default function BroadcastSection() {
   const page = 0;
   const size = 9;
 
+  /**
+   * 명대방송 데이터를 불러옵니다.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -27,7 +30,7 @@ export default function BroadcastSection() {
   }, []);
 
   return (
-    <section className='flex flex-col gap-3'>
+    <section className='w-full min-w-0 flex flex-col gap-3'>
       <div className='flex justify-between px-3 items-center'>
         <h2 className='text-heading02 text-mju-primary'>명대뉴스</h2>
         <Link to='/broadcast'>
@@ -35,10 +38,13 @@ export default function BroadcastSection() {
         </Link>
       </div>
       <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
-        {isLoading && <Skeleton className='w-full h-80 bg-white flex-shrink-0' />}
+        {isLoading &&
+          [...Array(5)].map((_, index) => (
+            <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
+          ))}
         {!isLoading &&
           broadcasts.map((item, index) => (
-            <div key={index} className='w-95 h-80 flex flex-col bg-white rounded-xl'>
+            <div key={index} className='w-95 h-80 flex flex-col bg-white rounded-xl flex-shrink-0'>
               <iframe
                 className='h-54 rounded-t-xl'
                 src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}

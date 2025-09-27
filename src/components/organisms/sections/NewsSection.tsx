@@ -3,9 +3,10 @@ import { fetchNewsInfo } from '../../../api/news';
 import type { NewsInfo } from '../../../types/news/newsInfo';
 import { Link } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io';
-import TabComponent from '../../molecules/mainpage/Tab';
+import Tab from '../../atoms/Tab';
 import Divider from '../../atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import React from 'react';
 
 const tabNameMap: Record<string, string> = {
   보도: 'REPORT',
@@ -49,21 +50,20 @@ export default function NewsSection() {
         </Link>
       </div>
       <div className='px-3'>
-        <TabComponent tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
+        <Tab tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
       </div>
       <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
         {isLoading &&
-          [...Array(5)].map((_, i) => (
-            <>
-              <Skeleton key={i} className='h-40' />
-              {i < 4 && <Divider variant='thin' />}
-            </>
+          [...Array(5)].map((_, index) => (
+            <React.Fragment key={index}>
+              <Skeleton className='h-40' />
+              {index < 4 && <Divider variant='thin' />}
+            </React.Fragment>
           ))}
         {!isLoading &&
-          fetchedNews.slice(0, 5).map((news, i) => (
-            <>
+          fetchedNews.slice(0, 5).map((news, index) => (
+            <React.Fragment key={index}>
               <a
-                key={i}
                 href={news.link}
                 target='_blank'
                 rel='noopener noreferrer'
@@ -82,8 +82,8 @@ export default function NewsSection() {
                   <p className='text-body03 text-black line-clamp-3'>{news.summary}</p>
                 </div>
               </a>
-              {i < 4 && <Divider variant='thin' />}
-            </>
+              {index < 4 && <Divider variant='thin' />}
+            </React.Fragment>
           ))}
       </div>
     </section>

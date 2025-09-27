@@ -43,7 +43,7 @@ export default function WeatherComponent() {
   const location = weatherData?.location;
 
   return (
-    <div className='px-6 py-4 rounded-xl flex flex-col gap-3 border-2 border-grey-05 bg-white'>
+    <section className='px-6 py-4 rounded-xl flex flex-col gap-3 border-2 border-grey-05 bg-white'>
       {isError ? (
         <>
           <span className='text-title02 text-mju-primary text-center'>문제가 발생했습니다</span>
@@ -90,6 +90,6 @@ export default function WeatherComponent() {
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }

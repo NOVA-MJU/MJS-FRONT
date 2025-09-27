@@ -52,7 +52,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
 
   if (isLoggedIn) {
     return (
-      <div
+      <section
         className={`w-full flex flex-col border border-grey-05 rounded-md p-4 font-sans ${className}`}
       >
         <div className='flex items-center justify-between'>
@@ -106,7 +106,7 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
             MyPage
           </Link>
         </div>
-      </div>
+      </section>
     );
   }
 

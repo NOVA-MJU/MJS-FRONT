@@ -31,9 +31,9 @@ import FindPw from './pages/findPw';
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<Main />} />
-
       <Route element={<Layout />}>
+        <Route path='/' element={<Main />} />
+
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />
