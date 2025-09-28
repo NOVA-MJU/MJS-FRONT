@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getRealTimeSearch } from '../../../../api/main/real-time';
-import type { TopKeywordsResponse } from '../../../../api/main/real-time';
+import { getRealTimeSearch } from '../../../api/main/real-time';
+import type { TopKeywordsResponse } from '../../../api/main/real-time';
 import { Skeleton } from '@/components/atoms/Skeleton';
 
 type RankItem = { keyword: string };
@@ -124,6 +124,7 @@ export default function RealtimeRank({ limit = 10, intervalMs = 10000 }) {
             );
           })
         )}
+        {!isLoading && current.length === 0 && <p>아직 실시간 검색 순위가 없는데요</p>}
       </div>
     </section>
   );

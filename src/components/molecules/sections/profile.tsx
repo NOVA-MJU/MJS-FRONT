@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
-import Avatar from '../atoms/Avatar';
-import { useAuthStore } from '../../store/useAuthStore';
+import Avatar from '../../atoms/Avatar';
+import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
 
-interface ProfileComponentProps {
+interface ProfileSectionProps {
   className?: string;
 }
 
@@ -24,11 +24,11 @@ interface ProfileComponentProps {
  *     **추후 실제 경로로 연결 작업이 필요**합니다.
  *
  * @component
- * @param {ProfileComponentProps} props - 컴포넌트 속성
+ * @param {ProfileSectionProps} props - 컴포넌트 속성
  * @param {string} [props.className] - 외부에서 전달받은 TailwindCSS 클래스명
  * @returns {JSX.Element} 로그인 상태에 따라 다른 UI를 렌더링하는 JSX 요소
  */
-const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
+export default function ProfileSection({ className }: ProfileSectionProps) {
   const { isLoggedIn, user, logout } = useAuthStore();
 
   /**
@@ -143,6 +143,4 @@ const ProfileComponent = ({ className = '' }: ProfileComponentProps) => {
       </div>
     </section>
   );
-};
-
-export default ProfileComponent;
+}

@@ -1,16 +1,16 @@
-import BroadcastSection from '@/components/organisms/sections/BroadcastSection';
-import MealSection from '@/components/organisms/sections/MealSection';
-import NewsSection from '@/components/organisms/sections/NewsSection';
-import NoticeSection from '@/components/organisms/sections/NoticeSection';
+import BroadcastSection from '@/components/molecules/sections/broadcast';
+import MealSection from '@/components/molecules/sections/meal';
+import NewsSection from '@/components/molecules/sections/news';
+import NoticeSection from '@/components/molecules/sections/notice';
 import SearchBar from '@/components/atoms/SearchBar';
-import ProfileComponent from '@/components/organisms/ProfileComponent';
-import WeatherComponent from '@/components/molecules/mainpage/Weather';
-import AdCarousel from '@/components/molecules/mainpage/Advertise';
-import RealtimeRank from '@/components/molecules/mainpage/RealTimeRank';
-import HotBoardList from '@/components/molecules/mainpage/HotBoardList.tsx';
+import ProfileSection from '@/components/molecules/sections/profile';
+import WeatherComponent from '@/components/molecules/sections';
+import AdCarousel from '@/components/molecules/sections/advertise';
+import RealtimeRank from '@/components/molecules/sections/rank';
+import HotBoardList from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
-import AcademicCalendarSection from '@/components/organisms/sections/CalendarSection';
+import AcademicCalendarSection from '@/components/molecules/sections/calendar';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -37,7 +37,7 @@ export default function Main() {
           <BroadcastSection />
         </div>
         <div className='min-w-0 flex-1/3 flex flex-col gap-12'>
-          <ProfileComponent />
+          <ProfileSection />
           <WeatherComponent />
           <AdCarousel />
           <RealtimeRank />

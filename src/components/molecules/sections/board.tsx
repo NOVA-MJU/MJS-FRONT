@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { getBoards } from '../../../../api/board';
-import type { BoardItem } from '../../../../api/board';
-import { useAuthStore } from '../../../../store/useAuthStore';
+import { getBoards } from '../../../api/board';
+import type { BoardItem } from '../../../api/board';
+import { useAuthStore } from '../../../store/useAuthStore';
 import { Link } from 'react-router-dom';
 import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
-import { Typography } from '../../../atoms/Typography';
+import { Typography } from '../../atoms/Typography';
 
 type Status = 'loading' | 'success' | 'error';
 
