@@ -53,10 +53,15 @@ export default function Main() {
   if (!isDesktop)
     return (
       <div className='flex-1 px-5 py-6 flex flex-col gap-10'>
-        <div className='px-3 flex items-center gap-2 text-body03 text-mju-secondary line-clamp-1'>
-          <FaBullhorn />
-          <span>{ANNOUNCEMENT_TEXT}</span>
-        </div>
+        <section>
+          <div className='px-3 py-2 rounded-sm bg-blue-05'>
+            <div className='flex items-center justify-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
+              <FaBullhorn />
+              <span>{ANNOUNCEMENT_TEXT}</span>
+            </div>
+          </div>
+        </section>
+        <MealSection />
         <NoticeSection />
       </div>
       // <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-7 py-12 md:px-0'>

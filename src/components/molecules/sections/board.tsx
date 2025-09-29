@@ -1,179 +1,94 @@
+import { type BoardItem, getBoards } from '@/api/board';
+import { Skeleton } from '@/components/atoms/Skeleton';
 import { useEffect, useState } from 'react';
-import { getBoards } from '../../../api/board';
-import type { BoardItem } from '../../../api/board';
-import { useAuthStore } from '../../../store/useAuthStore';
 import { Link } from 'react-router-dom';
-import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
-import { Typography } from '../../atoms/Typography';
 
-type Status = 'loading' | 'success' | 'error';
+export default function HotBoardList() {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [boards, setBoards] = useState<BoardItem[]>([]);
 
-interface Props {
-  limit?: number;
-  hrefBuilder?: (uuid: string) => string;
-  loginHref?: string;
-  onLoginClick?: () => void;
-}
+  /**
+   * 데이터 불러오기
+   */
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-function isObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null;
-}
-
-function extractBoards(res: unknown): BoardItem[] {
-  if (Array.isArray(res)) return res as BoardItem[];
-  if (isObject(res)) {
-    const contentDirect = (res as Record<string, unknown>)['content'];
-    if (Array.isArray(contentDirect)) return contentDirect as BoardItem[];
-    const data = (res as Record<string, unknown>)['data'];
-    if (isObject(data)) {
-      const contentInData = (data as Record<string, unknown>)['content'];
-      if (Array.isArray(contentInData)) return contentInData as BoardItem[];
+  /**
+   * 게시판 데이터 요청
+   */
+  async function fetchData() {
+    try {
+      setIsLoading(true);
+      const res = await getBoards();
+      setBoards(res.content);
+      setIsError(false);
+    } catch (e) {
+      console.error('HotBoardList.tsx::fetchData()', e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   }
-  return [];
-}
-
-function getErrorMessage(e: unknown): string {
-  return e instanceof Error ? e.message : '자유게시판 HOT 목록을 불러오지 못했어요.';
-}
-
-export default function HotBoardList({ limit = 5, loginHref = '/login', onLoginClick }: Props) {
-  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
-
-  const [status, setStatus] = useState<Status>('loading');
-  const [items, setItems] = useState<BoardItem[]>([]);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  useEffect(() => {
-    let mounted = true;
-
-    if (!isLoggedIn) {
-      setStatus('success');
-      setItems([]);
-      setErrorMsg('');
-      return () => {
-        mounted = false;
-      };
-    }
-
-    (async () => {
-      try {
-        setStatus('loading');
-        setErrorMsg('');
-
-        const res = await getBoards(0, 20, 'likeCount', 'DESC');
-        const rows = extractBoards(res);
-        const hot = rows.filter((r) => r.popular === true).slice(0, limit);
-
-        if (!mounted) return;
-        setItems(hot);
-        setStatus('success');
-      } catch (e: unknown) {
-        if (!mounted) return;
-        setStatus('error');
-        setErrorMsg(getErrorMessage(e));
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [limit, isLoggedIn]);
 
   return (
-    <section
-      className='rounded-2xl border border-blue-05 bg-white shadow-sm px-5 py-5'
-      aria-label='자유게시판 HOT'
-    >
-      <div className='mb-4 flex items-center justify-between'>
-        <h3 className='text-base font-semibold text-mju-primary'>HOT 게시물</h3>
-        <a
-          href={isLoggedIn ? '/board' : loginHref}
-          onClick={!isLoggedIn ? onLoginClick : undefined}
-          className={`text-xs no-underline ${isLoggedIn ? 'text-mju-primary hover:opacity-80' : 'text-gray-400 hover:text-grey-40'}`}
-        >
-          더보기
-        </a>
-      </div>
-
-      {/* 로그인 전 뷰 */}
-      {!isLoggedIn && (
-        <div className='text-center rounded-xl border border-gray-200 bg-gray-50 px-4 py-6 text-sm'>
-          <p className='text-grey-40 font-bold'>로그인이 필요한 서비스입니다.</p>
-          <div className='mt-3'>
-            <a
-              href={loginHref}
-              onClick={onLoginClick}
-              className='inline-flex items-center rounded-md bg-mju-primary px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 no-underline'
-            >
-              로그인하러 가기
-            </a>
-          </div>
+    <section>
+      <div className='flex flex-col gap-3'>
+        <div className='px-3'>
+          <h2 className='text-title02 text-mju-primary'>자유게시판</h2>
         </div>
-      )}
-
-      {/* 로그인 후 뷰 */}
-      {isLoggedIn && (
-        <>
-          {status === 'loading' && (
-            <ul className='space-y-2'>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <li key={i} className='h-10 rounded-lg bg-gray-100 animate-pulse' />
+        <div className='p-3 flex flex-col gap-2 border-2 border-grey-05 rounded-xl'>
+          {isError && (
+            <div className='py-4 flex flex-col gap-3 items-center'>
+              <p className='text-body02'>문제가 발생했습니다</p>
+              <button
+                className='bg-grey-05 px-2 py-1 cursor-pointer rounded-xl text-caption01'
+                onClick={fetchData}
+              >
+                다시 시도하기
+              </button>
+            </div>
+          )}
+          {isLoading && [...Array(5)].map((_, index) => <Skeleton key={index} className='h-10' />)}
+          {!isLoading &&
+            boards &&
+            boards
+              .slice(0, 5)
+              .map((board) => (
+                <BoardItem
+                  key={board.uuid}
+                  uuid={board.uuid}
+                  title={board.title}
+                  isHighlighted={board.popular}
+                />
               ))}
-            </ul>
-          )}
-
-          {status === 'error' && <div className='text-sm text-red-600 py-4'>{errorMsg}</div>}
-
-          {status === 'success' && (
-            <>
-              {items.length === 0 ? (
-                <div className='text-sm text-gray-500 py-4'>HOT 게시물이 없습니다.</div>
-              ) : (
-                // 랭킹 스타일 리스트
-                <ol className='space-y-4'>
-                  {items.map((post, idx) => {
-                    const rank = idx + 1;
-                    const rankColor = rank <= 3 ? 'text-sky-600' : 'text-gray-400';
-                    return (
-                      <li key={post.uuid} className='flex items-center gap-4'>
-                        {/* 좌측 순위 번호 */}
-                        <span className={`w-6 text-right font-semibold ${rankColor}`}>{rank}</span>
-
-                        {/* 항목 (밑줄 제거) */}
-                        <Link
-                          to={`/board/${post.uuid}`}
-                          className='group flex flex-1 items-center gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 no-underline'
-                        >
-                          <span className='flex-1 text-sm text-gray-900 truncate no-underline'>
-                            {post.title}
-                          </span>
-                          <span className='text-xs text-gray-400 shrink-0 inline-flex items-center gap-3'>
-                            <Typography
-                              variant='caption02'
-                              className='text-grey-40 flex items-center gap-0.5'
-                            >
-                              <IoIosHeart />
-                              {post.likeCount}
-                            </Typography>
-                            <Typography
-                              variant='caption02'
-                              className='text-grey-40 flex items-center gap-0.5'
-                            >
-                              <IoIosChatbubbles aria-label='댓글' />
-                              {post.commentCount}
-                            </Typography>
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-            </>
-          )}
-        </>
-      )}
+        </div>
+      </div>
     </section>
+  );
+}
+
+/**
+ * 게시판 아이템 항목
+ */
+interface BoardItemProps {
+  uuid: string;
+  title: string;
+  isHighlighted: boolean;
+}
+
+function BoardItem({ uuid, title, isHighlighted }: BoardItemProps) {
+  return (
+    <Link to={`/board/${uuid}`}>
+      <div className='px-3 py-2 flex items-center gap-3 rounded-xl hover:bg-blue-05 transition'>
+        {isHighlighted && (
+          <div className='px-3 py-2 text-center bg-mju-primary rounded-full'>
+            <p className='text-caption01 text-white'>HOT</p>
+          </div>
+        )}
+        <p className='text-body03 line-clamp-1'>{title}</p>
+      </div>
+    </Link>
   );
 }

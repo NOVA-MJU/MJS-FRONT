@@ -4,6 +4,7 @@ import { getMenus } from '../../../api/menu';
 import { IoIosArrowForward } from 'react-icons/io';
 import Divider from '../../atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { useResponsive } from '@/hooks/useResponse';
 
 type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
@@ -39,6 +40,7 @@ export default function MealSection() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+  const { isDesktop } = useResponsive();
 
   useEffect(() => {
     if (isWeekend) {
@@ -75,26 +77,39 @@ export default function MealSection() {
    */
   if (isWeekend) return null;
 
-  return (
-    <section className='w-full flex flex-col gap-3'>
-      <div className='px-3 flex justify-between items-center'>
-        <h1 className='text-heading02 text-mju-primary'>학식</h1>
+  if (isDesktop)
+    return (
+      <section className='w-full flex flex-col gap-3'>
+        <div className='px-3 flex justify-between items-center'>
+          <h1 className='text-heading02 text-mju-primary'>학식</h1>
+          <Link to='/menu'>
+            <IoIosArrowForward className='text-blue-10' size={20} />
+          </Link>
+        </div>
+        <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>
+          <h3 className='text-body02 text-mju-secondary'>{current}</h3>
+          <Divider variant='thin' />
+          <ul className='grid grid-cols-1 md:grid-cols-2 gap-y-3'>
+            {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='w-48 h-6' />)}
+            {todayMeals[current].map((meal, index) => (
+              <li key={index} className='text-body03'>
+                {meal}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+
+  if (!isDesktop)
+    return (
+      <section>
         <Link to='/menu'>
-          <IoIosArrowForward className='text-blue-10' size={20} />
+          <div className='px-8 py-2.5 flex flex-col items-center gap-2 rounded-xl border-2 border-grey-05'>
+            <p className='text-body02'>9월 11일 (목) 점심</p>
+            <Divider variant='thin' />
+          </div>
         </Link>
-      </div>
-      <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>
-        <h3 className='text-body02 text-mju-secondary'>{current}</h3>
-        <Divider variant='thin' />
-        <ul className='grid grid-cols-1 md:grid-cols-2 gap-y-3'>
-          {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='w-48 h-6' />)}
-          {todayMeals[current].map((meal, index) => (
-            <li key={index} className='text-body03'>
-              {meal}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
+      </section>
+    );
 }

@@ -55,12 +55,14 @@
   .text-heading02 {
     @apply font-bold text-[28px] leading-[1.5];
   }
+
   .text-title01 {
     @apply font-bold text-[20px] leading-[1.5];
   }
   .text-title02 {
     @apply font-semibold text-[20px] leading-[1.5];
   }
+
   .text-body01 {
     @apply font-normal text-[20px] leading-[1.5];
   }
@@ -70,11 +72,30 @@
   .text-body03 {
     @apply font-normal text-[16px] leading-[1.5];
   }
+  .text-body04 {
+    @apply font-semibold text-[14px] leading-[1.5];
+  }
+  .text-body05 {
+    @apply font-normal text-[14px] leading-[1.5];
+  }
+
   .text-caption01 {
     @apply font-semibold text-[12px] leading-[1.5];
   }
   .text-caption02 {
     @apply font-normal text-[12px] leading-[1.5];
+  }
+  .text-caption04 {
+    @apply font-semibold text-[11px] leading-[1.5];
+  }
+  .text-caption05 {
+    @apply font-normal text-[11px] leading-[1.5];
+  }
+  .text-caption06 {
+    @apply font-semibold text-[10px] leading-[1.5];
+  }
+  .text-caption07 {
+    @apply font-extralight text-[10px] leading-[1.5];
   }
 }
 

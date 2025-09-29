@@ -20,7 +20,6 @@ export default function RealtimeRank({ limit = 10, intervalMs = 10000 }) {
   // 서버 데이터 요청
   const fetchKeywords = async () => {
     try {
-      setIsLoading(true);
       const res: TopKeywordsResponse = await getRealTimeSearch(limit);
       if (!res?.data?.length) {
         setCurrent([]);
