@@ -2,7 +2,6 @@ import { Typography } from '../../../components/atoms/Typography';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Comment from '../../../components/organisms/Comment';
-import '../markdown.css';
 import {
   deletePost,
   getBoardComments,

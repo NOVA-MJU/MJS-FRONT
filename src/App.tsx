@@ -14,8 +14,8 @@ import MyPage from './pages/mypage';
 import MyPageEdit from './pages/mypage/edit';
 import Department from './pages/department';
 import DepartmentDetail from './pages/department/detail';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Login from './pages/login';
+import Register from './pages/register';
 import Admin from './pages/admin/calendar';
 import AdminNotice from './pages/admin/notice';
 import AdminNoticeDetail from './pages/admin/notice/detail';
@@ -31,9 +31,9 @@ import FindPw from './pages/findPw';
 const App = () => {
   return (
     <Routes>
-      <Route path='/' element={<Main />} />
-
       <Route element={<Layout />}>
+        <Route path='/' element={<Main />} />
+
         <Route path='/board' element={<Board />} />
         <Route path='/board/:uuid' element={<BoardDetail />} />
         <Route path='/board/write' element={<BoardWrite />} />

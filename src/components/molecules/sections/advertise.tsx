@@ -39,7 +39,7 @@ export default function AdCarousel({ images, intervalMs = 4000 }: AdCarouselProp
 
   return (
     <section
-      className='relative w-full h-56 md:h-64 rounded-xl overflow-hidden border bg-white shadow-md'
+      className='relative aspect-[98/55] w-full rounded-xl overflow-hidden bg-white'
       aria-label='홍보 캐러셀'
       onMouseEnter={() => (hoverRef.current = true)}
       onMouseLeave={() => {
