@@ -63,33 +63,9 @@ export default function Main() {
         </section>
         <MealSection />
         <NoticeSection />
+        <AcademicCalendarSection />
+        <NewsSection />
+        <BroadcastSection />
       </div>
-      // <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-7 py-12 md:px-0'>
-      //   <div className='flex flex-col md:flex-row gap-6'>
-      //     {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
-      //     <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-12 mb-12'>
-      //       <div className='hidden md:flex flex-col gap-3'></div>
-      //       <div className='hidden'></div>
-      //       <div className='hidden md:block md:order-1'></div>
-      //       <div className='order-1 md:order-2'></div>
-      //       <div className='order-3 md:order-3'></div>
-      //       <div className='hidden md:block md:order-4'></div>
-      //       <div className='order-2 md:hidden'>
-      //         <AcademicCalendar />
-      //       </div>
-      //     </div>
-      //     <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-12 mb-12'>
-      //       <div className='hidden md:block'>
-      //         <ProfileComponent />
-      //       </div>
-      //       <div className='hidden md:block'></div>
-      //       <div className='hidden md:block'></div>
-      //       <div className='hidden md:block '></div>
-      //       <div className='hidden md:block'>
-      //         <HotBoardList />
-      //       </div>
-      //     </div>
-      //   </div>
-      // </main>
     );
 }
