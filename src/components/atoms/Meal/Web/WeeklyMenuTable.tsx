@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import type { MenuItem } from '../../../api/menu';
-import MenuDayButton from '../../molecules/MenuDayButton';
-import MenuItemButton from '../../molecules/MenuItemButton';
 
+import type { MenuItem } from '@/api/menu';
+import MenuDayButton from '@/components/molecules/MenuDayButton';
+import MenuItemButton from '@/components/molecules/MenuItemButton';
 const timeLabelMap = {
   BREAKFAST: '아침',
   LUNCH: '점심',
