@@ -1,13 +1,12 @@
-import { Typography } from '../../../components/atoms/Typography';
+import { postBoard } from '@/api/board';
+import { DOMAIN_VALUES } from '@/api/s3upload';
+import Divider from '@/components/atoms/Divider';
+import NavigationUp from '@/components/molecules/NavigationUp';
+import BlockTextEditor from '@/components/organisms/BlockTextEditor';
+import { getBlockTextEditorContentPreview } from '@/components/organisms/BlockTextEditor/util';
+import type { BlockNoteEditor } from '@blocknote/core';
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
-import type { BlockNoteEditor } from '@blocknote/core';
-import NavigationUp from '../../../components/molecules/NavigationUp';
-import Divider from '../../../components/atoms/Divider';
-import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { postBoard } from '../../../api/board';
-import { DOMAIN_VALUES } from '../../../api/s3upload';
 
 export default function BoardWrite() {
   const navigate = useNavigate();
@@ -75,27 +74,30 @@ export default function BoardWrite() {
 
   return (
     <div className='flex-1 p-4 md:p-8 gap-6 flex flex-col'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        게시글 작성
-      </Typography>
+      <h2 className='text-heading01 text-mju-primary'>게시글 작성</h2>
       <Divider />
       <div className='flex justify-between items-center'>
         <NavigationUp onClick={() => navigate(-1)} />
         <button
-          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
+          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-3 text-body02 rounded-xl'
           onClick={handleUploadPost}
         >
-          <Typography variant='body02' className='text-black'>
-            완료
-          </Typography>
+          완료
         </button>
       </div>
-      <input
-        className='p-3 placeholder-grey-20 font-bold text-[28px] focus:outline-none'
-        placeholder='제목을 입력하세요'
-        ref={titleRef}
-      />
-      <div className='flex-1 cursor-text' onClick={handleFocusEditor}>
+      <div className='rounded-xl border-2 border-blue-05'>
+        <input
+          id='post-title'
+          name='post-title'
+          className='w-full p-3 placeholder-grey-20 font-bold text-body02 focus:outline-none'
+          placeholder='제목을 입력하세요'
+          ref={titleRef}
+        />
+      </div>
+      <div
+        className='flex-1 cursor-text rounded-xl border-2 border-blue-05 p-3'
+        onClick={handleFocusEditor}
+      >
         <div ref={editorWrapperRef}>
           <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
