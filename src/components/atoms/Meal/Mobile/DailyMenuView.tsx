@@ -2,20 +2,16 @@ import type { MenuItem } from '@/api/menu';
 import MenuDayButton from '@/components/molecules/MenuDayButton';
 import MenuItemButton from '@/components/molecules/MenuItemButton';
 
-//모바일 환경일때의 컴포넌트입니다.
-export function DailyMenuView({
-  dateKey,
-  items,
-  nowCategory,
-  onPrev,
-  onNext,
-}: {
+type Props = {
   dateKey: string;
   items: MenuItem[];
   nowCategory?: 'BREAKFAST' | 'LUNCH' | 'DINNER';
   onPrev: () => void;
   onNext: () => void;
-}) {
+};
+
+// 모바일 전용(≤md) — 하루 3끼 + 이전/다음 이동
+export function DailyMenuView({ dateKey, items, nowCategory, onPrev, onNext }: Props) {
   const weekday = dateKey.match(/\((.+)\)/)?.[1] ?? '';
   const row = ['BREAKFAST', 'LUNCH', 'DINNER'].map((k) => items.find((i) => i.menuCategory === k));
 
