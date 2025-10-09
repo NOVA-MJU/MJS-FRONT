@@ -8,7 +8,6 @@ const timeLabelMap = {
   LUNCH: '점심',
   DINNER: '저녁',
 } as const;
-
 const ORDER: Array<keyof typeof timeLabelMap> = ['BREAKFAST', 'LUNCH', 'DINNER'];
 
 // 주차/기간 유틸
@@ -111,7 +110,7 @@ export default function WeeklyMenuView({
                   key={`empty-${date}-${idx}`}
                   className='min-h-16 rounded-xl border border-dashed text-xs text-gray-400 flex items-center justify-center'
                 >
-                  등록된 메뉴가 없어요
+                  등록된 식단 내용이 없습니다.
                 </div>
               ),
             )}
@@ -125,7 +124,6 @@ export default function WeeklyMenuView({
     <div className='w-full'>
       <WeekHeader />
       <DesktopTable />
-      {/* 모바일 UI는 DailyMenuView가 담당 */}
     </div>
   );
 }

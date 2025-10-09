@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMenuData } from '@/hooks/menu/useMenuData';
 import { DailyMenuView } from '@/components/atoms/Meal/Mobile/DailyMenuView';
 import WeeklyMenuView from '@/components/atoms/Meal/Web/WeeklyMenuView';
+import { Typography } from '@/components/atoms/Typography';
 
 export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
@@ -28,7 +30,6 @@ export default function MenuPage() {
           ? 'DINNER'
           : undefined;
 
-  // 제스처/버튼 이동
   const onPrev = () => setIdx((i) => Math.max(0, i - 1));
   const onNext = () => setIdx((i) => Math.min(keys.length - 1, i + 1));
 
@@ -36,7 +37,23 @@ export default function MenuPage() {
   if (error) return <div className='p-4 text-red-500'>식단 로딩 실패</div>;
 
   return (
-    <div className='w-full'>
+    <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-6 mx-auto'>
+      <Link to='/menu'>
+        <Typography variant='heading01' className='text-mju-primary'>
+          식단
+        </Typography>
+      </Link>
+
+      <hr className='w-full border-blue-05 border-2' />
+      <div className='flex flex-row justify-center mt-4 mb-4'>
+        <Typography variant='heading02' className='text-mju-primary text-center'>
+          {new Date().toLocaleDateString('ko-KR', {
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+          })}
+        </Typography>
+      </div>
       {/* 모바일: 오늘(기본) + 좌우 이동 */}
       <DailyMenuView
         dateKey={dateKey}
