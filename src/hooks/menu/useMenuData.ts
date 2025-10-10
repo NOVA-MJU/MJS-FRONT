@@ -47,5 +47,51 @@ export function useMenuData() {
 
   const getByDate = (key: string) => groupedByDate.find(([d]) => d === key)?.[1] ?? [];
 
-  return { isLoading, error, refetch, groupedByDate, keys, todayKey, getByDate };
+  // ---------- shared date/week utilities (exported) ----------
+  function startOfWeek(d: Date, weekStartsOn = 1) {
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = (day - weekStartsOn + 7) % 7;
+    date.setDate(date.getDate() - diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  function endOfWeek(d: Date, weekStartsOn = 1) {
+    const start = startOfWeek(d, weekStartsOn);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    return end;
+  }
+
+  function getWeekOfMonth(d: Date, weekStartsOn = 1) {
+    const date = new Date(d);
+    const month = date.getMonth();
+    const firstOfMonth = new Date(date.getFullYear(), month, 1);
+    const firstWeekStart = startOfWeek(firstOfMonth, weekStartsOn);
+    const thisWeekStart = startOfWeek(date, weekStartsOn);
+    const diffDays = Math.floor((thisWeekStart.getTime() - firstWeekStart.getTime()) / 86400000);
+    return Math.floor(diffDays / 7) + 1;
+  }
+
+  function fmtMD(date: Date) {
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${m}.${d}`;
+  }
+
+  return {
+    isLoading,
+    error,
+    refetch,
+    groupedByDate,
+    keys,
+    todayKey,
+    getByDate,
+    startOfWeek,
+    endOfWeek,
+    fmtMD,
+    getWeekOfMonth,
+  };
 }
