@@ -19,9 +19,10 @@ export default function MenuPage() {
   const dateKey = keys[idx] ?? todayKey;
 
   // 현재 끼니
+  type Meal = 'BREAKFAST' | 'LUNCH' | 'DINNER';
   const now = new Date();
   const h = now.getHours() + now.getMinutes() / 60;
-  const nowCategory =
+  const nowCategory: Meal | undefined =
     h >= 6 && h < 9
       ? 'BREAKFAST'
       : h >= 11 && h < 14
@@ -39,8 +40,11 @@ export default function MenuPage() {
   return (
     <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-6 mx-auto'>
       <Link to='/menu'>
-        <Typography variant='heading01' className='text-mju-primary'>
-          식단
+        <Typography variant='heading02' className='md:hidden block  text-mju-primary'>
+          학식
+        </Typography>
+        <Typography variant='heading01' className='hidden md:block text-mju-primary'>
+          학식
         </Typography>
       </Link>
 
@@ -54,10 +58,11 @@ export default function MenuPage() {
           })}
         </Typography>
       </div>
+
       {/* 모바일: 오늘(기본) + 좌우 이동 */}
       <DailyMenuView
         dateKey={dateKey}
-        items={getByDate(dateKey)}
+        items={getByDate(dateKey) ?? []} // 빈배열 fallback(안전)
         nowCategory={nowCategory}
         onPrev={onPrev}
         onNext={onNext}
