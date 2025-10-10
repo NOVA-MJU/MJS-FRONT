@@ -16,6 +16,8 @@ export function useMenuData() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const stripDow = (s: string) => s.replace(/\s*\([^)]*\)\s*/g, '').trim(); // '(월)' 같은 요일 제거
+
   // 날짜별 그룹 + 끼니 순 정렬 + 날짜 정렬
   const groupedByDate = useMemo(() => {
     const map = new Map<string, MenuItem[]>();
@@ -35,9 +37,13 @@ export function useMenuData() {
     const now = new Date();
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
-    const dow = ['일', '월', '화', '수', '목', '금', '토'][now.getDay()];
-    return `${mm}.${dd} (${dow})`;
-  }, []);
+    const canonical = `${mm}.${dd}`; // 요일 없는 '정규 키'
+
+    // 실제 keys 배열에서 요일 유무와 무관하게 매칭되는 '실제 키'를 찾음
+    const found = keys.find((k) => stripDow(k) === canonical);
+    // 찾으면 그걸 todayKey로, 없으면 첫 번째 키
+    return found ?? keys[0] ?? '';
+  }, [keys]);
 
   const getByDate = (key: string) => groupedByDate.find(([d]) => d === key)?.[1] ?? [];
 

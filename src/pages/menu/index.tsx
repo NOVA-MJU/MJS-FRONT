@@ -4,16 +4,25 @@ import { useMenuData } from '@/hooks/menu/useMenuData';
 import { DailyMenuView } from '@/components/atoms/Meal/Mobile/DailyMenuView';
 import WeeklyMenuView from '@/components/atoms/Meal/Web/WeeklyMenuView';
 import { Typography } from '@/components/atoms/Typography';
+import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 
 export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
 
   // 모바일: 기본 오늘, 스와이프 시 인덱스 이동
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState<number | null>(null);
+
+  // 최초 1회만 todayKey로 맞추고, keys 길이 변하면 범위만 보정
   useEffect(() => {
     if (!keys.length) return;
-    const i = keys.indexOf(todayKey);
-    setIdx(i >= 0 ? i : 0);
+    setIdx((prev) => {
+      if (prev === null) {
+        const i = keys.indexOf(todayKey);
+        return i >= 0 ? i : 0;
+      }
+      const max = Math.max(0, keys.length - 1);
+      return Math.min(Math.max(prev, 0), max);
+    });
   }, [keys, todayKey]);
 
   const dateKey = keys[idx] ?? todayKey;
@@ -31,10 +40,19 @@ export default function MenuPage() {
           ? 'DINNER'
           : undefined;
 
-  const onPrev = () => setIdx((i) => Math.max(0, i - 1));
-  const onNext = () => setIdx((i) => Math.min(keys.length - 1, i + 1));
+  const atStart = idx <= 0;
+  const atEnd = idx >= keys.length - 1;
 
-  if (isLoading) return <div className='p-4 text-gray-500'>식단 불러오는 중…</div>;
+  const onPrev = () => {
+    if (atStart) return;
+    setIdx((i) => (i == null ? 0 : Math.max(0, i - 1)));
+  };
+  const onNext = () => {
+    if (atEnd) return;
+    setIdx((i) => (i == null ? 0 : Math.min(keys.length - 1, i + 1)));
+  };
+
+  if (isLoading) return <LoadingIndicator />;
   if (error) return <div className='p-4 text-red-500'>식단 로딩 실패</div>;
 
   return (
@@ -63,8 +81,9 @@ export default function MenuPage() {
 
       {/* 모바일: 오늘(기본) + 좌우 이동 */}
       <DailyMenuView
+        key={dateKey}
         dateKey={dateKey}
-        items={getByDate(dateKey) ?? []} // 빈배열 fallback(안전)
+        items={getByDate(dateKey) ?? []}
         nowCategory={nowCategory}
         onPrev={onPrev}
         onNext={onNext}

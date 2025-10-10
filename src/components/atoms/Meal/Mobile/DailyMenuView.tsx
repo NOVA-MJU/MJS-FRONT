@@ -22,7 +22,7 @@ export function DailyMenuView({ dateKey, items, nowCategory, onPrev, onNext }: D
           <button onClick={onPrev} aria-label='이전 날짜' className='px-2 text-sm'>
             ‹
           </button>
-          <MenuDayButton label={`${weekday}요일`} focused />
+          <MenuDayButton label={`${weekday} 요일`} focused />
           <button onClick={onNext} aria-label='다음 날짜' className='px-2 text-sm'>
             ›
           </button>
