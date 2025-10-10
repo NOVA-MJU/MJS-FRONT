@@ -38,7 +38,7 @@ export default function MenuPage() {
   if (error) return <div className='p-4 text-red-500'>식단 로딩 실패</div>;
 
   return (
-    <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-6 mx-auto'>
+    <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-2 mx-auto'>
       <Link to='/menu'>
         <Typography variant='heading02' className='md:hidden block  text-mju-primary'>
           학식
@@ -47,10 +47,12 @@ export default function MenuPage() {
           학식
         </Typography>
       </Link>
-
-      <hr className='w-full border-blue-05 border-2' />
-      <div className='flex flex-row justify-center mt-4 mb-4'>
-        <Typography variant='heading02' className='text-mju-primary text-center'>
+      <hr className='w-[381px] border-t-2 border-blue-10 rounded-xl md:hidden' />
+      <div className='flex flex-row justify-center mt-4 '>
+        <Typography
+          variant='heading02'
+          className='text-mju-primary text-center hidden md:flex flex-row justify-center '
+        >
           {new Date().toLocaleDateString('ko-KR', {
             month: 'long',
             day: 'numeric',
