@@ -10,7 +10,7 @@ export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
 
   // 모바일: 기본 오늘, 스와이프 시 인덱스 이동
-  const [idx, setIdx] = useState<number | null>(null);
+  const [idx, setIdx] = useState<number | null>(null); //의도적으로 null로 시작하여, todayKey로 강제로 맞춘다.
 
   // 최초 1회만 todayKey로 맞추고, keys 길이 변하면 범위만 보정
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function MenuPage() {
     });
   }, [keys, todayKey]);
 
-  const dateKey = keys[idx] ?? todayKey;
+  const dateKey = keys[idx] ?? todayKey; // 널 병합 연산자, keys[idx]가 null이면 todayKey
 
   // 현재 끼니
   type Meal = 'BREAKFAST' | 'LUNCH' | 'DINNER';
@@ -81,7 +81,6 @@ export default function MenuPage() {
 
       {/* 모바일: 오늘(기본) + 좌우 이동 */}
       <DailyMenuView
-        key={dateKey}
         dateKey={dateKey}
         items={getByDate(dateKey) ?? []}
         nowCategory={nowCategory}
