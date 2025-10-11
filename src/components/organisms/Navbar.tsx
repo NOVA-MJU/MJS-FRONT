@@ -6,12 +6,13 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { useNavTracking } from '../../hooks/gtm/useNavTracking';
 import toast from 'react-hot-toast';
 import SearchBar from '../atoms/SearchBar';
+import { logout as apiLogout } from '@/api/user';
 
 const CONTAINER = 'mx-auto w-[90%] md:max-w-[1200px] px-4';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuthStore();
+  const { isLoggedIn, reset } = useAuthStore();
   const { trackNavClick } = useNavTracking();
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,11 +20,24 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
-  const handleAuthClick = () => {
-    if (isLoggedIn) {
-      logout();
+  const handleAuthClick = async () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await apiLogout();
+      reset();
       toast.success('로그아웃 되었습니다.');
-    } else navigate('/login');
+      if (location.pathname.startsWith('/mypage') || location.pathname === '/board') {
+        navigate('/');
+      }
+    } catch (e) {
+      reset();
+      console.error('logout error:', e);
+      toast.error('로그아웃 처리 중 문제가 발생했습니다.');
+    }
   };
 
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -282,8 +296,8 @@ const Navbar = () => {
           </li>
           <li>
             <button
-              onClick={() => {
-                handleAuthClick();
+              onClick={async () => {
+                await handleAuthClick();
                 closeMenu();
               }}
               className='inline-flex items-center gap-2 px-3 h-10 rounded-lg hover:bg-white/10 transition-colors'
