@@ -9,7 +9,10 @@ import NewsCard from './NewsCard';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getSearchResult } from '../../api/search';
 import GlobalErrorPage from '../error';
-const ITEMS_PER_PAGE = 8;
+import { useResponsive } from '@/hooks/useResponse';
+
+const MOBILE_ITEMS_PER_PAGE = 5;
+const DESKTOP_ITEMS_PER_PAGE = 8;
 
 const News = () => {
   /**
@@ -39,6 +42,8 @@ const News = () => {
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
+  const { isDesktop } = useResponsive();
+  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
 
   useEffect(() => {
     /**
@@ -79,7 +84,7 @@ const News = () => {
           setIsError(true);
         }
       })();
-  }, [keyword, selectedCategory, page]);
+  }, [keyword, selectedCategory, page, ITEMS_PER_PAGE]);
 
   if (isError) return <GlobalErrorPage />;
 
