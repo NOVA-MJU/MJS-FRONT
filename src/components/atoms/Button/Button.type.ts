@@ -8,7 +8,8 @@ export type ButtonVariant =
   | 'grey'
   | 'greyLight'
   | 'greyBlack'
-  | 'borderRed';
+  | 'borderRed'
+  | 'borderGrey';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonShape = 'pill' | 'rounded';
 
