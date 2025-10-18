@@ -19,7 +19,7 @@ export default function Tab({ tabs, currentTab, setCurrentTab }: TabComponentPro
             aria-controls={`tab-panel-${value}`}
             onClick={() => setCurrentTab(value)}
             className={`
-                flex-1 p-3 text-title02 cursor-pointer whitespace-nowrap
+                flex-1 p-3 md:text-title02 text-body02 cursor-pointer whitespace-nowrap
                 ${isSelected ? 'text-blue-35 border-b-2 border-blue-35' : 'text-grey-40'}
               `}
           >

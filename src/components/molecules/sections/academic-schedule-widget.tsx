@@ -58,7 +58,10 @@ export default function AcademicScheduleWidget() {
   async function getData() {
     try {
       setIsLoading(true);
-      const res = await getAcademicCalendar(2025, 10);
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1;
+      const res = await getAcademicCalendar(currentYear, currentMonth);
       setScheduleData(res);
       setIsError(false);
     } catch (e) {
@@ -112,16 +115,16 @@ export default function AcademicScheduleWidget() {
                       <div
                         className={`w-14 flex items-center justify-center ${category.className}`}
                       >
-                        <span className='text-caption05 text-white'>{category.label}</span>
+                        <span className='text-caption04 text-white'>{category.label}</span>
                       </div>
                       <div className='flex flex-col gap-0.5'>
                         <ul>
                           {events.map((event) => (
                             <li key={event.id}>
-                              <span className='inline-block w-20 text-caption05 text-grey-40'>
+                              <span className='inline-block w-20 text-caption04 text-grey-40'>
                                 {formatDateRange(event.startDate, event.endDate)}
                               </span>
-                              <span className='text-caption05 text-black'>{event.description}</span>
+                              <span className='text-caption04 text-black'>{event.description}</span>
                             </li>
                           ))}
                         </ul>
