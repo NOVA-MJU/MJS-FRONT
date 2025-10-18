@@ -11,6 +11,7 @@ import HotBoardList from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
 import AcademicCalendarSection from '@/components/molecules/sections/calendar';
+import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -63,7 +64,7 @@ export default function Main() {
         </section>
         <MealSection />
         <NoticeSection />
-        <AcademicCalendarSection />
+        <AcademicScheduleWidget />
         <NewsSection />
         <BroadcastSection />
       </div>
