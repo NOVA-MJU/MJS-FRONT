@@ -2,9 +2,18 @@ import Footer from '../organisms/Footer';
 import Navbar from '../organisms/Navbar';
 import { Outlet } from 'react-router-dom';
 
-const Layout = () => {
+interface LayoutProps {
+  className?: string;
+}
+
+const Layout = ({ className }: LayoutProps) => {
   return (
-    <div className='min-h-screen w-full flex flex-col justify-center items-center overflow-hidden'>
+    <div
+      className={`
+        min-h-screen w-full flex flex-col justify-center items-center overflow-x-auto
+        ${className}
+        `}
+    >
       <Navbar />
       {/**
        * 부연 설명을 덧붙이자면....

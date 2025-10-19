@@ -1,7 +1,7 @@
-const Footer = () => {
+export default function Footer() {
   const handleContactClick = () => {
     const email = 'mjsearch2025@gmail.com';
-    const subject = encodeURIComponent('MJS NOVA 문의드립니다');
+    const subject = encodeURIComponent('문의 내용을 작성해주세요');
     const body = encodeURIComponent(
       '안녕하세요,\n\n문의사항을 아래에 작성해주세요.\n\n- 이름:\n- 연락처:\n- 문의 내용:',
     );
@@ -10,27 +10,21 @@ const Footer = () => {
   };
 
   return (
-    <footer className='min-w-[375px] md:min-w-[1280px] w-full bg-blue-05 md:py-4 mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4'>
-      <div className='flex items-center '>
+    <footer className='w-full bg-blue-05'>
+      <div className='p-5 w-full md:w-[1280px] mx-auto flex flex-col gap-4'>
         <img src='/logo/MJS_lightLogo.svg' alt='mjs' className='h-auto w-14' />
+        <div className='flex gap-4'>
+          <a className='text-caption05 text-grey-40 cursor-pointer'>이용약관</a>
+          <a className='text-caption05 text-grey-40 cursor-pointer'>개인정보 처리방침</a>
+          <button
+            className='text-caption05 text-grey-40 cursor-pointer'
+            onClick={handleContactClick}
+          >
+            문의하기
+          </button>
+        </div>
+        <p className='text-caption05 text-grey-20'>© 2025 MJS. All rights reserved.</p>
       </div>
-
-      <ul className='flex gap-6 text-sm text-gray-800'>
-        <li className='hover:text-gray-600 hover:underline cursor-pointer'>이용 약관</li>
-        <li className='hover:text-gray-600 hover:underline cursor-pointer'>개인정보 처리방침</li>
-        <li
-          className='hover:text-gray-600 hover:underline cursor-pointer'
-          onClick={handleContactClick}
-        >
-          문의하기
-        </li>
-      </ul>
-
-      <p className='text-center text-s text-gray-400 md:text-right w-full md:w-auto'>
-        © 2025 MJS. All rights reserved.
-      </p>
     </footer>
   );
-};
-
-export default Footer;
+}

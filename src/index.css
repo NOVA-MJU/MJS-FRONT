@@ -50,52 +50,52 @@
  */
 @layer utilities {
   .text-heading01 {
-    @apply font-bold text-[40px] leading-[1.5];
+    @apply font-bold text-[2.5rem] leading-[1.5]; /* 40px */
   }
   .text-heading02 {
-    @apply font-bold text-[28px] leading-[1.5];
+    @apply font-bold text-[1.75rem] leading-[1.5]; /* 28px */
   }
 
   .text-title01 {
-    @apply font-bold text-[20px] leading-[1.5];
+    @apply font-bold text-[1.25rem] leading-[1.5]; /* 20px */
   }
   .text-title02 {
-    @apply font-semibold text-[20px] leading-[1.5];
+    @apply font-semibold text-[1.25rem] leading-[1.5]; /* 20px */
   }
 
   .text-body01 {
-    @apply font-normal text-[20px] leading-[1.5];
+    @apply font-normal text-[1.25rem] leading-[1.5]; /* 20px */
   }
   .text-body02 {
-    @apply font-semibold text-[16px] leading-[1.5];
+    @apply font-semibold text-[1rem] leading-[1.5]; /* 16px */
   }
   .text-body03 {
-    @apply font-normal text-[16px] leading-[1.5];
+    @apply font-normal text-[1rem] leading-[1.5]; /* 16px */
   }
   .text-body04 {
-    @apply font-semibold text-[14px] leading-[1.5];
+    @apply font-semibold text-[0.875rem] leading-[1.5]; /* 14px */
   }
   .text-body05 {
-    @apply font-normal text-[14px] leading-[1.5];
+    @apply font-normal text-[0.875rem] leading-[1.5]; /* 14px */
   }
 
   .text-caption01 {
-    @apply font-semibold text-[12px] leading-[1.5];
+    @apply font-semibold text-[0.75rem] leading-[1.5]; /* 12px */
   }
   .text-caption02 {
-    @apply font-normal text-[12px] leading-[1.5];
+    @apply font-normal text-[0.75rem] leading-[1.5]; /* 12px */
+  }
+  .text-caption03 {
+    @apply font-semibold text-[0.6875rem] leading-[1.5]; /* 11px */
   }
   .text-caption04 {
-    @apply font-semibold text-[11px] leading-[1.5];
+    @apply font-normal text-[0.6875rem] leading-[1.5]; /* 11px */
   }
   .text-caption05 {
-    @apply font-normal text-[11px] leading-[1.5];
+    @apply font-semibold text-[0.625rem] leading-[1.5]; /* 10px */
   }
   .text-caption06 {
-    @apply font-semibold text-[10px] leading-[1.5];
-  }
-  .text-caption07 {
-    @apply font-extralight text-[10px] leading-[1.5];
+    @apply font-extralight text-[0.625rem] leading-[1.5]; /* 10px */
   }
 }
 
@@ -122,12 +122,18 @@
 }
 
 /**
- * BlockNote.js가 모바일 화면에서 구동될 때 좌우 padding을 제거합니다
+ * BlockNote.js가 구동될 때 좌우 padding을 제거합니다
  */
-@media (max-width: 768px) {
-  .bn-editor {
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
-  }
+/*
+ .bn-editor {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100% !important;
 }
+
+.block-editor-handle {
+  position: absolute;
+  left: auto; 
+  right: 0;
+  transform: translateX(100%);
+} */
