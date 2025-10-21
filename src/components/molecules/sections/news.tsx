@@ -95,7 +95,7 @@ export default function NewsSection() {
   else
     return (
       <section>
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 p-5 bg-white rounded-xl'>
           <div className='flex items-center justify-between'>
             <h3 className='text-title01 text-blue-35'>명대신문</h3>
             <Link to='/news' className='text-caption01 text-grey-20'>

@@ -166,7 +166,7 @@ export default function Navbar() {
   if (!isDesktop)
     return (
       <nav className='w-full h-fit bg-mju-primary'>
-        <div className='p-2 flex flex-col'>
+        <div className='px-5 py-2 flex flex-col'>
           <div className='flex items-center justify-between'>
             <Link to='/'>
               <img src='/logo/mjs-typography-primary.svg' alt='logo' />
@@ -174,7 +174,7 @@ export default function Navbar() {
             {/* <div className='flex-1'> */}
             {/* <SearchBar className='h-5' /> */}
             {/* </div> */}
-            <div className='flex items-center gap-2 text-white text-title02'>
+            <div className='flex items-center gap-2 text-white text-xl'>
               <Link
                 to='search'
                 className='p-2 hover:bg-white/10 rounded-md cursor-pointer transition'

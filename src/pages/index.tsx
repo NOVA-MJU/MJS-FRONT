@@ -10,7 +10,6 @@ import RealtimeRank from '@/components/molecules/sections/rank';
 import HotBoardList from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
-import AcademicCalendarSection from '@/components/molecules/sections/calendar';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 
 export default function Main() {
@@ -42,7 +41,7 @@ export default function Main() {
           <WeatherComponent />
           <AdCarousel />
           <RealtimeRank />
-          <AcademicCalendarSection />
+          <AcademicScheduleWidget />
           <HotBoardList />
         </div>
       </div>
@@ -53,10 +52,10 @@ export default function Main() {
    */
   if (!isDesktop)
     return (
-      <div className='flex-1 px-5 py-6 flex flex-col gap-10'>
+      <div className='flex-1 py-2 flex flex-col gap-2 bg-blue-05'>
         <section>
-          <div className='px-3 py-2 rounded-sm bg-blue-05'>
-            <div className='flex items-center justify-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
+          <div className='px-5 py-1 rounded-xl bg-blue-05'>
+            <div className='flex items-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
               <FaBullhorn />
               <span>{ANNOUNCEMENT_TEXT}</span>
             </div>

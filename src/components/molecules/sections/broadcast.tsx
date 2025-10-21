@@ -29,38 +29,43 @@ export default function BroadcastSection() {
   }, []);
 
   return (
-    <section className='w-full min-w-0 flex flex-col gap-3'>
-      <div className='flex justify-between px-3 items-center'>
-        <h2 className='text-title01 text-blue-35 md:text-heading02 md:text-mju-primary'>
-          명대뉴스
-        </h2>
-        <Link to='/broadcast' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </div>
-      <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
-        {isLoading &&
-          [...Array(5)].map((_, index) => (
-            <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
-          ))}
-        {!isLoading &&
-          broadcasts.map((item, index) => (
-            <div key={index} className='w-95 h-80 flex flex-col bg-white rounded-xl flex-shrink-0'>
-              <iframe
-                className='h-54 rounded-t-xl'
-                src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
-                title={item.title}
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                allowFullScreen
-              />
-              <div className='p-3 flex flex-col gap-2 justify-between'>
-                <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
-                <p className='text-caption02 text-grey-40 text-end'>
-                  {formatDate(item.publishedAt)}
-                </p>
+    <section>
+      <div className='w-full min-w-0 flex flex-col gap-3 p-5 bg-white rounded-xl'>
+        <div className='flex justify-between px-3 items-center'>
+          <h2 className='text-title01 text-blue-35 md:text-heading02 md:text-mju-primary'>
+            명대뉴스
+          </h2>
+          <Link to='/broadcast' className='text-caption01 text-grey-20'>
+            더보기
+          </Link>
+        </div>
+        <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
+          {isLoading &&
+            [...Array(5)].map((_, index) => (
+              <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
+            ))}
+          {!isLoading &&
+            broadcasts.map((item, index) => (
+              <div
+                key={index}
+                className='w-95 h-80 flex flex-col bg-white rounded-xl flex-shrink-0'
+              >
+                <iframe
+                  className='h-54 rounded-t-xl'
+                  src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
+                  title={item.title}
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                  allowFullScreen
+                />
+                <div className='p-3 flex flex-col gap-2 justify-between'>
+                  <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
+                  <p className='text-caption02 text-grey-40 text-end'>
+                    {formatDate(item.publishedAt)}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </section>
   );

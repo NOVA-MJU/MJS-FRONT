@@ -115,7 +115,7 @@ export default function NoticeSection() {
   } else if (!isDesktop) {
     return (
       <section>
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 p-5 bg-white rounded-xl'>
           <div className='flex items-center justify-between'>
             <h2 className='text-title01 text-blue-35'>공지사항</h2>
             <Link to='/notice' className='text-caption01 text-grey-20'>
@@ -158,10 +158,10 @@ function MobileNoticeItem({ link, title, publishedDate }: MobileNoticeItemProps)
       href={link}
       target='_blank'
       rel='noopener noreferrer'
-      className='py-2 flex gap-2.5 justify-between'
+      className='py-2 flex gap-1.5 justify-between items-center'
     >
-      <span className='text-body04 text-black flex-1 line-clamp-1'>{title}</span>
-      <span className='text-caption02 text-grey-40'>{publishedDate}</span>
+      <span className='text-[15px] text-black flex-1 line-clamp-1'>{title}</span>
+      <span className='text-body05 text-grey-40'>{publishedDate}</span>
     </a>
   );
 }

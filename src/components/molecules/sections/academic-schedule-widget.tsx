@@ -31,13 +31,17 @@ const formatDateRange = (startDate: string, endDate: string): string => {
  * API 응답의 키와 화면에 표시될 라벨, Tailwind CSS 클래스를 매핑합니다.
  */
 const scheduleCategories = {
-  all: { label: '학부·대학원', className: 'bg-blue-20 text-white' },
+  all: { label: '전체', className: 'bg-blue-20 text-white' },
   undergrad: { label: '학부', className: 'bg-mju-primary text-white' },
   graduate: { label: '대학원', className: 'bg-grey-40 text-white' },
   holiday: { label: '휴일', className: 'bg-error text-white' },
 };
 
-export default function AcademicScheduleWidget() {
+interface AcademicScheduleWidgetProps {
+  className?: string;
+}
+
+export default function AcademicScheduleWidget({ className }: AcademicScheduleWidgetProps) {
   const [scheduleData, setScheduleData] = useState<CalendarMonthlyRes | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -74,7 +78,12 @@ export default function AcademicScheduleWidget() {
 
   return (
     <section>
-      <div className='flex flex-col gap-4'>
+      <div
+        className={`
+        flex flex-col gap-4 bg-white rounded-xl p-5
+        ${className}
+        `}
+      >
         <div className='flex justify-between items-center'>
           <h3 className='text-title01 text-blue-35'>학사일정</h3>
           <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
@@ -113,18 +122,20 @@ export default function AcademicScheduleWidget() {
                   <div key={key}>
                     <div className='flex gap-2'>
                       <div
-                        className={`w-14 flex items-center justify-center ${category.className}`}
+                        className={`w-12 flex items-center justify-center ${category.className}`}
                       >
-                        <span className='text-caption04 text-white'>{category.label}</span>
+                        <span className='text-[12px] text-white'>{category.label}</span>
                       </div>
                       <div className='flex flex-col gap-0.5'>
                         <ul>
                           {events.map((event) => (
-                            <li key={event.id}>
-                              <span className='inline-block w-20 text-caption04 text-grey-40'>
+                            <li key={event.id} className='flex items-center'>
+                              <span className='inline-block w-20 text-[12px] text-grey-40'>
                                 {formatDateRange(event.startDate, event.endDate)}
                               </span>
-                              <span className='text-caption04 text-black'>{event.description}</span>
+                              <span className='text-[14px] text-black line-clamp-1'>
+                                {removeBracketedContent(event.description)}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -141,4 +152,21 @@ export default function AcademicScheduleWidget() {
       </div>
     </section>
   );
+}
+
+/**
+ * Removes all content, including the square brackets, that is enclosed
+ * within [ and ] from a given string.
+ *
+ * @param inputString The string to process.
+ * @returns The processed string with bracketed content removed.
+ */
+function removeBracketedContent(inputString: string): string {
+  // Regular expression to match any character(s) (non-greedy, represented by '.*?' or '[^\]]*')
+  // enclosed between a literal '[' and a literal ']'. The 'g' flag ensures
+  // all occurrences are replaced.
+  const regex = /\[.*?\]/g;
+
+  // Replace all matches of the regex with an empty string.
+  return inputString.replace(regex, '');
 }
