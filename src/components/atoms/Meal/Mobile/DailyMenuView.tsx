@@ -10,7 +10,6 @@ type DailyMenuViewProps = {
   onNext: () => void;
 };
 
-// 모바일 전용(≤md) — 하루 3끼 + 이전/다음 이동
 export function DailyMenuView({ dateKey, items, nowCategory, onPrev, onNext }: DailyMenuViewProps) {
   const weekday = dateKey.match(/\((.+)\)/)?.[1] ?? '';
   const row = ['BREAKFAST', 'LUNCH', 'DINNER'].map((k) => items.find((i) => i.menuCategory === k));

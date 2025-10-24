@@ -51,7 +51,7 @@ export default function MealSection() {
     (async () => {
       try {
         setIsLoading(true);
-        // getMenus가 Axios라면: const list: MenuItem[] = (await getMenus()).data;
+
         const list: MenuItem[] = await getMenus();
 
         const today = getTodayLabel();
@@ -72,9 +72,6 @@ export default function MealSection() {
     })();
   }, [isWeekend]);
 
-  /**
-   * 주말이면 식단을 표시하지 않습니다
-   */
   if (isWeekend) return null;
 
   if (isDesktop)

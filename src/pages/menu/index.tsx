@@ -9,10 +9,8 @@ import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
 
-  // 모바일: 기본 오늘, 스와이프 시 인덱스 이동
-  const [idx, setIdx] = useState<number | null>(null); //의도적으로 null로 시작하여, todayKey로 강제로 맞춘다.
+  const [idx, setIdx] = useState<number | null>(null);
 
-  // 최초 1회만 todayKey로 맞추고, keys 길이 변하면 범위만 보정
   useEffect(() => {
     if (!keys.length) return;
     setIdx((prev) => {
@@ -25,13 +23,12 @@ export default function MenuPage() {
     });
   }, [keys, todayKey]);
 
-  const dateKey = keys[idx] ?? todayKey; // 널 병합 연산자, keys[idx]가 null이면 todayKey
+  const dateKey = keys[idx] ?? todayKey;
 
-  // 현재 끼니
-  type Meal = 'BREAKFAST' | 'LUNCH' | 'DINNER';
+  type currentMeal = 'BREAKFAST' | 'LUNCH' | 'DINNER';
   const now = new Date();
   const h = now.getHours() + now.getMinutes() / 60;
-  const nowCategory: Meal | undefined =
+  const nowCategory: currentMeal | undefined =
     h >= 6 && h < 9
       ? 'BREAKFAST'
       : h >= 11 && h < 14
@@ -79,7 +76,6 @@ export default function MenuPage() {
         </Typography>
       </div>
 
-      {/* 모바일: 오늘(기본) + 좌우 이동 */}
       <DailyMenuView
         dateKey={dateKey}
         items={getByDate(dateKey) ?? []}
@@ -88,7 +84,6 @@ export default function MenuPage() {
         onNext={onNext}
       />
 
-      {/* 데스크톱: 주간 테이블 */}
       <WeeklyMenuView groupedByDate={groupedByDate} todayKey={todayKey} nowCategory={nowCategory} />
     </div>
   );

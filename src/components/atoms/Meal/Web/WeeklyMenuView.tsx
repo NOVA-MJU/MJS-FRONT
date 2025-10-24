@@ -17,7 +17,6 @@ type WeeklyMenuViewProps = {
   nowCategory?: 'BREAKFAST' | 'LUNCH' | 'DINNER';
 };
 
-// 데스크톱 전용(≥md) — 주간 테이블
 export default function WeeklyMenuView({
   groupedByDate,
   todayKey,
