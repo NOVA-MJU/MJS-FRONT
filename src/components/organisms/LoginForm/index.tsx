@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/useAuthStore';
 
@@ -52,6 +51,12 @@ const LoginForm = () => {
     method: 'email',
   });
 
+  /** id 포커싱 ref **/
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     onSubmitCapture(e);
     e.preventDefault();
@@ -75,7 +80,7 @@ const LoginForm = () => {
       useAuthStore.getState().login(userInfo);
       markSuccess();
       navigate('/');
-    } catch (err: any) {
+    } catch (err) {
       /**  401 처리 (아이디/비번 불일치) **/
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         setFormError('입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.');
@@ -88,23 +93,31 @@ const LoginForm = () => {
   };
 
   return (
-    <form className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]' onSubmit={handleLogin}>
+    <form
+      className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]'
+      onSubmit={handleLogin}
+      autoComplete='on'
+    >
       <InputField
+        ref={inputRef}
         label='이메일'
+        name='username'
         type='email'
         placeholder='@mju.ac.kr'
-        value={id}
+        defaultValue={id}
         onChange={(e) => {
           setId(e.target.value);
           clearErrors();
           markStart();
         }}
         error={emailError}
-        helperText={''}
+        helperText=''
+        autoComplete='username'
       />
 
       <InputField
         label='비밀번호'
+        name='password'
         type='password'
         placeholder='비밀번호를 입력하세요'
         value={pw}
@@ -113,6 +126,7 @@ const LoginForm = () => {
           clearErrors();
           markStart();
         }}
+        autoComplete='current-password'
       />
 
       {formError && (
