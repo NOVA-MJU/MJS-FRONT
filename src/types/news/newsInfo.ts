@@ -5,5 +5,5 @@ export interface NewsInfo {
   imageUrl: string;
   summary: string;
   link: string;
-  category: 'REPORT' | 'SOCIETY';
+  category: 'ALL' | 'REPORT' | 'SOCIETY';
 }

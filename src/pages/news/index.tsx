@@ -7,10 +7,12 @@ import { fetchNewsInfo } from '../../api/news';
 import type { NewsInfo } from '../../types/news/newsInfo';
 import NewsCard from './NewsCard';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Typography } from '../../components/atoms/Typography';
 import { getSearchResult } from '../../api/search';
 import GlobalErrorPage from '../error';
-const ITEMS_PER_PAGE = 8;
+import { useResponsive } from '@/hooks/useResponse';
+
+const MOBILE_ITEMS_PER_PAGE = 5;
+const DESKTOP_ITEMS_PER_PAGE = 8;
 
 const News = () => {
   /**
@@ -40,6 +42,8 @@ const News = () => {
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
+  const { isDesktop } = useResponsive();
+  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
 
   useEffect(() => {
     /**
@@ -56,7 +60,7 @@ const News = () => {
             imageUrl: item.imageUrl,
             summary: item.highlightedContent,
             link: item.link,
-            category: item.category,
+            category: item.category as NewsInfo['category'],
           }));
 
           setNewsList(parsed);
@@ -80,16 +84,14 @@ const News = () => {
           setIsError(true);
         }
       })();
-  }, [keyword, selectedCategory, page]);
+  }, [keyword, selectedCategory, page, ITEMS_PER_PAGE]);
 
   if (isError) return <GlobalErrorPage />;
 
   return (
     <div className='flex-1 p-4 md:p-8 flex flex-col gap-4 md:gap-6'>
       <Link to='/news'>
-        <Typography variant='heading01' className='text-mju-primary'>
-          명대신문
-        </Typography>
+        <p className='text-blue-35 text-heading02 md:text-heading01'>명대신문</p>
       </Link>
       <SearchBar domain='news' initialContent={initialContent} />
       <div className='no-scrollbar -mx-2 overflow-x-auto px-2 md:overflow-visible'>
@@ -113,7 +115,7 @@ const News = () => {
          */}
         {keyword && newsList.length === 0 && (
           <div className='flex-1 text-center content-center'>
-            <Typography variant='title02'>검색 결과가 없습니다</Typography>
+            <p className='text-title02'>검색 결과가 없습니다</p>
           </div>
         )}
       </div>
