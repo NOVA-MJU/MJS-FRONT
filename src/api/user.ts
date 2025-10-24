@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import { accessTokenStore } from './token';
+
 import type {
   ApiResponse,
   EmailVerifyResponse,
@@ -12,13 +13,6 @@ import type { UserInfo } from '../types/auth';
 interface LoginResponse {
   accessToken: string;
 }
-
-/** 공통 API 래핑 타입 (스웨거 /auth/reissue) */
-type ApiEnvelope<T> = {
-  status: string;
-  data: T;
-  timestamp?: string;
-};
 
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
   const { data } = await apiClient.post<LoginResponse>('/auth/login', { email, password });
@@ -55,11 +49,11 @@ export const saveUserInfo = async (): Promise<UserInfo> => {
 /** 세션 시도(앱 부팅 시) — reissue 명세에 맞춰 data.accessToken 파싱 */
 export const trySession = async (): Promise<UserInfo | null> => {
   try {
-    const { data } = await apiClient.post<ApiEnvelope<{ accessToken: string }>>(
+    const { data } = await apiClient.post<ApiResponse<{ accessToken: string }>>(
       '/auth/reissue',
       {},
     );
-    const newAT = data.data.accessToken;
+    const newAT = data.data?.accessToken ?? null;
     if (!newAT) {
       accessTokenStore.clear();
       return null;

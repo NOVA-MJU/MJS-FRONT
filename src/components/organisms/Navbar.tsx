@@ -12,7 +12,7 @@ const CONTAINER = 'mx-auto w-[90%] md:max-w-[1200px] px-4';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, reset } = useAuthStore();
+  const { isLoggedIn, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,13 +28,13 @@ const Navbar = () => {
 
     try {
       await apiLogout();
-      reset();
+      resetUser();
       toast.success('로그아웃 되었습니다.');
-      if (location.pathname.startsWith('/mypage') || location.pathname === '/board') {
+      if (location.pathname.startsWith('/mypage') || location.pathname === '/board/write') {
         navigate('/');
       }
     } catch (e) {
-      reset();
+      resetUser();
       console.error('logout error:', e);
       toast.error('로그아웃 처리 중 문제가 발생했습니다.');
     }

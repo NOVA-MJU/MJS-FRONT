@@ -6,7 +6,7 @@ interface AuthState {
   user: UserInfo | null;
   setLoggedIn: (v: boolean) => void;
   setUser: (u: UserInfo | null) => void;
-  reset: () => void;
+  resetUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -14,5 +14,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   setLoggedIn: (v) => set({ isLoggedIn: v }),
   setUser: (u) => set({ user: u }),
-  reset: () => set({ isLoggedIn: false, user: null }),
+  resetUser: () => set({ isLoggedIn: false, user: null }),
 }));
