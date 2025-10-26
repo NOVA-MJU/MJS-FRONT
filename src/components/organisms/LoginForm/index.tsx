@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -58,6 +58,12 @@ const LoginForm: React.FC = () => {
     method: 'email',
   });
 
+  /** id 포커싱 ref **/
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     onSubmitCapture(e);
     e.preventDefault();
@@ -100,12 +106,18 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]' onSubmit={handleLogin}>
+    <form
+      className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]'
+      onSubmit={handleLogin}
+      autoComplete='on'
+    >
       <InputField
+        ref={inputRef}
         label='이메일'
+        name='username'
         type='email'
         placeholder='@mju.ac.kr'
-        value={id}
+        defaultValue={id}
         onChange={(e) => {
           setId(e.target.value);
           clearErrors();
@@ -113,10 +125,12 @@ const LoginForm: React.FC = () => {
         }}
         error={emailError}
         helperText=''
+        autoComplete='username'
       />
 
       <InputField
         label='비밀번호'
+        name='password'
         type='password'
         placeholder='비밀번호를 입력하세요'
         value={pw}
@@ -125,6 +139,7 @@ const LoginForm: React.FC = () => {
           clearErrors();
           markStart();
         }}
+        autoComplete='current-password'
       />
 
       {formError && (
