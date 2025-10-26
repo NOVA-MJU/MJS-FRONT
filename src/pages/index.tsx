@@ -17,9 +17,6 @@ export default function Main() {
 
   const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';
 
-  /**
-   * 데스크탑 화면
-   */
   if (isDesktop)
     return (
       <div className='w-full flex-1 px-7 py-12 flex gap-6'>
@@ -47,9 +44,6 @@ export default function Main() {
       </div>
     );
 
-  /**
-   * 모바일 화면
-   */
   if (!isDesktop)
     return (
       <div className='flex-1 px-5 py-6 flex flex-col gap-10'>
