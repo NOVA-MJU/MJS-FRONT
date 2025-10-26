@@ -2,30 +2,6 @@ import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calenda
 import Button from '@/components/atoms/Button';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-/**
- * 시작일과 종료일을 받아서 "MM.DD" 또는 "MM.DD - MM.DD" 형식으로 반환합니다.
- * @param startDate - 'YYYY-MM-DD'
- * @param endDate - 'YYYY-MM-DD'
- * @returns string - 포맷팅된 날짜 문자열
- */
-const formatDateRange = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const format = (date: Date) => {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${month}.${day}`;
-  };
-
-  if (startDate === endDate) {
-    return format(start);
-  } else {
-    return `${format(start)} - ${format(end)}`;
-  }
-};
 
 /**
  * API 응답의 키와 화면에 표시될 라벨, Tailwind CSS 클래스를 매핑합니다.
@@ -39,12 +15,13 @@ const scheduleCategories = {
 
 interface AcademicScheduleWidgetProps {
   className?: string;
+  events?: CalendarMonthlyRes | null;
 }
 
-export default function AcademicScheduleWidget({ className }: AcademicScheduleWidgetProps) {
-  const [scheduleData, setScheduleData] = useState<CalendarMonthlyRes | null>(null);
+export default function AcademicScheduleWidget({ className, events }: AcademicScheduleWidgetProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [scheduleData, setScheduleData] = useState<CalendarMonthlyRes | null>(null);
   const categoryOrder: (keyof typeof scheduleCategories)[] = [
     'all',
     'undergrad',
@@ -52,9 +29,12 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
     'holiday',
   ];
 
+  /**
+   * 부모 컴포넌트로부터 이벤트 데이터를 받지 못했으면 새롭게 api를 요청합니다.
+   */
   useEffect(() => {
-    getData();
-  }, []);
+    if (!events) getData();
+  }, [events]);
 
   /**
    * 캘린더 데이터를 불러옵니다
@@ -78,18 +58,7 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
 
   return (
     <section>
-      <div
-        className={`
-        flex flex-col gap-4 bg-white rounded-xl p-5
-        ${className}
-        `}
-      >
-        <div className='flex justify-between items-center'>
-          <h3 className='text-title01 text-blue-35'>학사일정</h3>
-          <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
-            더보기
-          </Link>
-        </div>
+      <div className={className}>
         {isError ? (
           <div className='p-4 flex flex-col items-center gap-4'>
             <h3 className='text-title01'>문제가 발생했습니다</h3>
@@ -155,6 +124,31 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
 }
 
 /**
+ * 시작일과 종료일을 받아서 "MM.DD" 또는 "MM.DD - MM.DD" 형식으로 반환합니다.
+ * @param startDate - 'YYYY-MM-DD'
+ * @param endDate - 'YYYY-MM-DD'
+ * @returns string - 포맷팅된 날짜 문자열
+ */
+const formatDateRange = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const format = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${month}.${day}`;
+  };
+
+  if (startDate === endDate) {
+    return format(start);
+  } else {
+    return `${format(start)} - ${format(end)}`;
+  }
+};
+
+/**
+ * 이벤트 제목에서 대괄호를 제거하는 함수입니다.
+ *
  * Removes all content, including the square brackets, that is enclosed
  * within [ and ] from a given string.
  *

@@ -10,7 +10,7 @@ const Layout = ({ className }: LayoutProps) => {
   return (
     <div
       className={`
-        min-h-screen w-full flex flex-col justify-center items-center overflow-x-auto
+        w-full md:min-w-[1280px] min-h-screen flex flex-col items-center 
         ${className}
         `}
     >
