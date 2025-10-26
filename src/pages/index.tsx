@@ -11,6 +11,7 @@ import HotBoardList from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
+import { Link } from 'react-router-dom';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -63,7 +64,15 @@ export default function Main() {
         </section>
         <MealSection />
         <NoticeSection />
-        <AcademicScheduleWidget />
+        <div className='flex flex-col gap-4 bg-white rounded-xl p-5'>
+          <div className='flex justify-between items-center'>
+            <h3 className='text-title01 text-blue-35'>학사일정</h3>
+            <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </div>
+          <AcademicScheduleWidget />
+        </div>
         <NewsSection />
         <BroadcastSection />
       </div>
