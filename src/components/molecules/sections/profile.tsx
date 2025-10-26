@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import Avatar from '../../atoms/Avatar';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { logout as apiLogout } from '../../../api/user';
 import toast from 'react-hot-toast';
 
 interface ProfileSectionProps {
@@ -9,40 +10,33 @@ interface ProfileSectionProps {
 }
 
 /**
+ * 로그인 상태에 따라 사용자 프로필 또는 로그인 유도 UI를 표시
+ * - 로그인 상태: 프로필 정보 + 로그아웃 버튼
+ * - 비로그인 상태: 로그인/회원가입 버튼
  *
- * 로그인 상태에 따라 사용자 프로필 또는 로그인 유도 UI를 표시하는 컴포넌트입니다.
- *
- * - 로그인 상태(`isLoggedIn`이 true)일 경우:
- *   - 프로필이미지, 이름, 이메일 표시
- *   - 로그아웃 버튼: 클릭 시 zustand 스토어와 sessionStorage를 초기화하고
- *     persist 저장소를 비웁니다.
- *   - MSI, MYiCap, Office365 등 외부 링크와 MyPage 내부 링크를 표시합니다.
- *
- * - 비로그인 상태일 경우:
- *   - "로그인" 및 "회원가입" 버튼을 표시하여 각각 해당 페이지로 이동할 수 있습니다.
- *   - "아이디 찾기"와 "비밀번호 찾기" 버튼은 현재 더미 링크(`#`)로 연결되어 있으며,
- *     **추후 실제 경로로 연결 작업이 필요**합니다.
- *
- * @component
- * @param {ProfileSectionProps} props - 컴포넌트 속성
- * @param {string} [props.className] - 외부에서 전달받은 TailwindCSS 클래스명
- * @returns {JSX.Element} 로그인 상태에 따라 다른 UI를 렌더링하는 JSX 요소
+ * 새로 추가된 기능
+ * - 로그아웃 시 서버에 /auth/logout 요청(서버가 RT 쿠키 제거)
+ * - 프론트의 AT 메모리(store) 초기화, Zustand 세션 상태 초기화
  */
 export default function ProfileSection({ className }: ProfileSectionProps) {
-  const { isLoggedIn, user, logout } = useAuthStore();
+  const { isLoggedIn, user, reset } = useAuthStore();
 
   /**
    * 로그아웃 핸들러
    */
-  const handleLogout = () => {
-    // 1) zustand 상태 초기화 + sessionStorage.clear()
-    logout();
-    // 2) persist에 저장된 값까지 제거 (localStorage/sessionStorage 어디든)
+  const handleLogout = async () => {
     try {
-      useAuthStore.persist.clearStorage();
+      // 1) 서버 RT(HttpOnly 쿠키) 폐기
+      await apiLogout();
+
+      // 2) 클라이언트 세션 초기화
+      reset();
+
       toast.success('로그아웃되었습니다.');
     } catch (e) {
-      console.warn('persist clearStorage failed:', e);
+      reset();
+      console.error('logout error:', e);
+      toast.error('로그아웃 처리 중 문제가 발생했습니다.');
     }
   };
 
@@ -66,6 +60,7 @@ export default function ProfileSection({ className }: ProfileSectionProps) {
             </div>
           </div>
 
+          {/* 아이콘을 로그아웃 버튼으로 사용 */}
           <FaExternalLinkAlt
             onClick={handleLogout}
             className='text-gray-600 text-base cursor-pointer'
