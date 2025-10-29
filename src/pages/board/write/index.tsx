@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
@@ -22,7 +22,10 @@ export default function BoardWrite() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  /* 카테고리 */
+  // 수정사항 존재 여부
+  const [isDirty, setIsDirty] = useState(false);
+
+  // 카테고리
   const [isOpened, setIsOpened] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>('FREE');
   const options: Category[] = ['FREE', 'NOTICE'];
@@ -32,7 +35,38 @@ export default function BoardWrite() {
    */
   const handleEditorReady = useCallback((editor: BlockNoteEditor) => {
     editorRef.current = editor;
+
+    editor.onChange(() => {
+      setIsDirty(true);
+    });
   }, []);
+
+  /**
+   * 브라우저 새로고침 / 탭 닫기 / 외부 이동 시 경고
+   */
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
+
+  /**
+   * 상단 뒤로가기 눌렀을 때 확인
+   */
+  const handleBack = () => {
+    if (isDirty) {
+      const ok = window.confirm('작성 중인 내용이 사라집니다. 나가시겠습니까?');
+      if (!ok) return;
+    }
+    navigate(-1);
+  };
 
   /**
    * 게시글 업로드 요청
@@ -57,6 +91,7 @@ export default function BoardWrite() {
     setIsLoading(true);
     try {
       const newPostUuid = await postBoard(title, selectedCategory, content, contentPreview, true);
+      setIsDirty(false);
       navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
@@ -88,7 +123,7 @@ export default function BoardWrite() {
     <div className='flex-1 p-4 md:p-8 gap-6 flex flex-col'>
       {/* 상단 네비게이션 */}
       <div className='flex justify-between items-center'>
-        <NavigationUp onClick={() => navigate(-1)} />
+        <NavigationUp onClick={handleBack} />
       </div>
 
       {/* 제목 입력 */}
@@ -96,6 +131,7 @@ export default function BoardWrite() {
         className='py-2 px-3 placeholder-grey-20 font-semibold text-base border-blue-05 border-1 md:border-2 rounded-lg focus:outline-none md:py-3 md:text-3xl'
         placeholder='제목'
         ref={titleRef}
+        onChange={() => setIsDirty(true)}
       />
 
       {/* 카테고리 선택 드롭다운 */}
@@ -120,6 +156,7 @@ export default function BoardWrite() {
                 onClick={() => {
                   setSelectedCategory(option);
                   setIsOpened(false);
+                  setIsDirty(true);
                 }}
               >
                 {CATEGORY_LABEL[option]}
