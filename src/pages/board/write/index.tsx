@@ -1,20 +1,31 @@
-import { Typography } from '../../../components/atoms/Typography';
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
-import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
 import { postBoard } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
+import { FiChevronDown } from 'react-icons/fi';
+
+type Category = 'FREE' | 'NOTICE';
+const CATEGORY_LABEL: Record<Category, string> = {
+  FREE: '자유게시판',
+  NOTICE: '정보게시판',
+};
 
 export default function BoardWrite() {
   const navigate = useNavigate();
   const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
+
   const [isLoading, setIsLoading] = useState(false);
+
+  /* 카테고리 */
+  const [isOpened, setIsOpened] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category>('FREE');
+  const options: Category[] = ['FREE', 'NOTICE'];
 
   /**
    * 에디터 인스턴스를 불러옵니다.
@@ -24,7 +35,7 @@ export default function BoardWrite() {
   }, []);
 
   /**
-   * 게시글 업로드 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
+   * 게시글 업로드 요청
    */
   const handleUploadPost = async () => {
     if (isLoading) return;
@@ -45,7 +56,7 @@ export default function BoardWrite() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await postBoard(title, content, contentPreview);
+      const newPostUuid = await postBoard(title, selectedCategory, content, contentPreview, true);
       navigate(`/board/${newPostUuid}`, { replace: true });
     } catch (e) {
       console.error('BoardWrite.tsx', e);
@@ -55,7 +66,7 @@ export default function BoardWrite() {
   };
 
   /**
-   * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
+   * editor의 블록 외부를 클릭했을 때 마지막 줄로 커서 이동
    */
   const handleFocusEditor = (e: React.MouseEvent<HTMLDivElement>) => {
     const editor = editorRef.current;
@@ -75,30 +86,68 @@ export default function BoardWrite() {
 
   return (
     <div className='flex-1 p-4 md:p-8 gap-6 flex flex-col'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        게시글 작성
-      </Typography>
-      <Divider />
+      {/* 상단 네비게이션 */}
       <div className='flex justify-between items-center'>
         <NavigationUp onClick={() => navigate(-1)} />
-        <button
-          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
-          onClick={handleUploadPost}
-        >
-          <Typography variant='body02' className='text-black'>
-            완료
-          </Typography>
-        </button>
       </div>
+
+      {/* 제목 입력 */}
       <input
-        className='p-3 placeholder-grey-20 font-bold text-[28px] focus:outline-none'
-        placeholder='제목을 입력하세요'
+        className='py-2 px-3 placeholder-grey-20 font-semibold text-base border-blue-05 border-1 md:border-2 rounded-lg focus:outline-none md:py-3 md:text-3xl'
+        placeholder='제목'
         ref={titleRef}
       />
-      <div className='flex-1 cursor-text' onClick={handleFocusEditor}>
-        <div ref={editorWrapperRef}>
+
+      {/* 카테고리 선택 드롭다운 */}
+      <div className='flex flex-col'>
+        <button
+          className='flex py-2 px-4 text-base border-1 md:border-2 justify-between border-blue-05 rounded-lg'
+          onClick={() => setIsOpened(!isOpened)}
+        >
+          <span className='text-blue-10'>{CATEGORY_LABEL[selectedCategory]}</span>
+          <FiChevronDown
+            size={22}
+            className={`text-grey-20 ${isOpened ? 'rotate-180' : 'rotate-0'} transition-transform duration-300`}
+          />
+        </button>
+
+        {isOpened && (
+          <div className='mx-1 border-x-1 border-b-1 md:border-x-2 md:border-b-2 border-blue-05 rounded-b-lg bg-white'>
+            {options.map((option) => (
+              <div
+                className='flex py-2 px-4 text-grey-40 cursor-pointer hover:bg-blue-01'
+                key={option}
+                onClick={() => {
+                  setSelectedCategory(option);
+                  setIsOpened(false);
+                }}
+              >
+                {CATEGORY_LABEL[option]}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 에디터 */}
+      <div
+        className='flex-1 px-4 md:px-0 py-2 border-1 md:border-2 border-blue-05 rounded-lg cursor-text'
+        onClick={handleFocusEditor}
+      >
+        <div className='px-4 py-2 md:px-0 overflow-visible' ref={editorWrapperRef}>
           <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
+      </div>
+
+      {/* 완료 버튼 */}
+      <div className='flex justify-end'>
+        <button
+          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-2 md:p-3 rounded-xl disabled:opacity-50'
+          onClick={handleUploadPost}
+          disabled={isLoading}
+        >
+          <p className='text-black text-body02'>완료</p>
+        </button>
       </div>
     </div>
   );
