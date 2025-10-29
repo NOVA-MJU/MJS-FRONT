@@ -16,9 +16,9 @@ export const formatToLocalTime = (dateString: string): string => {
 };
 
 /**
- * 현재 클라이언트 기준 시간으로 UTC 시간 응답값을 날짜-시간 형식으로 파싱합니다.
+ * 현재 클라이언트 기준 시간으로 UTC 시간 응답값을 날짜 형식으로 파싱합니다.
  * @param dateString 서버에서 응답받은 현재 시간을 입력하세요.
- * @returns `2025-08-09 17:17`
+ * @returns `2025-08-09`
  */
 export const formatToLocalDate = (dateString: string): string => {
   const date = new Date(dateString + 'Z');

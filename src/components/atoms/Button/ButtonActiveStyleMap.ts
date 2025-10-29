@@ -46,6 +46,11 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     color: colors.error,
     border: `2px solid ${colors.error}`,
   },
+  borderGrey: {
+    backgroundColor: 'transparent',
+    color: colors.grey20,
+    border: `1px solid ${colors.grey10}`,
+  },
 };
 
 export default buttonActiveStyleMap;

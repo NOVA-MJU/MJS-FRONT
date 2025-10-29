@@ -6,10 +6,12 @@ import { useNavTracking } from '../../hooks/gtm/useNavTracking';
 import toast from 'react-hot-toast';
 import { useResponsive } from '@/hooks/useResponse';
 import { IoIosClose, IoIosMenu, IoIosSearch } from 'react-icons/io';
+import SearchBar from '../atoms/SearchBar';
+import { logout as apiLogout } from '@/api/user';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuthStore();
+  const { isLoggedIn, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
   const navigate = useNavigate();
   const { isDesktop } = useResponsive();
@@ -17,11 +19,24 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
-  const handleAuthClick = () => {
-    if (isLoggedIn) {
-      logout();
+  const handleAuthClick = async () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await apiLogout();
+      resetUser();
       toast.success('로그아웃 되었습니다.');
-    } else navigate('/login');
+      if (location.pathname.startsWith('/mypage') || location.pathname === '/board/write') {
+        navigate('/');
+      }
+    } catch (e) {
+      resetUser();
+      console.error('logout error:', e);
+      toast.error('로그아웃 처리 중 문제가 발생했습니다.');
+    }
   };
 
   const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '../../../atoms/Button';
+import { useResponsive } from '@/hooks/useResponse';
 
 export interface CategoryFilterProps {
   categories: string[];
@@ -7,30 +8,35 @@ export interface CategoryFilterProps {
   onChange: (c: string) => void;
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, current, onChange }) => (
-  <>
-    {/* 모바일 버전  */}
-    <div className='md:hidden flex flex-wrap gap-2'>
-      {categories.map((c) => (
-        <Button
-          key={c}
-          variant={current === c ? 'main' : 'greyLight'}
-          shape='pill'
-          size='sm'
-          disabled={false}
-          fullWidth={false}
-          onClick={() => onChange(c)}
-        >
-          {c}
-        </Button>
-      ))}
-    </div>
-    {/* PC 버전 */}
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, current, onChange }) => {
+  const { isDesktop } = useResponsive();
+
+  if (!isDesktop) {
+    return (
+      <div className='md:hidden flex flex-wrap gap-2'>
+        {categories.map((c) => (
+          <Button
+            key={c}
+            variant={current === c ? 'blue35' : 'borderGrey'}
+            shape='pill'
+            size='sm'
+            disabled={false}
+            fullWidth={false}
+            onClick={() => onChange(c)}
+          >
+            {c}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
     <div className='hidden md:flex flex-wrap gap-2'>
       {categories.map((c) => (
         <Button
           key={c}
-          variant={current === c ? 'main' : 'greyLight'}
+          variant={current === c ? 'blue35' : 'borderGrey'}
           shape='pill'
           size='md'
           disabled={false}
@@ -41,7 +47,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, current, on
         </Button>
       ))}
     </div>
-  </>
-);
+  );
+};
 
 export default CategoryFilter;

@@ -120,6 +120,7 @@ export default function MealSection() {
     (async () => {
       try {
         setIsLoading(true);
+
         const list: MenuItem[] = await getMenus();
 
         const currentMealInfo = getTargetMealInfo();
@@ -146,9 +147,6 @@ export default function MealSection() {
     })();
   }, [isWeekend]);
 
-  /**
-   * 주말이면 식단을 표시하지 않습니다
-   */
   if (isWeekend) return null;
 
   /**
