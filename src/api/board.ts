@@ -9,6 +9,7 @@ import { type ApiResponse, type Paginated } from './types';
  * @param direction 정렬 순서를 입력하세요.
  */
 type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
+type Category = 'FREE' | 'NOTICE';
 
 export const getBoards = async (
   page = 0,
@@ -26,6 +27,7 @@ export interface BoardItem {
   uuid: string;
   title: string;
   previewContent: string;
+  communityCategory: Category;
   viewCount: number;
   published: boolean;
   publishedAt: string;
@@ -48,6 +50,7 @@ export interface BoardItem {
  */
 export const postBoard = async (
   title: string,
+  communityCategory: Category,
   content: string,
   contentPreview: string,
   published = true,
@@ -57,6 +60,7 @@ export const postBoard = async (
     content,
     contentPreview,
     published,
+    communityCategory,
   });
   return res.data.data.uuid;
 };
