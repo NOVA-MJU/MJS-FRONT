@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
 
@@ -18,6 +18,11 @@ interface CalendarEventItem {
   description: string;
 }
 
+/**
+ * @deprecated
+ * @param param0
+ * @returns
+ */
 export const getAcademicEvents = async ({
   page = 0,
   size = 100,
@@ -31,12 +36,8 @@ export const getAcademicEvents = async ({
   sortDir?: string;
   year: number;
 }) => {
-  try {
-    const { data } = await apiClient.get<ApiResponse<Paginated<CalendarEventItem>>>('/calendar', {
-      params: { page, size, sortBy, sortDir, year },
-    });
-    return data.data.content;
-  } catch (err: any) {
-    throw new Error(err.response?.data?.message || '캘린더 조회 실패');
-  }
+  const { data } = await apiClient.get<ApiResponse<Paginated<CalendarEventItem>>>('/calendar', {
+    params: { page, size, sortBy, sortDir, year },
+  });
+  return data.data.content;
 };

@@ -29,6 +29,7 @@ export const formatToLocalDate = (dateString: string): string => {
 
   return `${year}-${month}-${day}`;
 };
+
 /**
  * 현재 클라이언트 기준 시간으로 UTC 시간 응답값으로부터 경과시간을 파싱합니다.
  * @param dateString 서버에서 응답받은 현재 시간을 입력하세요.
