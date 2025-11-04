@@ -22,7 +22,10 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
     <nav className='flex items-center justify-center gap-4 text-xs md:text-sm text-grey-40'>
       <button
         disabled={page === 0}
-        onClick={() => onChange(page - 1)}
+        onClick={() => {
+          onChange(page - 1);
+          window.scrollTo(0, 0);
+        }}
         className={clsx(
           'flex items-center gap-1 rounded-lg px-3 py-2',
           'transition-colors duration-200',
@@ -56,7 +59,10 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) =
       })}
       <button
         disabled={page === totalPages - 1}
-        onClick={() => onChange(page + 1)}
+        onClick={() => {
+          onChange(page + 1);
+          window.scrollTo(0, 0);
+        }}
         className={clsx(
           'flex items-center gap-1 rounded-lg px-3 py-2',
           'transition-colors duration-200',

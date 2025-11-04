@@ -1,31 +1,32 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import SearchBar from '../../components/atoms/SearchBar';
-import Pagination from '../../components/molecules/common/Pagination';
-import CategoryFilter from '../../components/molecules/common/CategoryFilter';
-import { Notices } from '../../constants/notices';
-import NoticeList from '../../components/organisms/CommonList';
-import { fetchNotionInfo } from '../../api/main/notice-api';
-import { getSearchResult, type GetSearchResultRes } from '../../api/search';
-import { Typography } from '../../components/atoms/Typography';
-import type { ListItemProps } from '../../components/organisms/DetailItem/idex';
-import type { NoticeItem } from '../../types/notice/noticeInfo';
+import { fetchNotionInfo } from '@/api/main/notice-api';
+import { getSearchResult, type GetSearchResultRes } from '@/api/search';
+import type { ListItemProps } from '@/components/organisms/DetailItem/idex';
+import { useResponsive } from '@/hooks/useResponse';
+import type { NoticeItem } from '@/types/notice/noticeInfo';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import GlobalErrorPage from '../error';
+import SearchBar from '@/components/atoms/SearchBar';
+import Pagination from '@/components/molecules/common/Pagination';
+import NoticeList from '@/components/organisms/CommonList';
+import { ChipTabs } from '@/components/atoms/Tabs';
+import { formatToLocalDate } from '@/utils';
+import DOMPurify from 'dompurify';
 
 /**
  * 카테고리 매핑
  */
-const categoryMapping: Record<string, string> = {
-  전체: 'all',
-  일반공지: 'general',
-  학사공지: 'academic',
-  장학공지: 'scholarship',
-  진로공지: 'career',
-  학생활동: 'activity',
-  학칙개정: 'rule',
+const categoryMap: Record<string, string> = {
+  all: '전체',
+  general: '일반공지',
+  academic: '학사공지',
+  scholarship: '장학공지',
+  career: '진로공지',
+  activity: '학생활동',
+  rule: '학칙개정',
 };
 
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 10;
 
 /**
  * Notice (공지사항 페이지)
@@ -36,18 +37,17 @@ const ITEMS_PER_PAGE = 8;
  * - Pagination 은 0-base 로 동작 (백엔드 스펙)
  */
 export default function Notice() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
   const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
   const [initialContent, setInitialContent] = useState('');
-  const CATEGORY_LIST = useMemo(() => Notices, []);
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORY_LIST[0] ?? '전체');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [items, setItems] = useState<ListItemProps[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const { isDesktop } = useResponsive();
 
   useEffect(() => {
     if (keyword) setInitialContent(keyword);
@@ -97,8 +97,13 @@ export default function Notice() {
       (async () => {
         try {
           setIsLoading(true);
-          const categoryKey = categoryMapping[selectedCategory] ?? 'general';
-          const data = await fetchNotionInfo(categoryKey, undefined, page, ITEMS_PER_PAGE, 'desc');
+          const data = await fetchNotionInfo(
+            selectedCategory,
+            undefined,
+            page,
+            ITEMS_PER_PAGE,
+            'desc',
+          );
 
           const parsed: ListItemProps[] = (data?.content ?? []).map(
             (item: NoticeItem, idx: number) => ({
@@ -133,38 +138,118 @@ export default function Notice() {
     setSearchParams(newParams);
   };
 
+  /**
+   * 오류 페이지 렌더링
+   */
   if (isError) return <GlobalErrorPage />;
 
-  return (
-    <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-6 mx-auto'>
-      <Link to='/notice'>
-        <Typography variant='heading01' className='text-mju-primary'>
-          공지사항
-        </Typography>
-      </Link>
-      <SearchBar domain='notice' initialContent={initialContent} />
-      {!keyword && (
-        <>
-          <CategoryFilter
-            categories={CATEGORY_LIST}
-            current={selectedCategory}
-            onChange={(category) => {
-              setSelectedCategory(category);
-              navigate('/notice');
-            }}
-          />
-          <hr className='w-full border-blue-05 border-2' />
-        </>
-      )}
-      <div className='flex-1 flex flex-col'>
-        <NoticeList items={items} category='notice' page={page + 1} itemsPerPage={ITEMS_PER_PAGE} />
-        {!isLoading && keyword && items.length === 0 && (
-          <div className='flex-1 text-center content-center'>
-            <Typography variant='title02'>검색 결과가 없습니다</Typography>
-          </div>
+  /**
+   * 데스크톱 페이지 렌더링
+   */
+  if (isDesktop)
+    return (
+      <div className='w-[1280px] flex-1 flex flex-col p-12 gap-6 mx-auto'>
+        <Link to='/notice'>
+          <h2 className='text-heading01 text-mju-primary'>공지사항</h2>
+        </Link>
+        <SearchBar domain='notice' initialContent={initialContent} />
+        {!keyword && (
+          <>
+            <ChipTabs
+              tabs={categoryMap}
+              currentTab={selectedCategory}
+              setCurrentTab={setSelectedCategory}
+            />
+            <hr className='w-full border-blue-05 border-2' />
+          </>
         )}
+        <div className='flex-1 flex flex-col'>
+          <NoticeList
+            items={items}
+            category='notice'
+            page={page + 1}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
+          {!isLoading && keyword && items.length === 0 && (
+            <div className='flex-1 text-center content-center'>
+              <span className='text-title02'>검색 결과가 없습니다</span>
+            </div>
+          )}
+        </div>
+        <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
       </div>
-      <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
-    </div>
-  );
+    );
+
+  /**
+   * 모바일 페이지 렌더링
+   */
+  if (!isDesktop)
+    return (
+      <div className='flex-1 flex flex-col p-5 gap-5'>
+        <div className='flex flex-col gap-3'>
+          <Link to='/notice' className='w-fit'>
+            <h2 className='text-title01 text-blue-35'>공지사항</h2>
+          </Link>
+          <SearchBar domain='notice' initialContent={initialContent} />
+          {/* 검색하지 않는 경우에만 카테고리 칩 화면에 표시 */}
+          {!keyword && (
+            <ChipTabs
+              tabs={categoryMap}
+              currentTab={selectedCategory}
+              setCurrentTab={setSelectedCategory}
+            />
+          )}
+        </div>
+
+        {/* 공지사항 데이터 표시 */}
+        <div className='flex-1 flex flex-col'>
+          {items.map((item, index) => {
+            const isEnd = items.length - 1 === index;
+
+            return (
+              <a key={item.id} href={item.link} target='_blank' rel='noopener noreferrer'>
+                <div
+                  className={`
+                    w-full h-fit p-2.5
+                    ${!isEnd && 'border-b border-blue-05'}
+                  `}
+                >
+                  <div className='flex flex-col gap-0.5'>
+                    <span className='text-caption03 text-blue-10'>
+                      {categoryMap[item.category] ?? item.category}
+                    </span>
+                    {/* 검색 결과 highlight */}
+                    <span
+                      className={`
+                        text-body05 text-black line-clamp-2
+                        [&_em]:font-semibold [&_em]:not-italic [&_em]:bg-blue-05 [&_em]:rounded-md [&_em]:px-0.5
+                      `}
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(item.title),
+                      }}
+                    />
+                    {item.date && (
+                      <span className='text-caption04 text-grey-20'>
+                        {formatToLocalDate(item.date)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+
+          {/* 검색 결과 없음 페이지 */}
+          {!isLoading && keyword && items.length === 0 && (
+            <div className='flex-1 flex justify-center items-center'>
+              <span className='font-bold'>{keyword}</span>
+              <span>{`에 대한 검색 결과가 없습니다`}</span>
+            </div>
+          )}
+        </div>
+
+        {/* 페이지네이션 */}
+        <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
+      </div>
+    );
 }
