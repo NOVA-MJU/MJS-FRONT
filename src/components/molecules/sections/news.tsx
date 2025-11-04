@@ -1,7 +1,7 @@
 import { fetchNewsInfo } from '@/api/news';
 import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import Tab from '@/components/atoms/Tab';
+import { Tabs } from '@/components/atoms/Tabs';
 import { useResponsive } from '@/hooks/useResponse';
 import type { NewsInfo } from '@/types/news/newsInfo';
 import { formatToLocalDate } from '@/utils';
@@ -11,8 +11,8 @@ import { IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
-  보도: 'REPORT',
-  사회: 'SOCIETY',
+  REPORT: '보도',
+  SOCIETY: '사회',
 };
 
 export default function NewsSection() {
@@ -54,7 +54,7 @@ export default function NewsSection() {
           </Link>
         </div>
         <div className='px-3'>
-          <Tab tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
+          <Tabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
         </div>
         <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
           {isLoading &&
@@ -92,7 +92,8 @@ export default function NewsSection() {
         </div>
       </section>
     );
-  else
+
+  if (!isDesktop)
     return (
       <section>
         <div className='flex flex-col gap-4 p-5 bg-white rounded-xl'>
@@ -102,7 +103,7 @@ export default function NewsSection() {
               더보기
             </Link>
           </div>
-          <Tab tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
+          <Tabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
           <div className='flex flex-col gap-2'>
             {isLoading &&
               [...Array(5)].map((_, index) => <Skeleton key={index} className='h-32' />)}

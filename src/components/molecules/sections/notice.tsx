@@ -1,7 +1,7 @@
 import { fetchNotionInfo } from '@/api/main/notice-api';
 import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import Tab from '@/components/atoms/Tab';
+import { Tabs } from '@/components/atoms/Tabs';
 import { useResponsive } from '@/hooks/useResponse';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToElapsedTime } from '@/utils';
@@ -11,13 +11,13 @@ import { IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
-  전체: 'all',
-  일반공지: 'general',
-  학사공지: 'academic',
-  장학공지: 'scholarship',
-  진로공지: 'career',
-  학생활동: 'activity',
-  학칙개정: 'rule',
+  all: '전체',
+  general: '일반공지',
+  academic: '학사공지',
+  scholarship: '장학공지',
+  career: '진로공지',
+  activity: '학생활동',
+  rule: '학칙개정',
 };
 
 /**
@@ -82,7 +82,7 @@ export default function NoticeSection() {
           </Link>
         </div>
         <div className='px-3'>
-          <Tab tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+          <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
         </div>
         <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
           {isLoading &&
@@ -123,7 +123,7 @@ export default function NoticeSection() {
             </Link>
           </div>
           <div className='flex flex-col gap-3'>
-            <Tab tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+            <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
             <div className='flex flex-col gap-1'>
               {isLoading &&
                 [...Array(CONTENT_LENGTH)].map((_, index) => (
