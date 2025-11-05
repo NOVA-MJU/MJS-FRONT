@@ -21,7 +21,7 @@ interface SearchBarProps {
 }
 
 /**
- * 검색바 컴포넌트 입니다
+ * 검색바 컴포넌트
  * @param domain 검색을 수행할 domain을 입력하세요. 검색 수행 시 해당 domain 페이지에서 검색을 수행합니다. 기본값은 search 이고, 기본값일 경우 검색 수행 시 통합검색 페이지로 이동됩니다.
  * @param initialContent 검색바가 렌더링될 때 initialContent가 입력된 상태로 렌더링됩니다
  * @param className 스타일을 입력하세요
@@ -32,6 +32,7 @@ export default function SearchBar({
   className,
 }: SearchBarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [value, setValue] = useState('');
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const initialized = useRef(true);
@@ -79,6 +80,25 @@ export default function SearchBar({
       }
     })();
   }, [debounced]);
+
+  /**
+   * 자동완성 키워드 아이템 클릭
+   * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
+   */
+  const handleKeywordClick = (keyword: string) => {
+    console.log(domain);
+    if (
+      location.pathname === `/${domain}` &&
+      location.search === `?keyword=${encodeURIComponent(keyword)}`
+    ) {
+      window.location.reload();
+    } else {
+      navigate({
+        pathname: `/${domain}`,
+        search: `?keyword=${encodeURIComponent(keyword.trim())}`,
+      });
+    }
+  };
 
   /**
    * 검색어를 지울 경우 검색어 자동완성 창 자동 닫기
@@ -132,6 +152,7 @@ export default function SearchBar({
 
   return (
     <div className='relative' ref={searchBarRef}>
+      {/* 검색바 */}
       <div
         className={clsx(
           'flex items-center bg-white border-grey-05 p-4 gap-3',
@@ -159,15 +180,24 @@ export default function SearchBar({
           }}
         />
       </div>
-      {/*
-       * 자동완성 키워드가 있는 경우 자동완성 박스가 표시됩니다.
-       */}
+
+      {/* 키워드 자동완성 박스 */}
       {suggestedKeywords.length !== 0 && (
         <div className='w-full absolute top-full z-50'>
           <div className='bg-white border border-grey-05 rounded-b-lg flex flex-col gap-1'>
             <div className='flex flex-col max-h-80 overflow-y-auto border-b border-grey-05'>
               {suggestedKeywords.map((item, index) => (
-                <Keyword key={index} text={item} domain={domain} />
+                <button
+                  key={index}
+                  onClick={() => {
+                    handleKeywordClick(item);
+                  }}
+                  className='w-full h-fit px-5 py-3 flex gap-3 items-center cursor-pointer hover:bg-grey-05 transition hover:duration-0'
+                >
+                  <FaSearch className='text-grey-20 text-xl p-1 bg-grey-05 rounded-full' />
+                  <span className='text-body03 flex-1 text-start'>{item}</span>
+                  <GoArrowUpRight />
+                </button>
               ))}
             </div>
             <a
@@ -179,49 +209,6 @@ export default function SearchBar({
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-/**
- * 자동완성 아이템
- */
-interface KeywordProps {
-  text: string;
-  domain: string;
-}
-
-function Keyword({ text, domain }: KeywordProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  /**
-   * 자동완성 키워드 아이템 클릭
-   * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
-   */
-  const handleClick = () => {
-    console.log(domain);
-    if (
-      location.pathname === `/${domain}` &&
-      location.search === `?keyword=${encodeURIComponent(text)}`
-    ) {
-      window.location.reload();
-    } else {
-      navigate({
-        pathname: `/${domain}`,
-        search: `?keyword=${encodeURIComponent(text.trim())}`,
-      });
-    }
-  };
-
-  return (
-    <div
-      onClick={handleClick}
-      className='px-5 py-3.5 flex gap-3 items-center cursor-pointer hover:bg-grey-05 transition hover:duration-0'
-    >
-      <FaSearch className='text-grey-20 text-xl p-1 bg-grey-05 rounded-full' />
-      <span className='text-body03 flex-1'>{text}</span>
-      <GoArrowUpRight />
     </div>
   );
 }
