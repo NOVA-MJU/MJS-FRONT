@@ -1,11 +1,10 @@
 import { FaSearch } from 'react-icons/fa';
-import { Typography } from '../Typography';
 import { useEffect, useRef, useState } from 'react';
-import { getSearchWordcompletion } from '../../../api/search';
 import clsx from 'clsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
-import { useDebounce } from '../../../hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
+import { getSearchWordcompletion } from '@/api/search';
 
 interface SearchBarProps {
   /**
@@ -137,12 +136,12 @@ export default function SearchBar({
           className,
         )}
       >
-        <Typography variant='body03' className='text-grey-20'>
+        <p className='text-body04 md:text-body01 text-grey-20'>
           <FaSearch />
-        </Typography>
+        </p>
         <input
           type='text'
-          className='flex-1 bg-transparent outline-none text-lg text-black placeholder-grey-20'
+          className='text-body04 md:text-body01 flex-1 bg-transparent outline-none text-black placeholder-grey-20'
           placeholder={'검색어를 입력하세요'}
           value={value}
           onChange={(e) => {
@@ -167,10 +166,10 @@ export default function SearchBar({
               ))}
             </div>
             <a
-              className='w-fit self-end py-2 px-4 text-grey-40 cursor-pointer'
+              className='w-fit self-end py-2 px-4 text-caption02 text-grey-40 cursor-pointer'
               onClick={handleCloseBox}
             >
-              <Typography variant='caption02'>닫기</Typography>
+              닫기
             </a>
           </div>
         </div>
@@ -214,9 +213,7 @@ function Keyword({ text }: KeywordProps) {
       className='px-5 py-3 flex gap-3 items-center cursor-pointer hover:bg-gray-100' // 스타일링을 위해 cursor-pointer와 hover 효과 추가
     >
       <FaSearch className='text-grey-20 text-xl p-1 bg-grey-05 rounded-full' />
-      <Typography variant='body03' className='flex-1'>
-        {text}
-      </Typography>
+      <span className='text-body03 flex-1'>{text}</span>
       <GoArrowUpRight />
     </div>
   );

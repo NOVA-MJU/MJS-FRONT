@@ -10,7 +10,8 @@ import RealtimeRank from '@/components/molecules/sections/rank';
 import HotBoardList from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
-import AcademicCalendarSection from '@/components/molecules/sections/calendar';
+import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
+import { Link } from 'react-router-dom';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -38,7 +39,7 @@ export default function Main() {
           <WeatherComponent />
           <AdCarousel />
           <RealtimeRank />
-          <AcademicCalendarSection />
+          <AcademicScheduleWidget />
           <HotBoardList />
         </div>
       </div>
@@ -46,10 +47,10 @@ export default function Main() {
 
   if (!isDesktop)
     return (
-      <div className='flex-1 px-5 py-6 flex flex-col gap-10'>
+      <div className='flex-1 py-2 flex flex-col gap-2 bg-blue-05'>
         <section>
-          <div className='px-3 py-2 rounded-sm bg-blue-05'>
-            <div className='flex items-center justify-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
+          <div className='px-5 py-1 rounded-xl bg-blue-05'>
+            <div className='flex items-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
               <FaBullhorn />
               <span>{ANNOUNCEMENT_TEXT}</span>
             </div>
@@ -57,33 +58,17 @@ export default function Main() {
         </section>
         <MealSection />
         <NoticeSection />
+        <div className='flex flex-col gap-4 bg-white rounded-xl p-5'>
+          <div className='flex justify-between items-center'>
+            <h3 className='text-title01 text-blue-35'>학사일정</h3>
+            <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </div>
+          <AcademicScheduleWidget />
+        </div>
+        <NewsSection />
+        <BroadcastSection />
       </div>
-      // <main className='flex-1 w-full md:w-[1280px] mx-auto flex flex-col px-7 py-12 md:px-0'>
-      //   <div className='flex flex-col md:flex-row gap-6'>
-      //     {/* 좌 컬럼: 검색 + 메인 콘텐츠 */}
-      //     <div className='min-w-0 w-full md:w-2/3 flex flex-col gap-12 mb-12'>
-      //       <div className='hidden md:flex flex-col gap-3'></div>
-      //       <div className='hidden'></div>
-      //       <div className='hidden md:block md:order-1'></div>
-      //       <div className='order-1 md:order-2'></div>
-      //       <div className='order-3 md:order-3'></div>
-      //       <div className='hidden md:block md:order-4'></div>
-      //       <div className='order-2 md:hidden'>
-      //         <AcademicCalendar />
-      //       </div>
-      //     </div>
-      //     <div className='min-w-0 w-full md:w-1/3 flex flex-col gap-12 mb-12'>
-      //       <div className='hidden md:block'>
-      //         <ProfileComponent />
-      //       </div>
-      //       <div className='hidden md:block'></div>
-      //       <div className='hidden md:block'></div>
-      //       <div className='hidden md:block '></div>
-      //       <div className='hidden md:block'>
-      //         <HotBoardList />
-      //       </div>
-      //     </div>
-      //   </div>
-      // </main>
     );
 }

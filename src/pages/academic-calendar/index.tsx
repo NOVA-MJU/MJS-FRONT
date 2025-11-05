@@ -1,51 +1,113 @@
 import { useEffect, useState } from 'react';
-import Divider from '../../components/atoms/Divider';
-import CalendarGrid, { type CalendarEventItem } from '../../components/organisms/CalendarGrid';
-import CalendarList from '../../components/organisms/CalendarList';
-import { getAcademicEvents } from '../../api/calendar';
+import { useResponsive } from '@/hooks/useResponse';
+import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
+import type { CalendarEventItem } from '@/components/organisms/CalendarGrid';
+import { getAcademicEvents } from '@/api/calendar';
+import Divider from '@/components/atoms/Divider';
+import CalendarGrid from '@/components/organisms/CalendarGrid';
+import CalendarList from '@/components/organisms/CalendarList';
+import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calendar';
+import Calendar from '@/components/molecules/Calendar';
 
 export default function AcademicCalendar() {
+  const [, setIsLoading] = useState(true);
+  const [, setIsError] = useState(false);
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
-  const [events, setEvents] = useState<CalendarEventItem[] | null>(null);
+  const [events, setEvents] = useState<CalendarMonthlyRes | null>(null);
+  const { isDesktop } = useResponsive();
 
+  useEffect(() => {
+    getEvents(currentYear, currentMonth);
+  }, [currentYear, currentMonth]);
+
+  /**
+   * 캘린더 데이터를 조회합니다
+   */
+  async function getEvents(year: number, month: number) {
+    try {
+      setIsLoading(true);
+      const res = await getAcademicCalendar(year, month);
+      console.log(res);
+      setEvents(res);
+      setIsError(false);
+    } catch (e) {
+      setIsError(true);
+      console.error('academic-calendar.tsx', e);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  /**
+   * @deprecated 삭제예정 코드
+   */
+  const [data, setData] = useState<CalendarEventItem[] | null>(null);
   useEffect(() => {
     (async () => {
       try {
         const res = await getAcademicEvents({ year: currentYear });
-        setEvents(res);
+        setData(res);
       } catch (err) {
         console.error(err);
       }
     })();
   }, [currentYear]);
 
-  return (
-    <div className='px-4 md:px-7 py-8 md:py-12 flex flex-col gap-4 md:gap-6'>
-      <h2 className='text-heading01 text-mju-primary md:text-2xl text-xl md:hidden'>학사일정</h2>
-      <span className='md:hidden'>
-        <Divider />
-      </span>
+  /**
+   * 데스크탑 화면을 표시합니다
+   */
+  if (isDesktop)
+    return (
+      <div className='px-4 md:px-7 py-8 md:py-12 flex flex-col gap-4 md:gap-6'>
+        <h2 className='text-heading01 text-mju-primary md:text-2xl text-xl md:hidden'>학사일정</h2>
+        <span className='md:hidden'>
+          <Divider />
+        </span>
 
-      <section
-        className='
+        <section
+          className='
           grid gap-4 md:gap-6
           grid-cols-1
           md:grid-cols-[2fr_1fr]
         '
-      >
-        <div className='w-full'>
-          <CalendarGrid
-            events={events}
-            onYearChange={setCurrentYear}
-            onMonthChange={setCurrentMonth}
-          />
-        </div>
+        >
+          <div className='w-full'>
+            <CalendarGrid
+              events={data}
+              onYearChange={setCurrentYear}
+              onMonthChange={setCurrentMonth}
+            />
+          </div>
 
-        <aside className='hidden md:block w-full' aria-hidden={false}>
-          <CalendarList events={events} month={currentMonth} />
-        </aside>
-      </section>
-    </div>
-  );
+          <aside className='hidden md:block w-full' aria-hidden={false}>
+            <CalendarList events={data} month={currentMonth} />
+          </aside>
+        </section>
+      </div>
+    );
+
+  /**
+   * 모바일 화면을 표시합니다
+   */
+  if (!isDesktop)
+    return (
+      <div className='flex-1 p-5'>
+        <div className='flex flex-col gap-4'>
+          <div>
+            <span className='text-title01 text-blue-35'>학사일정</span>
+          </div>
+          <div>
+            <Calendar
+              events={events}
+              onYearChange={setCurrentYear}
+              onMonthChange={setCurrentMonth}
+            />
+          </div>
+          <div>
+            <AcademicScheduleWidget events={events} />
+          </div>
+        </div>
+      </div>
+    );
 }

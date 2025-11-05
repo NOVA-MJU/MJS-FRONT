@@ -1,0 +1,64 @@
+/**
+ * @start_url 앱 실행 시 접속할 주소입니다. 앱 실행 시 홈으로 이동하도록 하려면 "/"을 입력하세요
+ *
+ * @display 화면에 표시할 모드를 설정하세요
+ * ```
+ * "standalone": 앱이 마치 기기에 설치된 네이티브 앱처럼 동작합니다.
+ * "fullscreen": 상태표시줄까지 모두 숨깁니다. 앱이 화면 전체를 차지합니다.
+ * "minimal-ui": 최소한의 브라우저 ui를 남겨둡니다.
+ * "browser": (기본값) 일반적인 브라우저 화면으로 실행됩니다.
+ * ```
+ *
+ * @background_color 앱 실행 시 스플래시 화면에 표시할 배경색을 입력하세요
+ *
+ * @orientation 화면 모드를 설정하세요 `"portrait" (세로고정)` `"landscape" (가로고정)` `"any" (모두허용)`
+ *
+ * @theme_color 앱의 테마 컬러를 설정하세요. 이 값은 모바일 브라우저 주소창/툴바, PWA 상태 표시줄, 앱 카드의 머리글 색상으로 사용됩니다.
+ *
+ * @description 이 웹 애플리케이션이 무엇을 하는지 설명을 입력하세요.
+ *
+ * @icons
+ * ```
+ * "any": 아이콘의 테두리를 다듬어서 제공하세요.
+ * 어디에서나 사용할 수 있는 일반적인 아이콘이고, 브라우저는 이 아이콘의 모양을 그대로 표시합니다.
+ *
+ * "maskable": 아이콘 테두리를 처리하지 않고 사각형 아이콘 그대로 입력하세요.
+ * 안드로이드와 같은 최신 OS는 모든 앱 아이콘을 일관된 모양(원형, 사각형, 둥근 사각형, 눈물방울 모양 등)으로 통일하려 하기 때문에 maskable 형식으로 아이콘을 제공하면 시스템에서 아이템의 테두리를 처리합니다.
+ * ```
+ */
+{
+  "name": "MJSearch",
+  "short_name": "MJSearch",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#3367D6",
+  "orientation": "portrait",
+  "theme_color": "#3367D6",
+  "description": "MJSearch Web Application",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
