@@ -6,7 +6,6 @@ import { useNavTracking } from '../../hooks/gtm/useNavTracking';
 import toast from 'react-hot-toast';
 import { useResponsive } from '@/hooks/useResponse';
 import { IoIosClose, IoIosMenu, IoIosSearch } from 'react-icons/io';
-import SearchBar from '../atoms/SearchBar';
 import { logout as apiLogout } from '@/api/user';
 
 export default function Navbar() {

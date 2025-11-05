@@ -1,4 +1,3 @@
- 
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
 

@@ -124,16 +124,22 @@
 /**
  * BlockNote.js가 구동될 때 좌우 padding을 제거합니다
  */
-/*
- .bn-editor {
-  margin: 0 !important;
-  padding: 0 !important;
-  max-width: 100% !important;
+@media (max-width: 768px) {
+  .bn-editor {
+    padding: 0 22px !important;
+  }
+
+  .bn-side-menu > *:nth-child(1) {
+    margin-left: 24px !important;
+  }
+  .bn-side-menu > *:nth-child(2) {
+    margin-left: -6px !important;
+  }
 }
 
 .block-editor-handle {
   position: absolute;
-  left: auto; 
+  left: auto;
   right: 0;
   transform: translateX(100%);
-} */
+}
