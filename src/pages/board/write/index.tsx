@@ -171,7 +171,7 @@ export default function BoardWrite() {
         className='flex-1 px-4 md:px-0 py-2 border-1 md:border-2 border-blue-05 rounded-lg cursor-text'
         onClick={handleFocusEditor}
       >
-        <div className='px-4 py-2 md:px-0 overflow-visible' ref={editorWrapperRef}>
+        <div className='py-2 md:px-0 overflow-visible' ref={editorWrapperRef}>
           <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
       </div>
