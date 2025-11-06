@@ -11,8 +11,8 @@ import { SkeletonProfile } from '@/components/atoms/Skeleton';
  * 카테고리 및 페이지 길이 조절
  */
 const CATEGORIES: Record<string, string> = {
-  FREE: '자유게시판',
   NOTICE: '정보게시판',
+  FREE: '자유게시판',
 };
 const ITEM_COUNT = 4;
 
