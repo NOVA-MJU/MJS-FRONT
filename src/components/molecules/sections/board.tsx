@@ -1,94 +1,91 @@
-import { type BoardItem, getBoards } from '@/api/board';
-import { Skeleton } from '@/components/atoms/Skeleton';
+import { type BoardItem, getBoards, type Category } from '@/api/board';
+import { Tabs } from '@/components/atoms/Tabs';
 import { useEffect, useState } from 'react';
+import { IoIosHeartEmpty } from 'react-icons/io';
 import { Link } from 'react-router-dom';
+import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
+import { formatToElapsedTime } from '@/utils';
+import { SkeletonProfile } from '@/components/atoms/Skeleton';
 
-export default function HotBoardList() {
-  const [isError, setIsError] = useState(false);
+/**
+ * 카테고리 및 페이지 길이 조절
+ */
+const CATEGORIES: Record<string, string> = {
+  FREE: '자유게시판',
+  NOTICE: '정보게시판',
+};
+const ITEM_COUNT = 4;
+
+/**
+ * 메인페이지에 표시할 자유게시판 위젯 컴포넌트
+ */
+export default function BoardSection() {
+  const [category, setCategory] = useState<keyof typeof CATEGORIES>('FREE');
+  const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [boards, setBoards] = useState<BoardItem[]>([]);
 
-  /**
-   * 데이터 불러오기
-   */
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  /**
-   * 게시판 데이터 요청
-   */
-  async function fetchData() {
-    try {
-      setIsLoading(true);
-      const res = await getBoards();
-      setBoards(res.content);
-      setIsError(false);
-    } catch (e) {
-      console.error('HotBoardList.tsx::fetchData()', e);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    (async () => {
+      try {
+        setIsLoading(true);
+        const res = await getBoards(0, ITEM_COUNT, category as Category);
+        setContents(res.content);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [category]);
 
   return (
     <section>
-      <div className='flex flex-col gap-3'>
-        <div className='px-3'>
-          <h2 className='text-title02 text-mju-primary'>자유게시판</h2>
-        </div>
-        <div className='p-3 flex flex-col gap-2 border-2 border-grey-05 rounded-xl'>
-          {isError && (
-            <div className='py-4 flex flex-col gap-3 items-center'>
-              <p className='text-body02'>문제가 발생했습니다</p>
-              <button
-                className='bg-grey-05 px-2 py-1 cursor-pointer rounded-xl text-caption01'
-                onClick={fetchData}
-              >
-                다시 시도하기
-              </button>
-            </div>
-          )}
-          {isLoading && [...Array(5)].map((_, index) => <Skeleton key={index} className='h-10' />)}
+      <div className='flex flex-col gap-2'>
+        {/* 탭 선택기 */}
+        <Tabs tabs={CATEGORIES} currentTab={category} setCurrentTab={setCategory} />
+
+        {/* 게시글 표시 */}
+        <div className='flex flex-col gap-2'>
+          {isLoading && [...Array(6)].map((_, index) => <SkeletonProfile key={index} />)}
+
           {!isLoading &&
-            boards &&
-            boards
-              .slice(0, 5)
-              .map((board) => (
-                <BoardItem
-                  key={board.uuid}
-                  uuid={board.uuid}
-                  title={board.title}
-                  isHighlighted={board.popular}
-                />
-              ))}
+            contents.map((content, index) => {
+              const isLast = index === contents.length - 1;
+
+              return (
+                <Link
+                  to={`/board/${content.uuid}`}
+                  className={`
+                  w-full h-fit
+                  ${!isLast && 'border-b border-grey-05'}
+                `}
+                >
+                  <div className='flex flex-col gap-2 mb-2'>
+                    {/* 제목표시영역 */}
+                    <div className='px-1 flex flex-col gap-1'>
+                      <span className='text-body04 text-black line-clamp-1'>{content.title}</span>
+                      <span className='text-body05 text-black line-clamp-2'>
+                        {content.previewContent}
+                      </span>
+                    </div>
+                    {/* 날짜표시영역 */}
+                    <div className='px-1 flex items-center justify-between'>
+                      <div className='flex items-center gap-1'>
+                        <IoIosHeartEmpty size={12} className='text-blue-10' />
+                        <span className='text-caption04 text-grey-40'>{content.likeCount}</span>
+                        <HiOutlineChatBubbleOvalLeftEllipsis size={12} className='text-blue-10' />
+                        <span className='text-caption04 text-grey-40'>{content.commentCount}</span>
+                      </div>
+                      <span className='text-caption02 text-grey-40'>
+                        {formatToElapsedTime(content.publishedAt)}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
         </div>
       </div>
     </section>
-  );
-}
-
-/**
- * 게시판 아이템 항목
- */
-interface BoardItemProps {
-  uuid: string;
-  title: string;
-  isHighlighted: boolean;
-}
-
-function BoardItem({ uuid, title, isHighlighted }: BoardItemProps) {
-  return (
-    <Link to={`/board/${uuid}`}>
-      <div className='px-3 py-2 flex items-center gap-3 rounded-xl hover:bg-blue-05 transition'>
-        {isHighlighted && (
-          <div className='px-3 py-2 text-center bg-mju-primary rounded-full'>
-            <p className='text-caption01 text-white'>HOT</p>
-          </div>
-        )}
-        <p className='text-body03 line-clamp-1'>{title}</p>
-      </div>
-    </Link>
   );
 }

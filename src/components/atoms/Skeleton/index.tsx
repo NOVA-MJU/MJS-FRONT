@@ -5,9 +5,9 @@ function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>)
   return <div className={`min-h-5 animate-pulse rounded-md bg-grey-05 ${className}`} {...props} />;
 }
 
-function SkeletonProfile() {
+function SkeletonProfile({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className='flex items-center space-x-4'>
+    <div className={`flex items-center space-x-4 ${className}`} {...props}>
       <Skeleton className='h-12 w-12 rounded-full' />
       <div className='space-y-2'>
         <Skeleton className='h-4 w-[250px]' />
@@ -17,9 +17,9 @@ function SkeletonProfile() {
   );
 }
 
-function SkeletonCard() {
+function SkeletonCard({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className='flex flex-col space-y-3'>
+    <div className={`flex flex-col space-y-3 ${className}`} {...props}>
       <Skeleton className='h-[125px] w-[250px] rounded-xl' />
       <div className='space-y-2'>
         <Skeleton className='h-4 w-[250px]' />

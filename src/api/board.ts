@@ -8,17 +8,18 @@ import { type ApiResponse, type Paginated } from './types';
  * @param sortBy 정렬 기준을 입력하세요. 기본값을 'createdAt' 입니다.
  * @param direction 정렬 순서를 입력하세요.
  */
-type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
-type Category = 'FREE' | 'NOTICE';
+export type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
+export type Category = 'ALL' | 'FREE' | 'NOTICE';
 
 export const getBoards = async (
   page = 0,
   size = 10,
+  communityCategory: Category = 'ALL',
   sortBy: BoardSortBy = 'createdAt',
   direction = 'DESC',
 ) => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
-    params: { page, size, sortBy, direction },
+    params: { page, size, communityCategory, sortBy, direction },
   });
   return data.data;
 };
