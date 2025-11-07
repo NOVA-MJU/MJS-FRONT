@@ -72,7 +72,7 @@ export default function NoticeSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab, recentYear]);
 
-  if (isDesktop) {
+  if (isDesktop)
     return (
       <section className='flex flex-col gap-3'>
         <div className='px-3 flex justify-between items-center'>
@@ -112,56 +112,34 @@ export default function NoticeSection() {
         </div>
       </section>
     );
-  } else if (!isDesktop) {
+
+  if (!isDesktop)
     return (
       <section>
-        <div className='flex flex-col gap-3 p-5 bg-white rounded-xl'>
-          <div className='flex items-center justify-between'>
-            <h2 className='text-title01 text-blue-35'>공지사항</h2>
-            <Link to='/notice' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </div>
-          <div className='flex flex-col gap-3'>
-            <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
-            <div className='flex flex-col gap-1'>
-              {isLoading &&
-                [...Array(CONTENT_LENGTH)].map((_, index) => (
-                  <Skeleton key={index} className='my-1 h-7' />
-                ))}
-              {!isLoading &&
-                selectedInfo.map((info, index) => (
-                  <MobileNoticeItem
-                    key={index}
-                    link={info.link}
-                    title={info.title}
-                    publishedDate={formatToElapsedTime(info.date)}
-                  />
-                ))}
-            </div>
+        <div className='flex flex-col gap-3'>
+          <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+
+          {/* 학사공지 아이템 목록 */}
+          <div className='flex flex-col gap-1'>
+            {isLoading &&
+              [...Array(CONTENT_LENGTH)].map((_, index) => (
+                <Skeleton key={index} className='my-1 h-7' />
+              ))}
+            {!isLoading &&
+              selectedInfo.map((info, index) => (
+                <a
+                  key={index}
+                  href={info.link}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='py-2 flex gap-1.5 justify-between items-center'
+                >
+                  <span className='text-[15px] text-black flex-1 line-clamp-1'>{info.title}</span>
+                  <span className='text-body05 text-grey-40'>{formatToElapsedTime(info.date)}</span>
+                </a>
+              ))}
           </div>
         </div>
       </section>
     );
-  }
-}
-
-interface MobileNoticeItemProps {
-  link: string;
-  title: string;
-  publishedDate: string;
-}
-
-function MobileNoticeItem({ link, title, publishedDate }: MobileNoticeItemProps) {
-  return (
-    <a
-      href={link}
-      target='_blank'
-      rel='noopener noreferrer'
-      className='py-2 flex gap-1.5 justify-between items-center'
-    >
-      <span className='text-[15px] text-black flex-1 line-clamp-1'>{title}</span>
-      <span className='text-body05 text-grey-40'>{publishedDate}</span>
-    </a>
-  );
 }
