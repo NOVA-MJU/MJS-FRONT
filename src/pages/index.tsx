@@ -4,14 +4,15 @@ import NewsSection from '@/components/molecules/sections/news';
 import NoticeSection from '@/components/molecules/sections/notice';
 import SearchBar from '@/components/atoms/SearchBar';
 import ProfileSection from '@/components/molecules/sections/profile';
-import WeatherComponent from '@/components/molecules/sections';
+import WeatherComponent from '@/components/molecules/sections/weather';
 import AdCarousel from '@/components/molecules/sections/advertise';
 import RealtimeRank from '@/components/molecules/sections/rank';
-import HotBoardList from '@/components/molecules/sections/board';
+import HotBoardList from '@/components/molecules/sections/hot-board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import { Link } from 'react-router-dom';
+import BoardSection from '@/components/molecules/sections/board';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -58,17 +59,59 @@ export default function Main() {
         </section>
         <MealSection />
         <NoticeSection />
-        <div className='flex flex-col gap-4 bg-white rounded-xl p-5'>
-          <div className='flex justify-between items-center'>
+
+        {/* 학사일정 위젯 */}
+        <Card>
+          <CardHeader>
             <h3 className='text-title01 text-blue-35'>학사일정</h3>
             <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
               더보기
             </Link>
-          </div>
+          </CardHeader>
           <AcademicScheduleWidget />
-        </div>
+        </Card>
+
+        {/* 게시판 위젯 */}
+        <Card>
+          <CardHeader>
+            <h3 className='text-title01 text-blue-35'>게시판</h3>
+            <Link to='/board' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </CardHeader>
+          <BoardSection />
+        </Card>
+
         <NewsSection />
         <BroadcastSection />
       </div>
     );
+}
+
+function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`
+        flex flex-col gap-4 bg-white rounded-xl p-5
+        ${className}
+    `}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={`
+        flex justify-between items-center
+        ${className}
+    `}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 }
