@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { formatToLocalDate } from '@/utils';
 import { fetchBroadCastInfo, type BroadcastItem } from '@/api/main/broadcast-api';
@@ -10,6 +10,10 @@ import SearchBar from '@/components/atoms/SearchBar';
 const PAGE_SIZE = 9;
 
 export default function Broadcast() {
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword');
+  const [, setInitialKeyword] = useState('');
+
   const { id } = useParams<{ id: string }>();
   const [totalPage, setTotalPage] = useState(1);
   const [page, setPage] = useState(0);
@@ -17,23 +21,54 @@ export default function Broadcast() {
   const [contents, setContents] = useState<BroadcastItem[]>([]);
   const { isDesktop } = useResponsive();
 
+  /**
+   *
+   */
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetchBroadCastInfo(page, PAGE_SIZE);
-        setTotalPage(res.totalPages);
-        setContents(res.content);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [id, page]);
+    if (keyword) setInitialKeyword(keyword);
+  }, [keyword]);
+
+  useEffect(() => {
+    /**
+     * 검색어 없는 경우 모든 데이터 조회
+     */
+    if (!keyword) {
+      (async () => {
+        try {
+          setIsLoading(true);
+          const res = await fetchBroadCastInfo(page, PAGE_SIZE);
+          setTotalPage(res.totalPages);
+          setContents(res.content);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    } else {
+      /**
+       * 검색어 있는 경우 검색 요청
+       */
+      (async () => {
+        try {
+          setIsLoading(true);
+          // TODO: 검색
+
+          // TODO: 페이지네이션 초기화
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    }
+  }, [id, page, keyword]);
 
   if (isLoading) return <LoadingIndicator />;
 
+  /**
+   * 데스크톱 페이지
+   */
   if (isDesktop)
     return (
       <div className='flex-1 flex flex-col gap-4 md:gap-8 p-4 md:p-8'>
@@ -72,12 +107,15 @@ export default function Broadcast() {
       </div>
     );
 
+  /**
+   * 모바일 페이지
+   */
   if (!isDesktop)
     return (
       <div className='p-5 flex-1 flex flex-col gap-6'>
         <div className='flex flex-col gap-3'>
           <h2 className='text-title01 text-blue-35'>명대뉴스</h2>
-          <SearchBar domain='news' />
+          <SearchBar domain='broadcast' />
         </div>
 
         {/* 방송국 목록 표시 */}
