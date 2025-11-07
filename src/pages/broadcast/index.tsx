@@ -5,25 +5,10 @@ import { fetchBroadCastInfo, type BroadcastItem } from '@/api/main/broadcast-api
 import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 import Pagination from '@/components/molecules/common/Pagination';
 import { useResponsive } from '@/hooks/useResponse';
-
-/**
- *
- * @param url
- * @returns
- */
-const extractYoutubeId = (url: string): string => {
-  let match = url.match(/v=([^&]+)/);
-  if (match) return match[1];
-  match = url.match(/youtu\.be\/([^?]+)/);
-  if (match) return match[1];
-  return '';
-};
+import SearchBar from '@/components/atoms/SearchBar';
 
 const PAGE_SIZE = 9;
 
-/**
- *
- */
 export default function Broadcast() {
   const { id } = useParams<{ id: string }>();
   const [totalPage, setTotalPage] = useState(1);
@@ -86,4 +71,54 @@ export default function Broadcast() {
         <Pagination page={page} totalPages={totalPage} onChange={setPage} />
       </div>
     );
+
+  if (!isDesktop)
+    return (
+      <div className='p-5 flex-1 flex flex-col gap-6'>
+        <div className='flex flex-col gap-3'>
+          <h2 className='text-title01 text-blue-35'>명대뉴스</h2>
+          <SearchBar domain='news' />
+        </div>
+
+        {/* 방송국 목록 표시 */}
+        <div className='flex-1 flex flex-col gap-2'>
+          {contents.map((content) => (
+            <article key={content.url} className='flex flex-col gap-1'>
+              <iframe
+                className='w-full h-54 rounded-lg'
+                src={`https://www.youtube.com/embed/${extractYoutubeId(content.url)}`}
+                title={content.title}
+                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                allowFullScreen
+              />
+              <div className='px-4 py-2 border border-grey-10 rounded-lg'>
+                <div className='flex flex-col gap-1'>
+                  <span className='text-body04 text-black'>{content.title}</span>
+                  <span className='text-body05 text-grey-40'>{content.playlistTitle}</span>
+                  <span className='text-caption04 text-grey-40'>
+                    {formatToLocalDate(content.publishedAt)}
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* 페이지네이션 */}
+        <Pagination page={page} totalPages={totalPage} onChange={setPage} />
+      </div>
+    );
 }
+
+/**
+ *
+ * @param url
+ * @returns
+ */
+const extractYoutubeId = (url: string): string => {
+  let match = url.match(/v=([^&]+)/);
+  if (match) return match[1];
+  match = url.match(/youtu\.be\/([^?]+)/);
+  if (match) return match[1];
+  return '';
+};
