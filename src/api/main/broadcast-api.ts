@@ -18,6 +18,6 @@ export interface BroadcastItem {
   title: string;
   url: string;
   thumbnailUrl: string;
-  playlistTitle: string;
+  playlistTitle: string | null;
   publishedAt: string;
 }

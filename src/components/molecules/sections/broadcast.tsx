@@ -1,10 +1,10 @@
-import { fetchBroadCastInfo } from '@/api/main/broadcast-api';
+import { fetchBroadCastInfo, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import type { BroadcastContent } from '@/types/broadcast/broadcastInfo';
+import { formatToLocalDate } from '@/utils';
 import { useEffect, useState } from 'react';
 
 export default function BroadcastSection() {
-  const [broadcasts, setBroadcasts] = useState<BroadcastContent[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const page = 0;
@@ -51,7 +51,7 @@ export default function BroadcastSection() {
                 <div className='p-3 flex flex-col gap-2 justify-between'>
                   <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
                   <p className='text-caption02 text-grey-40 text-end'>
-                    {formatDate(item.publishedAt)}
+                    {formatToLocalDate(item.publishedAt)}
                   </p>
                 </div>
               </div>
@@ -65,11 +65,4 @@ export default function BroadcastSection() {
 const extractYoutubeId = (url: string): string => {
   const match = url.match(/v=([^&]+)/);
   return match ? match[1] : '';
-};
-
-const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  return `${date.getFullYear()}.${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 };
