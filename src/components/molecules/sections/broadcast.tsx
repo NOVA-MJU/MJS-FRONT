@@ -2,7 +2,6 @@ import { fetchBroadCastInfo } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { BroadcastContent } from '@/types/broadcast/broadcastInfo';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 export default function BroadcastSection() {
   const [broadcasts, setBroadcasts] = useState<BroadcastContent[]>([]);
@@ -30,15 +29,7 @@ export default function BroadcastSection() {
 
   return (
     <section>
-      <div className='w-full min-w-0 flex flex-col gap-3 p-5 bg-white rounded-xl'>
-        <div className='flex justify-between px-3 items-center'>
-          <h2 className='text-title01 text-blue-35 md:text-heading02 md:text-mju-primary'>
-            명대뉴스
-          </h2>
-          <Link to='/broadcast' className='text-caption01 text-grey-20'>
-            더보기
-          </Link>
-        </div>
+      <div className='w-full min-w-0 flex flex-col gap-3'>
         <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
           {isLoading &&
             [...Array(5)].map((_, index) => (

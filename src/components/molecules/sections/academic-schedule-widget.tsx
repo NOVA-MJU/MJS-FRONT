@@ -1,5 +1,4 @@
 import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calendar';
-import Button from '@/components/atoms/Button';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useEffect, useState } from 'react';
 
@@ -20,7 +19,6 @@ interface AcademicScheduleWidgetProps {
 
 export default function AcademicScheduleWidget({ className, events }: AcademicScheduleWidgetProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   const [scheduleData, setScheduleData] = useState<CalendarMonthlyRes | null>(null);
   const categoryOrder: (keyof typeof scheduleCategories)[] = [
     'all',
@@ -47,10 +45,8 @@ export default function AcademicScheduleWidget({ className, events }: AcademicSc
       const currentMonth = currentDate.getMonth() + 1;
       const res = await getAcademicCalendar(currentYear, currentMonth);
       setScheduleData(res);
-      setIsError(false);
     } catch (e) {
       console.error('academic-schedule-widget.tsx', e);
-      setIsError(true);
     } finally {
       setIsLoading(false);
     }
@@ -59,65 +55,54 @@ export default function AcademicScheduleWidget({ className, events }: AcademicSc
   return (
     <section>
       <div className={className}>
-        {isError ? (
-          <div className='p-4 flex flex-col items-center gap-4'>
-            <h3 className='text-title01'>문제가 발생했습니다</h3>
-            <Button onClick={getData}>다시 시도하기</Button>
-          </div>
-        ) : (
-          <div className='flex flex-col gap-3'>
-            {isLoading && (
-              <>
-                <Skeleton className='h-8' />
-                <Skeleton className='h-12' />
-                <Skeleton className='h-8' />
-                <Skeleton className='h-4' />
-              </>
-            )}
-            {!isLoading &&
-              scheduleData &&
-              categoryOrder.map((key, index) => {
-                const category = scheduleCategories[key];
-                const events = scheduleData[key];
+        <div className='flex flex-col gap-3'>
+          {isLoading && (
+            <>
+              <Skeleton className='h-8' />
+              <Skeleton className='h-12' />
+              <Skeleton className='h-8' />
+              <Skeleton className='h-4' />
+            </>
+          )}
+          {!isLoading &&
+            scheduleData &&
+            categoryOrder.map((key, index) => {
+              const category = scheduleCategories[key];
+              const events = scheduleData[key];
 
-                /**
-                 * 해당 카테고리에 일정이 없으면 렌더링하지 않습니다.
-                 */
-                if (!events || events.length === 0) {
-                  return null;
-                }
+              /**
+               * 해당 카테고리에 일정이 없으면 렌더링하지 않습니다.
+               */
+              if (!events || events.length === 0) {
+                return null;
+              }
 
-                return (
-                  <div key={key}>
-                    <div className='flex gap-2'>
-                      <div
-                        className={`w-12 flex items-center justify-center ${category.className}`}
-                      >
-                        <span className='text-[12px] text-white'>{category.label}</span>
-                      </div>
-                      <div className='flex flex-col gap-0.5'>
-                        <ul>
-                          {events.map((event) => (
-                            <li key={event.id} className='flex items-center'>
-                              <span className='inline-block w-20 text-[12px] text-grey-40'>
-                                {formatDateRange(event.startDate, event.endDate)}
-                              </span>
-                              <span className='text-[14px] text-black line-clamp-1'>
-                                {removeBracketedContent(event.description)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+              return (
+                <div key={key}>
+                  <div className='flex gap-2'>
+                    <div className={`w-12 flex items-center justify-center ${category.className}`}>
+                      <span className='text-[12px] text-white'>{category.label}</span>
                     </div>
-                    {index < categoryOrder.length - 1 && (
-                      <div className='h-[1px] mt-3 bg-grey-10' />
-                    )}
+                    <div className='flex flex-col gap-0.5'>
+                      <ul>
+                        {events.map((event) => (
+                          <li key={event.id} className='flex items-center'>
+                            <span className='inline-block w-20 text-[12px] text-grey-40'>
+                              {formatDateRange(event.startDate, event.endDate)}
+                            </span>
+                            <span className='text-[14px] text-black line-clamp-1'>
+                              {removeBracketedContent(event.description)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                );
-              })}
-          </div>
-        )}
+                  {index < categoryOrder.length - 1 && <div className='h-[1px] mt-3 bg-grey-10' />}
+                </div>
+              );
+            })}
+        </div>
       </div>
     </section>
   );

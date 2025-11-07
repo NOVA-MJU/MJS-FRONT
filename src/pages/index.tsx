@@ -13,6 +13,7 @@ import { FaBullhorn } from 'react-icons/fa';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import { Link } from 'react-router-dom';
 import BoardSection from '@/components/molecules/sections/board';
+import { Card, CardHeader } from '@/components/atoms/Card';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
@@ -49,6 +50,7 @@ export default function Main() {
   if (!isDesktop)
     return (
       <div className='flex-1 py-2 flex flex-col gap-2 bg-blue-05'>
+        {/* 확성기 위젯 */}
         <section>
           <div className='px-5 py-1 rounded-xl bg-blue-05'>
             <div className='flex items-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
@@ -57,8 +59,22 @@ export default function Main() {
             </div>
           </div>
         </section>
-        <MealSection />
-        <NoticeSection />
+
+        {/* 식단표 위젯 */}
+        <Card>
+          <MealSection />
+        </Card>
+
+        {/* 공지사항 위젯 */}
+        <Card>
+          <CardHeader>
+            <h2 className='text-title01 text-blue-35'>공지사항</h2>
+            <Link to='/notice' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </CardHeader>
+          <NoticeSection />
+        </Card>
 
         {/* 학사일정 위젯 */}
         <Card>
@@ -82,36 +98,27 @@ export default function Main() {
           <BoardSection />
         </Card>
 
-        <NewsSection />
-        <BroadcastSection />
+        {/* 명대신문 위젯 */}
+        <Card>
+          <CardHeader>
+            <h3 className='text-title01 text-blue-35'>명대신문</h3>
+            <Link to='/news' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </CardHeader>
+          <NewsSection />
+        </Card>
+
+        {/* 명대뉴스 위젯 */}
+        <Card>
+          <CardHeader>
+            <h3 className='text-title01 text-blue-35'>명대뉴스</h3>
+            <Link to='/broadcast' className='text-caption01 text-grey-20'>
+              더보기
+            </Link>
+          </CardHeader>
+          <BroadcastSection />
+        </Card>
       </div>
     );
-}
-
-function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`
-        flex flex-col gap-4 bg-white rounded-xl p-5
-        ${className}
-    `}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`
-        flex justify-between items-center
-        ${className}
-    `}
-      {...props}
-    >
-      {children}
-    </div>
-  );
 }

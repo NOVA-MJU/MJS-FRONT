@@ -187,7 +187,7 @@ export default function MealSection() {
     return (
       <section>
         <Link to='/menu'>
-          <div className='px-8 py-4 flex flex-col items-center gap-2 rounded-xl bg-white'>
+          <div className='flex flex-col items-center gap-2'>
             <p className='text-body02'>9월 11일 (목) 점심</p>
             <Divider variant='thin' />
             <div className='flex flex-wrap justify-center gap-x-2 gap-y-1'>
