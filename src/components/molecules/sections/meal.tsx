@@ -156,7 +156,7 @@ export default function MealSection() {
     return (
       <section className='w-full flex flex-col gap-3'>
         <div className='px-3 flex justify-between items-center'>
-          <h1 className='text-heading02 text-mju-primary'>학식</h1>
+          <h3 className='text-heading02 text-mju-primary'>학식</h3>
           <Link to='/menu'>
             <IoIosArrowForward className='text-blue-10' size={20} />
           </Link>
@@ -188,7 +188,7 @@ export default function MealSection() {
       <section>
         <Link to='/menu'>
           <div className='flex flex-col items-center gap-2'>
-            <p className='text-body02'>9월 11일 (목) 점심</p>
+            <h3 className='text-body02'>{mealInfo.uiFullLabel}</h3>
             <Divider variant='thin' />
             <div className='flex flex-wrap justify-center gap-x-2 gap-y-1'>
               {isLoading && (
@@ -208,7 +208,6 @@ export default function MealSection() {
                 meals.map((meal, index) => (
                   <span key={index} className='text-body03 whitespace-nowrap'>
                     {meal}
-                    {index < meals.length - 1 && ', '}
                   </span>
                 ))}
             </div>

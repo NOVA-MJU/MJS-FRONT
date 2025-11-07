@@ -1,4 +1,4 @@
-function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={`
@@ -6,13 +6,11 @@ function Card({ className, children, ...props }: React.HTMLAttributes<HTMLDivEle
         ${className}
     `}
       {...props}
-    >
-      {children}
-    </div>
+    />
   );
 }
 
-function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={`
@@ -20,9 +18,7 @@ function CardHeader({ className, children, ...props }: React.HTMLAttributes<HTML
         ${className}
     `}
       {...props}
-    >
-      {children}
-    </div>
+    />
   );
 }
 
