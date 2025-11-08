@@ -1,4 +1,4 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { formatToLocalDate } from '@/utils';
 import { fetchBroadcasts, searchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
@@ -11,16 +11,23 @@ import { HighlightedText } from '@/components/atoms/HighlightedText';
 const PAGE_SIZE = 9;
 
 export default function Broadcast() {
-  const [searchParams] = useSearchParams();
-  const keyword = searchParams.get('keyword');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [initialKeyword, setInitialKeyword] = useState('');
-
-  const { id } = useParams<{ id: string }>();
+  const keyword = searchParams.get('keyword');
   const [totalPage, setTotalPage] = useState(1);
-  const [page, setPage] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const page = Number(searchParams.get('page') || '0');
   const [contents, setContents] = useState<BroadcastItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { isDesktop } = useResponsive();
+
+  /**
+   * 페이지 번호를 url에 반영합니다
+   */
+  const handlePageChange = (newPage: number) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('page', String(newPage));
+    setSearchParams(newSearchParams);
+  };
 
   /**
    * 주소에 search parameter 값이 있으면 검색바에 반영합니다
@@ -57,7 +64,6 @@ export default function Broadcast() {
         try {
           setIsLoading(true);
           const res = await searchBroadcasts(keyword, 'relevance', page, PAGE_SIZE);
-          console.log(res);
           setContents(res.data);
           setTotalPage(res.totalPages);
         } catch (e) {
@@ -67,8 +73,11 @@ export default function Broadcast() {
         }
       })();
     }
-  }, [id, page, keyword]);
+  }, [page, keyword]);
 
+  /**
+   * 로딩 페이지
+   */
   if (isLoading) return <LoadingIndicator />;
 
   /**
@@ -109,7 +118,7 @@ export default function Broadcast() {
             ))}
           </section>
         </div>
-        <Pagination page={page} totalPages={totalPage} onChange={setPage} />
+        <Pagination page={page} totalPages={totalPage} onChange={handlePageChange} />
       </div>
     );
 
@@ -156,10 +165,19 @@ export default function Broadcast() {
               </article>
             );
           })}
+
+          {/* 검색 결과 없음 표시 */}
+          {!isLoading && keyword && contents.length === 0 && (
+            <div className='flex-1 flex justify-center items-center'>
+              <span className='text-body05 text-grey-40'>{`"${keyword}"에 대한 검색 결과가 없습니다`}</span>
+            </div>
+          )}
         </div>
 
         {/* 페이지네이션 */}
-        <Pagination page={page} totalPages={totalPage} onChange={setPage} />
+        {!isLoading && contents.length > 0 && (
+          <Pagination page={page} totalPages={totalPage} onChange={handlePageChange} />
+        )}
       </div>
     );
 }
