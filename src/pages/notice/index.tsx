@@ -11,7 +11,7 @@ import Pagination from '@/components/molecules/common/Pagination';
 import NoticeList from '@/components/organisms/CommonList';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import { formatToLocalDate } from '@/utils';
-import DOMPurify from 'dompurify';
+import { HighlightedText } from '@/components/atoms/HighlightedText';
 
 /**
  * 카테고리 매핑
@@ -218,16 +218,9 @@ export default function Notice() {
                     <span className='text-caption03 text-blue-10'>
                       {categoryMap[item.category] ?? item.category}
                     </span>
-                    {/* 검색 결과 highlight */}
-                    <span
-                      className={`
-                        text-body05 text-black line-clamp-2
-                        [&_em]:font-semibold [&_em]:not-italic [&_em]:bg-blue-05 [&_em]:rounded-md [&_em]:px-0.5
-                      `}
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(item.title),
-                      }}
-                    />
+                    <HighlightedText className='text-body05 text-black line-clamp-2'>
+                      {item.title}
+                    </HighlightedText>
                     {item.date && (
                       <span className='text-caption04 text-grey-20'>
                         {formatToLocalDate(item.date)}
