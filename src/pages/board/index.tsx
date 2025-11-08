@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -31,9 +31,11 @@ export default function Board() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const navigate = useNavigate();
   const location = useLocation();
+  const authWarnedRef = useRef(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !authWarnedRef.current) {
+      authWarnedRef.current = true;
       toast.error('로그인이 필요한 서비스입니다.');
       navigate('/', { replace: true, state: { from: location.pathname } });
     }
