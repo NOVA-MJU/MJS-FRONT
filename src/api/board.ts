@@ -9,15 +9,24 @@ import { type ApiResponse, type Paginated } from './types';
  * @param direction 정렬 순서를 입력하세요.
  */
 export type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
-export type Category = 'ALL' | 'FREE' | 'NOTICE';
+export type BoardDirection = 'ASC' | 'DESC';
+export type Category = 'ALL' | 'FREE' | 'NOTICE' | 'INFORMATION';
 
-export const getBoards = async (
+export interface GetBoardsParams {
+  page?: number;
+  size?: number;
+  communityCategory?: Category;
+  sortBy?: BoardSortBy;
+  direction?: BoardDirection;
+}
+
+export const getBoards = async ({
   page = 0,
   size = 10,
-  communityCategory: Category = 'ALL',
-  sortBy: BoardSortBy = 'createdAt',
+  communityCategory = 'ALL',
+  sortBy = 'createdAt',
   direction = 'DESC',
-) => {
+}: GetBoardsParams = {}) => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
     params: { page, size, communityCategory, sortBy, direction },
   });
