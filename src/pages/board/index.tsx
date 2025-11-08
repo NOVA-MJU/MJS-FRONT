@@ -73,9 +73,7 @@ export default function Board() {
     <div className='relative flex h-full w-full flex-col bg-grey-00 pb-24 md:pb-12'>
       <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
         <header className='flex flex-col gap-4'>
-          <Typography variant='heading01' className='text-mju-primary'>
-            게시판
-          </Typography>
+          <h2 className='text-title01 text-blue-35'>게시판</h2>
           <SearchBar />
           <nav className='grid w-full grid-cols-2 border-b border-grey-10'>
             {CATEGORY_TABS.map((tab) => (
