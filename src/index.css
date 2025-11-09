@@ -85,16 +85,16 @@
   .text-caption02 {
     @apply font-normal text-[12px] leading-[1.5];
   }
-  .text-caption04 {
+  .text-caption03 {
     @apply font-semibold text-[11px] leading-[1.5];
   }
-  .text-caption05 {
+  .text-caption04 {
     @apply font-normal text-[11px] leading-[1.5];
   }
-  .text-caption06 {
+  .text-caption05 {
     @apply font-semibold text-[10px] leading-[1.5];
   }
-  .text-caption07 {
+  .text-caption06 {
     @apply font-extralight text-[10px] leading-[1.5];
   }
 }
@@ -122,12 +122,24 @@
 }
 
 /**
- * BlockNote.js가 모바일 화면에서 구동될 때 좌우 padding을 제거합니다
+ * BlockNote.js가 구동될 때 좌우 padding을 제거합니다
  */
 @media (max-width: 768px) {
   .bn-editor {
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
+    padding: 0 22px !important;
   }
+
+  .bn-side-menu > *:nth-child(1) {
+    margin-left: 24px !important;
+  }
+  .bn-side-menu > *:nth-child(2) {
+    margin-left: -6px !important;
+  }
+}
+
+.block-editor-handle {
+  position: absolute;
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
 }

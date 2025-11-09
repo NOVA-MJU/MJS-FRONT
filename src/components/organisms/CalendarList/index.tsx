@@ -10,6 +10,11 @@ interface CalendarListProps {
   handleAddEvent?: () => void;
 }
 
+/**
+ * @deprecated
+ * @param param0
+ * @returns
+ */
 export default function CalendarList({
   events,
   month,

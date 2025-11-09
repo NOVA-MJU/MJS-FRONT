@@ -5,6 +5,7 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { initAuth } from '@/api/initAuth';
+import React from 'react';
 
 const queryClient = new QueryClient();
 const root = createRoot(document.getElementById('root')!);
@@ -14,19 +15,21 @@ const root = createRoot(document.getElementById('root')!);
     await initAuth(); //reissue
   } finally {
     root.render(
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <App />
-          <Toaster
-            position='top-center'
-            toastOptions={{
-              duration: 2000,
-              success: { duration: 2000 },
-              error: { duration: 2000 },
-            }}
-          />
-        </QueryClientProvider>
-      </BrowserRouter>,
+      <React.StrictMode>
+        <BrowserRouter>
+          <QueryClientProvider client={queryClient}>
+            <App />
+            <Toaster
+              position='top-center'
+              toastOptions={{
+                duration: 2000,
+                success: { duration: 2000 },
+                error: { duration: 2000 },
+              }}
+            />
+          </QueryClientProvider>
+        </BrowserRouter>
+      </React.StrictMode>,
     );
   }
 })();

@@ -1,32 +1,32 @@
 import { Routes, Route } from 'react-router-dom';
-import Board from './pages/board';
-import BoardDetail from './pages/board/detail';
-import BoardWrite from './pages/board/write';
-import Notice from './pages/notice';
-import Broadcast from './pages/broadcast';
-import News from './pages/news';
-import Main from './pages';
-import Layout from './components/templates/Layout';
-import Menu from './pages/menu';
-import AcademicCalendar from './pages/academic-calendar';
-import Search from './pages/search';
-import MyPage from './pages/mypage';
-import MyPageEdit from './pages/mypage/edit';
-import Department from './pages/department';
-import DepartmentDetail from './pages/department/detail';
-import Login from './pages/login';
-import Register from './pages/register';
-import Admin from './pages/admin/calendar';
-import AdminNotice from './pages/admin/notice';
-import AdminNoticeDetail from './pages/admin/notice/detail';
-import BoardEdit from './pages/board/edit';
-import ViewPosts from './pages/mypage/viewPosts';
-import ViewComments from './pages/mypage/viewComments';
-import ViewLikes from './pages/mypage/viewLikes';
-import AdminNoticeWrite from './pages/admin/notice/write';
-import AdminNoticeEdit from './pages/admin/notice/edit';
-import GlobalErrorPage from './pages/error';
-import FindPw from './pages/findPw';
+import Board from '@/pages/board';
+import BoardDetail from '@/pages/board/detail';
+import BoardWrite from '@/pages/board/write';
+import Notice from '@/pages/notice';
+import Broadcast from '@/pages/broadcast';
+import News from '@/pages/news';
+import Main from '@/pages';
+import Layout from '@/components/templates/Layout';
+import Menu from '@/pages/menu';
+import AcademicCalendar from '@/pages/academic-calendar';
+import Search from '@/pages/search';
+import MyPage from '@/pages/mypage';
+import MyPageEdit from '@/pages/mypage/edit';
+import Department from '@/pages/department';
+import DepartmentDetail from '@/pages/department/detail';
+import Login from '@/pages/login';
+import Register from '@/pages/register';
+import Admin from '@/pages/admin/calendar';
+import AdminNotice from '@/pages/admin/notice';
+import AdminNoticeDetail from '@/pages/admin/notice/detail';
+import BoardEdit from '@/pages/board/edit';
+import ViewPosts from '@/pages/mypage/viewPosts';
+import ViewComments from '@/pages/mypage/viewComments';
+import ViewLikes from '@/pages/mypage/viewLikes';
+import AdminNoticeWrite from '@/pages/admin/notice/write';
+import AdminNoticeEdit from '@/pages/admin/notice/edit';
+import GlobalErrorPage from '@/pages/error';
+import FindPw from '@/pages/findPw';
 
 const App = () => {
   return (
@@ -41,10 +41,7 @@ const App = () => {
 
         <Route path='/notice' element={<Notice />} />
         <Route path='/news' element={<News />} />
-        <Route path='/login' element={<Login />} />
         <Route path='/broadcast' element={<Broadcast />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/find-pw' element={<FindPw />} />
         <Route path='/mypage/:uuid' element={<MyPage />} />
         <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
 
@@ -70,6 +67,12 @@ const App = () => {
         />
 
         <Route path='*' element={<GlobalErrorPage />} />
+      </Route>
+
+      <Route element={<Layout className='bg-grey-05' />}>
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/find-pw' element={<FindPw />} />
       </Route>
     </Routes>
   );

@@ -20,6 +20,11 @@ interface CalendarGridProps {
 
 type Event = { event: string };
 
+/**
+ * @deprecated
+ * @param param0
+ * @returns
+ */
 export default function CalendarGrid({ events, onYearChange, onMonthChange }: CalendarGridProps) {
   const [year, setYear] = useState(() => new Date().getFullYear());
   const [month, setMonth] = useState(() => new Date().getMonth() + 1);

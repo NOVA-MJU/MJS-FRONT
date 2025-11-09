@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
-import { fetchBroadCastInfo } from '../../../api/main/broadcast-api';
-import type { BroadcastContent } from '../../../types/broadcast/broadcastInfo';
-import { Link } from 'react-router-dom';
-import { IoIosArrowForward } from 'react-icons/io';
+import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { formatToLocalDate } from '@/utils';
+import { useEffect, useState } from 'react';
 
 export default function BroadcastSection() {
-  const [broadcasts, setBroadcasts] = useState<BroadcastContent[]>([]);
+  const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const page = 0;
@@ -19,7 +17,7 @@ export default function BroadcastSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const data = await fetchBroadCastInfo(page, size);
+        const data = await fetchBroadcasts(page, size);
         setBroadcasts(data.content);
       } catch (err) {
         console.error('BroadcastSection.tsx::fetch broadcast data', err);
@@ -30,37 +28,35 @@ export default function BroadcastSection() {
   }, []);
 
   return (
-    <section className='w-full min-w-0 flex flex-col gap-3'>
-      <div className='flex justify-between px-3 items-center'>
-        <h2 className='text-heading02 text-mju-primary'>명대뉴스</h2>
-        <Link to='/broadcast'>
-          <IoIosArrowForward className='text-blue-10' size={20} />
-        </Link>
-      </div>
-      <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
-        {isLoading &&
-          [...Array(5)].map((_, index) => (
-            <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
-          ))}
-        {!isLoading &&
-          broadcasts.map((item, index) => (
-            <div key={index} className='w-95 h-80 flex flex-col bg-white rounded-xl flex-shrink-0'>
-              <iframe
-                className='h-54 rounded-t-xl'
-                src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
-                title={item.title}
-                allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                allowFullScreen
-              />
-              <div className='p-3 flex flex-col gap-2 justify-between'>
-                <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
-                {/* <p className='text-body03'>유튜브내에 적힌 설명이 어쩌구저쩌구</p> */}
-                <p className='text-caption02 text-grey-40 text-end'>
-                  {formatDate(item.publishedAt)}
-                </p>
+    <section>
+      <div className='w-full min-w-0 flex flex-col gap-3'>
+        <div className='p-3 rounded-xl bg-grey-05 overflow-x-auto flex gap-3'>
+          {isLoading &&
+            [...Array(5)].map((_, index) => (
+              <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
+            ))}
+          {!isLoading &&
+            broadcasts.map((item, index) => (
+              <div
+                key={index}
+                className='w-95 h-80 flex flex-col bg-white rounded-xl flex-shrink-0'
+              >
+                <iframe
+                  className='h-54 rounded-t-xl'
+                  src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
+                  title={item.title}
+                  allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                  allowFullScreen
+                />
+                <div className='p-3 flex flex-col gap-2 justify-between'>
+                  <h3 className='text-title02 line-clamp-1'>{item.title}</h3>
+                  <p className='text-caption02 text-grey-40 text-end'>
+                    {formatToLocalDate(item.publishedAt)}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
       </div>
     </section>
   );
@@ -69,11 +65,4 @@ export default function BroadcastSection() {
 const extractYoutubeId = (url: string): string => {
   const match = url.match(/v=([^&]+)/);
   return match ? match[1] : '';
-};
-
-const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  return `${date.getFullYear()}.${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
 };
