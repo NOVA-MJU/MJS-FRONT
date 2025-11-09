@@ -1,4 +1,4 @@
-import { fetchBroadCastInfo, type BroadcastItem } from '@/api/main/broadcast-api';
+import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { formatToLocalDate } from '@/utils';
 import { useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ export default function BroadcastSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const data = await fetchBroadCastInfo(page, size);
+        const data = await fetchBroadcasts(page, size);
         setBroadcasts(data.content);
       } catch (err) {
         console.error('BroadcastSection.tsx::fetch broadcast data', err);
