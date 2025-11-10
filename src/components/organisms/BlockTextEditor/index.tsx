@@ -169,7 +169,13 @@ export default function BlockTextEditor({
   const hiddenItems = ['비디오', '오디오', '파일', 'Video', 'Audio', 'File'];
 
   return (
-    <BlockNoteView editor={editor} editable={!readOnly} theme='light' slashMenu={false}>
+    <BlockNoteView
+      editor={editor}
+      editable={!readOnly}
+      theme='light'
+      slashMenu={false}
+      className={readOnly ? '[&_.bn-editor]:!p-0' : ''} // 좌우 padding 제거
+    >
       <SuggestionMenuController
         triggerCharacter='/'
         getItems={async (query) => {
