@@ -1,6 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios';
 import { accessTokenStore } from './token';
 import { getCookie } from '@/utils/cookie';
+import { XSRF_COOKIE_NAME, XSRF_HEADER_NAME, HAS_SESSION_KEY } from '@/constants/auth';
 
 type Pending = {
   resolve: (v: unknown) => void;
@@ -30,9 +31,9 @@ const flushQueue = (error: unknown, newToken?: string) => {
 export const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-  withCredentials: true, // RT 쿠키 전송
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-CSRF-TOKEN',
+  withCredentials: true,
+  xsrfCookieName: XSRF_COOKIE_NAME,
+  xsrfHeaderName: XSRF_HEADER_NAME,
 });
 
 /** 요청 인터셉터 */
@@ -40,17 +41,30 @@ apiClient.interceptors.request.use((config) => {
   const at = accessTokenStore.get();
   config.headers = config.headers ?? {};
 
-  if (at) config.headers.Authorization = `Bearer ${at}`;
+  const isReissue = (config.url ?? '').includes('/auth/reissue');
+  if (at && !isReissue) {
+    config.headers.Authorization = `Bearer ${at}`;
+  }
 
-  const xsrf = getCookie('XSRF-TOKEN');
-  if (xsrf) config.headers['X-CSRF-TOKEN'] = xsrf;
+  const xsrf = getCookie(XSRF_COOKIE_NAME);
+  if (xsrf) config.headers[XSRF_HEADER_NAME] = xsrf;
 
   return config;
 });
 
-/** 재발급 API */
+/** 재발급 */
 const reissueAccessToken = async (): Promise<string> => {
-  const { data } = await apiClient.post('/auth/reissue', {});
+  const xsrf = getCookie(XSRF_COOKIE_NAME);
+  const { data } = await apiClient.post(
+    '/auth/reissue',
+    {},
+    {
+      headers: {
+        ...(xsrf ? { [XSRF_HEADER_NAME]: xsrf } : {}),
+        Authorization: '',
+      },
+    },
+  );
   const newAT: string | undefined = data?.data?.accessToken ?? data?.accessToken;
   if (!newAT) throw new Error('No access token from reissue');
   accessTokenStore.set(newAT);
@@ -72,8 +86,9 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 401/403 시 재발급 시도
-    if ((status === 401 || status === 403) && !original._retry) {
+    const hadAuthHeader = !!original?.headers?.Authorization;
+
+    if ((status === 401 || status === 403) && !original._retry && hadAuthHeader) {
       original._retry = true;
 
       if (isRefreshing) {
@@ -91,6 +106,7 @@ apiClient.interceptors.response.use(
         return apiClient(original);
       } catch (e) {
         accessTokenStore.clear();
+        localStorage.removeItem(HAS_SESSION_KEY);
         flushQueue(e);
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
