@@ -6,7 +6,7 @@ import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem, type Category, type GetBoardsParams } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Divider from '../../components/atoms/Divider';
-import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { IoHeartOutline, IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 import { HiOutlinePencilSquare } from 'react-icons/hi2';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
@@ -83,7 +83,7 @@ export default function Board() {
                 key={tab.key}
                 className={clsx(
                   'relative py-3 text-center text-body02 md:text-body01 transition-colors',
-                  category === tab.key ? 'text-mju-primary font-semibold' : 'text-grey-30',
+                  category === tab.key ? 'text-blue-20 font-semibold' : 'text-grey-30',
                 )}
                 onClick={() => setCategory(tab.key)}
               >
@@ -91,7 +91,7 @@ export default function Board() {
                 <span
                   className={clsx(
                     'absolute left-0 bottom-0 h-[3px] w-full rounded-full',
-                    category === tab.key ? 'bg-mju-primary' : 'bg-transparent',
+                    category === tab.key ? 'bg-blue-20' : 'bg-transparent',
                   )}
                 />
               </button>
@@ -171,25 +171,22 @@ function BoardItem({
       to={`/board/${uuid}`}
     >
       <div
-        className={clsx(
-          'flex-1 flex flex-col gap-2',
-          isPopular && 'border-l-2 border-blue-10 pl-4',
-        )}
+        className={clsx('flex-1 flex flex-col gap-2', isPopular && 'border-l-2 border-none pl-4')}
       >
-        <Typography variant='body02' className='font-semibold'>
+        <Typography variant='body02' className='font-semibold text-grey-90'>
           {title}
         </Typography>
         <Typography variant='body03' className='line-clamp-2 text-grey-40'>
           {previewContent}
         </Typography>
         <div className='flex items-center gap-4 text-caption01 text-grey-30'>
-          <span className='flex items-center gap-1'>
-            <IoIosHeart />
-            {likeCount}
+          <span className='flex items-center gap-1 text-blue-20'>
+            <IoHeartOutline />
+            <span className='text-grey-40'>{likeCount}</span>
           </span>
-          <span className='flex items-center gap-1'>
-            <IoIosChatbubbles />
-            {commentCount}
+          <span className='flex items-center gap-1 text-blue-20'>
+            <IoChatbubbleEllipsesOutline />
+            <span className='text-grey-40'>{commentCount}</span>
           </span>
         </div>
       </div>
