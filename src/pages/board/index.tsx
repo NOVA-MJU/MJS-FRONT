@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/useAuthStore';
 import { formatToElapsedTime } from '../../utils';
+import { useResponsive } from '../../hooks/useResponse'; // ✅ 추가
 
 const CATEGORY_TABS: { key: Category; label: string }[] = [
   { key: 'NOTICE', label: '정보 게시판' },
@@ -32,6 +33,8 @@ export default function Board() {
   const navigate = useNavigate();
   const location = useLocation();
   const authWarnedRef = useRef(false);
+
+  const { isDesktop } = useResponsive(); // useResponsive hook 추가
 
   useEffect(() => {
     if (!isLoggedIn && !authWarnedRef.current) {
@@ -71,69 +74,94 @@ export default function Board() {
     fetchBoards();
   }, [category, page]);
 
+  /** -------------------
+   *  공통 컨텐츠 블록
+   * ------------------- */
+  const BoardContent = (
+    <>
+      <header className='flex flex-col gap-4'>
+        <h2 className='text-title01 text-blue-35'>게시판</h2>
+        <SearchBar />
+        <nav className='grid w-full grid-cols-2 border-b border-grey-10'>
+          {CATEGORY_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              className={clsx(
+                'relative py-3 text-center text-body02 md:text-body01 transition-colors',
+                category === tab.key ? 'text-blue-20 font-semibold' : 'text-grey-30',
+              )}
+              onClick={() => setCategory(tab.key)}
+            >
+              {tab.label}
+              <span
+                className={clsx(
+                  'absolute left-0 bottom-0 h-[3px] w-full rounded-full',
+                  category === tab.key ? 'bg-blue-20' : 'bg-transparent',
+                )}
+              />
+            </button>
+          ))}
+        </nav>
+      </header>
+
+      <Divider />
+
+      <section className='flex-1 overflow-hidden rounded-xl bg-white shadow-sm'>
+        {isLoading ? (
+          <div className='flex h-full w-full items-center justify-center'>
+            <LoadingIndicator />
+          </div>
+        ) : isError ? (
+          <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
+            게시글을 불러오는 데 실패했습니다.
+          </div>
+        ) : contents.length === 0 ? (
+          <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
+            게시글이 없습니다.
+          </div>
+        ) : (
+          <div className='flex h-full flex-col divide-y divide-grey-05 overflow-y-auto'>
+            {contents.map((content) => (
+              <BoardItem
+                key={content.uuid}
+                uuid={content.uuid}
+                title={content.title}
+                previewContent={content.previewContent}
+                likeCount={content.likeCount}
+                commentCount={content.commentCount}
+                publishedAt={content.publishedAt}
+                isPopular={content.popular}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={setPage} />}
+    </>
+  );
+
+  /** -------------------
+   *  데스크톱 / 모바일 분기
+   * ------------------- */
+  if (isDesktop)
+    return (
+      <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
+        <div className='w-[1200px] flex flex-col gap-6 p-8'>{BoardContent}</div>
+        <Link
+          className='fixed bottom-24 right-24 flex h-[72px] w-[72px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg transition-transform hover:scale-105'
+          to={'/board/write'}
+        >
+          <HiOutlinePencilSquare size={24} />
+          <span className='text-caption01 font-semibold'>글남기기</span>
+        </Link>
+      </div>
+    );
+
+  // 모바일
   return (
     <div className='relative flex h-full w-full flex-col bg-grey-00 pb-24 md:pb-12'>
-      <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
-        <header className='flex flex-col gap-4'>
-          <h2 className='text-title01 text-blue-35'>게시판</h2>
-          <SearchBar />
-          <nav className='grid w-full grid-cols-2 border-b border-grey-10'>
-            {CATEGORY_TABS.map((tab) => (
-              <button
-                key={tab.key}
-                className={clsx(
-                  'relative py-3 text-center text-body02 md:text-body01 transition-colors',
-                  category === tab.key ? 'text-blue-20 font-semibold' : 'text-grey-30',
-                )}
-                onClick={() => setCategory(tab.key)}
-              >
-                {tab.label}
-                <span
-                  className={clsx(
-                    'absolute left-0 bottom-0 h-[3px] w-full rounded-full',
-                    category === tab.key ? 'bg-blue-20' : 'bg-transparent',
-                  )}
-                />
-              </button>
-            ))}
-          </nav>
-        </header>
-
-        <Divider />
-
-        <section className='flex-1 overflow-hidden rounded-xl bg-white shadow-sm'>
-          {isLoading ? (
-            <div className='flex h-full w-full items-center justify-center'>
-              <LoadingIndicator />
-            </div>
-          ) : isError ? (
-            <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
-              게시글을 불러오는 데 실패했습니다.
-            </div>
-          ) : contents.length === 0 ? (
-            <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
-              게시글이 없습니다.
-            </div>
-          ) : (
-            <div className='flex h-full flex-col divide-y divide-grey-05 overflow-y-auto'>
-              {contents.map((content) => (
-                <BoardItem
-                  key={content.uuid}
-                  uuid={content.uuid}
-                  title={content.title}
-                  previewContent={content.previewContent}
-                  likeCount={content.likeCount}
-                  commentCount={content.commentCount}
-                  publishedAt={content.publishedAt}
-                  isPopular={content.popular}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onChange={setPage} />}
-      </div>
+      <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>{BoardContent}</div>
 
       <Link
         className='fixed bottom-40 right-5 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg md:bottom-16'
@@ -146,6 +174,9 @@ export default function Board() {
   );
 }
 
+/** -------------------
+ *  게시글 Item 컴포넌트
+ * ------------------- */
 interface BoardItemProps {
   uuid: string;
   title: string;
