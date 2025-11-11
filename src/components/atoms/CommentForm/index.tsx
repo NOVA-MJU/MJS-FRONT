@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { FaArrowUp } from 'react-icons/fa';
 
 interface CommentFormProps {
@@ -5,6 +6,7 @@ interface CommentFormProps {
   setNewComment: (value: string) => void;
   handleCommentUpload: () => void;
   MAX_REPLY_LEN: number;
+  isLoggedin: boolean;
 }
 
 /**
@@ -20,13 +22,14 @@ function CommentForm({
   setNewComment,
   handleCommentUpload,
   MAX_REPLY_LEN,
+  isLoggedin,
 }: CommentFormProps) {
   return (
     <div className='flex flex-col gap-0.5'>
       <div className='relative w-full'>
         <input
           className='w-full text-body05 text-black placeholder-grey-40 bg-grey-05 px-3 py-2.5 rounded-lg '
-          placeholder='댓글을 작성해주세요.'
+          placeholder={isLoggedin ? '댓글을 작성해주세요.' : '로그인이 필요한 서비스 입니다'}
           type='text'
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
@@ -35,11 +38,16 @@ function CommentForm({
               handleCommentUpload();
             }
           }}
+          disabled={!isLoggedin}
         />
         <button
           type='button'
           onClick={handleCommentUpload}
-          className='absolute right-2.5 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-grey-20 text-white cursor-pointer'
+          className={clsx(
+            'absolute right-2.5 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-grey-20 text-white',
+            isLoggedin && 'cursor-pointer',
+          )}
+          disabled={!isLoggedin}
         >
           <FaArrowUp size='16' />
         </button>
