@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem, type Category, type GetBoardsParams } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -9,10 +9,8 @@ import Divider from '../../components/atoms/Divider';
 import { IoHeartOutline, IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 import { HiOutlinePencilSquare } from 'react-icons/hi2';
 import clsx from 'clsx';
-import toast from 'react-hot-toast';
-import { useAuthStore } from '../../store/useAuthStore';
 import { formatToElapsedTime } from '../../utils';
-import { useResponsive } from '../../hooks/useResponse'; // ✅ 추가
+import { useResponsive } from '../../hooks/useResponse';
 
 const CATEGORY_TABS: { key: Category; label: string }[] = [
   { key: 'NOTICE', label: '정보 게시판' },
@@ -29,20 +27,7 @@ export default function Board() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const authWarnedRef = useRef(false);
-
   const { isDesktop } = useResponsive(); // useResponsive hook 추가
-
-  useEffect(() => {
-    if (!isLoggedIn && !authWarnedRef.current) {
-      authWarnedRef.current = true;
-      toast.error('로그인이 필요한 서비스입니다.');
-      navigate('/', { replace: true, state: { from: location.pathname } });
-    }
-  }, [isLoggedIn, navigate, location.pathname]);
 
   useEffect(() => {
     setPage(0);
