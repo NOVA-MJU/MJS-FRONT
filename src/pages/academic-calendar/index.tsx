@@ -105,10 +105,7 @@ export default function AcademicCalendar() {
               events={events}
               onYearChange={setCurrentYear}
               onMonthChange={setCurrentMonth}
-              onDateSelect={(date) => {
-                console.log(date);
-                setSelectedDate(date);
-              }}
+              onDateSelect={setSelectedDate}
             />
           </div>
           <div>
