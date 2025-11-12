@@ -131,7 +131,7 @@ export default function Board() {
    * ------------------- */
   if (isDesktop)
     return (
-      <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
+      <div className='relative flex flex-col items-center w-full pb-24 md:pb-12'>
         <div className='w-[1200px] flex flex-col gap-6 p-8'>{BoardContent}</div>
         <Link
           className='fixed bottom-24 right-24 flex h-[72px] w-[72px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg transition-transform hover:scale-105'
