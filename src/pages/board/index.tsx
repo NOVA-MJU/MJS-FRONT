@@ -230,7 +230,7 @@ function BoardItem({
         </div>
       </div>
       <div className='flex min-w-[70px] items-center justify-center'>
-        <Typography variant='caption01' className='text-grey-30'>
+        <Typography variant='caption01' className='font-normal text-grey-30'>
           {formatToElapsedTime(publishedAt)}
         </Typography>
       </div>
