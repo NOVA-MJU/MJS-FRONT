@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem, type Category, type GetBoardsParams } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -11,6 +11,8 @@ import { HiOutlinePencilSquare } from 'react-icons/hi2';
 import clsx from 'clsx';
 import { formatToElapsedTime } from '../../utils';
 import { useResponsive } from '../../hooks/useResponse';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const CATEGORY_TABS: { key: Category; label: string }[] = [
   { key: 'NOTICE', label: '정보 게시판' },
@@ -27,7 +29,9 @@ export default function Board() {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const { isDesktop } = useResponsive(); // useResponsive hook 추가
+  const { isDesktop } = useResponsive();
+  const navigate = useNavigate();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   useEffect(() => {
     setPage(0);
@@ -131,15 +135,23 @@ export default function Board() {
    * ------------------- */
   if (isDesktop)
     return (
-      <div className='relative flex flex-col items-center w-full pb-24 md:pb-12'>
+      <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
         <div className='w-[1200px] flex flex-col gap-6 p-8'>{BoardContent}</div>
-        <Link
+        <button
+          type='button'
           className='fixed bottom-24 right-24 flex h-[72px] w-[72px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg transition-transform hover:scale-105'
-          to={'/board/write'}
+          onClick={() => {
+            if (!isLoggedIn) {
+              toast.error('로그인이 필요한 서비스입니다.');
+              navigate('/login');
+              return;
+            }
+            navigate('/board/write');
+          }}
         >
           <HiOutlinePencilSquare size={24} />
           <span className='text-caption01 font-semibold'>글남기기</span>
-        </Link>
+        </button>
       </div>
     );
 
@@ -148,13 +160,21 @@ export default function Board() {
     <div className='relative flex h-full w-full flex-col bg-grey-00 pb-24 md:pb-12'>
       <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>{BoardContent}</div>
 
-      <Link
+      <button
+        type='button'
         className='fixed bottom-40 right-5 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg md:bottom-16'
-        to={'/board/write'}
+        onClick={() => {
+          if (!isLoggedIn) {
+            toast.error('로그인이 필요한 서비스입니다.');
+            navigate('/login');
+            return;
+          }
+          navigate('/board/write');
+        }}
       >
         <HiOutlinePencilSquare size={22} />
         <span className='text-caption01 font-semibold'>글남기기</span>
-      </Link>
+      </button>
     </div>
   );
 }
