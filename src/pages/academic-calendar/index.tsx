@@ -8,6 +8,7 @@ import CalendarGrid from '@/components/organisms/CalendarGrid';
 import CalendarList from '@/components/organisms/CalendarList';
 import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calendar';
 import Calendar from '@/components/molecules/Calendar';
+import { DailyAcademicScheduleWidget } from '@/components/molecules/sections/daily-academic-schedule-widget';
 
 export default function AcademicCalendar() {
   const [, setIsLoading] = useState(true);
@@ -15,6 +16,8 @@ export default function AcademicCalendar() {
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [events, setEvents] = useState<CalendarMonthlyRes | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
   const { isDesktop } = useResponsive();
 
   useEffect(() => {
@@ -102,7 +105,14 @@ export default function AcademicCalendar() {
               events={events}
               onYearChange={setCurrentYear}
               onMonthChange={setCurrentMonth}
+              onDateSelect={(date) => {
+                console.log(date);
+                setSelectedDate(date);
+              }}
             />
+          </div>
+          <div>
+            <DailyAcademicScheduleWidget date={selectedDate} events={events} />
           </div>
           <div>
             <AcademicScheduleWidget events={events} />

@@ -8,6 +8,7 @@ interface CalendarProps {
   onYearChange: (year: number) => void;
   onMonthChange: (month: number) => void;
   events: CalendarMonthlyRes | null;
+  onDateSelect: (date: Date) => void;
 }
 
 export default function Calendar({
@@ -15,6 +16,7 @@ export default function Calendar({
   onYearChange,
   onMonthChange,
   events: initialEvents,
+  onDateSelect,
 }: CalendarProps) {
   const date = new Date();
   const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
@@ -121,6 +123,9 @@ export default function Calendar({
       return `${y}-${m}-${d}`;
     };
 
+    /**
+     * 이전 달
+     */
     for (let i = startDayOfWeek; i > 0; i--) {
       const day = lastDayOfPrevMonth - i + 1;
       const dayOfWeek = startDayOfWeek - i;
@@ -132,9 +137,13 @@ export default function Calendar({
         outdated: true,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
       });
     }
 
+    /**
+     * 현재 달
+     */
     for (let i = 1; i <= daysInMonth; i++) {
       const dayOfWeek = (startDayOfWeek + i - 1) % 7;
       const date = new Date(currentYear, currentMonth - 1, i);
@@ -145,6 +154,7 @@ export default function Calendar({
         outdated: false,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
       });
     }
 
@@ -152,6 +162,9 @@ export default function Calendar({
     const totalGridCells = totalCellsNeeded > 35 ? 42 : 35;
     const remainingCells = totalGridCells - totalCellsNeeded;
 
+    /**
+     * 다음 달
+     */
     for (let i = 1; i <= remainingCells; i++) {
       const dayOfWeek = (startDayOfWeek + daysInMonth + i - 1) % 7;
       const date = new Date(currentYear, currentMonth, i);
@@ -162,6 +175,7 @@ export default function Calendar({
         outdated: true,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
       });
     }
 
@@ -229,6 +243,7 @@ export default function Calendar({
                 outdated={item.outdated}
                 weekend={item.weekend}
                 events={item.events}
+                onClick={() => onDateSelect?.(item.fullDate)}
               />
             ))}
           </div>
@@ -252,11 +267,18 @@ interface CalendarItemProps {
   outdated?: boolean;
   weekend?: boolean;
   events?: CalendarEvent[];
+  onClick: () => void;
 }
 
-function CalendarItem({ day, outdated = false, weekend = false, events = [] }: CalendarItemProps) {
+function CalendarItem({
+  day,
+  outdated = false,
+  weekend = false,
+  events = [],
+  onClick,
+}: CalendarItemProps) {
   return (
-    <button>
+    <button onClick={onClick}>
       <div className='min-h-15 p-1 flex flex-col hover:bg-blue-05'>
         <span
           className={clsx(
