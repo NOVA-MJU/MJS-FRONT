@@ -63,6 +63,15 @@ export default function Board() {
     fetchBoards();
   }, [category, page]);
 
+  const handleWriteClick = () => {
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+      return;
+    }
+    navigate('/board/write');
+  };
+
   /** -------------------
    *  공통 컨텐츠 블록
    * ------------------- */
@@ -70,7 +79,20 @@ export default function Board() {
     <>
       <header className='flex flex-col gap-4'>
         <h2 className='text-title01 text-blue-35'>게시판</h2>
-        <SearchBar />
+        <div className={clsx('flex flex-col gap-3', isDesktop && 'flex-row items-center gap-4')}>
+          <div className={clsx(isDesktop && 'flex-1')}>
+            <SearchBar />
+          </div>
+          {isDesktop && (
+            <button
+              type='button'
+              onClick={handleWriteClick}
+              className='h-12 rounded-xl bg-blue-35 px-6 text-body02 font-semibold text-white transition-colors hover:bg-blue-30'
+            >
+              글 남기기
+            </button>
+          )}
+        </div>
         <nav className='grid w-full grid-cols-2 border-b border-grey-10'>
           {CATEGORY_TABS.map((tab) => (
             <button
@@ -137,21 +159,6 @@ export default function Board() {
     return (
       <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
         <div className='w-[1200px] flex flex-col gap-6 p-8'>{BoardContent}</div>
-        <button
-          type='button'
-          className='fixed bottom-24 right-24 flex h-[72px] w-[72px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg transition-transform hover:scale-105'
-          onClick={() => {
-            if (!isLoggedIn) {
-              toast.error('로그인이 필요한 서비스입니다.');
-              navigate('/login');
-              return;
-            }
-            navigate('/board/write');
-          }}
-        >
-          <HiOutlinePencilSquare size={24} />
-          <span className='text-caption01 font-semibold'>글남기기</span>
-        </button>
       </div>
     );
 
@@ -163,14 +170,7 @@ export default function Board() {
       <button
         type='button'
         className='fixed bottom-40 right-5 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg md:bottom-16'
-        onClick={() => {
-          if (!isLoggedIn) {
-            toast.error('로그인이 필요한 서비스입니다.');
-            navigate('/login');
-            return;
-          }
-          navigate('/board/write');
-        }}
+        onClick={handleWriteClick}
       >
         <HiOutlinePencilSquare size={22} />
         <span className='text-caption01 font-semibold'>글남기기</span>
