@@ -1,5 +1,7 @@
 import React from 'react';
-import defaultAvatar from '../../../assets/avatar-default.jpeg';
+import defaultAvatar from '@/assets/avatar-default.jpeg';
+import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface AvatarProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
@@ -16,7 +18,7 @@ export default function Avatar({ src, className, ...props }: AvatarProps) {
     <img
       src={imgSrc}
       alt='프로필 이미지'
-      className={`w-12 h-12 aspect-square rounded-full object-cover ${className ?? ''}`}
+      className={twMerge(clsx('w-12 h-12 aspect-square rounded-full object-cover', className))}
       onError={() => setImgSrc(defaultAvatar)}
       {...props}
     />

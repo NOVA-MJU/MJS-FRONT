@@ -20,7 +20,7 @@ const ITEM_COUNT = 4;
  * 메인페이지에 표시할 자유게시판 위젯 컴포넌트
  */
 export default function BoardSection() {
-  const [category, setCategory] = useState<keyof typeof CATEGORIES>('FREE');
+  const [category, setCategory] = useState<keyof typeof CATEGORIES>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
