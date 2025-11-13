@@ -8,19 +8,21 @@ interface CalendarProps {
   onYearChange: (year: number) => void;
   onMonthChange: (month: number) => void;
   events: CalendarMonthlyRes | null;
+  onDateSelect: (date: Date) => void;
 }
 
 export default function Calendar({
   className,
   onYearChange,
   onMonthChange,
-  events: initialEvents,
+  events,
+  onDateSelect,
 }: CalendarProps) {
   const date = new Date();
   const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
   const [currentYear, setCurrentYear] = useState(date.getFullYear());
   const [currentMonth, setCurrentMonth] = useState(date.getMonth() + 1);
-  const [events] = useState(initialEvents);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   /**
    * 시스템 현재 날짜값 보관
@@ -29,6 +31,27 @@ export default function Calendar({
   const actualCurrentYear = today.getFullYear();
   const actualCurrentMonth = today.getMonth() + 1;
   const actualCurrentDayOfWeek = today.getDay();
+  const actualCurrentDay = today.getDate();
+
+  /**
+   * 두 Date 객체가 같은 날짜인지 비교
+   */
+  const isSameDate = (date1: Date | null, date2: Date | null) => {
+    if (!date1 || !date2) return false;
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  };
+
+  /**
+   * 날짜 클릭 핸들러
+   */
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    onDateSelect?.(date);
+  };
 
   /**
    * 이전 달 버튼 핸들러
@@ -121,6 +144,9 @@ export default function Calendar({
       return `${y}-${m}-${d}`;
     };
 
+    /**
+     * 이전 달
+     */
     for (let i = startDayOfWeek; i > 0; i--) {
       const day = lastDayOfPrevMonth - i + 1;
       const dayOfWeek = startDayOfWeek - i;
@@ -132,19 +158,29 @@ export default function Calendar({
         outdated: true,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
       });
     }
 
+    /**
+     * 현재 달
+     */
     for (let i = 1; i <= daysInMonth; i++) {
       const dayOfWeek = (startDayOfWeek + i - 1) % 7;
       const date = new Date(currentYear, currentMonth - 1, i);
       const currentDateStr = formatDate(date);
+      const isToday =
+        currentYear === actualCurrentYear &&
+        currentMonth === actualCurrentMonth &&
+        i === actualCurrentDay;
 
       days.push({
         day: i,
         outdated: false,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
+        isToday: isToday,
       });
     }
 
@@ -152,6 +188,9 @@ export default function Calendar({
     const totalGridCells = totalCellsNeeded > 35 ? 42 : 35;
     const remainingCells = totalGridCells - totalCellsNeeded;
 
+    /**
+     * 다음 달
+     */
     for (let i = 1; i <= remainingCells; i++) {
       const dayOfWeek = (startDayOfWeek + daysInMonth + i - 1) % 7;
       const date = new Date(currentYear, currentMonth, i);
@@ -162,11 +201,19 @@ export default function Calendar({
         outdated: true,
         weekend: dayOfWeek === 0 || dayOfWeek === 6,
         events: getEventsForDate(currentDateStr),
+        fullDate: date,
       });
     }
 
     return days;
-  }, [currentYear, currentMonth, allEvents]);
+  }, [
+    currentYear,
+    currentMonth,
+    allEvents,
+    actualCurrentYear,
+    actualCurrentMonth,
+    actualCurrentDay,
+  ]);
 
   return (
     <section>
@@ -222,15 +269,26 @@ export default function Calendar({
            * 이벤트 표시
            */}
           <div className='w-full grid grid-cols-7'>
-            {calendarDays.map((item, index) => (
-              <CalendarItem
-                key={index}
-                day={item.day}
-                outdated={item.outdated}
-                weekend={item.weekend}
-                events={item.events}
-              />
-            ))}
+            {calendarDays.map((item, index) => {
+              /**
+               * 오늘 날짜 이거나 선택한 날짜가 있는 경우 highlight 표시
+               */
+              const isSelected = isSameDate(item.fullDate, selectedDate);
+              const isToday = item.isToday;
+              const isHighlighted = selectedDate !== null ? isSelected : isToday;
+
+              return (
+                <CalendarItem
+                  key={index}
+                  day={item.day}
+                  outdated={item.outdated}
+                  weekend={item.weekend}
+                  events={item.events}
+                  onClick={() => handleDateClick(item.fullDate)}
+                  isHighlighted={isHighlighted}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
@@ -252,22 +310,40 @@ interface CalendarItemProps {
   outdated?: boolean;
   weekend?: boolean;
   events?: CalendarEvent[];
+  onClick: () => void;
+  isHighlighted?: boolean;
 }
 
-function CalendarItem({ day, outdated = false, weekend = false, events = [] }: CalendarItemProps) {
+/**
+ * 캘린더 날짜 아이템
+ */
+function CalendarItem({
+  day,
+  outdated = false,
+  weekend = false,
+  events = [],
+  onClick,
+  isHighlighted = false,
+}: CalendarItemProps) {
   return (
-    <button>
-      <div className='min-h-15 p-1 flex flex-col hover:bg-blue-05'>
+    <button onClick={onClick} disabled={outdated}>
+      <div
+        className={clsx(
+          'min-h-15 py-1 flex flex-col',
+          !outdated && 'hover:bg-blue-05 cursor-pointer',
+          isHighlighted && !outdated && 'bg-blue-05',
+        )}
+      >
         <span
           className={clsx(
-            'text-caption04 text-start',
+            'mx-1 text-caption04 text-start',
             outdated && 'text-grey-40',
             weekend && 'text-error',
           )}
         >
           {String(day).padStart(2, '0')}
         </span>
-        <div className='h-[0.5px] bg-grey-10' />
+        <div className='mx-1 h-[0.5px] bg-grey-10' />
 
         {/**
          * 이벤트 막대(bar) 렌더링 영역

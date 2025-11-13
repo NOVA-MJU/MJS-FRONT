@@ -31,7 +31,8 @@ export default function AcademicScheduleWidget({ className, events }: AcademicSc
    * 부모 컴포넌트로부터 이벤트 데이터를 받지 못했으면 새롭게 api를 요청합니다.
    */
   useEffect(() => {
-    if (!events) getData();
+    if (events) setScheduleData(events);
+    else getData();
   }, [events]);
 
   /**
@@ -83,14 +84,14 @@ export default function AcademicScheduleWidget({ className, events }: AcademicSc
                     <div className={`w-12 flex items-center justify-center ${category.className}`}>
                       <span className='text-[12px] text-white'>{category.label}</span>
                     </div>
-                    <div className='flex flex-col gap-0.5'>
+                    <div className='flex-1 flex flex-col gap-0.5'>
                       <ul>
                         {events.map((event) => (
                           <li key={event.id} className='flex items-center'>
                             <span className='inline-block w-20 text-[12px] text-grey-40'>
                               {formatDateRange(event.startDate, event.endDate)}
                             </span>
-                            <span className='text-[14px] text-black line-clamp-1'>
+                            <span className='flex-1 text-[14px] text-black line-clamp-1'>
                               {removeBracketedContent(event.description)}
                             </span>
                           </li>
@@ -132,20 +133,9 @@ const formatDateRange = (startDate: string, endDate: string): string => {
 };
 
 /**
- * 이벤트 제목에서 대괄호를 제거하는 함수입니다.
- *
- * Removes all content, including the square brackets, that is enclosed
- * within [ and ] from a given string.
- *
- * @param inputString The string to process.
- * @returns The processed string with bracketed content removed.
+ * 이벤트 제목에서 대괄호 제거
  */
 function removeBracketedContent(inputString: string): string {
-  // Regular expression to match any character(s) (non-greedy, represented by '.*?' or '[^\]]*')
-  // enclosed between a literal '[' and a literal ']'. The 'g' flag ensures
-  // all occurrences are replaced.
   const regex = /\[.*?\]/g;
-
-  // Replace all matches of the regex with an empty string.
   return inputString.replace(regex, '');
 }

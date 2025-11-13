@@ -28,7 +28,11 @@ export default function BoardSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const res = await getBoards(0, ITEM_COUNT, category as Category);
+        const res = await getBoards({
+          page: 0,
+          size: ITEM_COUNT,
+          communityCategory: category as Category,
+        });
         setContents(res.content);
       } catch (e) {
         console.error(e);

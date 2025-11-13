@@ -10,7 +10,7 @@ interface SearchBarProps {
   /**
    * domain을 설정하면, 검색 수행 시 해당 domain에 맞는 페이지로 이동됩니다
    */
-  domain?: 'search' | 'notice' | 'news' | 'board';
+  domain?: 'search' | 'notice' | 'news' | 'board' | 'broadcast';
 
   /**
    * initialContent를 설정하면 검색바가 렌더링될 때 해당 content가 입력된 상태로 렌더링됩니다
