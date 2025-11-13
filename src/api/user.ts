@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import { accessTokenStore } from './token';
+import { HAS_SESSION_KEY } from '@/constants/auth';
 
 import type {
   ApiResponse,
@@ -9,7 +10,7 @@ import type {
 } from '../types/api';
 import type { UserInfo } from '../types/auth';
 
-/** 로그인: 바디에 AT만 온다고 가정(스웨거 로그인 명세) */
+/** 로그인 */
 interface LoginResponse {
   accessToken: string;
 }
@@ -17,9 +18,9 @@ interface LoginResponse {
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
   const { data } = await apiClient.post<LoginResponse>('/auth/login', { email, password });
   const accessToken = data.accessToken;
-
   if (accessToken) {
     accessTokenStore.set(accessToken);
+    localStorage.setItem(HAS_SESSION_KEY, '1');
   }
 
   return data;
@@ -36,6 +37,7 @@ export const logout = async (): Promise<LogoutResponse> => {
     return data;
   } finally {
     accessTokenStore.clear();
+    localStorage.removeItem(HAS_SESSION_KEY);
   }
 };
 
@@ -46,7 +48,7 @@ export const saveUserInfo = async (): Promise<UserInfo> => {
   return data.data;
 };
 
-/** 세션 시도(앱 부팅 시) — reissue 명세에 맞춰 data.accessToken 파싱 */
+/** 앱 부팅 시 세션 시도 */
 export const trySession = async (): Promise<UserInfo | null> => {
   try {
     const { data } = await apiClient.post<ApiResponse<{ accessToken: string }>>(
@@ -56,6 +58,7 @@ export const trySession = async (): Promise<UserInfo | null> => {
     const newAT = data.data?.accessToken ?? null;
     if (!newAT) {
       accessTokenStore.clear();
+      localStorage.removeItem(HAS_SESSION_KEY);
       return null;
     }
     accessTokenStore.set(newAT);
@@ -63,6 +66,7 @@ export const trySession = async (): Promise<UserInfo | null> => {
     return me;
   } catch {
     accessTokenStore.clear();
+    localStorage.removeItem(HAS_SESSION_KEY);
     return null;
   }
 };

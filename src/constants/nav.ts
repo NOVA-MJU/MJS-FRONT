@@ -3,7 +3,7 @@ import type { NavItem } from '../types/nav/item';
 export const NAV_ITEMS: NavItem[] = [
   { key: 'notice', label: '공지사항', path: '/notice' },
   { key: 'department', label: '학과별정보', path: '/department' },
-  { key: 'board', label: '게시판', path: '/board', requiresAuth: true },
+  { key: 'board', label: '게시판', path: '/board' },
   { key: 'meal', label: '식단', path: '/menu' },
   { key: 'calendar', label: '학사일정', path: '/academic-calendar' },
   {
