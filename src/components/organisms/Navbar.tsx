@@ -38,13 +38,8 @@ export default function Navbar() {
     }
   };
 
-  const handleBoardClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!isLoggedIn) {
-      e.preventDefault();
-      toast.error('로그인이 필요한 서비스입니다.', { duration: 2000 });
-      trackNavClick('board');
-      navigate('/login');
-    }
+  const handleBoardClick = () => {
+    navigate('/board');
   };
 
   useEffect(() => {
