@@ -20,7 +20,7 @@ const ITEM_COUNT = 4;
  * 메인페이지에 표시할 자유게시판 위젯 컴포넌트
  */
 export default function BoardSection() {
-  const [category, setCategory] = useState<keyof typeof CATEGORIES>('FREE');
+  const [category, setCategory] = useState<keyof typeof CATEGORIES>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +28,11 @@ export default function BoardSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const res = await getBoards(0, ITEM_COUNT, category as Category);
+        const res = await getBoards({
+          page: 0,
+          size: ITEM_COUNT,
+          communityCategory: category as Category,
+        });
         setContents(res.content);
       } catch (e) {
         console.error(e);

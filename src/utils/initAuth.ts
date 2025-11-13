@@ -9,11 +9,11 @@ import { useAuthStore } from '@/store/useAuthStore';
  */
 export const initAuth = async () => {
   const me = await trySession();
-  const { setLoggedIn, setUser, reset } = useAuthStore.getState();
+  const { setLoggedIn, setUser, resetUser } = useAuthStore.getState();
   if (me) {
     setLoggedIn(true);
     setUser(me);
   } else {
-    reset();
+    resetUser();
   }
 };

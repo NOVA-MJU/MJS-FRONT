@@ -21,7 +21,7 @@ export default function HotBoardList() {
   async function fetchData() {
     try {
       setIsLoading(true);
-      const res = await getBoards();
+      const res = await getBoards({ communityCategory: 'FREE' });
       setBoards(res.content);
       setIsError(false);
     } catch (e) {
