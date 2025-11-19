@@ -66,3 +66,12 @@ export const formatToElapsedTime = (dateString: string): string => {
   }
   return `${Math.floor(diffInSeconds / YEAR)}년 전`;
 };
+/**
+ * UTC 시간 응답값을 `-` 문자 대신 `.` 으로 변환합니다.
+ * @param dateString 서버에서 응답받은 현재 시간을 입력하세요.
+ * @returns `2025.08.09`
+ */
+export const FormatToDotDate = (dateString: string): string => {
+  const formattedDate = dateString.slice(0, 10).replace(/-/g, '.');
+  return formattedDate;
+};
