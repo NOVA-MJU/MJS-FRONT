@@ -32,9 +32,9 @@ const MyListItem = ({
 
   return (
     <div className='group hover:bg-blue-05 active:bg-blue-05 not-hover:transition'>
-      <Link to={`/board/${id}`} className='flex h-fit w-full flex-col md:gap-3'>
+      <Link to={`/board/${id}`} className='flex w-full flex-col md:gap-3'>
         <div className='flex h-fit w-full items-center p-2 md:gap-6 md:p-3'>
-          <div className='flex h-fit flex-1 flex-col gap-3'>
+          <div className='flex h-fit flex-1 flex-col gap-1'>
             <p className='text-body02 font-semibold'>{title}</p>
             <p className='text-body05 line-clamp-1 md:line-clamp-2'>{contentPreview}</p>
 
