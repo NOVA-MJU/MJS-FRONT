@@ -129,7 +129,7 @@ const News = () => {
             const serverCategory = NewsCategory[category]; //서버 enum 값으로
 
             nextParams.set('category', serverCategory ?? 'ALL');
-            nextParams.set('page', '0');
+            nextParams.set('page', '1');
 
             setSearchParams(nextParams);
           }}
@@ -156,7 +156,8 @@ const News = () => {
         onChange={(page) => {
           setPage(page);
           const nextParams = new URLSearchParams(searchParams);
-          nextParams.set('page', page.toString());
+          const appPage = page + 1;
+          nextParams.set('page', appPage.toString());
           setSearchParams(nextParams);
         }}
       />
