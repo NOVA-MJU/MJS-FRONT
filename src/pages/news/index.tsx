@@ -17,8 +17,9 @@ const DESKTOP_ITEMS_PER_PAGE = 8;
 const News = () => {
   /**
    * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
+   * setter 를 추가하여, 카테고리가 바뀌면 url에 쿼리가 찍히도록 합니다.
    */
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const [initialContent, setInitialContent] = useState('');
 
@@ -33,7 +34,7 @@ const News = () => {
     });
 
     if (entry) {
-      const key = entry[0];
+      const key = entry[0]; //한국어 탭 이름
       return key;
     }
     return '전체';
@@ -123,6 +124,14 @@ const News = () => {
           onChange={(category) => {
             setSelectedCategory(category);
             setPage(0);
+
+            const nextParams = new URLSearchParams(searchParams);
+            const serverCategory = NewsCategory[category]; //서버 enum 값으로
+
+            nextParams.set('category', serverCategory ?? 'ALL');
+            nextParams.set('page', '0');
+
+            setSearchParams(nextParams);
           }}
         />
       </div>
@@ -141,7 +150,16 @@ const News = () => {
           </div>
         )}
       </div>
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onChange={(page) => {
+          setPage(page);
+          const nextParams = new URLSearchParams(searchParams);
+          nextParams.set('page', page.toString());
+          setSearchParams(nextParams);
+        }}
+      />
     </div>
   );
 };
