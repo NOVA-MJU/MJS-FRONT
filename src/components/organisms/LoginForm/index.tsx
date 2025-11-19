@@ -107,7 +107,7 @@ const LoginForm: React.FC = () => {
 
   return (
     <form
-      className='flex flex-col mx-auto gap-12 w-[300px] md:w-[440px]'
+      className='mx-auto flex w-[300px] flex-col gap-12 md:w-[440px]'
       onSubmit={handleLogin}
       autoComplete='on'
     >
@@ -143,7 +143,7 @@ const LoginForm: React.FC = () => {
       />
 
       {formError && (
-        <div className='flex -mt-6 -mb-6 w-full text-xs md:text-sm items-center gap-2 text-error'>
+        <div className='text-error -mt-6 -mb-6 flex w-full items-center gap-2 text-xs md:text-sm'>
           <AiOutlineInfoCircle className='text-error' />
           <p>{formError}</p>
         </div>
