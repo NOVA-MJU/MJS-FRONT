@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Typography } from '../../atoms/Typography';
-import { IoIosChatbubbles, IoIosHeart } from 'react-icons/io';
+import { IoIosHeartEmpty } from 'react-icons/io';
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 import { RxDividerVertical } from 'react-icons/rx';
 import Divider from '../../atoms/Divider';
 
@@ -26,45 +26,43 @@ const MyListItem = ({
   isLast = false,
 }: MyListItemProps) => {
   return (
-    <>
-      <Link to={`/board/${id}`} className='w-full h-fit flex flex-col md:gap-3'>
-        <div className='w-full h-fit p-2 md:p-3 flex items-center gap-3 md:gap-6'>
-          <div className='flex-1 h-fit flex flex-col gap-3'>
-            <Typography variant='body02'>{title}</Typography>
-            <Typography variant='body03' className='line-clamp-1 md:line-clamp-2'>
-              {contentPreview}
-            </Typography>
-            <div className='flex gap2'>
-              <Typography variant='body03' className='text-grey-40 flex gap-1 items-center'>
-                <IoIosHeart />
-                {likeCount}
-                <RxDividerVertical />
-                <IoIosChatbubbles />
-                {commentCount}
-              </Typography>
+    <div className='hover:bg-blue-05 active:bg-blue-05'>
+      <Link to={`/board/${id}`} className='flex h-fit w-full flex-col md:gap-3'>
+        <div className='flex h-fit w-full items-center p-2 not-hover:transition md:gap-6 md:p-3'>
+          <div className='flex h-fit flex-1 flex-col gap-3'>
+            <p className='text-body02 font-semibold'>{title}</p>
+            <p className='text-body05 line-clamp-1 md:line-clamp-2'>{contentPreview}</p>
+            <div className='flex justify-between gap-2'>
+              <div>
+                <p className='text-grey-40 text-caption02 flex items-center gap-1'>
+                  <IoIosHeartEmpty className='text-blue-10' />
+                  {likeCount}
+                  <RxDividerVertical />
+                  <IoChatbubbleEllipsesOutline className='text-blue-10' />
+                  {commentCount}
+                </p>
+              </div>
+              <div className='flex h-fit w-fit items-center px-3'>
+                <p className='text-grey-40 text-caption02'>{publishedDate}</p>
+              </div>
             </div>
           </div>
-          <div className='w-fit h-fit px-3 flex items-center'>
-            <Typography variant='body03' className='text-grey-40'>
-              {publishedDate}
-            </Typography>
-          </div>
         </div>
+
         {commentPreview && (
-          <div className='w-full h-fit p-2 md:p-3'>
-            <div className='w-full h-fit flex flex-col gap-3 pl-6 border-l-2 border-blue-10 '>
-              <span className='w-fit px-2 py-1 rounded-sm bg-blue-05'>
-                <Typography variant='body02' className='text-blue-35'>
-                  나의 댓글
-                </Typography>
+          <div className='h-fit w-full px-2 pb-2 md:px-3 md:pb-3'>
+            <div className='border-blue-10 flex h-fit w-full flex-col gap-3 border-l-2 pl-6'>
+              <span className='bg-blue-05 w-fit rounded-sm px-2 py-1'>
+                <p className='text-blue-35 text-body02'>나의 댓글</p>
               </span>
-              <Typography variant='body03'>{commentPreview}</Typography>
+              <p className='text-body03'>{commentPreview}</p>
             </div>
           </div>
         )}
       </Link>
+
       {!isLast && <Divider variant='thin' />}
-    </>
+    </div>
   );
 };
 
