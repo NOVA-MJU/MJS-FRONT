@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import { getMyPosts, type MyPostItem } from '../../api/mypage';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Button from '../../components/atoms/Button';
-import { getMyPosts, type MyPostItem } from '../../api/mypage';
 import MyListItem from '../../components/molecules/MyListItem';
+import Pagination from '@/components/molecules/common/Pagination';
 import { FormatToDotDate } from '@/utils';
 
 const ViewPosts = () => {
@@ -10,20 +11,33 @@ const ViewPosts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchPosts = async (currentPage: number) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const pageResult = await getMyPosts(currentPage, 10);
+
+      setContents(pageResult.content);
+      setTotalPages(pageResult.totalPages);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getMyPosts();
-        setContents(res);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+    void fetchPosts(page);
+  }, [page]);
+
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
+  };
 
   if (isLoading)
     return (
@@ -54,9 +68,10 @@ const ViewPosts = () => {
               commentCount={content.commentCount}
               likeCount={content.likeCount}
               publishedDate={FormatToDotDate(content.publishedAt)}
-              isLast={index === contents.length - 1}
+              isLast={index === contents.length}
             />
           ))}
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
         </div>
       ) : (
         <p className='text-body01'>아직 작성한 게시글이 없습니다</p>

@@ -1,29 +1,44 @@
 import { useEffect, useState } from 'react';
-import MyListItem from '../../components/molecules/MyListItem';
-import { FormatToDotDate } from '../../utils';
-import Button from '../../components/atoms/Button';
-import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import { getMyLikedPosts, type MyPostItem } from '../../api/mypage';
+import Button from '../../components/atoms/Button';
+import MyListItem from '../../components/molecules/MyListItem';
+import LoadingIndicator from '../../components/atoms/LoadingIndicator';
+import Pagination from '../../components/molecules/common/Pagination';
+import { FormatToDotDate } from '../../utils';
 
 const ViewLikedPosts = () => {
   const [contents, setContents] = useState<MyPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchLikedPosts = async (currentPage: number) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+
+      const pageResult = await getMyLikedPosts(currentPage, 10);
+
+      setContents(pageResult.content);
+      setTotalPages(pageResult.totalPages);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getMyLikedPosts();
-        setContents(res);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+    void fetchLikedPosts(page);
+  }, [page]);
+
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
+  };
 
   if (isLoading)
     return (
@@ -43,7 +58,7 @@ const ViewLikedPosts = () => {
   return (
     <div className='flex w-full flex-1 flex-col bg-white p-4 md:gap-2 md:p-8'>
       <p className='text-title02 text-blue-35 mt-2 ml-2'>찜한 게시물</p>
-      {contents ? (
+      {contents && contents.length > 0 ? (
         <div className='bg-white'>
           {contents.map((content, index) => (
             <MyListItem
@@ -57,11 +72,11 @@ const ViewLikedPosts = () => {
               isLast={index === contents.length - 1}
             />
           ))}
+
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
         </div>
       ) : (
-        <>
-          <p className='text-body01'>아직 작성한 게시글이 없습니다</p>
-        </>
+        <p className='text-body01'>아직 찜한 게시글이 없습니다</p>
       )}
     </div>
   );

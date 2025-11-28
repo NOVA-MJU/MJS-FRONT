@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getMyCommentedPosts } from '../../api/mypage';
+import { getMyComments } from '../../api/mypage';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Button from '../../components/atoms/Button';
 import MyListItem from '../../components/molecules/MyListItem';
+import Pagination from '@/components/molecules/common/Pagination';
 import { FormatToDotDate } from '../../utils';
 
 interface GroupedCommentPost {
@@ -15,48 +16,64 @@ interface GroupedCommentPost {
   comments: string[];
 }
 
+const PAGE_SIZE = 10;
+
 const ViewComments = () => {
   const [contents, setContents] = useState<GroupedCommentPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchComments = async (currentPage: number) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+
+      const res = await getMyComments(currentPage, PAGE_SIZE);
+      const grouped = res.content.reduce<Record<string, GroupedCommentPost>>((acc, cur) => {
+        const id = cur.boardUuid;
+
+        if (!acc[id]) {
+          acc[id] = {
+            boardUuid: cur.boardUuid,
+            boardTitle: cur.boardTitle,
+            boardPreviewContent: cur.boardPreviewContent,
+            boardViewCount: cur.boardViewCount,
+            boardLikeCount: cur.boardLikeCount,
+            boardCreatedAt: cur.boardCreatedAt,
+            comments: [],
+          };
+        }
+
+        if (cur.commentPreviewContent) {
+          acc[id].comments.push(cur.commentPreviewContent);
+        }
+
+        return acc;
+      }, {});
+
+      const groupedArray = Object.values(grouped);
+
+      setContents(groupedArray);
+      setTotalPages(res.totalPages);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getMyCommentedPosts();
-        const groupedObj = res.reduce<Record<string, GroupedCommentPost>>((acc, cur) => {
-          const id = cur.boardUuid;
+    void fetchComments(page);
+  }, [page]);
 
-          if (!acc[id]) {
-            acc[id] = {
-              boardUuid: cur.boardUuid,
-              boardTitle: cur.boardTitle,
-              boardPreviewContent: cur.boardPreviewContent,
-              boardViewCount: cur.boardViewCount,
-              boardLikeCount: cur.boardLikeCount,
-              boardCreatedAt: cur.boardCreatedAt,
-              comments: [],
-            };
-          }
-
-          if (cur.commentPreviewContent) {
-            acc[id].comments.push(cur.commentPreviewContent);
-          }
-
-          return acc;
-        }, {});
-
-        const groupedArray = Object.values(groupedObj);
-        setContents(groupedArray);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
+  };
 
   if (isLoading)
     return (
@@ -69,14 +86,18 @@ const ViewComments = () => {
     return (
       <div className='flex flex-1 flex-col items-center justify-center gap-4'>
         <p className='text-body01'>문제가 발생했습니다</p>
-        <Button shape='rounded'>다시 시도하기</Button>
+        <Button shape='rounded' onClick={() => window.location.reload()}>
+          다시 시도하기
+        </Button>
       </div>
     );
+
+  const hasContents = contents.length > 0;
 
   return (
     <div className='flex w-full flex-1 flex-col bg-white p-4 md:gap-2 md:p-8'>
       <p className='text-title02 text-blue-35 mt-2 ml-2'>내가 쓴 댓글</p>
-      {contents.length ? (
+      {hasContents ? (
         <div className='bg-white'>
           {contents.map((content, index) => (
             <MyListItem
@@ -91,6 +112,7 @@ const ViewComments = () => {
               isLast={index === contents.length - 1}
             />
           ))}
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
         </div>
       ) : (
         <p className='text-body01'>아직 작성한 댓글이 없습니다</p>
