@@ -1,5 +1,5 @@
 import apiClient from './apiClient';
-import { type ApiResponse } from './types';
+import { type ApiResponse, type Paginated } from './types';
 
 /**
  * 회원 통계 정보
@@ -8,6 +8,7 @@ export const getProfileStats = async (): Promise<ProfileStatsRes> => {
   const res = await apiClient.get('/profile');
   return res.data.data;
 };
+
 export interface ProfileStatsRes {
   postCount: number;
   commentCount: number;
@@ -17,9 +18,19 @@ export interface ProfileStatsRes {
 /**
  * 내 댓글 조회
  */
-export const getMyComments = async () => {
-  const res = await apiClient.get('/profile/comments');
-  console.log('댓글 조회:', res.data.data);
+export const getMyComments = async (
+  page = 0,
+  size = 5,
+): Promise<Paginated<MyCommentedPostItem>> => {
+  const params: Record<string, unknown> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await apiClient.get<ApiResponse<Paginated<MyCommentedPostItem>>>(
+    '/profile/comments',
+    { params },
+  );
+
   return res.data.data;
 };
 
@@ -46,10 +57,16 @@ export const changePassword = async (pw: string, newPw: string) => {
  * 내가 쓴 게시글 목록을 조회합니다.
  * @returns 게시글 목록을 반환합니다.
  */
-export const getMyPosts = async () => {
-  const res = await apiClient.get<ApiResponse<MyPostItem[]>>('/profile/posts');
+export const getMyPosts = async (page = 0, size = 10): Promise<Paginated<MyPostItem>> => {
+  const params: Record<string, unknown> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await apiClient.get<ApiResponse<Paginated<MyPostItem>>>('/profile/posts', { params });
+
   return res.data.data;
 };
+
 export interface MyPostItem {
   uuid: string;
   title: string;
@@ -73,6 +90,7 @@ export const getMyCommentedPosts = async () => {
   const res = await apiClient.get<ApiResponse<MyCommentedPostItem[]>>('/profile/comments');
   return res.data.data;
 };
+
 export interface MyCommentedPostItem {
   author: string;
   boardCreatedAt: string;
@@ -94,7 +112,14 @@ export interface MyCommentedPostItem {
  * 내가 좋아요 누른 게시글을 조회합니다.
  * @returns 게시글 목록을 반환합니다.
  */
-export const getMyLikedPosts = async () => {
-  const res = await apiClient.get<ApiResponse<MyPostItem[]>>('/profile/liked_posts');
+export const getMyLikedPosts = async (page = 0, size = 5): Promise<Paginated<MyPostItem>> => {
+  const params: Record<string, unknown> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await apiClient.get<ApiResponse<Paginated<MyPostItem>>>('/profile/liked_posts', {
+    params,
+  });
+
   return res.data.data;
 };
