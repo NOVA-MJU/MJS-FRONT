@@ -26,6 +26,7 @@ import { Skeleton, SkeletonCard, SkeletonProfile } from '@/components/atoms/Skel
 import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
 import { ICON_SIZE_MD } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const MAX_REPLY_LEN = 100;
 
@@ -77,7 +78,7 @@ export default function BoardDetail() {
       setCanEdit(res.canEdit);
       setCanDelete(res.canDelete);
     } catch (e) {
-      console.error(e);
+      handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       setIsError(true);
     } finally {
       setIsContentLoading(false);
@@ -93,7 +94,7 @@ export default function BoardDetail() {
       const res = await getBoardComments(uuid);
       setComments(res);
     } catch (e) {
-      console.error(e);
+      handleError(e, '댓글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       setIsError(true);
     } finally {
       setIsCommentsLoading(false);
@@ -120,7 +121,7 @@ export default function BoardDetail() {
       await getComments(uuid);
       setNewComment('');
     } catch (err) {
-      console.error(err);
+      handleError(err, '댓글 작성에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -137,8 +138,7 @@ export default function BoardDetail() {
       await deletePost(uuid);
       navigate(-1);
     } catch (err) {
-      console.error(err);
-      alert(err);
+      handleError(err, '게시글 삭제에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -162,8 +162,7 @@ export default function BoardDetail() {
         };
       });
     } catch (err) {
-      console.error(err);
-      alert(err);
+      handleError(err, '좋아요 처리에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }

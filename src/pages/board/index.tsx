@@ -14,6 +14,7 @@ import { useResponsive } from '../../hooks/useResponse';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/useAuthStore';
 import { BOARD_PAGE_SIZE, ICON_SIZE_XL } from '../../constants/common';
+import { handleError } from '../../utils/error';
 
 const CATEGORY_TABS: { key: Category; label: string }[] = [
   { key: 'NOTICE', label: '정보 게시판' },
@@ -52,7 +53,7 @@ export default function Board() {
         setContents(res.content);
         setTotalPages(res.totalPages);
       } catch (e) {
-        console.error(e);
+        handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
         setIsError(true);
       } finally {
         setIsLoading(false);

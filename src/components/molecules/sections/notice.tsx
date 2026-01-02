@@ -62,7 +62,7 @@ export default function NoticeSection() {
             [selectedTab]: fetchedNoticeData.content,
           }));
         } catch (e) {
-          console.error('NoticeSection.tsx::useEffect()', e);
+          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setSelectedInfo([]);
         } finally {
           setIsLoading(false);

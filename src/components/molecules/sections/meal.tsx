@@ -139,7 +139,7 @@ export default function MealSection() {
           setMeals([]);
         }
       } catch (e) {
-        console.error('MealSection.tsx::fetching meal data', e);
+        handleError(e, '식단 정보를 불러오는 중 오류가 발생했습니다.', { showToast: false });
         setMeals([]);
       } finally {
         setIsLoading(false);

@@ -11,6 +11,7 @@ import { getSearchResult } from '../../api/search';
 import GlobalErrorPage from '../error';
 import { useResponsive } from '@/hooks/useResponse';
 import { NEWS_MOBILE_PAGE_SIZE, NEWS_DESKTOP_PAGE_SIZE } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const News = () => {
   /**
@@ -30,7 +31,7 @@ const News = () => {
       try {
         // await handleSearch(keyword);
       } catch (e) {
-        console.error(e);
+        handleError(e, '검색 중 오류가 발생했습니다.', { showToast: false });
       }
     })();
   }, [keyword]);
@@ -64,7 +65,7 @@ const News = () => {
           setNewsList(parsed);
           setTotalPages(res.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '검색 결과를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();
@@ -78,7 +79,7 @@ const News = () => {
           setNewsList(data.data.content);
           setTotalPages(data.data.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();

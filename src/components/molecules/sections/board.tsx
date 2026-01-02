@@ -7,6 +7,7 @@ import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { formatToElapsedTime } from '@/utils';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
 import { ICON_SIZE_SM } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 /**
  * 카테고리 및 페이지 길이 조절
@@ -36,7 +37,7 @@ export default function BoardSection() {
         });
         setContents(res.content);
       } catch (e) {
-        console.error(e);
+        handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
         setIsLoading(false);
       }

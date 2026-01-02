@@ -1,5 +1,6 @@
 import type { AxiosError } from 'axios';
 import type { ApiResponse } from '../types/api';
+import type { AxiosErrorResponseData } from '../types/error';
 import { toast } from 'react-hot-toast';
 
 /**
@@ -10,15 +11,6 @@ import { toast } from 'react-hot-toast';
  *
  * @module utils/error
  */
-
-/**
- * Axios 에러 응답의 구조를 나타내는 타입
- */
-interface AxiosErrorResponse {
-  message?: string;
-  status?: string | number;
-  error?: string;
-}
 
 /**
  * 에러 메시지를 추출하는 함수
@@ -47,7 +39,7 @@ export function extractErrorMessage(error: unknown, fallback: string): string {
   // AxiosError인 경우
   if (isAxiosError(error)) {
     const response = error.response;
-    const data = response?.data as AxiosErrorResponse | undefined;
+    const data = response?.data as AxiosErrorResponseData | undefined;
 
     // 서버 응답에서 메시지 추출
     if (data?.message) {

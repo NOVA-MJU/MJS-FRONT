@@ -13,6 +13,7 @@ import { ChipTabs } from '@/components/atoms/Tabs';
 import { formatToLocalDate } from '@/utils';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
 import { NOTICE_PAGE_SIZE } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const categoryMap: Record<string, string> = {
   all: '전체',
@@ -81,7 +82,7 @@ export default function Notice() {
           setIsError(false);
         } catch (e) {
           setIsError(true);
-          console.error('/src/pages/notice/index.tsx::Notice()', e);
+          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
         } finally {
           setIsLoading(false);
         }
@@ -117,7 +118,7 @@ export default function Notice() {
           setIsError(false);
         } catch (e) {
           setIsError(true);
-          console.error('/src/pages/notice/index.tsx::Notice()', e);
+          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
         } finally {
           setIsLoading(false);
         }

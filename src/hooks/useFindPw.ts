@@ -17,15 +17,11 @@ export function useSendRecoveryEmail() {
 
     try {
       const fullEmail = toFullEmail(email);
-      console.log('[useSendRecoveryEmail] 요청 시작:', fullEmail);
-
       const ok = await sendEmailExists(fullEmail);
-      console.log('[useSendRecoveryEmail] 응답(ok):', ok);
 
       setDone(ok);
       if (!ok) setError('인증 이메일 발송에 실패했습니다.');
     } catch (e) {
-      console.error('[useSendRecoveryEmail] 에러 발생:', e);
       setDone(false);
       setError(getErrorMessage(e, '인증 이메일 발송에 실패했습니다.'));
       throw e;
@@ -52,11 +48,8 @@ export function useVerifyRecoveryCode() {
       const fullEmail = toFullEmail(email);
       const safeCode = normalizeCode(code);
 
-      console.log('[useVerifyRecoveryCode] 요청 시작:', { fullEmail, safeCode });
-
       // 내부 플래그 세팅
       const ok = await sendAuthority(fullEmail, safeCode);
-      console.log('[useVerifyRecoveryCode] /members/recovery/verify-code ok:', ok);
       setVerified(ok);
       if (!ok) {
         setError(
@@ -64,7 +57,6 @@ export function useVerifyRecoveryCode() {
         );
       }
     } catch (e) {
-      console.error('[useVerifyRecoveryCode] 에러 발생:', e);
       setVerified(false);
       setError(getErrorMessage(e, '인증 처리에 실패했습니다.'));
       throw e;
@@ -89,15 +81,11 @@ export function useResetPassword() {
 
     try {
       const fullEmail = toFullEmail(email);
-      console.log('[useResetPassword] 요청 시작:', { fullEmail });
-
       const success = await changePassword(fullEmail, newPassword);
-      console.log('[useResetPassword] 응답(success):', success);
 
       setOk(success);
       if (!success) setError('비밀번호 변경에 실패했습니다.');
     } catch (e) {
-      console.error('[useResetPassword] 에러 발생:', e);
       setOk(false);
       setError(getErrorMessage(e, '비밀번호 변경에 실패했습니다.'));
       throw e;
