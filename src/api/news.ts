@@ -23,15 +23,10 @@ export const fetchNewsInfo = async (
   page?: number,
   size?: number,
 ): Promise<NewsListRes> => {
-  try {
-    const params: Record<string, unknown> = { category };
-    if (page !== undefined) params.page = page;
-    if (size !== undefined) params.size = size;
+  const params: Record<string, unknown> = { category };
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
 
-    const res = await apiClient.get('/news', { params });
-    return res.data;
-  } catch (e) {
-    console.error('news fetching error', e);
-    throw e;
-  }
+  const res = await apiClient.get('/news', { params });
+  return res.data;
 };

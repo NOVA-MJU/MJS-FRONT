@@ -7,6 +7,7 @@ import InputModal from '../../components/molecules/Modal/InputModal';
 import { Typography } from '../../components/atoms/Typography';
 import ProfileCard from '../../components/molecules/user/ProfileCard';
 import LabelButton from '../../components/atoms/Button/LabelButton';
+import { handleError } from '../../utils/error';
 import toast from 'react-hot-toast';
 
 const Mypage = () => {
@@ -25,7 +26,7 @@ const Mypage = () => {
         window.location.href = '/';
       }
     } catch (error) {
-      console.error('[탈퇴 요청 에러]', error);
+      handleError(error, '회원 탈퇴 처리 중 오류가 발생했습니다.', { showToast: false });
       setHasError(true);
     } finally {
       setIsModalOpen(false);
@@ -45,7 +46,9 @@ const Mypage = () => {
         const data = await getProfileStats();
         setStateData(data);
       } catch (err) {
-        console.error('마이페이지 데이터 불러오기 실패', err);
+        handleError(err, '마이페이지 데이터를 불러오는 중 오류가 발생했습니다.', {
+          showToast: false,
+        });
       }
     };
     fetchData();
