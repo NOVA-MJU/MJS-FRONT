@@ -22,6 +22,7 @@ import heic2any from 'heic2any';
 import imageCompression from 'browser-image-compression';
 
 import { gtmPush } from '../utils/gtm';
+import { handleError } from '../utils/error';
 
 /**
  * 회원가입 관련 상태와 이벤트 핸들러를 제공하는 커스텀 훅
@@ -103,13 +104,6 @@ export const useRegisterHandlers = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* 공통 에러 처리 */
-  const handleError = (err: unknown, defaultMsg = '알 수 없는 오류') => {
-    const axiosError = err as AxiosError<{ message: string }>;
-    console.error(axiosError?.response?.data?.message || defaultMsg);
-    toast.error(axiosError?.response?.data?.message || defaultMsg);
-  };
-
   const handleSendCode = async () => {
     try {
       ensureStarted();
@@ -121,7 +115,6 @@ export const useRegisterHandlers = ({
       setShowCodeInput(true);
     } catch (err: unknown) {
       handleError(err, '이메일 중복 확인 또는 인증 메일 발송 실패');
-      toast.error('이메일 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -175,7 +168,6 @@ export const useRegisterHandlers = ({
       toast.success('사용 가능한 학번입니다!');
     } catch (err: unknown) {
       handleError(err, '학번 중복 확인 또는 인증 메일 발송 실패');
-      toast.error('학번 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }

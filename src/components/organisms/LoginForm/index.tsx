@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { login, saveUserInfo } from '../../../api/user';
 import { useLoginTracking } from '../../../hooks/gtm/useLoginTracking';
+import { handleErrorWithStatus } from '../../../utils/error';
 
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
@@ -66,13 +67,19 @@ const LoginForm = () => {
       markSuccess();
       navigate('/');
     } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setFormError('입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.');
-        return;
-      }
+      const errorMessage =
+        axios.isAxiosError(err) && err.response?.status === 401
+          ? '입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.'
+          : '로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.';
 
-      console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
-      setFormError('로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      handleErrorWithStatus(
+        err,
+        {
+          401: '입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.',
+        },
+        '로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+      );
+      setFormError(errorMessage);
     }
   };
 

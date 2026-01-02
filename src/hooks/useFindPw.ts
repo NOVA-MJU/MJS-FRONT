@@ -1,16 +1,8 @@
 import { useState } from 'react';
-import type { AxiosError } from 'axios';
 import { sendEmailExists, sendAuthority, changePassword } from '../api/user';
 import { toFullEmail } from '../utils/email';
-import type { ApiResponse } from '../types/api';
 import { normalizeCode } from '../utils/code';
-
-/** 공통 에러 메시지 유틸 (Axios 4xx/5xx + 커스텀) */
-const toErrMsg = (err: unknown, fallback: string) => {
-  const ax = err as AxiosError<ApiResponse<unknown>>;
-  console.error('[toErrMsg] 원본 에러:', err);
-  return ax.response?.data?.message || ax.response?.data?.status || ax.message || fallback;
-};
+import { getErrorMessage } from '../utils/error';
 
 /** 1) 비밀번호 찾기 — 이메일로 인증코드 발송 */
 export function useSendRecoveryEmail() {
@@ -35,7 +27,7 @@ export function useSendRecoveryEmail() {
     } catch (e) {
       console.error('[useSendRecoveryEmail] 에러 발생:', e);
       setDone(false);
-      setError(toErrMsg(e, '인증 이메일 발송에 실패했습니다.'));
+      setError(getErrorMessage(e, '인증 이메일 발송에 실패했습니다.'));
       throw e;
     } finally {
       setLoading(false);
@@ -74,7 +66,7 @@ export function useVerifyRecoveryCode() {
     } catch (e) {
       console.error('[useVerifyRecoveryCode] 에러 발생:', e);
       setVerified(false);
-      setError(toErrMsg(e, '인증 처리에 실패했습니다.'));
+      setError(getErrorMessage(e, '인증 처리에 실패했습니다.'));
       throw e;
     } finally {
       setLoading(false);
@@ -107,7 +99,7 @@ export function useResetPassword() {
     } catch (e) {
       console.error('[useResetPassword] 에러 발생:', e);
       setOk(false);
-      setError(toErrMsg(e, '비밀번호 변경에 실패했습니다.'));
+      setError(getErrorMessage(e, '비밀번호 변경에 실패했습니다.'));
       throw e;
     } finally {
       setLoading(false);
