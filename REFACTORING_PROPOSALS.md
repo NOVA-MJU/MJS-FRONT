@@ -2,18 +2,21 @@
 
 이 문서는 useQuery 마이그레이션을 제외한 추가 리팩토링 가능 항목을 정리합니다.
 
-## 📋 목차
+## 목차
 
-1. [검증 로직 통합](#1-검증-로직-통합-우선순위-높음)
-2. [API 파일의 console.error 정리](#2-api-파일의-consoleerror-정리-우선순위-중간)
-3. [인라인 스타일 하드코딩 값 정리](#3-인라인-스타일-하드코딩-값-정리-우선순위-중간)
+1. [검증 로직 통합](#1-검증-로직-통합-완료)
+2. [API 파일의 console.error 정리](#2-api-파일의-consoleerror-정리-완료)
+3. [인라인 스타일 하드코딩 값 정리](#3-인라인-스타일-하드코딩-값-정리-완료)
 4. [@deprecated 컴포넌트 정리](#4-deprecated-컴포넌트-정리-우선순위-낮음)
 5. [중복된 useEffect 패턴 개선](#5-중복된-useeffect-패턴-개선-우선순위-낮음)
-6. [불필요한 console.log 제거](#6-불필요한-consolelog-제거-우선순위-낮음)
+6. [불필요한 console.log 제거](#6-불필요한-consolelog-제거-완료)
 
 ---
 
-## 1. 검증 로직 통합 (우선순위: 높음)
+## 1. 검증 로직 통합 (완료)
+
+**완료일**: 2026년 1월 2일  
+**커밋**: `90e7143`
 
 ### 문제점
 
@@ -86,22 +89,26 @@ export const isMjuEmailDomain = (email: string): boolean => {
 };
 ```
 
-### 적용 대상 파일
+### 적용된 파일
 
+- `src/utils/validation.ts` (신규 생성)
 - `src/components/organisms/Register/index.tsx`
 - `src/components/organisms/LoginForm/index.tsx`
 - `src/components/organisms/FindForm/FindIdForm.tsx`
-- `src/components/molecules/user/StudentCodeFieldWithVerify/index.tsx`
 
-### 예상 효과
+### 완료된 효과
 
 - 검증 로직 일관성 향상
 - 유지보수 용이성 증가
 - 테스트 용이성 향상
+- 코드 중복 제거
 
 ---
 
-## 2. API 파일의 console.error 정리 (우선순위: 중간)
+## 2. API 파일의 console.error 정리 (완료)
+
+**완료일**: 2026년 1월 2일  
+**커밋**: `d6196bd`
 
 ### 문제점
 
@@ -120,17 +127,26 @@ export const isMjuEmailDomain = (email: string): boolean => {
 - API 파일의 `console.error`를 제거하거나 `handleError`로 대체
 - 디버깅용 `console.log` 제거
 
-### 적용 대상
+### 적용된 파일
 
-- `src/api/news.ts`
-- `src/api/main/meal-api.ts`
-- `src/pages/search/index.tsx`
-- `src/pages/mypage/index.tsx`
-- `src/components/atoms/SearchBar/index.tsx`
+- `src/api/news.ts`: 불필요한 try-catch 및 console.error 제거
+- `src/api/main/meal-api.ts`: 불필요한 try-catch 및 console.error 제거
+- `src/pages/search/index.tsx`: console.error 제거
+- `src/pages/mypage/index.tsx`: console.error를 handleError로 대체
+- `src/components/atoms/SearchBar/index.tsx`: console.error 및 console.log 제거
+
+### 완료된 효과
+
+- 프로덕션 로그 정리
+- 에러 처리 통일
+- 코드 간결성 향상
 
 ---
 
-## 3. 인라인 스타일 하드코딩 값 정리 (우선순위: 중간)
+## 3. 인라인 스타일 하드코딩 값 정리 (완료)
+
+**완료일**: 2026년 1월 2일  
+**커밋**: `466adae`
 
 ### 문제점
 
@@ -162,11 +178,17 @@ export const colors = {
 };
 ```
 
-### 적용 대상
+### 적용된 파일
 
-- `src/components/atoms/Input/Input.tsx`
-- `src/components/atoms/Button/ButtonActiveStyleMap.ts`
-- `src/components/atoms/Button/ButtonDisabledStyleMap.ts`
+- `src/styles/color.ts`: errorBackground, yellow 색상 상수 추가
+- `src/components/atoms/Input/Input.tsx`: 하드코딩된 색상 값을 상수로 교체
+- `src/components/atoms/Button/ButtonActiveStyleMap.ts`: 하드코딩된 색상 값을 상수로 교체
+
+### 완료된 효과
+
+- 색상 일관성 향상
+- 중앙화된 색상 관리
+- 유지보수 용이성 증가
 
 ---
 
@@ -246,7 +268,10 @@ export function useAsyncEffect(asyncFn: () => Promise<void>, dependencies: React
 
 ---
 
-## 6. 불필요한 console.log 제거 (우선순위: 낮음)
+## 6. 불필요한 console.log 제거 (완료)
+
+**완료일**: 2026년 1월 2일  
+**커밋**: `d6196bd`
 
 ### 문제점
 
@@ -260,35 +285,53 @@ export function useAsyncEffect(asyncFn: () => Promise<void>, dependencies: React
 
 불필요한 `console.log` 제거
 
----
+### 적용된 파일
 
-## 📊 우선순위 요약
+- `src/components/atoms/SearchBar/index.tsx`: console.log(domain) 제거
 
-### 높음 (즉시 권장)
+### 완료된 효과
 
-1. ✅ **검증 로직 통합** - 코드 일관성 및 유지보수성 향상
-
-### 중간 (권장)
-
-2. ✅ **API 파일의 console.error 정리** - 프로덕션 로그 정리
-3. ✅ **인라인 스타일 하드코딩 값 정리** - 색상 일관성 향상
-
-### 낮음 (선택적)
-
-4. ⚠️ **@deprecated 컴포넌트 정리** - 큰 작업, 신중한 접근 필요
-5. ⚠️ **중복된 useEffect 패턴 개선** - 선택적 개선
-6. ✅ **불필요한 console.log 제거** - 간단한 정리
+- 프로덕션 로그 정리
+- 코드 간결성 향상
 
 ---
 
-## 🎯 추천 작업 순서
+## 우선순위 요약
 
-1. **검증 로직 통합** (가장 영향 큼)
-2. **API 파일의 console.error 정리** (간단하고 효과적)
-3. **인라인 스타일 하드코딩 값 정리** (일관성 향상)
-4. **불필요한 console.log 제거** (간단한 정리)
+### 완료된 작업
+
+1. **검증 로직 통합** - 코드 일관성 및 유지보수성 향상 (완료)
+2. **API 파일의 console.error 정리** - 프로덕션 로그 정리 (완료)
+3. **인라인 스타일 하드코딩 값 정리** - 색상 일관성 향상 (완료)
+4. **불필요한 console.log 제거** - 간단한 정리 (완료)
+
+### 남은 작업 (선택적)
+
+1. **@deprecated 컴포넌트 정리** - 큰 작업, 신중한 접근 필요
+   - Typography 컴포넌트: 34개 파일에서 사용 중
+   - Calendar 관련 deprecated 함수들
+   - 사용처 확인 후 Tailwind CSS로 대체 또는 제거 필요
+
+2. **중복된 useEffect 패턴 개선** - 선택적 개선
+   - 비슷한 패턴의 async useEffect를 커스텀 훅으로 추출 가능
+   - `src/pages/mypage/index.tsx`, `src/pages/search/index.tsx` 등
+
+---
+
+## 다음 단계 권장 사항
+
+### 즉시 권장하지 않음
+
+- **@deprecated 컴포넌트 정리**: 큰 작업이며 기존 코드에 광범위한 영향을 미칠 수 있음
+- **중복된 useEffect 패턴 개선**: 현재 패턴이 명확하고 이해하기 쉬움
+
+### 추후 고려 사항
+
+- React Query 마이그레이션 확대 (별도 작업으로 진행 예정)
+- 인라인 스타일 Tailwind CSS 전환 (선택적)
 
 ---
 
 **작성일**: 2024년  
+**최종 업데이트**: 2026년 1월 2일  
 **참고**: useQuery 마이그레이션은 별도 작업으로 진행 예정
