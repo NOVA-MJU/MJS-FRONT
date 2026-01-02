@@ -35,7 +35,7 @@ const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
  * - `emailError`: 이메일 형식 오류 여부
  * - `formError`: 인풋과 버튼 사이에 표시되는 에러 메시지 문자열
  */
-const LoginForm: React.FC = () => {
+const LoginForm = () => {
   const navigate = useNavigate();
 
   const [id, setId] = useState<string>('');

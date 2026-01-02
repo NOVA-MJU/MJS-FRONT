@@ -6,7 +6,7 @@ interface Props {
   setPw: (val: string) => void;
 }
 
-const PasswordField: React.FC<Props> = ({ pw, setPw }) => (
+const PasswordField = ({ pw, setPw }: Props) => (
   <div>
     <InputField
       label='비밀번호'

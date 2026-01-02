@@ -6,7 +6,7 @@ interface ProfileImageInputProps {
   onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ImageInput: React.FC<ProfileImageInputProps> = ({ imageUrl, onImageChange }) => {
+const ImageInput = ({ imageUrl, onImageChange }: ProfileImageInputProps) => {
   return (
     <div className='flex flex-col'>
       <label htmlFor='profile-image' className='cursor-pointer'>

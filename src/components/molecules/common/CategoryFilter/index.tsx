@@ -8,7 +8,7 @@ export interface CategoryFilterProps {
   onChange: (c: string) => void;
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, current, onChange }) => {
+const CategoryFilter = ({ categories, current, onChange }: CategoryFilterProps) => {
   const { isDesktop } = useResponsive();
 
   if (!isDesktop) {

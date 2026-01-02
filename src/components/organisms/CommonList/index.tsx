@@ -7,7 +7,7 @@ interface NoticeListProps {
   itemsPerPage?: number;
 }
 
-const CommonList: React.FC<NoticeListProps> = ({ items, category, page = 1, itemsPerPage = 8 }) => {
+const CommonList = ({ items, category, page = 1, itemsPerPage = 8 }: NoticeListProps) => {
   return (
     <section className='flex flex-col'>
       {items.map((item, index) => (

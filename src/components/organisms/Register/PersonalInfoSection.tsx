@@ -29,7 +29,7 @@ interface Props {
   setIsNicknameChecked: (val: boolean) => void;
 }
 
-const PersonalInfoSection: React.FC<Props> = ({
+const PersonalInfoSection = ({
   setProfileImageFile,
   name,
   setName,
@@ -48,7 +48,7 @@ const PersonalInfoSection: React.FC<Props> = ({
   handleVerifyNickname,
   handleVerifyStudentCode,
   setIsNicknameChecked,
-}) => {
+}: Props) => {
   return (
     <section>
       <p className='text-xl md:text-3xl font-bold my-6 text-mju-primary'>개인 정보</p>

@@ -8,7 +8,7 @@ import { saveUserInfo } from '../../api/user';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const Edit: React.FC = () => {
+const Edit = () => {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
   const navigator = useNavigate();

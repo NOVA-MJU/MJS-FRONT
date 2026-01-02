@@ -17,7 +17,7 @@ interface Props {
   errorMessage?: string;
 }
 
-const DropdownField: React.FC<Props> = ({
+const DropdownField = ({
   label,
   selected,
   onSelect,
@@ -25,7 +25,7 @@ const DropdownField: React.FC<Props> = ({
   placeholder = '선택하세요',
   error = false,
   errorMessage = '값을 선택해주세요.',
-}) => {
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   const selectedLabel = options.find((item) => item.value === selected)?.label;

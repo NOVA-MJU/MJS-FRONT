@@ -8,12 +8,12 @@ interface LoginButtonsProps {
   onSignUp?: () => void;
 }
 
-const UserFormButtons: React.FC<LoginButtonsProps> = ({
+const UserFormButtons = ({
   label = '',
   loading = false,
   disabled = false,
   onSignUp,
-}) => {
+}: LoginButtonsProps) => {
   const isLoginDisabled = disabled || loading;
   const loginVariant = isLoginDisabled ? 'grey' : 'main';
   return (

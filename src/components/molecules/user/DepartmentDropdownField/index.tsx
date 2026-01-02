@@ -6,7 +6,7 @@ interface Props {
   setDepartment: (val: string) => void;
 }
 
-const DepartmentDropdownField: React.FC<Props> = ({ department, setDepartment }) => (
+const DepartmentDropdownField = ({ department, setDepartment }: Props) => (
   <DropdownField
     label='학과'
     selected={department}

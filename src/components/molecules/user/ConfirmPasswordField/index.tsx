@@ -7,7 +7,7 @@ interface Props {
   confirmError: boolean;
 }
 
-const ConfirmPasswordField: React.FC<Props> = ({ confirmPw, setConfirmPw, confirmError }) => (
+const ConfirmPasswordField = ({ confirmPw, setConfirmPw, confirmError }: Props) => (
   <InputField
     label='비밀번호 확인'
     type='password'

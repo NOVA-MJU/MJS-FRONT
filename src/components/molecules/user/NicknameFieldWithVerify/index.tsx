@@ -11,14 +11,14 @@ interface Props {
   setIsNicknameChecked: (val: boolean) => void;
 }
 
-const NicknameFieldWithVerify: React.FC<Props> = ({
+const NicknameFieldWithVerify = ({
   nickname,
   setNickname,
   isSending,
   isNicknameChecked,
   handleVerifyNickname,
   setIsNicknameChecked,
-}) => (
+}: Props) => (
   <InputField
     label='닉네임'
     type='text'

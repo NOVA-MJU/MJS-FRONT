@@ -15,7 +15,7 @@ interface PaginationProps {
  * @param onChange setPage hook을 입력하세요.
  * @returns
  */
-const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onChange }) => {
+const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
   const visibleCount = Math.min(5, totalPages);
   const startPage = Math.floor(page / visibleCount) * visibleCount;
   return (

@@ -9,7 +9,7 @@ import ProfileCard from '../../components/molecules/user/ProfileCard';
 import LabelButton from '../../components/atoms/Button/LabelButton';
 import toast from 'react-hot-toast';
 
-const Mypage: React.FC = () => {
+const Mypage = () => {
   const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [password, setPassword] = useState('');

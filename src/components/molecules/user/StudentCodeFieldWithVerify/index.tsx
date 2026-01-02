@@ -11,14 +11,14 @@ interface Props {
   handleVerifyStudentCode: () => void;
 }
 
-const StudentCodeFieldWithVerify: React.FC<Props> = ({
+const StudentCodeFieldWithVerify = ({
   studentCode,
   setStudentCode,
   isStudentCodeValid,
   isSending,
   isStuCodeChecked,
   handleVerifyStudentCode,
-}) => (
+}: Props) => (
   <div className='h-[110px]'>
     <InputField
       label='학번'
