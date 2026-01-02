@@ -4,6 +4,7 @@ import Button from '../../atoms/Button/Button';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
 import { useNavigate } from 'react-router-dom';
 import { EMAIL_DOMAIN } from '../../../constants/common';
+import { isMjuEmailDomain } from '../../../utils/validation';
 
 const FindIdForm = () => {
   const navigate = useNavigate();
@@ -16,11 +17,8 @@ const FindIdForm = () => {
   const [emailVerified, setEmailVerified] = useState(false);
   const [isEmailChecked, setIsEmailChecked] = useState(false);
 
-  const isMjuEmail = (email: string) =>
-    new RegExp(`${EMAIL_DOMAIN.replace('.', '\\.')}$`, 'i').test(email);
-
   const handleSendCode = async () => {
-    if (!isMjuEmail(id)) return;
+    if (!isMjuEmailDomain(id)) return;
     setIsSending(true);
     try {
       setShowCodeInput(true);
@@ -58,7 +56,7 @@ const FindIdForm = () => {
               setId(e.target.value);
               setIsEmailChecked(false);
             }}
-            error={!!id && !isMjuEmail(id)}
+            error={!!id && !isMjuEmailDomain(id)}
             rightElement={
               <div className='flex items-center gap-3'>
                 <p className='font-light ml-2'>{EMAIL_DOMAIN}</p>
@@ -66,7 +64,7 @@ const FindIdForm = () => {
                   type='button'
                   shape='rounded'
                   size='sm'
-                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmailDomain(id)}
                   onClick={handleSendCode}
                   fullWidth={false}
                   variant={emailVerified || isSending ? 'grey' : 'main'}

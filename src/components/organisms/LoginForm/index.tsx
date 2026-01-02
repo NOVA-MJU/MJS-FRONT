@@ -6,13 +6,12 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import { login, saveUserInfo } from '../../../api/user';
 import { useLoginTracking } from '../../../hooks/gtm/useLoginTracking';
 import { handleErrorWithStatus } from '../../../utils/error';
+import { validateMjuEmail } from '../../../utils/validation';
 
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
 import { EMAIL_DOMAIN } from '../../../constants/common';
-
-const emailRegex = new RegExp(`^[\\w.-]+${EMAIL_DOMAIN.replace('.', '\\.')}$`);
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -52,7 +51,7 @@ const LoginForm = () => {
       setFormError('비밀번호를 입력해 주세요');
       return;
     }
-    if (!emailRegex.test(id)) {
+    if (!validateMjuEmail(id)) {
       setEmailError(true);
       setFormError('학교 이메일 형식이 아닙니다.');
       return;
