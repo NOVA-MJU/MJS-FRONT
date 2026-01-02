@@ -9,8 +9,9 @@ import { useLoginTracking } from '../../../hooks/gtm/useLoginTracking';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
+import { EMAIL_DOMAIN } from '../../../constants/common';
 
-const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
+const emailRegex = new RegExp(`^[\\w.-]+${EMAIL_DOMAIN.replace('.', '\\.')}$`);
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ const LoginForm = () => {
         label='이메일'
         name='username'
         type='email'
-        placeholder='@mju.ac.kr'
+        placeholder={EMAIL_DOMAIN}
         defaultValue={id}
         onChange={(e) => {
           setId(e.target.value);

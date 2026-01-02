@@ -1,4 +1,5 @@
 import DetailItem, { type ListItemProps } from '../DetailItem/idex';
+import { COMMON_LIST_ITEMS_PER_PAGE } from '@/constants/common';
 
 interface NoticeListProps {
   items: ListItemProps[];
@@ -7,7 +8,12 @@ interface NoticeListProps {
   itemsPerPage?: number;
 }
 
-const CommonList = ({ items, category, page = 1, itemsPerPage = 8 }: NoticeListProps) => {
+const CommonList = ({
+  items,
+  category,
+  page = 1,
+  itemsPerPage = COMMON_LIST_ITEMS_PER_PAGE,
+}: NoticeListProps) => {
   return (
     <section className='flex flex-col'>
       {items.map((item, index) => (

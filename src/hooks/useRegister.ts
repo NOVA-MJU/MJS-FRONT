@@ -13,6 +13,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 import { MAX_FILE_SIZE_MB } from '../constants/maxFileSize';
+import {
+  EMAIL_DOMAIN,
+  IMAGE_MAX_WIDTH_OR_HEIGHT,
+  IMAGE_COMPRESSION_QUALITY,
+} from '../constants/common';
 import heic2any from 'heic2any';
 import imageCompression from 'browser-image-compression';
 
@@ -57,7 +62,7 @@ export const useRegisterHandlers = ({
   gender: string;
   department: string;
 }) => {
-  const fullEmail = `${id}@mju.ac.kr`;
+  const fullEmail = `${id}${EMAIL_DOMAIN}`;
   const navigator = useNavigate();
 
   const [code, setCode] = useState('');
@@ -192,7 +197,7 @@ export const useRegisterHandlers = ({
           const blob = (await heic2any({
             blob: uploadFile,
             toType: 'image/jpeg',
-            quality: 0.9,
+            quality: IMAGE_COMPRESSION_QUALITY,
           })) as Blob;
 
           uploadFile = new File([blob], uploadFile.name.replace(/\.[^/.]+$/, '.jpg'), {
@@ -207,7 +212,7 @@ export const useRegisterHandlers = ({
         if (uploadFile.size > maxBytes) {
           uploadFile = await imageCompression(uploadFile, {
             maxSizeMB: limitMB,
-            maxWidthOrHeight: 1920,
+            maxWidthOrHeight: IMAGE_MAX_WIDTH_OR_HEIGHT,
             useWebWorker: true,
             preserveExif: false,
             fileType: 'image/jpeg',

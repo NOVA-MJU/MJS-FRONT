@@ -158,7 +158,7 @@ export default function MealSection() {
         <div className='px-3 flex justify-between items-center'>
           <h3 className='text-heading02 text-mju-primary'>학식</h3>
           <Link to='/menu'>
-            <IoIosArrowForward className='text-blue-10' size={20} />
+            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
         <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>

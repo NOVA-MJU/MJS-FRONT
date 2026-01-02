@@ -25,6 +25,7 @@ import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { Skeleton, SkeletonCard, SkeletonProfile } from '@/components/atoms/Skeleton';
 import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
+import { ICON_SIZE_MD } from '@/constants/common';
 
 const MAX_REPLY_LEN = 100;
 
@@ -346,10 +347,13 @@ export default function BoardDetail() {
                     <span>{content.author}</span>
                   </div>
                   <div className='flex gap-1.5 items-center text-body05 text-grey-40'>
-                    <IoIosHeartEmpty size='16' className='text-blue-10' />
+                    <IoIosHeartEmpty size={ICON_SIZE_MD} className='text-blue-10' />
                     <span>{content.likeCount}</span>
                     <span>|</span>
-                    <HiOutlineChatBubbleOvalLeftEllipsis size='16' className='text-blue-10' />
+                    <HiOutlineChatBubbleOvalLeftEllipsis
+                      size={ICON_SIZE_MD}
+                      className='text-blue-10'
+                    />
                     <span>{content.commentCount}</span>
                   </div>
                 </div>

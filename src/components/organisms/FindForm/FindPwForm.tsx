@@ -8,6 +8,7 @@ import {
   useResetPassword,
 } from '../../../hooks/useFindPw';
 import toast from 'react-hot-toast';
+import { EMAIL_DOMAIN } from '../../../constants/common';
 
 const FindPwForm = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ const FindPwForm = () => {
             onChange={(e) => setId(e.target.value)}
             rightElement={
               <div className='hidden md:flex items-center gap-3'>
-                <p className='font-light ml-2'>@mju.ac.kr</p>
+                <p className='font-light ml-2'>{EMAIL_DOMAIN}</p>
                 <Button
                   type='button'
                   shape='rounded'
@@ -96,7 +97,7 @@ const FindPwForm = () => {
 
           {/* 모바일 버튼 */}
           <div className='w-full mt-3 flex items-center justify-between md:hidden'>
-            <p className='font-light text-sm mr-2'>@mju.ac.kr</p>
+            <p className='font-light text-sm mr-2'>{EMAIL_DOMAIN}</p>
             <Button
               type='button'
               shape='rounded'
@@ -111,7 +112,7 @@ const FindPwForm = () => {
           </div>
 
           <p className='block text-xs font-normal text-grey-40 mt-3 ml-1'>
-            @mju.ac.kr 형식의 이메일만 지원
+            {EMAIL_DOMAIN} 형식의 이메일만 지원
           </p>
         </div>
 

@@ -2,11 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { getRealTimeSearch } from '../../../api/main/real-time';
 import type { TopKeywordsResponse } from '../../../api/main/real-time';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { REALTIME_RANK_DEFAULT_LIMIT, REALTIME_RANK_INTERVAL_MS } from '@/constants/common';
 
 type RankItem = { keyword: string };
 type Delta = 'up' | 'down' | 'new' | 'same';
 
-export default function RealtimeRank({ limit = 10, intervalMs = 10000 }) {
+export default function RealtimeRank({
+  limit = REALTIME_RANK_DEFAULT_LIMIT,
+  intervalMs = REALTIME_RANK_INTERVAL_MS,
+}) {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [current, setCurrent] = useState<RankItem[]>([]);

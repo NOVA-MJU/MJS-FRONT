@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { formatToElapsedTime } from '@/utils';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
+import { ICON_SIZE_SM } from '@/constants/common';
 
 /**
  * 카테고리 및 페이지 길이 조절
@@ -75,9 +76,12 @@ export default function BoardSection() {
                     {/* 날짜표시영역 */}
                     <div className='px-1 flex items-center justify-between'>
                       <div className='flex items-center gap-1'>
-                        <IoIosHeartEmpty size={12} className='text-blue-10' />
+                        <IoIosHeartEmpty size={ICON_SIZE_SM} className='text-blue-10' />
                         <span className='text-caption04 text-grey-40'>{content.likeCount}</span>
-                        <HiOutlineChatBubbleOvalLeftEllipsis size={12} className='text-blue-10' />
+                        <HiOutlineChatBubbleOvalLeftEllipsis
+                          size={ICON_SIZE_SM}
+                          className='text-blue-10'
+                        />
                         <span className='text-caption04 text-grey-40'>{content.commentCount}</span>
                       </div>
                       <span className='text-caption02 text-grey-40'>

@@ -12,10 +12,8 @@ import NoticeList from '@/components/organisms/CommonList';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import { formatToLocalDate } from '@/utils';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
+import { NOTICE_PAGE_SIZE } from '@/constants/common';
 
-/**
- * 카테고리 매핑
- */
 const categoryMap: Record<string, string> = {
   all: '전체',
   general: '일반공지',
@@ -25,8 +23,6 @@ const categoryMap: Record<string, string> = {
   activity: '학생활동',
   rule: '학칙개정',
 };
-
-const ITEMS_PER_PAGE = 10;
 
 /**
  * Notice (공지사항 페이지)
@@ -61,7 +57,7 @@ export default function Notice() {
       (async () => {
         try {
           setIsLoading(true);
-          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, ITEMS_PER_PAGE);
+          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, NOTICE_PAGE_SIZE);
           const parsed: ListItemProps[] = res.content.map(
             (item: GetSearchResultRes, idx: number) => ({
               id: idx,
@@ -101,7 +97,7 @@ export default function Notice() {
             selectedCategory,
             undefined,
             page,
-            ITEMS_PER_PAGE,
+            NOTICE_PAGE_SIZE,
             'desc',
           );
 
@@ -168,7 +164,7 @@ export default function Notice() {
             items={items}
             category='notice'
             page={page + 1}
-            itemsPerPage={ITEMS_PER_PAGE}
+            itemsPerPage={NOTICE_PAGE_SIZE}
           />
           {!isLoading && keyword && items.length === 0 && (
             <div className='flex-1 text-center content-center'>

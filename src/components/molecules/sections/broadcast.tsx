@@ -2,13 +2,14 @@ import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { formatToLocalDate } from '@/utils';
 import { useEffect, useState } from 'react';
+import { BROADCAST_PAGE_SIZE } from '@/constants/common';
 
 export default function BroadcastSection() {
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const page = 0;
-  const size = 9;
+  const size = BROADCAST_PAGE_SIZE;
 
   /**
    * 명대방송 데이터를 불러옵니다.

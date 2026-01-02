@@ -3,6 +3,7 @@ import InputField from '../../molecules/common/InputField';
 import Button from '../../atoms/Button/Button';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
 import { useNavigate } from 'react-router-dom';
+import { EMAIL_DOMAIN } from '../../../constants/common';
 
 const FindIdForm = () => {
   const navigate = useNavigate();
@@ -15,7 +16,8 @@ const FindIdForm = () => {
   const [emailVerified, setEmailVerified] = useState(false);
   const [isEmailChecked, setIsEmailChecked] = useState(false);
 
-  const isMjuEmail = (email: string) => /@mju\.ac\.kr$/i.test(email);
+  const isMjuEmail = (email: string) =>
+    new RegExp(`${EMAIL_DOMAIN.replace('.', '\\.')}$`, 'i').test(email);
 
   const handleSendCode = async () => {
     if (!isMjuEmail(id)) return;
@@ -59,7 +61,7 @@ const FindIdForm = () => {
             error={!!id && !isMjuEmail(id)}
             rightElement={
               <div className='flex items-center gap-3'>
-                <p className='font-light ml-2'>@mju.ac.kr</p>
+                <p className='font-light ml-2'>{EMAIL_DOMAIN}</p>
                 <Button
                   type='button'
                   shape='rounded'
@@ -82,7 +84,7 @@ const FindIdForm = () => {
             }
           />
           <p className='hidden md:block text-xs font-normal text-grey-40 mt-2 ml-1'>
-            @mju.ac.kr 형식의 이메일만 지원
+            {EMAIL_DOMAIN} 형식의 이메일만 지원
           </p>
         </div>
 

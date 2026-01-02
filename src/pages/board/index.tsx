@@ -13,13 +13,12 @@ import { formatToElapsedTime } from '../../utils';
 import { useResponsive } from '../../hooks/useResponse';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/useAuthStore';
+import { BOARD_PAGE_SIZE, ICON_SIZE_XL } from '../../constants/common';
 
 const CATEGORY_TABS: { key: Category; label: string }[] = [
   { key: 'NOTICE', label: '정보 게시판' },
   { key: 'FREE', label: '자유 게시판' },
 ];
-
-const PAGE_SIZE = 10;
 
 export default function Board() {
   const [category, setCategory] = useState<Category>('NOTICE');
@@ -44,7 +43,7 @@ export default function Board() {
       try {
         const params: GetBoardsParams = {
           page,
-          size: PAGE_SIZE,
+          size: BOARD_PAGE_SIZE,
           communityCategory: category,
           sortBy: 'createdAt',
           direction: 'DESC',
@@ -172,7 +171,7 @@ export default function Board() {
         className='fixed bottom-40 right-5 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg md:bottom-16'
         onClick={handleWriteClick}
       >
-        <HiOutlinePencilSquare size={22} />
+        <HiOutlinePencilSquare size={ICON_SIZE_XL} />
         <span className='text-caption01 font-semibold'>글남기기</span>
       </button>
     </div>
