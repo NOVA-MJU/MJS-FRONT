@@ -160,11 +160,9 @@ export default function BoardDetail() {
           liked: !prev.liked,
         };
       });
-      // TODO: 좋아요가 표시되었습니다 알림창 표시
     } catch (err) {
       console.error(err);
       alert(err);
-      // TODO: 로그인이 필요한 서비스 입니다 알림창 표시
     } finally {
       setIsLoading(false);
     }

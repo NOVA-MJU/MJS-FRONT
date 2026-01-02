@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '../../../atoms/Button/Button';
 
 interface LoginButtonsProps {
@@ -41,7 +40,6 @@ const UserFormButtons = ({
         {label}
       </Button>
 
-      {/* 2) 회원가입 버튼 */}
       <Button
         type='button'
         variant='blue20'

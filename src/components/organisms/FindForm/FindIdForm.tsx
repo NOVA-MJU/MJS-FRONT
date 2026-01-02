@@ -7,8 +7,8 @@ import { useNavigate } from 'react-router-dom';
 const FindIdForm = () => {
   const navigate = useNavigate();
 
-  const [id, setId] = useState(''); // 이메일 입력값
-  const [code, setCode] = useState(''); // 인증코드
+  const [id, setId] = useState('');
+  const [code, setCode] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -21,8 +21,6 @@ const FindIdForm = () => {
     if (!isMjuEmail(id)) return;
     setIsSending(true);
     try {
-      // TODO: 인증코드 전송 API 호출
-      // await api.sendResetCode(id);
       setShowCodeInput(true);
       setIsEmailChecked(true);
     } finally {
@@ -34,8 +32,7 @@ const FindIdForm = () => {
     if (!code.trim()) return;
     setIsVerifying(true);
     try {
-      // 인증코드 검증 API 호출 로직 연결 예정
-      const ok = true; // 임시 코드
+      const ok = true;
       if (ok) setEmailVerified(true);
     } finally {
       setIsVerifying(false);

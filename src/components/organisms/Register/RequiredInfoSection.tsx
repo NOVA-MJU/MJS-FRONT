@@ -1,4 +1,3 @@
-import React from 'react';
 import EmailFieldWithVerification from '../../molecules/user/EmailFieldWithVerification';
 import PasswordField from '../../molecules/user/PasswordField';
 import ConfirmPasswordField from '../../molecules/user/ConfirmPasswordField';

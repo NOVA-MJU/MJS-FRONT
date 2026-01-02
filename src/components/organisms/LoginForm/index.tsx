@@ -12,40 +12,15 @@ import UserFormButtons from '../../molecules/user/UserFormButtons';
 
 const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
 
-/**
- * 로그인 폼 컴포넌트
- * @component
- *
- *
- *
- *
- *
- * @returns {JSX.Element} 로그인 입력 폼 UI
- *
- * @description
- * - 이메일(@mju.ac.kr 형식)과 비밀번호 입력 필드 제공
- * - 입력값 검증: 아이디/비밀번호 미입력, 이메일 형식 오류 처리
- * - `Enter` 키 또는 버튼 클릭 시 `onSubmit` 콜백 호출
- * - 로그인 실패(401 Unauthorized) 시 에러 메시지 표시
- *
- * @remarks
- * 상태 관리:
- * - `id`: 입력된 이메일 값
- * - `pw`: 입력된 비밀번호 값
- * - `emailError`: 이메일 형식 오류 여부
- * - `formError`: 인풋과 버튼 사이에 표시되는 에러 메시지 문자열
- */
 const LoginForm = () => {
   const navigate = useNavigate();
 
   const [id, setId] = useState<string>('');
   const [pw, setPw] = useState<string>('');
 
-  // 필드별 & 공통 에러 상태
   const [emailError, setEmailError] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>('');
 
-  // Zustand 액션(토큰은 저장하지 않음)
   const { setLoggedIn, setUser } = useAuthStore();
 
   const clearErrors = () => {
@@ -53,12 +28,10 @@ const LoginForm = () => {
     setFormError('');
   };
 
-  /** GTM hook **/
   const { markStart, onSubmitCapture, markSuccess } = useLoginTracking({
     method: 'email',
   });
 
-  /** id 포커싱 ref **/
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current?.focus();
@@ -84,10 +57,7 @@ const LoginForm = () => {
     }
 
     try {
-      // 1) 로그인
       await login(id, pw);
-
-      // 2) 사용자 정보 조회
       const userInfo = await saveUserInfo();
       setUser(userInfo);
       setLoggedIn(true);

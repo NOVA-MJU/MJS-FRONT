@@ -1,4 +1,3 @@
-import React from 'react';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import NameInputField from '../../molecules/user/NameInputField';
 import NicknameFieldWithVerify from '../../molecules/user/NicknameFieldWithVerify';
