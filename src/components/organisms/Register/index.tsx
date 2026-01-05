@@ -61,7 +61,7 @@ const RegisterForm = () => {
 
   return (
     <form
-      className='flex flex-col gap-6 md:gap-12 w-full md:w-[672px] mt-6'
+      className='mt-6 flex w-full flex-col gap-6 md:w-[672px] md:gap-12'
       onSubmit={handleSubmit}
     >
       <RequiredInfoSection

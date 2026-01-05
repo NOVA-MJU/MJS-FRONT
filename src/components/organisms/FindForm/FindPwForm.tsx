@@ -64,10 +64,10 @@ const FindPwForm = () => {
 
   return (
     <form
-      className='flex h-auto flex-col w-full md:w-[90%] md:py-12 items-start justify-start'
+      className='flex h-auto w-full flex-col items-start justify-start md:w-[90%] md:py-12'
       onSubmit={(e) => e.preventDefault()}
     >
-      <div className='md:p-12 rounded-2xl flex flex-col  w-full'>
+      <div className='flex w-full flex-col rounded-2xl md:p-12'>
         {/* 이메일 입력 */}
         <div>
           <InputField
@@ -78,8 +78,8 @@ const FindPwForm = () => {
             value={id}
             onChange={(e) => setId(e.target.value)}
             rightElement={
-              <div className='hidden md:flex items-center gap-3'>
-                <p className='font-light ml-2'>{EMAIL_DOMAIN}</p>
+              <div className='hidden items-center gap-3 md:flex'>
+                <p className='ml-2 font-light'>@mju.ac.kr</p>
                 <Button
                   type='button'
                   shape='rounded'
@@ -87,7 +87,7 @@ const FindPwForm = () => {
                   disabled={isSending || !id || emailSent}
                   onClick={handleSendCode}
                   variant={emailSent || isSending ? 'grey' : 'main'}
-                  className='w-28 h-10 md:w-34 md:h-12'
+                  className='h-10 w-28 md:h-12 md:w-34'
                 >
                   {emailSent ? '전송 완료' : isSending ? '전송 중...' : '인증 요청'}
                 </Button>
@@ -96,8 +96,8 @@ const FindPwForm = () => {
           />
 
           {/* 모바일 버튼 */}
-          <div className='w-full mt-3 flex items-center justify-between md:hidden'>
-            <p className='font-light text-sm mr-2'>{EMAIL_DOMAIN}</p>
+          <div className='mt-3 flex w-full items-center justify-between md:hidden'>
+            <p className='mr-2 text-sm font-light'>@mju.ac.kr</p>
             <Button
               type='button'
               shape='rounded'
@@ -105,20 +105,20 @@ const FindPwForm = () => {
               disabled={isSending || !id || emailSent}
               onClick={handleSendCode}
               variant={emailSent || isSending ? 'grey' : 'main'}
-              className='w-28 h-10'
+              className='h-10 w-28'
             >
               {emailSent ? '전송 완료' : isSending ? '전송 중...' : '인증 요청'}
             </Button>
           </div>
 
-          <p className='block text-xs font-normal text-grey-40 mt-3 ml-1'>
-            {EMAIL_DOMAIN} 형식의 이메일만 지원
+          <p className='text-grey-40 mt-3 ml-1 block text-xs font-normal'>
+            @mju.ac.kr 형식의 이메일만 지원
           </p>
         </div>
 
         {/* 인증코드 입력 */}
         {emailSent && !verified && (
-          <div className='flex items-center gap-4 mt-4'>
+          <div className='mt-4 flex items-center gap-4'>
             <InputField
               label=''
               type='text'
@@ -134,7 +134,7 @@ const FindPwForm = () => {
               onClick={handleVerifyCode}
               size='sm'
               shape='rounded'
-              className='mt-4 md:mt-0 w-28 h-10 md:w-34 md:h-12'
+              className='mt-4 h-10 w-28 md:mt-0 md:h-12 md:w-34'
             >
               {isVerifying ? '확인 중...' : '인증'}
             </Button>
@@ -143,7 +143,7 @@ const FindPwForm = () => {
 
         {/* 새 비밀번호 입력 */}
         {verified && (
-          <div className='flex flex-col gap-8 my-4'>
+          <div className='my-4 flex flex-col gap-8'>
             <InputField
               label='새 비밀번호'
               type='password'
