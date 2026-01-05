@@ -62,7 +62,7 @@ export default function NoticeSection() {
             [selectedTab]: fetchedNoticeData.content,
           }));
         } catch (e) {
-          console.error('NoticeSection.tsx::useEffect()', e);
+          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setSelectedInfo([]);
         } finally {
           setIsLoading(false);
@@ -78,7 +78,7 @@ export default function NoticeSection() {
         <div className='px-3 flex justify-between items-center'>
           <h2 className='text-heading02 text-mju-primary'>공지사항</h2>
           <Link to='/notice'>
-            <IoIosArrowForward className='text-blue-10' size={20} />
+            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
         <div className='px-3'>

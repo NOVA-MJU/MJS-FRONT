@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AD_CAROUSEL_INTERVAL_MS } from '@/constants/common';
 
 type AdCarouselProps = {
   images?: { src: string; alt?: string; href?: string; caption?: string }[];
@@ -20,7 +21,10 @@ const DEFAULT_IMAGES = [
   },
 ];
 
-export default function AdCarousel({ images, intervalMs = 4000 }: AdCarouselProps) {
+export default function AdCarousel({
+  images,
+  intervalMs = AD_CAROUSEL_INTERVAL_MS,
+}: AdCarouselProps) {
   const slides = useMemo(() => (images?.length ? images : DEFAULT_IMAGES), [images]);
   const [index, setIndex] = useState(0);
   const timerRef = useRef<number | null>(null);

@@ -1,4 +1,3 @@
-import React from 'react';
 import InputField from '../../common/InputField';
 
 interface Props {
@@ -6,7 +5,7 @@ interface Props {
   setName: (val: string) => void;
 }
 
-const NameInputField: React.FC<Props> = ({ name, setName }) => (
+const NameInputField = ({ name, setName }: Props) => (
   <InputField
     label='이름'
     type='text'

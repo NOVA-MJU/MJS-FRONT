@@ -20,7 +20,7 @@ type PersonalInfoProps = {
   defaultImg: string;
 };
 
-const PersonalInfo: React.FC<PersonalInfoProps> = ({
+const PersonalInfo = ({
   nickname,
   setNickname,
   department,
@@ -29,9 +29,8 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
   setStudentCode,
   gender,
   setGender,
-
   setUploadedImageUrl,
-}) => {
+}: PersonalInfoProps) => {
   const user = useAuthStore((state) => state.user);
 
   return (

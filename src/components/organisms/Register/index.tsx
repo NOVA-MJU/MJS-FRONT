@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { genderOptions } from '../../../constants/gender';
 import { useRegisterHandlers } from '../../../hooks/useRegister';
+import { validatePassword, validateStudentCode } from '../../../utils/validation';
 import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
 import Button from '../../atoms/Button/Button';
@@ -44,10 +45,10 @@ const RegisterForm = () => {
     gender,
     department,
   });
-  const isPwValid = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).{8,16}$/.test(pw);
+  const isPwValid = validatePassword(pw);
   const isPwMatch = pw === confirmPw;
   const confirmError = confirmPw !== '' && !isPwMatch;
-  const isStudentCodeValid = /^60\d{6}$/.test(studentCode.trim());
+  const isStudentCodeValid = validateStudentCode(studentCode);
 
   const formValid =
     isPwValid &&

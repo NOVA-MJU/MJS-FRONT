@@ -25,6 +25,8 @@ import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { Skeleton, SkeletonCard, SkeletonProfile } from '@/components/atoms/Skeleton';
 import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
+import { ICON_SIZE_MD } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const MAX_REPLY_LEN = 100;
 
@@ -76,7 +78,7 @@ export default function BoardDetail() {
       setCanEdit(res.canEdit);
       setCanDelete(res.canDelete);
     } catch (e) {
-      console.error(e);
+      handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       setIsError(true);
     } finally {
       setIsContentLoading(false);
@@ -92,7 +94,7 @@ export default function BoardDetail() {
       const res = await getBoardComments(uuid);
       setComments(res);
     } catch (e) {
-      console.error(e);
+      handleError(e, '댓글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       setIsError(true);
     } finally {
       setIsCommentsLoading(false);
@@ -119,7 +121,7 @@ export default function BoardDetail() {
       await getComments(uuid);
       setNewComment('');
     } catch (err) {
-      console.error(err);
+      handleError(err, '댓글 작성에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -136,8 +138,7 @@ export default function BoardDetail() {
       await deletePost(uuid);
       navigate(-1);
     } catch (err) {
-      console.error(err);
-      alert(err);
+      handleError(err, '게시글 삭제에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -160,11 +161,8 @@ export default function BoardDetail() {
           liked: !prev.liked,
         };
       });
-      // TODO: 좋아요가 표시되었습니다 알림창 표시
     } catch (err) {
-      console.error(err);
-      alert(err);
-      // TODO: 로그인이 필요한 서비스 입니다 알림창 표시
+      handleError(err, '좋아요 처리에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -348,10 +346,13 @@ export default function BoardDetail() {
                     <span>{content.author}</span>
                   </div>
                   <div className='flex gap-1.5 items-center text-body05 text-grey-40'>
-                    <IoIosHeartEmpty size='16' className='text-blue-10' />
+                    <IoIosHeartEmpty size={ICON_SIZE_MD} className='text-blue-10' />
                     <span>{content.likeCount}</span>
                     <span>|</span>
-                    <HiOutlineChatBubbleOvalLeftEllipsis size='16' className='text-blue-10' />
+                    <HiOutlineChatBubbleOvalLeftEllipsis
+                      size={ICON_SIZE_MD}
+                      className='text-blue-10'
+                    />
                     <span>{content.commentCount}</span>
                   </div>
                 </div>

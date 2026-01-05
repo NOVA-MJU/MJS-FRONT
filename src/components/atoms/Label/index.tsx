@@ -3,7 +3,7 @@ interface LabelProps {
   disabled: boolean;
 }
 
-const Label: React.FC<LabelProps> = ({ lab, disabled }) => {
+const Label = ({ lab, disabled }: LabelProps) => {
   return (
     <div className='flex items-center gap-6'>
       <label

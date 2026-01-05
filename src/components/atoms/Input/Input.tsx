@@ -33,7 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         alignItems: 'center',
       },
       labelfield: {
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.white,
         borderBottom: `1px solid ${colors.grey20}`,
       },
       outlined: {
@@ -56,7 +56,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       color: disabled ? colors.grey40 : undefined,
       backgroundColor: disabled ? colors.white : variantStyleMap[variant].backgroundColor,
       borderColor: error ? colors.error : variantStyleMap[variant].borderColor,
-      border: error && variant !== 'labelfield' ? `1px solid ${colors.error}` : '1px solid white',
+      border:
+        error && variant !== 'labelfield'
+          ? `1px solid ${colors.error}`
+          : `1px solid ${colors.white}`,
     };
 
     const isMaxed = typeof value === 'string' && maxLength && value.length >= maxLength;
@@ -78,7 +81,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`w-full ${variantExtraClass[variant]}`}
           style={{
             ...wrapperStyle,
-            ...(isMaxed && !error ? { backgroundColor: '#fee2e2', borderColor: colors.error } : {}),
+            ...(isMaxed && !error
+              ? { backgroundColor: colors.errorBackground, borderColor: colors.error }
+              : {}),
             cursor: disabled ? 'not-allowed' : 'text',
           }}
         >

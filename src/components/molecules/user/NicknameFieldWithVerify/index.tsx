@@ -1,4 +1,3 @@
-import React from 'react';
 import InputField from '../../common/InputField';
 import Button from '../../../atoms/Button/Button';
 
@@ -11,14 +10,14 @@ interface Props {
   setIsNicknameChecked: (val: boolean) => void;
 }
 
-const NicknameFieldWithVerify: React.FC<Props> = ({
+const NicknameFieldWithVerify = ({
   nickname,
   setNickname,
   isSending,
   isNicknameChecked,
   handleVerifyNickname,
   setIsNicknameChecked,
-}) => (
+}: Props) => (
   <InputField
     label='닉네임'
     type='text'

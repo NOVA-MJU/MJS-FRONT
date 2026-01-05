@@ -1,5 +1,6 @@
 import InputField from '../../common/InputField';
 import Button from '../../../atoms/Button/Button';
+import { EMAIL_DOMAIN } from '@/constants/common';
 
 interface Props {
   id: string;
@@ -44,7 +45,7 @@ const EmailFieldWithVerification = ({
       error={id !== ''}
       rightElement={
         <div className='flex flex-col md:flex-row md:items-center gap-2 md:gap-6'>
-          <p className='font-light md:order-1 ml-4'>@mju.ac.kr</p>
+          <p className='font-light md:order-1 ml-4'>{EMAIL_DOMAIN}</p>
 
           <Button
             type='button'
@@ -68,7 +69,7 @@ const EmailFieldWithVerification = ({
       }
     />
     <p className='w-[55%] block md:hidden -mt-8 text-xs font-normal text-grey-40'>
-      @mju.ac.kr 형식의 이메일만 지원
+      {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
     {showCodeInput && (
       <div className='flex items-center gap-4 mt-4'>
@@ -95,7 +96,7 @@ const EmailFieldWithVerification = ({
       </div>
     )}
     <p className='hidden md:block text-xs font-normal text-grey-40 mt-2 ml-1'>
-      @mju.ac.kr 형식의 이메일만 지원
+      {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
   </div>
 );

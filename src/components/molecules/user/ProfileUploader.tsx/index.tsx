@@ -7,11 +7,7 @@ interface Props {
   defaultImg?: string | null;
 }
 
-const ProfileImageUploader: React.FC<Props> = ({
-  onChange,
-  label = '프로필',
-  defaultImg = null,
-}) => {
+const ProfileImageUploader = ({ onChange, label = '프로필', defaultImg = null }: Props) => {
   const [preview, setPreview] = useState<string | null>(defaultImg);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

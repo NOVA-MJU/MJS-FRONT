@@ -1,4 +1,3 @@
-import React from 'react';
 import EmailFieldWithVerification from '../../molecules/user/EmailFieldWithVerification';
 import PasswordField from '../../molecules/user/PasswordField';
 import ConfirmPasswordField from '../../molecules/user/ConfirmPasswordField';
@@ -23,7 +22,7 @@ interface Props {
   confirmError: boolean;
 }
 
-const RequiredInfoSection: React.FC<Props> = (props) => {
+const RequiredInfoSection = (props: Props) => {
   return (
     <section>
       <p className='text-xl md:text-3xl font-bold mb-6 text-mju-primary'>필수 정보</p>

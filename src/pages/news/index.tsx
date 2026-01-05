@@ -10,9 +10,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { getSearchResult } from '../../api/search';
 import GlobalErrorPage from '../error';
 import { useResponsive } from '@/hooks/useResponse';
-
-const MOBILE_ITEMS_PER_PAGE = 5;
-const DESKTOP_ITEMS_PER_PAGE = 8;
+import { NEWS_MOBILE_PAGE_SIZE, NEWS_DESKTOP_PAGE_SIZE } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const News = () => {
   /**
@@ -55,7 +54,7 @@ const News = () => {
       try {
         // await handleSearch(keyword);
       } catch (e) {
-        console.error(e);
+        handleError(e, '검색 중 오류가 발생했습니다.', { showToast: false });
       }
     })();
   }, [keyword]);
@@ -66,7 +65,7 @@ const News = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
   const { isDesktop } = useResponsive();
-  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
+  const ITEMS_PER_PAGE = isDesktop ? NEWS_DESKTOP_PAGE_SIZE : NEWS_MOBILE_PAGE_SIZE;
 
   useEffect(() => {
     /**
@@ -89,7 +88,7 @@ const News = () => {
           setNewsList(parsed);
           setTotalPages(res.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '검색 결과를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();
@@ -103,7 +102,7 @@ const News = () => {
           setNewsList(data.data.content);
           setTotalPages(data.data.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();

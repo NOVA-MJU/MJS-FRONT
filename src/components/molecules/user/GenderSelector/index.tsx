@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '../../../atoms/Button';
 
 interface GenderOption {
@@ -14,7 +13,7 @@ interface Props {
   placeholder?: string;
   error?: boolean;
 }
-const GenderSelector: React.FC<Props> = ({ options, selected, onSelect }) => (
+const GenderSelector = ({ options, selected, onSelect }: Props) => (
   <div>
     <div className='flex items-center gap-4 md:gap-6 mb-3'>
       <label className='text-blue-10 text-md md:text-xl font-semibold w-16 md:w-auto'>성별</label>

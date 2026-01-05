@@ -11,12 +11,18 @@ import {
   uploadProfileImage,
 } from '../api/user';
 import { useNavigate } from 'react-router-dom';
-import type { AxiosError } from 'axios';
 import { MAX_FILE_SIZE_MB } from '../constants/maxFileSize';
+import { isDuplicateNicknameError } from '../types/error';
+import {
+  EMAIL_DOMAIN,
+  IMAGE_MAX_WIDTH_OR_HEIGHT,
+  IMAGE_COMPRESSION_QUALITY,
+} from '../constants/common';
 import heic2any from 'heic2any';
 import imageCompression from 'browser-image-compression';
 
 import { gtmPush } from '../utils/gtm';
+import { handleError } from '../utils/error';
 
 /**
  * 회원가입 관련 상태와 이벤트 핸들러를 제공하는 커스텀 훅
@@ -57,7 +63,7 @@ export const useRegisterHandlers = ({
   gender: string;
   department: string;
 }) => {
-  const fullEmail = `${id}@mju.ac.kr`;
+  const fullEmail = `${id}${EMAIL_DOMAIN}`;
   const navigator = useNavigate();
 
   const [code, setCode] = useState('');
@@ -98,13 +104,6 @@ export const useRegisterHandlers = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* 공통 에러 처리 */
-  const handleError = (err: unknown, defaultMsg = '알 수 없는 오류') => {
-    const axiosError = err as AxiosError<{ message: string }>;
-    console.error(axiosError?.response?.data?.message || defaultMsg);
-    toast.error(axiosError?.response?.data?.message || defaultMsg);
-  };
-
   const handleSendCode = async () => {
     try {
       ensureStarted();
@@ -116,7 +115,6 @@ export const useRegisterHandlers = ({
       setShowCodeInput(true);
     } catch (err: unknown) {
       handleError(err, '이메일 중복 확인 또는 인증 메일 발송 실패');
-      toast.error('이메일 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -147,9 +145,7 @@ export const useRegisterHandlers = ({
       toast.success('사용 가능한 닉네임입니다!');
       setIsNicknameChecked(true);
     } catch (err: unknown) {
-      const ax = err as AxiosError<{ status?: number; error?: string; message?: string }>;
-
-      if (ax.response?.status === 400 && ax.response?.data?.error === 'DUPLICATE_NICKNAME') {
+      if (isDuplicateNicknameError(err)) {
         toast.error('이미 존재하는 닉네임입니다.');
         setIsNicknameChecked(false);
         return;
@@ -170,7 +166,6 @@ export const useRegisterHandlers = ({
       toast.success('사용 가능한 학번입니다!');
     } catch (err: unknown) {
       handleError(err, '학번 중복 확인 또는 인증 메일 발송 실패');
-      toast.error('학번 중복 확인 또는 인증 메일 발송 실패');
     } finally {
       setIsSending(false);
     }
@@ -192,7 +187,7 @@ export const useRegisterHandlers = ({
           const blob = (await heic2any({
             blob: uploadFile,
             toType: 'image/jpeg',
-            quality: 0.9,
+            quality: IMAGE_COMPRESSION_QUALITY,
           })) as Blob;
 
           uploadFile = new File([blob], uploadFile.name.replace(/\.[^/.]+$/, '.jpg'), {
@@ -207,7 +202,7 @@ export const useRegisterHandlers = ({
         if (uploadFile.size > maxBytes) {
           uploadFile = await imageCompression(uploadFile, {
             maxSizeMB: limitMB,
-            maxWidthOrHeight: 1920,
+            maxWidthOrHeight: IMAGE_MAX_WIDTH_OR_HEIGHT,
             useWebWorker: true,
             preserveExif: false,
             fileType: 'image/jpeg',

@@ -7,8 +7,7 @@ import Pagination from '@/components/molecules/common/Pagination';
 import { useResponsive } from '@/hooks/useResponse';
 import SearchBar from '@/components/atoms/SearchBar';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
-
-const PAGE_SIZE = 9;
+import { BROADCAST_PAGE_SIZE } from '@/constants/common';
 
 export default function Broadcast() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +44,7 @@ export default function Broadcast() {
       (async () => {
         try {
           setIsLoading(true);
-          const res = await fetchBroadcasts(page, PAGE_SIZE);
+          const res = await fetchBroadcasts(page, BROADCAST_PAGE_SIZE);
           setTotalPage(res.totalPages);
           setContents(res.content);
         } catch (err) {
@@ -63,7 +62,7 @@ export default function Broadcast() {
       (async () => {
         try {
           setIsLoading(true);
-          const res = await searchBroadcasts(keyword, 'relevance', page, PAGE_SIZE);
+          const res = await searchBroadcasts(keyword, 'relevance', page, BROADCAST_PAGE_SIZE);
           setContents(res.data);
           setTotalPage(res.totalPages);
         } catch (e) {

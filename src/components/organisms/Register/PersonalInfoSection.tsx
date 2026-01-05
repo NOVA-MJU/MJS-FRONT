@@ -1,4 +1,3 @@
-import React from 'react';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import NameInputField from '../../molecules/user/NameInputField';
 import NicknameFieldWithVerify from '../../molecules/user/NicknameFieldWithVerify';
@@ -29,7 +28,7 @@ interface Props {
   setIsNicknameChecked: (val: boolean) => void;
 }
 
-const PersonalInfoSection: React.FC<Props> = ({
+const PersonalInfoSection = ({
   setProfileImageFile,
   name,
   setName,
@@ -48,7 +47,7 @@ const PersonalInfoSection: React.FC<Props> = ({
   handleVerifyNickname,
   handleVerifyStudentCode,
   setIsNicknameChecked,
-}) => {
+}: Props) => {
   return (
     <section>
       <p className='text-xl md:text-3xl font-bold my-6 text-mju-primary'>개인 정보</p>

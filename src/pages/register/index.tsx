@@ -1,4 +1,3 @@
-import React from 'react';
 import RegisterForm from '../../components/organisms/Register/index';
 
 const Register: React.FC = () => (

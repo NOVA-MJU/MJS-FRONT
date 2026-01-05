@@ -5,47 +5,23 @@ import axios from 'axios';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { login, saveUserInfo } from '../../../api/user';
 import { useLoginTracking } from '../../../hooks/gtm/useLoginTracking';
+import { handleErrorWithStatus } from '../../../utils/error';
+import { validateMjuEmail } from '../../../utils/validation';
 
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import InputField from '../../molecules/common/InputField';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
+import { EMAIL_DOMAIN } from '../../../constants/common';
 
-const emailRegex = /^[\w.-]+@mju\.ac\.kr$/;
-
-/**
- * 로그인 폼 컴포넌트
- * @component
- *
- *
- *
- *
- *
- * @returns {JSX.Element} 로그인 입력 폼 UI
- *
- * @description
- * - 이메일(@mju.ac.kr 형식)과 비밀번호 입력 필드 제공
- * - 입력값 검증: 아이디/비밀번호 미입력, 이메일 형식 오류 처리
- * - `Enter` 키 또는 버튼 클릭 시 `onSubmit` 콜백 호출
- * - 로그인 실패(401 Unauthorized) 시 에러 메시지 표시
- *
- * @remarks
- * 상태 관리:
- * - `id`: 입력된 이메일 값
- * - `pw`: 입력된 비밀번호 값
- * - `emailError`: 이메일 형식 오류 여부
- * - `formError`: 인풋과 버튼 사이에 표시되는 에러 메시지 문자열
- */
-const LoginForm: React.FC = () => {
+const LoginForm = () => {
   const navigate = useNavigate();
 
   const [id, setId] = useState<string>('');
   const [pw, setPw] = useState<string>('');
 
-  // 필드별 & 공통 에러 상태
   const [emailError, setEmailError] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>('');
 
-  // Zustand 액션(토큰은 저장하지 않음)
   const { setLoggedIn, setUser } = useAuthStore();
 
   const clearErrors = () => {
@@ -53,12 +29,10 @@ const LoginForm: React.FC = () => {
     setFormError('');
   };
 
-  /** GTM hook **/
   const { markStart, onSubmitCapture, markSuccess } = useLoginTracking({
     method: 'email',
   });
 
-  /** id 포커싱 ref **/
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current?.focus();
@@ -77,17 +51,14 @@ const LoginForm: React.FC = () => {
       setFormError('비밀번호를 입력해 주세요');
       return;
     }
-    if (!emailRegex.test(id)) {
+    if (!validateMjuEmail(id)) {
       setEmailError(true);
       setFormError('학교 이메일 형식이 아닙니다.');
       return;
     }
 
     try {
-      // 1) 로그인
       await login(id, pw);
-
-      // 2) 사용자 정보 조회
       const userInfo = await saveUserInfo();
       setUser(userInfo);
       setLoggedIn(true);
@@ -95,13 +66,19 @@ const LoginForm: React.FC = () => {
       markSuccess();
       navigate('/');
     } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        setFormError('입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.');
-        return;
-      }
+      const errorMessage =
+        axios.isAxiosError(err) && err.response?.status === 401
+          ? '입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.'
+          : '로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.';
 
-      console.error('로그인 또는 회원정보 요청 중 오류 발생:', err);
-      setFormError('로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      handleErrorWithStatus(
+        err,
+        {
+          401: '입력하신 정보가 일치하지 않습니다. 다시 확인해 주세요.',
+        },
+        '로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+      );
+      setFormError(errorMessage);
     }
   };
 
@@ -116,7 +93,7 @@ const LoginForm: React.FC = () => {
         label='이메일'
         name='username'
         type='email'
-        placeholder='@mju.ac.kr'
+        placeholder={EMAIL_DOMAIN}
         defaultValue={id}
         onChange={(e) => {
           setId(e.target.value);

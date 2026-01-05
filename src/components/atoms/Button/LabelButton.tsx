@@ -3,7 +3,7 @@ interface LabelButtonProps {
   onClick?: () => void;
   emphasized?: boolean; // 강조 여부
 }
-const LabelButton: React.FC<LabelButtonProps> = ({ label, onClick, emphasized = false }) => {
+const LabelButton = ({ label, onClick, emphasized = false }: LabelButtonProps) => {
   const textClass = emphasized
     ? 'text-mju-primary text-base md:text-xl font-semibold'
     : 'text-black font-normal font-medium';

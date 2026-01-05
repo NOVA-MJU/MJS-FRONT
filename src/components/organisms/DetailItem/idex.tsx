@@ -28,7 +28,7 @@ const formatDate = (d?: string) => {
   return d.replace(/\./g, '-');
 };
 
-const DetailItem: React.FC<ListItemProps> = ({
+const DetailItem = ({
   id,
   category,
   title,
@@ -37,7 +37,7 @@ const DetailItem: React.FC<ListItemProps> = ({
   link,
   imgSrc,
   variant,
-}) => {
+}: ListItemProps) => {
   // 검색 하이라이트 보존
   const safeTitle = DOMPurify.sanitize(title, {
     ALLOWED_TAGS: ['em', 'strong', 'u'],

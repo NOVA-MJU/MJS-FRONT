@@ -8,6 +8,7 @@ import {
   useResetPassword,
 } from '../../../hooks/useFindPw';
 import toast from 'react-hot-toast';
+import { EMAIL_DOMAIN } from '../../../constants/common';
 
 const FindPwForm = () => {
   const navigate = useNavigate();

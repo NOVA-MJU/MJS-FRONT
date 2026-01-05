@@ -37,7 +37,7 @@ export default function NewsSection() {
         const sorted = [...items].sort((a: NewsInfo, b: NewsInfo) => toTS(b.date) - toTS(a.date));
         setFetchedNews(sorted);
       } catch (e) {
-        console.error('NewsSection.tsx::fetch news data', e);
+        handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
         setIsLoading(false);
       }
@@ -50,7 +50,7 @@ export default function NewsSection() {
         <div className='px-3 flex justify-between items-center'>
           <h2 className='text-heading02 text-mju-primary'>명대신문</h2>
           <Link to='/news'>
-            <IoIosArrowForward className='text-blue-10' size={20} />
+            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
         <div className='px-3'>
