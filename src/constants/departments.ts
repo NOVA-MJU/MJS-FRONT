@@ -60,7 +60,7 @@ export const DEPARTMENT_OPTIONS = [
       { label: '인공지능·소프트웨어융합대학', value: 'AI_SOFTWARE' },
       { label: '융합소프트웨어학부', value: 'CONVERGENT_SOFTWARE_STUDIES' },
       { label: '데이터사이언스전공', value: 'DATA_SCIENCE' },
-      { label: '응용소프트웨어학과', value: 'APPLICATION_SOFTWARE' },
+      { label: '응용소프트웨어전공', value: 'APPLICATION_SOFTWARE' },
       { label: '인공지능전공', value: 'AI' },
       { label: '디지털콘텐츠디자인학과', value: 'DIGITAL_CONTENT_DESIGN_STUDIES' },
     ],

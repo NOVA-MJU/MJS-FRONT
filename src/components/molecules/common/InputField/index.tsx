@@ -69,7 +69,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             autoComplete={autoComplete}
             disabled={disabled}
           />
-          {rightElement && <div className='mt-2 md:ml-4'>{rightElement}</div>}
+          {rightElement && <div className='mt-2 md:mt-0 md:ml-4'>{rightElement}</div>}
         </div>
       </div>
     );
