@@ -15,6 +15,7 @@ const RegisterForm = () => {
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
+  const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
   const [studentCode, setStudentCode] = useState('');
   const [gender, setGender] = useState<string>(genderOptions[0]?.value);
@@ -89,6 +90,8 @@ const RegisterForm = () => {
         setName={setName}
         nickname={nickname}
         setNickname={setNickname}
+        college={college}
+        setCollege={setCollege}
         department={department}
         setDepartment={setDepartment}
         studentCode={studentCode}
