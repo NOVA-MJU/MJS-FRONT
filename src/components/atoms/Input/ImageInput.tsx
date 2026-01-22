@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { colors } from '../../../styles/color';
 
 interface ProfileImageInputProps {
@@ -7,17 +7,37 @@ interface ProfileImageInputProps {
 }
 
 const ImageInput = ({ imageUrl, onImageChange }: ProfileImageInputProps) => {
+  const [error, setError] = useState<boolean>(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 파일 확장자 체크
+    const fileName = file.name.toLowerCase();
+    const validExtensions = ['.png', '.jpg', '.jpeg'];
+    const fileExtension = fileName.substring(fileName.lastIndexOf('.'));
+
+    if (!validExtensions.includes(fileExtension)) {
+      setError(true);
+      e.target.value = '';
+      return;
+    }
+    setError(false);
+    onImageChange(e);
+  };
+
   return (
     <div className='flex flex-col'>
       <label htmlFor='profile-image' className='cursor-pointer'>
         <div
-          className='w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden border-2 mt-3'
+          className='mt-3 h-24 w-24 overflow-hidden rounded-xl border-2 md:h-32 md:w-32'
           style={{ borderColor: colors.grey10 }}
         >
           {imageUrl && imageUrl !== '' ? (
-            <img src={imageUrl} alt='프로필' className='w-full h-full object-cover' />
+            <img src={imageUrl} alt='프로필' className='h-full w-full object-cover' />
           ) : (
-            <div className='w-full h-full flex items-center justify-center text-xs md:text-sm text-grey-20'>
+            <div className='text-grey-20 flex h-full w-full items-center justify-center text-xs md:text-sm'>
               이미지 업로드
             </div>
           )}
@@ -26,10 +46,18 @@ const ImageInput = ({ imageUrl, onImageChange }: ProfileImageInputProps) => {
       <input
         id='profile-image'
         type='file'
-        accept='image/*'
+        accept='image/png,image/jpeg,image/jpg'
         className='hidden'
-        onChange={onImageChange}
+        onChange={handleFileChange}
       />
+      {error && (
+        <div className='text-error mt-2 ml-1 flex flex-col text-xs'>
+          <p>파일 형식이 맞지 않습니다.</p>
+        </div>
+      )}
+      <div className='text-grey-40 mt-2 ml-1 flex flex-col text-[10px]'>
+        <p>png, jpg, jpeg 파일만 업로드 가능합니다.</p>
+      </div>
     </div>
   );
 };
