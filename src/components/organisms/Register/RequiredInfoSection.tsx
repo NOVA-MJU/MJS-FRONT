@@ -25,9 +25,11 @@ interface Props {
 const RequiredInfoSection = (props: Props) => {
   return (
     <section>
-      <p className='text-xl md:text-3xl font-bold mb-6 text-mju-primary'>필수 정보</p>
-      <div className='flex flex-col bg-white min-h-[540px] p-6 rounded-xl gap-12'>
-        <div className='flex flex-col md:mx-auto gap-6 md:gap-12 my-6'>
+      <p className='mb-6 flex w-fit px-1 text-xl font-bold text-[#000000] md:text-3xl'>
+        계정 정보*
+      </p>
+      <div className='flex min-h-[540px] flex-col gap-12 rounded-xl bg-white p-6'>
+        <div className='my-6 flex flex-col gap-6 md:mx-auto md:gap-12'>
           <EmailFieldWithVerification {...props} />
           <PasswordField pw={props.pw} setPw={props.setPw} />
           <ConfirmPasswordField

@@ -6,6 +6,7 @@ import { validatePassword, validateStudentCode } from '../../../utils/validation
 import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
 import Button from '../../atoms/Button/Button';
+import ProfileInfoSection from './ProfileInfoSection';
 
 const RegisterForm = () => {
   const [id, setId] = useState('');
@@ -84,8 +85,6 @@ const RegisterForm = () => {
         confirmError={confirmError}
       />
       <PersonalInfoSection
-        profileImageFile={profileImageFile}
-        setProfileImageFile={setProfileImageFile}
         name={name}
         setName={setName}
         nickname={nickname}
@@ -104,6 +103,7 @@ const RegisterForm = () => {
         handleVerifyStudentCode={handleVerifyStudentCode}
         setIsNicknameChecked={setIsNicknameChecked}
       />
+      <ProfileInfoSection setProfileImageFile={setProfileImageFile} />
       <Button
         type='submit'
         variant={formValid ? 'main' : 'greyLight'}
