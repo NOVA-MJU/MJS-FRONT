@@ -37,10 +37,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     ref,
   ) => {
     return (
-      <div className='flex flex-col gap-2 w-full mx-auto'>
+      <div className='mx-auto flex w-full flex-col gap-2'>
         <div className='flex items-center gap-4 md:gap-6'>
           <label
-            className={`text-md md:text-xl whitespace-nowrap ${
+            className={`text-md whitespace-nowrap md:text-xl ${
               disabled ? 'text-grey-40 font-med' : 'text-blue-10 font-semibold'
             }`}
           >
@@ -48,7 +48,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           </label>
           {showHr && (
             <hr
-              className={`w-full border-t-2 rounded-xl ${
+              className={`w-full rounded-xl border-t-2 ${
                 disabled ? 'border-grey-40' : 'border-blue-10'
               }`}
             />

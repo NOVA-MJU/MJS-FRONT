@@ -42,10 +42,10 @@ const EmailFieldWithVerification = ({
         setId(e.target.value);
         setIsEmailChecked(false);
       }}
-      error={id !== ''}
+      error={false}
       rightElement={
-        <div className='flex flex-col md:flex-row md:items-center gap-2 md:gap-6'>
-          <p className='font-light md:order-1 ml-4'>{EMAIL_DOMAIN}</p>
+        <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-6'>
+          <p className='ml-4 font-light md:order-1'>{EMAIL_DOMAIN}</p>
 
           <Button
             type='button'
@@ -55,7 +55,7 @@ const EmailFieldWithVerification = ({
             onClick={handleSendCode}
             fullWidth={false}
             variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
-            className='mt-6 md:mt-0 w-24 h-10 md:w-34 md:h-12 p-2 md:order-2'
+            className='mt-6 h-10 w-24 p-2 md:order-2 md:mt-0 md:h-12 md:w-34'
           >
             {emailVerified
               ? '완료'
@@ -68,11 +68,11 @@ const EmailFieldWithVerification = ({
         </div>
       }
     />
-    <p className='w-[55%] block md:hidden -mt-8 text-xs font-normal text-grey-40'>
+    <p className='text-grey-40 -mt-8 block w-[55%] text-xs font-normal md:hidden'>
       {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
     {showCodeInput && (
-      <div className='flex items-center gap-4 mt-4'>
+      <div className='mt-4 flex items-center gap-4'>
         <InputField
           label=''
           type='text'
@@ -89,13 +89,13 @@ const EmailFieldWithVerification = ({
           fullWidth={false}
           size='sm'
           shape='rounded'
-          className='mt-4 md:mt-0 w-28 h-10 md:w-34 md:h-12'
+          className='mt-4 h-10 w-28 md:mt-0 md:h-12 md:w-34'
         >
           {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
         </Button>
       </div>
     )}
-    <p className='hidden md:block text-xs font-normal text-grey-40 mt-2 ml-1'>
+    <p className='text-grey-40 mt-2 ml-1 hidden text-xs font-normal md:block'>
       {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
   </div>
