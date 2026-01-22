@@ -51,7 +51,7 @@ const EmailFieldWithVerification = ({
             type='button'
             shape='rounded'
             size='sm'
-            disabled={isSending || emailVerified || isEmailChecked}
+            disabled={isSending || emailVerified || isEmailChecked || id.trim() === ''}
             onClick={handleSendCode}
             fullWidth={false}
             variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
@@ -68,7 +68,7 @@ const EmailFieldWithVerification = ({
         </div>
       }
     />
-    <p className='text-grey-40 -mt-8 block w-[55%] text-xs font-normal md:hidden'>
+    <p className='text-grey-40 -mt-8 block w-[55%] text-[10px] font-normal md:hidden'>
       {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
     {showCodeInput && (
@@ -95,7 +95,7 @@ const EmailFieldWithVerification = ({
         </Button>
       </div>
     )}
-    <p className='text-grey-40 mt-2 ml-1 hidden text-xs font-normal md:block'>
+    <p className='text-grey-40 mt-2 ml-1 hidden text-[10px] font-normal md:block'>
       {EMAIL_DOMAIN} 형식의 이메일만 지원
     </p>
   </div>

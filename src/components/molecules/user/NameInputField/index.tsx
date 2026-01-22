@@ -29,7 +29,7 @@ const NameInputField = ({ name, setName }: Props) => {
         error={showError}
         helperText={showError ? '정확한 이름을 입력해 주세요.' : ''}
       />
-      <div className='text-grey-40 mt-2 ml-1 flex flex-col text-xs'>
+      <div className='text-grey-40 mt-2 ml-1 flex flex-col text-[10px]'>
         <p>실명을 입력하지 않을 경우 추후 불이익이 발생할 수 있습니다.</p>
       </div>
     </div>
