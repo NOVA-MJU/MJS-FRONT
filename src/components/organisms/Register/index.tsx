@@ -59,6 +59,10 @@ const RegisterForm = () => {
     name.trim() &&
     department.trim() &&
     isStudentCodeValid &&
+    emailVerified &&
+    isEmailChecked &&
+    isNicknameChecked &&
+    isStuCodeChecked &&
     gender;
 
   return (
