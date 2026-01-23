@@ -228,8 +228,7 @@ export const useRegisterHandlers = ({
       toast.success('회원가입이 완료되었습니다!');
       navigator('/login');
     } catch (err: unknown) {
-      handleError(err, '회원가입 실패');
-      toast.error('회원가입에 실패했습니다. 다시 시도해주세요 :');
+      handleError(err, '회원가입에 실패했습니다. 다시 시도해주세요.');
     }
   };
 

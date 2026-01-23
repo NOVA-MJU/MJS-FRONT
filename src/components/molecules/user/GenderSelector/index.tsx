@@ -15,9 +15,9 @@ interface Props {
 }
 const GenderSelector = ({ options, selected, onSelect }: Props) => (
   <div>
-    <div className='flex items-center gap-4 md:gap-6 mb-3'>
-      <label className='text-blue-10 text-md md:text-xl font-semibold w-16 md:w-auto'>성별</label>
-      <hr className='w-[381px] border-t-2 border-blue-10 rounded-xl' />
+    <div className='mb-3 flex items-center gap-4 md:gap-6'>
+      <label className='text-blue-10 text-md font-semibold md:w-auto md:text-xl'>성별</label>
+      <hr className='border-blue-10 flex-1 rounded-xl border-t-2' />
     </div>
     <div className='flex justify-center gap-4'>
       {options.map((g) => (
@@ -29,7 +29,7 @@ const GenderSelector = ({ options, selected, onSelect }: Props) => (
           shape='rounded'
           fullWidth={false}
           onClick={() => onSelect(g.value)}
-          className='w-16 h-10 md:w-[120px] md:h-[48px]'
+          className='h-10 w-16 md:h-[48px] md:w-[120px]'
           disabled={false}
         >
           {g.label}

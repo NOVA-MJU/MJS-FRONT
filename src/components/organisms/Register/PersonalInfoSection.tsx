@@ -1,18 +1,20 @@
-import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import NameInputField from '../../molecules/user/NameInputField';
 import NicknameFieldWithVerify from '../../molecules/user/NicknameFieldWithVerify';
 import DepartmentDropdownField from '../../molecules/user/DepartmentDropdownField';
 import StudentCodeFieldWithVerify from '../../molecules/user/StudentCodeFieldWithVerify';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import { genderOptions } from '../../../constants/gender';
+import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
+import { COLLEGE_OPTIONS } from '../../../constants/colleges';
+import { useEffect, useState } from 'react';
 
 interface Props {
-  profileImageFile: File | null;
-  setProfileImageFile: (file: File | null) => void;
   name: string;
   setName: (val: string) => void;
   nickname: string;
   setNickname: (val: string) => void;
+  college: string;
+  setCollege: (val: string) => void;
   department: string;
   setDepartment: (val: string) => void;
   studentCode: string;
@@ -28,12 +30,18 @@ interface Props {
   setIsNicknameChecked: (val: boolean) => void;
 }
 
+interface Options {
+  label: string;
+  value: string;
+}
+
 const PersonalInfoSection = ({
-  setProfileImageFile,
   name,
   setName,
   nickname,
   setNickname,
+  college,
+  setCollege,
   department,
   setDepartment,
   studentCode,
@@ -48,12 +56,24 @@ const PersonalInfoSection = ({
   handleVerifyStudentCode,
   setIsNicknameChecked,
 }: Props) => {
+  const [departmentOptions, setDepartmentOptions] = useState<Options[]>([]);
+
+  useEffect(() => {
+    console.log(college);
+    const departmentData = DEPARTMENT_OPTIONS.find((dept) => dept.college === college);
+    if (departmentData) {
+      console.log(departmentData.departments);
+      setDepartmentOptions(departmentData.departments);
+    }
+  }, [college]);
+
   return (
     <section>
-      <p className='text-xl md:text-3xl font-bold my-6 text-mju-primary'>개인 정보</p>
-      <div className='flex flex-col bg-white min-h-[540px] p-6 rounded-xl gap-12'>
-        <div className='flex flex-col md:mx-auto gap-6 md:gap-12 my-6'>
-          <ProfileImageUploader onChange={setProfileImageFile} />
+      <p className='my-6 flex w-fit px-1 text-xl font-bold text-[#000000] md:text-3xl'>
+        기본 정보*
+      </p>
+      <div className='flex min-h-[540px] flex-col gap-12 rounded-xl bg-white p-6'>
+        <div className='my-6 flex w-full flex-col gap-6 md:mx-auto md:w-[80%] md:gap-12'>
           <NameInputField name={name} setName={setName} />
           <NicknameFieldWithVerify
             nickname={nickname}
@@ -63,7 +83,18 @@ const PersonalInfoSection = ({
             handleVerifyNickname={handleVerifyNickname}
             setIsNicknameChecked={setIsNicknameChecked}
           />
-          <DepartmentDropdownField department={department} setDepartment={setDepartment} />
+          <DepartmentDropdownField
+            label='단과대'
+            options={COLLEGE_OPTIONS}
+            department={college}
+            setDepartment={setCollege}
+          />
+          <DepartmentDropdownField
+            label='학과'
+            options={departmentOptions}
+            department={department}
+            setDepartment={setDepartment}
+          />
           <StudentCodeFieldWithVerify
             studentCode={studentCode}
             setStudentCode={setStudentCode}
