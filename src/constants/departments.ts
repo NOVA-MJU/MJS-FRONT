@@ -2,7 +2,6 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: 'HUMANITIES',
     departments: [
-      { label: '인문대학', value: 'HUMANITIES_COLLEGE' },
       { label: '중어중문학전공', value: 'CHINESE_LITERATURE' },
       { label: '일어일문학전공', value: 'JAPANESE_LITERATURE' },
       { label: '아랍지역학전공', value: 'ARABIC_STUDIES' },
@@ -20,7 +19,6 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: 'SOCIAL_SCIENCES',
     departments: [
-      { label: '사회과학대학', value: 'SOCIAL_SCIENCES' },
       { label: '공공인재학부', value: 'PUBLIC_ADMINISTRATION' },
       { label: '행정학전공', value: 'PUBLIC_ADMINISTRATION' },
       { label: '정치외교학전공', value: 'POLITICAL_DIPLOMACY' },
@@ -57,7 +55,6 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: 'AI_SOFTWARE',
     departments: [
-      { label: '인공지능·소프트웨어융합대학', value: 'AI_SOFTWARE' },
       { label: '융합소프트웨어학부', value: 'CONVERGENT_SOFTWARE_STUDIES' },
       { label: '데이터사이언스전공', value: 'DATA_SCIENCE' },
       { label: '응용소프트웨어전공', value: 'APPLICATION_SOFTWARE' },
@@ -69,7 +66,6 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: 'FUTURE_CONVERGENCE',
     departments: [
-      { label: '미래융합대학', value: 'FUTURE_CONVERGENCE' },
       { label: '창의융합인재학부', value: 'CREATIVE_CONVERGENCE_TALENT_DEPARTMENT' },
       { label: '사회복지학과', value: 'SOCIAL_WELFARE' },
       { label: '부동산학과', value: 'REAL_ESTATE' },
