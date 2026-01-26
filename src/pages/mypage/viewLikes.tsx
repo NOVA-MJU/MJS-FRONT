@@ -8,6 +8,12 @@ import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import { useNavigate } from 'react-router-dom';
 import { getMyLikedPosts, type MyPostItem } from '../../api/mypage';
 
+/**
+ * 찜한 글 페이지
+ *
+ * 사용자가 좋아요를 누른 게시글 목록을 표시하는 페이지입니다.
+ * 게시글 제목, 미리보기, 댓글 수, 좋아요 수, 작성 시간을 보여줍니다.
+ */
 const ViewLikedPosts = () => {
   const [contents, setContents] = useState<MyPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);

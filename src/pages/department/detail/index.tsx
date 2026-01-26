@@ -16,6 +16,12 @@ import { departmentMap } from '../../../constants/departments';
 import GlobalErrorPage from '../../error';
 import { collegeMap } from '../../../constants/colleges';
 
+/**
+ * 학과 상세 페이지
+ *
+ * 특정 학과의 일정과 학생회 공지사항을 표시하는 페이지입니다.
+ * 탭을 통해 학과일정과 학생회 공지사항을 전환할 수 있습니다.
+ */
 export default function DepartmentDetail() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();

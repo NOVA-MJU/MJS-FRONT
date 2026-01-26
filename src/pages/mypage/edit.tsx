@@ -8,6 +8,11 @@ import { saveUserInfo } from '../../api/user';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+/**
+ * 프로필 수정 페이지
+ *
+ * 사용자의 필수 정보(비밀번호)와 개인 정보(닉네임, 학과, 학번, 성별)를 수정할 수 있는 페이지입니다.
+ */
 const Edit: React.FC = () => {
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);

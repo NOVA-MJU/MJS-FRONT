@@ -6,6 +6,12 @@ import { useEffect, useState } from 'react';
 import { getSearchOverview, type SearchResultItemRes } from '../../api/search';
 import { Link, useSearchParams } from 'react-router-dom';
 
+/**
+ * 검색 페이지
+ *
+ * 통합 검색 결과를 표시하는 페이지입니다.
+ * 공지사항, 자유게시판, 명대신문 검색 결과를 한 번에 보여줍니다.
+ */
 export default function Search() {
   const [searchParams] = useSearchParams();
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);

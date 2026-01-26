@@ -8,6 +8,12 @@ import NavigationUp from '../../components/molecules/NavigationUp';
 import MyListItem from '../../components/molecules/MyListItem';
 import { formatToElapsedTime } from '../../utils';
 
+/**
+ * 내가 쓴 댓글 페이지
+ *
+ * 사용자가 작성한 댓글이 포함된 게시글 목록을 표시하는 페이지입니다.
+ * 댓글 미리보기와 해당 게시글 정보를 함께 보여줍니다.
+ */
 const ViewComments = () => {
   const [contents, setContents] = useState<MyCommentedPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);

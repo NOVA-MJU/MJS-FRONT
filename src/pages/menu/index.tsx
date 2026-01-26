@@ -6,6 +6,13 @@ import WeeklyMenuView from '@/components/atoms/Meal/Web/WeeklyMenuView';
 import { Typography } from '@/components/atoms/Typography';
 import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 
+/**
+ * 학식 메뉴 페이지
+ *
+ * 일일 및 주간 학식 메뉴를 표시하는 페이지입니다.
+ * 모바일에서는 DailyMenuView, 데스크톱에서는 WeeklyMenuView를 표시합니다.
+ * (컴포넌트 내부에서 반응형 처리)
+ */
 export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
 

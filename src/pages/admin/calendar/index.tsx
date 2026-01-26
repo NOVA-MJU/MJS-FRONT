@@ -19,6 +19,12 @@ import { postDepartmentSchedule } from '../../../api/admin';
 
 const CALENDAR_COLORS = ['#6898DE', '#DE6898', '#DEAE68', '#98DE68', '#68D3DE', '#7368DE'];
 
+/**
+ * 관리자 학과 일정 관리 페이지
+ *
+ * 학과 관리자가 학과 일정을 조회하고 추가할 수 있는 페이지입니다.
+ * 캘린더 그리드와 일정 목록을 표시하며, 새로운 일정을 작성할 수 있습니다.
+ */
 export default function Admin() {
   const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [, setCurrentYear] = useState(new Date().getFullYear());

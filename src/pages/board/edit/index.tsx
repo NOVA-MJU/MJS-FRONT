@@ -9,6 +9,12 @@ import { getBlockTextEditorContentPreview } from '../../../components/organisms/
 import { getBoardDetail, updatePost } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
 
+/**
+ * 게시글 수정 페이지
+ *
+ * 기존 게시글을 수정하는 페이지입니다.
+ * 제목과 본문을 수정할 수 있으며, 수정 전 확인 모달을 표시합니다.
+ */
 export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
