@@ -21,15 +21,22 @@ const CATEGORY_TABS: { key: Category; label: string }[] = [
 
 const PAGE_SIZE = 10;
 
+/**
+ * 게시판 페이지
+ * 정보 게시판과 자유 게시판의 게시글 목록을 표시하는 페이지입니다.
+ * 데스크톱에서는 상단에 "글 남기기" 버튼이 표시되고,
+ * 모바일에서는 하단 고정 버튼으로 표시됩니다.
+ */
 export default function Board() {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   const [category, setCategory] = useState<Category>('NOTICE');
   const [page, setPage] = useState(0);
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-
-  const { isDesktop } = useResponsive();
   const navigate = useNavigate();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
@@ -152,9 +159,6 @@ export default function Board() {
     </>
   );
 
-  /** -------------------
-   *  데스크톱 / 모바일 분기
-   * ------------------- */
   if (isDesktop)
     return (
       <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
@@ -162,7 +166,6 @@ export default function Board() {
       </div>
     );
 
-  // 모바일
   return (
     <div className='relative flex h-full w-full flex-col bg-grey-00 pb-24 md:pb-12'>
       <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>{BoardContent}</div>
@@ -179,9 +182,6 @@ export default function Board() {
   );
 }
 
-/** -------------------
- *  게시글 Item 컴포넌트
- * ------------------- */
 interface BoardItemProps {
   uuid: string;
   title: string;

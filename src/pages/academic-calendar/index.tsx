@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useResponsive } from '@/hooks/useResponse';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import type { CalendarEventItem } from '@/components/organisms/CalendarGrid';
-import { getAcademicEvents } from '@/api/calendar';
+
 import Divider from '@/components/atoms/Divider';
 import CalendarGrid from '@/components/organisms/CalendarGrid';
 import CalendarList from '@/components/organisms/CalendarList';
@@ -10,15 +10,23 @@ import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calenda
 import Calendar from '@/components/molecules/Calendar';
 import { DailyAcademicScheduleWidget } from '@/components/molecules/sections/daily-academic-schedule-widget';
 
+/**
+ * 학사일정 페이지
+ *
+ * 학사 일정을 캘린더 형태로 표시하는 페이지입니다.
+ * 데스크톱에서는 그리드와 리스트를 함께 표시하고,
+ * 모바일에서는 캘린더 위젯과 일일 일정 위젯을 표시합니다.
+ */
 export default function AcademicCalendar() {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   const [, setIsLoading] = useState(true);
   const [, setIsError] = useState(false);
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [events, setEvents] = useState<CalendarMonthlyRes | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  const { isDesktop } = useResponsive();
 
   useEffect(() => {
     getEvents(currentYear, currentMonth);

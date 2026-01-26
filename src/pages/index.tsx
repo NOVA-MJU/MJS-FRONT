@@ -15,7 +15,14 @@ import { Link } from 'react-router-dom';
 import BoardSection from '@/components/molecules/sections/board';
 import { Card, CardHeader } from '@/components/atoms/Card';
 
+/**
+ * 메인 페이지
+ *
+ * 홈 화면으로, 다양한 섹션(식단, 공지사항, 명대신문, 명대방송 등)을 표시합니다.
+ * 데스크톱에서는 2열 레이아웃, 모바일에서는 카드 형태로 표시됩니다.
+ */
 export default function Main() {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
   const { isDesktop } = useResponsive();
 
   const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';

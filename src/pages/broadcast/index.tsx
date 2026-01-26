@@ -10,7 +10,16 @@ import { HighlightedText } from '@/components/atoms/HighlightedText';
 
 const PAGE_SIZE = 9;
 
+/**
+ * 명대방송 페이지
+ *
+ * 명지대학교 방송국 영상 목록을 표시하는 페이지입니다.
+ * 검색 기능을 제공하며, 데스크톱에서는 그리드 형태, 모바일에서는 리스트 형태로 표시됩니다.
+ */
 export default function Broadcast() {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [initialKeyword, setInitialKeyword] = useState('');
   const keyword = searchParams.get('keyword');
@@ -18,7 +27,6 @@ export default function Broadcast() {
   const page = Number(searchParams.get('page') || '0');
   const [contents, setContents] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { isDesktop } = useResponsive();
 
   /**
    * 페이지 번호를 url에 반영합니다

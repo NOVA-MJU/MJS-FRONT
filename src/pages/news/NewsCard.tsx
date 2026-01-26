@@ -9,7 +9,17 @@ interface NewsCardProps {
   fallbackSrc?: string;
 }
 
+/**
+ * 명대신문 카드 컴포넌트
+ *
+ * 명대신문 기사를 카드 형태로 표시하는 컴포넌트입니다.
+ * 데스크톱과 모바일에서 다른 레이아웃으로 표시됩니다.
+ * 검색어 하이라이트 기능을 지원합니다.
+ */
 function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProps) {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   /**
    * 검색어 highlight를 위해 텍스트를 sanitize 하고, em 태그를 허용합니다.
    */
@@ -21,8 +31,6 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
     ALLOWED_TAGS: ['em', 'strong', 'u'],
     ALLOWED_ATTR: [],
   });
-
-  const { isDesktop } = useResponsive();
   if (isDesktop) {
     return (
       <article className='flex-col overflow-hidden rounded-2xl border-grey-20 bg-white shadow-sm transition hover:shadow-lg'>

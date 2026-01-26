@@ -15,6 +15,9 @@ const MOBILE_ITEMS_PER_PAGE = 5;
 const DESKTOP_ITEMS_PER_PAGE = 8;
 
 const News = () => {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   /**
    * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
    */
@@ -42,7 +45,7 @@ const News = () => {
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
-  const { isDesktop } = useResponsive();
+
   const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
 
   useEffect(() => {
