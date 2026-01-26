@@ -11,6 +11,7 @@ const Layout = ({ className }: LayoutProps) => {
     <div
       className={`
         w-full md:min-w-[1280px] min-h-screen flex flex-col items-center 
+        mobile-figma-container
         ${className}
         `}
     >
