@@ -5,6 +5,8 @@ import { IoIosArrowForward } from 'react-icons/io';
 import Divider from '../../atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useResponsive } from '@/hooks/useResponse';
+import { ICON_SIZE_LG } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
@@ -154,18 +156,18 @@ export default function MealSection() {
    */
   if (isDesktop)
     return (
-      <section className='w-full flex flex-col gap-3'>
-        <div className='px-3 flex justify-between items-center'>
+      <section className='flex w-full flex-col gap-3'>
+        <div className='flex items-center justify-between px-3'>
           <h3 className='text-heading02 text-mju-primary'>학식</h3>
           <Link to='/menu'>
             <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
-        <div className='p-6 flex flex-col rounded-xl border-2 border-grey-05 gap-6'>
+        <div className='border-grey-05 flex flex-col gap-6 rounded-xl border-2 p-6'>
           <h3 className='text-body02 text-mju-secondary'>{mealInfo.uiFullLabel}</h3>
           <Divider variant='thin' />
-          <ul className='grid grid-cols-1 md:grid-cols-2 gap-y-3'>
-            {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='w-48 h-6' />)}
+          <ul className='grid grid-cols-1 gap-y-3 md:grid-cols-2'>
+            {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='h-6 w-48' />)}
             {!isLoading && meals.length === 0 && (
               <li className='text-body03'>식단 정보가 없습니다.</li>
             )}
@@ -193,11 +195,11 @@ export default function MealSection() {
             <div className='flex flex-wrap justify-center gap-x-2 gap-y-1'>
               {isLoading && (
                 <>
-                  <Skeleton className='w-40 h-5' />
-                  <Skeleton className='w-32 h-5' />
-                  <Skeleton className='w-28 h-5' />
-                  <Skeleton className='w-40 h-5' />
-                  <Skeleton className='w-28 h-5' />
+                  <Skeleton className='h-5 w-40' />
+                  <Skeleton className='h-5 w-32' />
+                  <Skeleton className='h-5 w-28' />
+                  <Skeleton className='h-5 w-40' />
+                  <Skeleton className='h-5 w-28' />
                 </>
               )}
               {!isLoading && !meals && (
