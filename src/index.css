@@ -100,10 +100,14 @@
   --color-white: var(--color-white);
   --color-bg: var(--color-bg);
 
+  --color-grey-80: var(--color-grey-80);
+  --color-grey-60: var(--color-grey-60);
   --color-grey-40: var(--color-grey-40);
+  --color-grey-30: var(--color-grey-30);
   --color-grey-20: var(--color-grey-20);
   --color-grey-10: var(--color-grey-10);
   --color-grey-05: var(--color-grey-05);
+  --color-grey-02: var(--color-grey-02);
 
   --color-mju-primary: var(--color-mju-primary);
   --color-mju-secondary: var(--color-mju-secondary);
