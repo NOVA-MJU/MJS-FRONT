@@ -2,9 +2,11 @@ import { fetchNewsInfo } from '@/api/news';
 import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { Tabs } from '@/components/atoms/Tabs';
+import { ICON_SIZE_LG } from '@/constants/common';
 import { useResponsive } from '@/hooks/useResponse';
 import type { NewsInfo } from '@/types/news/newsInfo';
 import { formatToLocalDate } from '@/utils';
+import { handleError } from '@/utils/error';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { IoIosArrowForward } from 'react-icons/io';
@@ -47,7 +49,7 @@ export default function NewsSection() {
   if (isDesktop)
     return (
       <section className='flex flex-col gap-3'>
-        <div className='px-3 flex justify-between items-center'>
+        <div className='flex items-center justify-between px-3'>
           <h2 className='text-heading02 text-mju-primary'>명대신문</h2>
           <Link to='/news'>
             <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
@@ -56,7 +58,7 @@ export default function NewsSection() {
         <div className='px-3'>
           <Tabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
         </div>
-        <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
+        <div className='border-grey-05 flex flex-col gap-3 rounded-xl border-2 p-3'>
           {isLoading &&
             [...Array(5)].map((_, index) => (
               <React.Fragment key={index}>
@@ -71,19 +73,19 @@ export default function NewsSection() {
                   href={news.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-full p-3 flex gap-6 rounded-xl cursor-pointer hover:bg-blue-05 transition'
+                  className='hover:bg-blue-05 flex w-full cursor-pointer gap-6 rounded-xl p-3 transition'
                 >
                   <img
                     src={news.imageUrl?.trim() || '/default-thumbnail.png'}
                     alt={news.title}
-                    className='w-46 h-34 object-cover rounded-xl'
+                    className='h-34 w-46 rounded-xl object-cover'
                     onError={(e) => {
                       e.currentTarget.src = '/default-thumbnail.png';
                     }}
                   />
-                  <div className='flex-1 flex flex-col gap-3 justify-center'>
-                    <h2 className='text-title02 text-black line-clamp-1'>{news.title}</h2>
-                    <p className='text-body03 text-black line-clamp-3'>{news.summary}</p>
+                  <div className='flex flex-1 flex-col justify-center gap-3'>
+                    <h2 className='text-title02 line-clamp-1 text-black'>{news.title}</h2>
+                    <p className='text-body03 line-clamp-3 text-black'>{news.summary}</p>
                   </div>
                 </a>
                 {index < 4 && <Divider variant='thin' />}
@@ -108,18 +110,18 @@ export default function NewsSection() {
                   href={news.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='w-full h-32 px-2.5 py-4 flex gap-2.5 rounded-sm border-1 border-blue-05 hover:bg-blue-05 cursor-pointer transition hover:duration-0'
+                  className='border-blue-05 hover:bg-blue-05 flex h-32 w-full cursor-pointer gap-2.5 rounded-sm border-1 px-2.5 py-4 transition hover:duration-0'
                 >
                   <img
                     src={news.imageUrl?.trim() || '/default-thumbnail.png'}
                     alt={news.title}
-                    className='w-26 h-26 object-cover rounded-sm border-1 border-grey-10'
+                    className='border-grey-10 h-26 w-26 rounded-sm border-1 object-cover'
                     onError={(e) => {
                       e.currentTarget.src = '/default-thumbnail.png';
                     }}
                   />
-                  <div className='flex-1 flex flex-col gap-2'>
-                    <div className='flex-1 flex flex-col gap-1'>
+                  <div className='flex flex-1 flex-col gap-2'>
+                    <div className='flex flex-1 flex-col gap-1'>
                       <h3 className='text-body04 line-clamp-1'>{news.title}</h3>
                       <p className='text-caption01 text-grey-40 line-clamp-2'>{news.summary}</p>
                     </div>
