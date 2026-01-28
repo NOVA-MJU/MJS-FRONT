@@ -45,40 +45,6 @@
 }
 
 /**
- * 피그마 디자인 기준: 모바일 width 393px (max), height 852px (min)
- * v3 디자인 기준으로 전체적인 직사각형 틀 설정
- * 
- * max-width를 사용하여 작은 화면에서는 393px로 제한하되,
- * 더 큰 모바일 기기(iPhone 14 Pro Max 등)에서는 화면 전체를 사용합니다.
- */
-@media (max-width: 767px) {
-  html,
-  body {
-    width: 100%;
-    max-width: 393px;
-    min-width: 0;
-    min-height: 852px;
-    margin: 0 auto;
-  }
-
-  #root {
-    width: 100%;
-    max-width: 393px;
-    min-width: 0;
-    min-height: 852px;
-    margin: 0 auto;
-  }
-
-  /* Layout 컴포넌트에 피그마 기준 적용 */
-  .mobile-figma-container {
-    width: 100%;
-    max-width: 393px;
-    min-width: 0;
-    min-height: 852px;
-  }
-}
-
-/**
  * typography
  * 그냥 className="text-title02" 이렇게 사용하시면 됩니다
  */
