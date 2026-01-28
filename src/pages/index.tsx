@@ -17,23 +17,22 @@ import { Card, CardHeader } from '@/components/atoms/Card';
 
 /**
  * 메인 페이지
- *
  * 홈 화면으로, 다양한 섹션(식단, 공지사항, 명대신문, 명대방송 등)을 표시합니다.
  * 데스크톱에서는 2열 레이아웃, 모바일에서는 카드 형태로 표시됩니다.
+
  */
 export default function Main() {
-  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
   const { isDesktop } = useResponsive();
 
   const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';
 
   if (isDesktop)
     return (
-      <div className='w-full flex-1 px-7 py-12 flex gap-6'>
-        <div className='min-w-0 flex-2/3 flex flex-col gap-12'>
+      <div className='flex w-full flex-1 gap-6 px-7 py-12'>
+        <div className='flex min-w-0 flex-2/3 flex-col gap-12'>
           <div className='flex flex-col gap-3'>
             <SearchBar />
-            <div className='px-3 flex items-center gap-2 text-body03 text-mju-secondary line-clamp-1'>
+            <div className='text-body03 text-mju-secondary line-clamp-1 flex items-center gap-2 px-3'>
               <FaBullhorn />
               <span>{ANNOUNCEMENT_TEXT}</span>
             </div>
@@ -43,7 +42,7 @@ export default function Main() {
           <NewsSection />
           <BroadcastSection />
         </div>
-        <div className='min-w-0 flex-1/3 flex flex-col gap-12'>
+        <div className='flex min-w-0 flex-1/3 flex-col gap-12'>
           <ProfileSection />
           <WeatherComponent />
           <AdCarousel />
@@ -56,11 +55,11 @@ export default function Main() {
 
   if (!isDesktop)
     return (
-      <div className='flex-1 py-2 flex flex-col gap-2 bg-blue-05'>
+      <div className='bg-blue-05 flex flex-1 flex-col gap-2 py-2'>
         {/* 확성기 위젯 */}
         <section>
-          <div className='px-5 py-1 rounded-xl bg-blue-05'>
-            <div className='flex items-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
+          <div className='bg-blue-05 rounded-xl px-5 py-1'>
+            <div className='text-body04 line-clamp-1 flex items-center gap-2 text-[#2254F5]'>
               <FaBullhorn />
               <span>{ANNOUNCEMENT_TEXT}</span>
             </div>
