@@ -6,6 +6,12 @@ import MyListItem from '../../components/molecules/MyListItem';
 import Pagination from '@/components/molecules/common/Pagination';
 import { FormatToDotDate } from '@/utils';
 
+/**
+ * 내가 쓴 게시물 페이지
+ *
+ * 사용자가 작성한 게시글 목록을 표시하는 페이지입니다.
+ * 게시글 제목, 미리보기, 댓글 수, 좋아요 수, 작성 시간을 보여줍니다.
+ */
 const ViewPosts = () => {
   const [contents, setContents] = useState<MyPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);

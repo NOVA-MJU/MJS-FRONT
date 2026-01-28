@@ -6,8 +6,8 @@ import { useState, useEffect } from 'react';
 const DESKTOP_MIN_WIDTH = 768;
 
 /**
- * 사용 예제: `const { isDesktop } = useResponsive();`
- * @returns 화면의 너비가 brake point보가 큰 경우 true, 작은 경우 false를 return합니다.
+ * 사용 예제: `const { isDesktop, isMobile } = useResponsive();`
+ * @returns 화면의 너비가 brake point보다 큰 경우 isDesktop=true, 작은 경우 isMobile=true를 return합니다.
  */
 export const useResponsive = () => {
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= DESKTOP_MIN_WIDTH);
@@ -25,5 +25,5 @@ export const useResponsive = () => {
     };
   }, []);
 
-  return { isDesktop };
+  return { isDesktop, isMobile: !isDesktop };
 };

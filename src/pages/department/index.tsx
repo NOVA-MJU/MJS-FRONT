@@ -7,6 +7,12 @@ import { COLLEGE_OPTIONS } from '../../constants/colleges';
 import { getDepartments, type DepartmentRes } from '../../api/departments';
 import GlobalErrorPage from '../error';
 
+/**
+ * 학과별 서비스 페이지
+ *
+ * 단과대별로 학과 목록을 조회하고 표시하는 페이지입니다.
+ * 단과대 필터를 통해 학과를 필터링할 수 있습니다.
+ */
 export default function Department() {
   const [departments, setDepartments] = useState<DepartmentRes[]>([]);
   const [selectedCollege, setSelectedCollege] = useState<string>('');

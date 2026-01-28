@@ -26,14 +26,18 @@ const categoryMap: Record<string, string> = {
 };
 
 /**
- * Notice (공지사항 페이지)
+ * 공지사항 페이지
  *
  * - 검색어(keyword)가 있으면 검색 API(getSearchResult) 호출
  * - 검색어가 없으면 카테고리별 공지사항 API(fetchNotionInfo) 호출
  * - "전체" 탭 선택 시 category=all 로 모든 공지를 최신순 조회
  * - Pagination 은 0-base 로 동작 (백엔드 스펙)
+ * - 데스크톱과 모바일에서 완전히 다른 레이아웃으로 표시됩니다.
  */
 export default function Notice() {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
   const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
@@ -44,7 +48,6 @@ export default function Notice() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const { isDesktop } = useResponsive();
 
   useEffect(() => {
     if (keyword) setInitialContent(keyword);

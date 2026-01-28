@@ -14,6 +14,9 @@ import { NEWS_MOBILE_PAGE_SIZE, NEWS_DESKTOP_PAGE_SIZE } from '@/constants/commo
 import { handleError } from '@/utils/error';
 
 const News = () => {
+  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
+  const { isDesktop } = useResponsive();
+
   /**
    * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
    * setter 를 추가하여, 카테고리가 바뀌면 url에 쿼리가 찍히도록 합니다.
@@ -64,8 +67,8 @@ const News = () => {
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
-  const { isDesktop } = useResponsive();
-  const ITEMS_PER_PAGE = isDesktop ? NEWS_DESKTOP_PAGE_SIZE : NEWS_MOBILE_PAGE_SIZE;
+
+  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
 
   useEffect(() => {
     /**

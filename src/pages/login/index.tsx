@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
 import LoginForm from '../../components/organisms/LoginForm';
 
+/**
+ * 로그인 페이지
+ *
+ * 사용자 로그인을 위한 페이지입니다.
+ * 아이디 찾기, 비밀번호 찾기 링크를 제공합니다.
+ */
 const Login = () => {
   return (
     <div className='bg-grey-05 flex h-full w-full flex-col p-12 py-[30%] md:mx-auto md:min-h-screen md:w-[1280px] md:py-10'>

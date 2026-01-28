@@ -1,5 +1,10 @@
 import FindIdForm from '../../components/organisms/FindForm/FindIdForm';
 
+/**
+ * 아이디 찾기 페이지
+ *
+ * 사용자가 가입 시 등록한 정보를 통해 아이디를 찾을 수 있는 페이지입니다.
+ */
 const FindId = () => {
   return (
     <div className='bg-grey-05 flex h-full w-full flex-col p-12 py-[30%] md:mx-auto md:min-h-screen md:w-[1280px] md:py-10'>

@@ -10,6 +10,12 @@ import LabelButton from '../../components/atoms/Button/LabelButton';
 import { handleError } from '../../utils/error';
 import toast from 'react-hot-toast';
 
+/**
+ * 마이페이지
+ *
+ * 사용자 프로필, 활동 통계, 서비스 정보를 표시하는 페이지입니다.
+ * 회원 탈퇴 기능을 제공합니다.
+ */
 const Mypage = () => {
   const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
