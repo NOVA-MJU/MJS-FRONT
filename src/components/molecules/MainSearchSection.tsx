@@ -56,7 +56,7 @@ export default function MainSearchSection() {
   return (
     <div className='relative flex h-screen w-full flex-col items-center justify-start px-6 pt-12'>
       {/* 검색창 영역 */}
-      <div className='flex h-[270px] w-full max-w-md flex-col items-center justify-center gap-2'>
+      <div className='flex h-[230px] w-full max-w-md flex-col items-center justify-center gap-2'>
         {/* 안내 텍스트 */}
         <div className='relative'>
           <div className='bg-blue-35 text-caption01 absolute -top-10 left-1/2 -translate-x-1/2 rounded-full px-4 py-2 whitespace-nowrap text-white shadow-md'>
@@ -67,7 +67,7 @@ export default function MainSearchSection() {
         </div>
 
         {/* 검색 입력창 */}
-        <div className='border-blue-35 flex w-full items-center gap-3 rounded-full border-2 bg-white px-6 py-3 shadow-sm transition-all hover:shadow-md'>
+        <div className='border-blue-35 flex w-full items-center gap-2 rounded-full border-2 bg-white px-6 py-3 shadow-sm transition-all hover:shadow-md'>
           <input
             type='text'
             value={searchQuery}
@@ -87,7 +87,7 @@ export default function MainSearchSection() {
       </div>
 
       {/* 추천 검색어 영역 */}
-      <div className='mt-0 flex w-full max-w-md flex-col items-center gap-1.5'>
+      <div className='-mt-5 flex w-full max-w-md flex-col items-center gap-1.5'>
         <p className='text-body04 text-grey-30'>추천 검색어 예시</p>
 
         {/* 카테고리 버튼 Flex 레이아웃 */}
