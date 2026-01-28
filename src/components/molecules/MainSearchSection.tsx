@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import SearchBar from '@/components/atoms/SearchBar';
 
 /**
  * 메인 페이지 검색 섹션
@@ -14,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
  */
 export default function MainSearchSection() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
 
   /**
    * 추천 검색어 카테고리 데이터
@@ -26,25 +24,6 @@ export default function MainSearchSection() {
     { id: 3, label: '학사일정', icon: '📅', path: '/academic-calendar' },
     { id: 4, label: '멘토링', icon: '👥', path: '/mentoring' },
   ];
-
-  /**
-   * 검색 실행 핸들러
-   * TODO: 검색 API 연동 예정
-   */
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
-
-  /**
-   * Enter 키 입력 핸들러
-   */
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
 
   /**
    * 카테고리 클릭 핸들러
@@ -66,24 +45,8 @@ export default function MainSearchSection() {
           <div className='bg-blue-35 absolute -top-4 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45'></div>
         </div>
 
-        {/* 검색 입력창 */}
-        <div className='border-blue-35 flex w-full items-center gap-2 rounded-full border-2 bg-white px-6 py-3 shadow-sm transition-all hover:shadow-md'>
-          <input
-            type='text'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder='검색어를 입력하세요'
-            className='text-body03 placeholder:text-grey-20 flex-1 outline-none'
-          />
-          <button
-            onClick={handleSearch}
-            className='text-blue-35 hover:text-blue-40 transition-colors'
-            aria-label='검색'
-          >
-            <FaSearch size={20} />
-          </button>
-        </div>
+        {/* 검색 입력창 (기존 SearchBar 로직 재사용) */}
+        <SearchBar domain='search' className='w-full rounded-full' />
       </div>
 
       {/* 추천 검색어 영역 */}
