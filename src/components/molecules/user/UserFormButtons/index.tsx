@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '../../../atoms/Button/Button';
 
 interface LoginButtonsProps {
@@ -8,12 +7,12 @@ interface LoginButtonsProps {
   onSignUp?: () => void;
 }
 
-const UserFormButtons: React.FC<LoginButtonsProps> = ({
+const UserFormButtons = ({
   label = '',
   loading = false,
   disabled = false,
   onSignUp,
-}) => {
+}: LoginButtonsProps) => {
   const isLoginDisabled = disabled || loading;
   const loginVariant = isLoginDisabled ? 'grey' : 'main';
   return (
@@ -41,7 +40,6 @@ const UserFormButtons: React.FC<LoginButtonsProps> = ({
         {label}
       </Button>
 
-      {/* 2) 회원가입 버튼 */}
       <Button
         type='button'
         variant='blue20'

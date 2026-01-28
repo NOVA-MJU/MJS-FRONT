@@ -12,7 +12,7 @@ interface ImageViewerProps {
   className?: string;
 }
 
-const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl, className }) => {
+const ImageViewer = ({ imageUrl, className }: ImageViewerProps) => {
   return (
     <div
       style={{ borderColor: colors.grey10 }}

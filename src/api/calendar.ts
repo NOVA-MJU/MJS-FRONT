@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
+import { CALENDAR_API_DEFAULT_SIZE } from '../constants/common';
 
 /**
  * 명지대학교의 학사일정 데이터를 페이지 단위로 조회합니다
@@ -24,7 +25,7 @@ interface CalendarEventItem {
  */
 export const getAcademicEvents = async ({
   page = 0,
-  size = 100,
+  size = CALENDAR_API_DEFAULT_SIZE,
   sortBy = 'startDate',
   sortDir = 'asc',
   year = 2025,

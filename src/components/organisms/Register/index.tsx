@@ -2,9 +2,11 @@ import { useState } from 'react';
 
 import { genderOptions } from '../../../constants/gender';
 import { useRegisterHandlers } from '../../../hooks/useRegister';
+import { validatePassword, validateStudentCode } from '../../../utils/validation';
 import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
 import Button from '../../atoms/Button/Button';
+import ProfileInfoSection from './ProfileInfoSection';
 
 const RegisterForm = () => {
   const [id, setId] = useState('');
@@ -13,6 +15,7 @@ const RegisterForm = () => {
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
+  const [college, setCollege] = useState('');
   const [department, setDepartment] = useState('');
   const [studentCode, setStudentCode] = useState('');
   const [gender, setGender] = useState<string>(genderOptions[0]?.value);
@@ -44,10 +47,10 @@ const RegisterForm = () => {
     gender,
     department,
   });
-  const isPwValid = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).{8,16}$/.test(pw);
+  const isPwValid = validatePassword(pw);
   const isPwMatch = pw === confirmPw;
   const confirmError = confirmPw !== '' && !isPwMatch;
-  const isStudentCodeValid = /^60\d{6}$/.test(studentCode.trim());
+  const isStudentCodeValid = validateStudentCode(studentCode);
 
   const formValid =
     isPwValid &&
@@ -56,11 +59,15 @@ const RegisterForm = () => {
     name.trim() &&
     department.trim() &&
     isStudentCodeValid &&
+    emailVerified &&
+    isEmailChecked &&
+    isNicknameChecked &&
+    isStuCodeChecked &&
     gender;
 
   return (
     <form
-      className='flex flex-col gap-6 md:gap-12 w-full md:w-[672px] mt-6'
+      className='mt-6 flex w-full flex-col gap-6 md:w-[672px] md:gap-12'
       onSubmit={handleSubmit}
     >
       <RequiredInfoSection
@@ -83,12 +90,12 @@ const RegisterForm = () => {
         confirmError={confirmError}
       />
       <PersonalInfoSection
-        profileImageFile={profileImageFile}
-        setProfileImageFile={setProfileImageFile}
         name={name}
         setName={setName}
         nickname={nickname}
         setNickname={setNickname}
+        college={college}
+        setCollege={setCollege}
         department={department}
         setDepartment={setDepartment}
         studentCode={studentCode}
@@ -103,6 +110,7 @@ const RegisterForm = () => {
         handleVerifyStudentCode={handleVerifyStudentCode}
         setIsNicknameChecked={setIsNicknameChecked}
       />
+      <ProfileInfoSection setProfileImageFile={setProfileImageFile} />
       <Button
         type='submit'
         variant={formValid ? 'main' : 'greyLight'}

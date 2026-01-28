@@ -9,15 +9,15 @@ import LoginForm from '../../components/organisms/LoginForm';
  */
 const Login = () => {
   return (
-    <div className='w-full py-[30%] md:py-10 h-full bg-grey-05 md:w-[1280px] md:min-h-screen flex flex-col md:mx-auto p-12'>
-      <p className='text-2xl mb-4 md:text-4xl font-bold text-mju-primary'>로그인</p>
-      <div className='w-full mx-auto flex justify-center items-center'>
-        <div className='w-[375px] flex flex-col md:gap-6 md:w-[672px]'>
-          <div className='flex mx-auto w-[80%] md:w-full md:min-h-[480px] items-center bg-white p-6 rounded-xl'>
+    <div className='bg-grey-05 flex h-full w-full flex-col p-12 py-[30%] md:mx-auto md:min-h-screen md:w-[1280px] md:py-10'>
+      <p className='text-mju-primary mb-4 text-2xl font-bold md:text-4xl'>로그인</p>
+      <div className='mx-auto flex w-full items-center justify-center'>
+        <div className='flex w-[375px] flex-col md:w-[672px] md:gap-6'>
+          <div className='mx-auto flex w-[80%] items-center rounded-xl bg-white p-6 md:min-h-[480px] md:w-full'>
             <LoginForm />
           </div>
 
-          <div className='w-[375px] md:w-full mt-4 flex justify-center gap-4 md:gap-20 text-sm md:text-md'>
+          <div className='md:text-md mt-4 flex w-[375px] justify-center gap-4 text-sm md:w-full md:gap-20'>
             <p className='font-normal text-[#999999]'>아이디 찾기</p>
             <p className='font-normal text-[#999999]'>|</p>
             <Link to={'/find-pw'}>

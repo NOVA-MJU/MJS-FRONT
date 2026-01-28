@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import LoadingIndicator from '../../components/atoms/LoadingIndicator';
-import { Typography } from '../../components/atoms/Typography';
-import Button from '../../components/atoms/Button';
 import { getMyPosts, type MyPostItem } from '../../api/mypage';
-import NavigationUp from '../../components/molecules/NavigationUp';
-import { useNavigate } from 'react-router-dom';
+import LoadingIndicator from '../../components/atoms/LoadingIndicator';
+import Button from '../../components/atoms/Button';
 import MyListItem from '../../components/molecules/MyListItem';
-import { formatToElapsedTime } from '../../utils';
+import Pagination from '@/components/molecules/common/Pagination';
+import { FormatToDotDate } from '@/utils';
 
 /**
  * 내가 쓴 게시물 페이지
@@ -18,46 +16,55 @@ const ViewPosts = () => {
   const [contents, setContents] = useState<MyPostItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const navigate = useNavigate();
+
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchPosts = async (currentPage: number) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const pageResult = await getMyPosts(currentPage, 10);
+
+      setContents(pageResult.content);
+      setTotalPages(pageResult.totalPages);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getMyPosts();
-        setContents(res);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+    void fetchPosts(page);
+  }, [page]);
+
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
+  };
 
   if (isLoading)
     return (
-      <div className='w-full flex-1 flex items-center justify-center'>
+      <div className='flex w-full flex-1 items-center justify-center'>
         <LoadingIndicator />
       </div>
     );
 
   if (isError)
     return (
-      <div className='flex-1 flex flex-col items-center justify-center gap-4'>
-        <Typography variant='body01'>문제가 발생했습니다</Typography>
+      <div className='flex flex-1 flex-col items-center justify-center gap-4'>
+        <p className='text-body01'>문제가 발생했습니다</p>
         <Button shape='rounded'>다시 시도하기</Button>
       </div>
     );
 
   return (
-    <div className='w-full flex-1 bg-grey-05 flex flex-col p-4 md:p-8 gap-3 md:gap-6'>
-      <NavigationUp onClick={() => navigate(-1)} />
-      <Typography variant='heading01' className='text-mju-primary'>
-        내가 쓴 게시물
-      </Typography>
-      {contents ? (
-        <div className='bg-white p-3 flex flex-col gap-3 rounded-lg'>
+    <div className='flex w-full flex-1 flex-col gap-3 bg-white p-4 md:gap-6 md:p-8'>
+      <p className='text-title02 text-blue-35 mt-2 ml-2'>내가 쓴 게시물</p>
+      {contents && contents.length > 0 ? (
+        <div className='bg-white'>
           {contents.map((content, index) => (
             <MyListItem
               key={content.uuid}
@@ -66,15 +73,14 @@ const ViewPosts = () => {
               contentPreview={content.previewContent}
               commentCount={content.commentCount}
               likeCount={content.likeCount}
-              publishedDate={formatToElapsedTime(content.publishedAt)}
-              isLast={index === contents.length - 1}
+              publishedDate={FormatToDotDate(content.publishedAt)}
+              isLast={index === contents.length}
             />
           ))}
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
         </div>
       ) : (
-        <>
-          <Typography variant='body01'>아직 작성한 게시글이 없습니다</Typography>
-        </>
+        <p className='text-body01'>아직 작성한 게시글이 없습니다</p>
       )}
     </div>
   );

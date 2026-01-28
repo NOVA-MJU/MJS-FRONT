@@ -1,6 +1,7 @@
 import apiClient from '../apiClient';
 import type { GetSearchResultRes } from '../search';
 import { type ApiResponse, type Paginated } from '../types';
+import { BROADCAST_PAGE_SIZE, DEFAULT_PAGE_SIZE } from '../../constants/common';
 
 /**
  * 방송국 관련 데이터 타입
@@ -19,7 +20,7 @@ export interface BroadcastItem {
  * @param size 한번에 불러올 데이터 갯수를 입력하세요
  * @returns 페이지네이션된 BroadcastItem[]를 반환합니다
  */
-export const fetchBroadcasts = async (page: number = 0, size: number = 9) => {
+export const fetchBroadcasts = async (page: number = 0, size: number = BROADCAST_PAGE_SIZE) => {
   const res = await apiClient.get<ApiResponse<Paginated<BroadcastItem>>>('/broadcast', {
     params: { page, size },
   });
@@ -38,7 +39,7 @@ export const searchBroadcasts = async (
   keyword: string,
   order: 'relevance' | 'latest' | 'oldest',
   page = 0,
-  size = 10,
+  size = DEFAULT_PAGE_SIZE,
 ) => {
   const res = await apiClient.get<ApiResponse<Paginated<GetSearchResultRes>>>('/search/detail', {
     params: { keyword, type: 'BROADCAST', order, page, size },

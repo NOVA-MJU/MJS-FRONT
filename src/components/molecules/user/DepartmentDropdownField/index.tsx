@@ -1,18 +1,24 @@
 import DropdownField from '../../common/DropdownField';
-import { DEPARTMENT_OPTIONS } from '../../../../constants/departments';
 
 interface Props {
+  label: string;
+  options: Options[];
   department: string;
   setDepartment: (val: string) => void;
 }
 
-const DepartmentDropdownField: React.FC<Props> = ({ department, setDepartment }) => (
+interface Options {
+  label: string;
+  value: string;
+}
+
+const DepartmentDropdownField = ({ label, options, department, setDepartment }: Props) => (
   <DropdownField
-    label='학과'
+    label={label}
     selected={department}
     onSelect={setDepartment}
-    options={DEPARTMENT_OPTIONS}
-    placeholder='학과를 선택해주세요'
+    options={options}
+    placeholder={`${label}를 선택해주세요`}
   />
 );
 

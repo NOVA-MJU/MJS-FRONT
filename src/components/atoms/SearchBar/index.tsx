@@ -73,10 +73,9 @@ export default function SearchBar({
         if (!controller.signal.aborted) {
           if (res.length !== 0) setSuggestedKeywords(res);
         }
-      } catch (e) {
-        if (!controller.signal.aborted) {
-          console.error(e);
-        }
+      } catch {
+        // 에러는 상위에서 처리 (abort된 경우 무시)
+        // 자동완성 실패는 조용히 처리
       }
     })();
   }, [debounced]);
@@ -86,7 +85,6 @@ export default function SearchBar({
    * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
    */
   const handleKeywordClick = (keyword: string) => {
-    console.log(domain);
     if (
       location.pathname === `/${domain}` &&
       location.search === `?keyword=${encodeURIComponent(keyword)}`

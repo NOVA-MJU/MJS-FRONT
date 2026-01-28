@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMenus, type MenuItem } from '@/api/menu';
+import { MENU_STALE_TIME_MS } from '@/constants/common';
 
 const ORDER: Array<MenuItem['menuCategory']> = ['BREAKFAST', 'LUNCH', 'DINNER'];
 
@@ -13,7 +14,7 @@ export function useMenuData() {
   } = useQuery<MenuItem[]>({
     queryKey: ['menus'],
     queryFn: getMenus,
-    staleTime: 5 * 60 * 1000,
+    staleTime: MENU_STALE_TIME_MS,
   });
 
   const stripDow = (s: string) => s.replace(/\s*\([^)]*\)\s*/g, '').trim(); // '(월)' 같은 요일 제거

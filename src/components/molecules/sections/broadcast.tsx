@@ -2,13 +2,15 @@ import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { formatToLocalDate } from '@/utils';
 import { useEffect, useState } from 'react';
+import { BROADCAST_PAGE_SIZE } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 export default function BroadcastSection() {
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const page = 0;
-  const size = 9;
+  const size = BROADCAST_PAGE_SIZE;
 
   /**
    * 명대방송 데이터를 불러옵니다.
@@ -20,11 +22,12 @@ export default function BroadcastSection() {
         const data = await fetchBroadcasts(page, size);
         setBroadcasts(data.content);
       } catch (err) {
-        console.error('BroadcastSection.tsx::fetch broadcast data', err);
+        handleError(err, '방송 정보를 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
         setIsLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

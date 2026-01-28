@@ -1,5 +1,6 @@
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
+import { SEARCH_API_DEFAULT_SIZE } from '../constants/common';
 
 /**
  * 카테고리별로 상위 검색 결과 5개를 표시합니다
@@ -67,7 +68,7 @@ export const getSearchResult = async (
     | 'MJU_CALENDAR',
   order: 'relevance' | 'latest' | 'oldest',
   page = 0,
-  size = 10,
+  size = SEARCH_API_DEFAULT_SIZE,
 ) => {
   const res = await apiClient.get<ApiResponse<Paginated<GetSearchResultRes>>>('/search/detail', {
     params: { keyword, type, order, page, size },

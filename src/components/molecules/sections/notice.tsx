@@ -2,9 +2,11 @@ import { fetchNotionInfo } from '@/api/main/notice-api';
 import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { Tabs } from '@/components/atoms/Tabs';
+import { ICON_SIZE_LG } from '@/constants/common';
 import { useResponsive } from '@/hooks/useResponse';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToElapsedTime } from '@/utils';
+import { handleError } from '@/utils/error';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { IoIosArrowForward } from 'react-icons/io';
@@ -62,7 +64,7 @@ export default function NoticeSection() {
             [selectedTab]: fetchedNoticeData.content,
           }));
         } catch (e) {
-          console.error('NoticeSection.tsx::useEffect()', e);
+          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setSelectedInfo([]);
         } finally {
           setIsLoading(false);
@@ -75,16 +77,16 @@ export default function NoticeSection() {
   if (isDesktop)
     return (
       <section className='flex flex-col gap-3'>
-        <div className='px-3 flex justify-between items-center'>
+        <div className='flex items-center justify-between px-3'>
           <h2 className='text-heading02 text-mju-primary'>공지사항</h2>
           <Link to='/notice'>
-            <IoIosArrowForward className='text-blue-10' size={20} />
+            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
         <div className='px-3'>
           <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
         </div>
-        <div className='p-3 flex flex-col gap-3 rounded-xl border-2 border-grey-05'>
+        <div className='border-grey-05 flex flex-col gap-3 rounded-xl border-2 p-3'>
           {isLoading &&
             [...Array(CONTENT_LENGTH)].map((_, index) => (
               <React.Fragment key={index}>
@@ -99,7 +101,7 @@ export default function NoticeSection() {
                   href={info.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='p-3 cursor-pointer hover:bg-blue-05 transition flex flex-col md:flex-row gap-2 justify-between rounded-xl'
+                  className='hover:bg-blue-05 flex cursor-pointer flex-col justify-between gap-2 rounded-xl p-3 transition md:flex-row'
                 >
                   <p className='text-body02 line-clamp-2'>{info.title}</p>
                   <span className='text-caption01 text-grey-40'>
@@ -132,9 +134,9 @@ export default function NoticeSection() {
                   href={info.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='py-2 flex gap-1.5 justify-between items-center'
+                  className='flex items-center justify-between gap-1.5 py-2'
                 >
-                  <span className='text-[15px] text-black flex-1 line-clamp-1'>{info.title}</span>
+                  <span className='line-clamp-1 flex-1 text-[15px] text-black'>{info.title}</span>
                   <span className='text-body05 text-grey-40'>{formatToElapsedTime(info.date)}</span>
                 </a>
               ))}

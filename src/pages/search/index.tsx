@@ -30,8 +30,8 @@ export default function Search() {
       setInitialContent(keyword);
       try {
         await handleSearch(keyword);
-      } catch (e) {
-        console.error(e);
+      } catch {
+        // 에러는 상위에서 처리
       }
     })();
   }, [keyword]);

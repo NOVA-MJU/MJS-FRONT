@@ -17,7 +17,7 @@ type RequiredInfoProps = {
   setOpenForm: (val: boolean) => void;
 };
 
-const RequiredInfo: React.FC<RequiredInfoProps> = ({
+const RequiredInfo = ({
   currentPw,
   setCurrentPw,
   pw,
@@ -26,7 +26,7 @@ const RequiredInfo: React.FC<RequiredInfoProps> = ({
   setConfirmPw,
   openForm,
   setOpenForm,
-}) => {
+}: RequiredInfoProps) => {
   const user = useAuthStore((state) => state.user);
   const isPwMatch = pw === confirmPw;
   const confirmError = confirmPw !== '' && !isPwMatch;

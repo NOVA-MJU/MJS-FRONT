@@ -12,8 +12,8 @@ export default function Divider({ variant = 'default', className, ...props }: Di
       className={clsx(
         'w-full rounded-full border-0',
         {
-          'h-[4px] bg-gradient-to-r from-blue-05 to-white': variant === 'default',
-          'h-[2px] bg-grey-05': variant === 'thin',
+          'from-blue-05 h-[4px] bg-gradient-to-r to-white': variant === 'default',
+          'bg-grey-05 h-[2px]': variant === 'thin',
         },
         className,
       )}

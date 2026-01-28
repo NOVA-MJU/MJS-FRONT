@@ -20,9 +20,11 @@ export interface GetBoardsParams {
   direction?: BoardDirection;
 }
 
+import { DEFAULT_PAGE_SIZE } from '../constants/common';
+
 export const getBoards = async ({
   page = 0,
-  size = 10,
+  size = DEFAULT_PAGE_SIZE,
   communityCategory = 'ALL',
   sortBy = 'createdAt',
   direction = 'DESC',

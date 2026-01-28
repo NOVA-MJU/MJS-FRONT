@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ArrowDown from '../../../../assets/btn_arrow_pub.svg';
 import clsx from 'clsx';
 
@@ -17,7 +17,7 @@ interface Props {
   errorMessage?: string;
 }
 
-const DropdownField: React.FC<Props> = ({
+const DropdownField = ({
   label,
   selected,
   onSelect,
@@ -25,14 +25,13 @@ const DropdownField: React.FC<Props> = ({
   placeholder = '선택하세요',
   error = false,
   errorMessage = '값을 선택해주세요.',
-}) => {
+}: Props) => {
   const [open, setOpen] = useState(false);
 
   const selectedLabel = options.find((item) => item.value === selected)?.label;
 
   return (
     <div className='relative w-full h-[90px] flex flex-col gap-2'>
-      {/* 라벨 + 라인 */}
       <div className='flex items-center gap-6'>
         <label className='text-blue-10 text-md md:text-xl font-semibold whitespace-nowrap'>
           {label}
@@ -40,7 +39,6 @@ const DropdownField: React.FC<Props> = ({
         <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
       </div>
 
-      {/* 선택 박스 */}
       <button
         type='button'
         className={clsx(
@@ -55,7 +53,6 @@ const DropdownField: React.FC<Props> = ({
         <img src={ArrowDown} alt='dropdownBtn' className='w-4 h-4' />
       </button>
 
-      {/* 옵션 리스트 */}
       {open && (
         <ul className='absolute text-sm md:text-base top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto text-grey-40'>
           {options.map((item) => (
@@ -73,7 +70,6 @@ const DropdownField: React.FC<Props> = ({
         </ul>
       )}
 
-      {/* 에러 메시지 */}
       <p className='text-xs mt-2 min-h-[20px] text-red-500'>{error ? errorMessage : '\u00A0'}</p>
     </div>
   );
