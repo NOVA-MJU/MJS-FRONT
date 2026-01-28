@@ -1,9 +1,11 @@
 import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface TabComponentProps {
   tabs: Record<string, string>;
   currentTab: string;
   setCurrentTab: (tab: string) => void;
+  className?: string;
 }
 
 /**
@@ -15,11 +17,17 @@ interface TabComponentProps {
  * @param setCurrentTab - 탭 클릭 시 호출되는 함수. 클릭된 탭의 **식별자(key)**를 인자로 받습니다.
  * @returns JSX Element
  */
-function Tabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
+function Tabs({ tabs, currentTab, setCurrentTab, className }: TabComponentProps) {
   const tabEntries = Object.entries(tabs);
 
   return (
-    <div className='flex border-b-1 border-grey-10 no-scrollbar overflow-x-auto gap-1.5'>
+    <div
+      className={twMerge(
+        'border-grey-10 no-scrollbar flex gap-1.5 overflow-x-auto border-b-1',
+        'md:text-title02 text-body02',
+        className,
+      )}
+    >
       {tabEntries.map(([key, label]) => {
         const isSelected = currentTab === key;
         return (
@@ -29,10 +37,7 @@ function Tabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
             aria-selected={isSelected}
             aria-controls={`tab-panel-${key}`}
             onClick={() => setCurrentTab(key)}
-            className={`
-                flex-1 p-1 px-3 md:p-3 md:text-title02 text-body02 cursor-pointer whitespace-nowrap
-                ${isSelected ? 'text-blue-35 border-b-2 border-blue-35' : 'text-grey-40'}
-              `}
+            className={`flex-1 cursor-pointer p-1 px-3 whitespace-nowrap md:p-3 ${isSelected ? 'text-blue-35 border-blue-35 border-b-2' : 'text-grey-40'} `}
           >
             {label}
           </button>
@@ -55,7 +60,7 @@ function ChipTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
   const tabEntries = Object.entries(tabs);
 
   return (
-    <div className='flex no-scrollbar overflow-x-auto gap-1.5'>
+    <div className='no-scrollbar flex gap-1.5 overflow-x-auto'>
       {tabEntries.map(([key, label]) => {
         const isSelected = currentTab === key;
         return (
@@ -65,10 +70,7 @@ function ChipTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
             aria-selected={isSelected}
             aria-controls={`tab-panel-${key}`}
             onClick={() => setCurrentTab(key)}
-            className={clsx`
-              px-3 py-1.5 rounded-full text-caption03 cursor-pointer whitespace-nowrap
-                ${isSelected ? 'bg-blue-35 text-white' : 'border border-grey-10 text-grey-20'}
-            `}
+            className={clsx`text-caption03 cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap ${isSelected ? 'bg-blue-35 text-white' : 'border-grey-10 text-grey-20 border'} `}
           >
             {label}
           </button>
