@@ -1,4 +1,5 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
 import { AgentationTool } from '@/utils/agentation';
 import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
@@ -11,6 +12,7 @@ import Layout from '@/components/templates/Layout';
 import Menu from '@/pages/menu';
 import AcademicCalendar from '@/pages/academic-calendar';
 import Search from '@/pages/search';
+import SearchOverlay from './pages/search/SearchOverlay';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
 import Department from '@/pages/department';
@@ -31,9 +33,14 @@ import FindPw from '@/pages/findPw';
 import DepartmentDetailPage from '@/pages/main/department';
 
 const App = () => {
+  const location = useLocation();
+  const state = location.state as { backgroundLocation?: Location } | undefined;
+  const backgroundLocation = state?.backgroundLocation;
+
   return (
     <>
-      <Routes>
+      {/* 기본 라우팅: backgroundLocation 이 있으면 그 위치를 기준으로 렌더 */}
+      <Routes location={backgroundLocation || location}>
         <Route element={<Layout />}>
           <Route path='/' element={<Main />} />
 
@@ -81,6 +88,13 @@ const App = () => {
           <Route path='/find-pw' element={<FindPw />} />
         </Route>
       </Routes>
+
+      {/* route-modal 방식의 검색 오버레이 */}
+      {backgroundLocation && (
+        <Routes>
+          <Route path='/search' element={<SearchOverlay />} />
+        </Routes>
+      )}
 
       <AgentationTool />
     </>
