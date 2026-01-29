@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import SearchBar from '@/components/atoms/SearchBar';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaSearch } from 'react-icons/fa';
 
 /**
  * 메인 페이지 검색 섹션
@@ -13,6 +13,7 @@ import SearchBar from '@/components/atoms/SearchBar';
  */
 export default function MainSearchSection() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   /**
    * 추천 검색어 카테고리 데이터
@@ -32,6 +33,16 @@ export default function MainSearchSection() {
     navigate(path);
   };
 
+  /**
+   * 검색바 클릭 시 검색 오버레이로 이동
+   * - backgroundLocation 에 현재 위치를 담아서 route-modal 패턴 적용
+   */
+  const handleSearchBarClick = () => {
+    navigate('/search', {
+      state: { backgroundLocation: location },
+    });
+  };
+
   return (
     <div className='relative flex h-screen w-full flex-col items-center justify-start px-6 pt-12'>
       {/* 검색창 영역 */}
@@ -45,8 +56,15 @@ export default function MainSearchSection() {
           <div className='bg-blue-35 absolute -top-4 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45'></div>
         </div>
 
-        {/* 검색 입력창 (기존 SearchBar 로직 재사용) */}
-        <SearchBar domain='search' className='w-full rounded-full' />
+        {/* 검색 입력창 (탭 시 검색 오버레이로 이동) */}
+        <button
+          type='button'
+          onClick={handleSearchBarClick}
+          className='text-body03 text-grey-30 ring-blue-05/60 flex w-full items-center gap-3 rounded-full bg-white/95 px-6 py-3 text-left shadow-sm ring-1'
+        >
+          <FaSearch className='text-blue-35' />
+          <span className='flex-1 truncate'>검색어를 입력해 주세요.</span>
+        </button>
       </div>
 
       {/* 추천 검색어 영역 */}
