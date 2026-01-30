@@ -9,14 +9,10 @@ interface LayoutProps {
 const Layout = ({ className }: LayoutProps) => {
   return (
     <div
-      className={`
-        w-full md:min-w-[1280px] min-h-screen flex flex-col items-center 
-      
-        ${className}
-        `}
+      className={`flex min-h-screen w-full flex-col items-center md:min-w-[1280px] ${className} `}
     >
       <Navbar />
-      <main className='w-full flex-1 md:w-[1280px] h-auto mx-auto flex flex-col'>
+      <main className='mx-auto flex h-auto w-full flex-1 flex-col md:w-[1280px]'>
         <Outlet />
       </main>
       <Footer />
