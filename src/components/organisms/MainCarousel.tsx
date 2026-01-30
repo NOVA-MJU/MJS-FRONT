@@ -70,8 +70,8 @@ export default function MainCarousel({ slides }: MainCarouselProps) {
         ))}
       </Swiper>
 
-      {/* 페이지네이션 인디케이터 */}
-      <div className='absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 gap-2'>
+      {/* 페이지네이션 인디케이터 (푸터 위) */}
+      <div className='absolute bottom-[150px] left-1/2 z-10 flex -translate-x-1/2 gap-2'>
         {slides.map((_, index) => (
           <button
             key={index}

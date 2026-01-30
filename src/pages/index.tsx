@@ -85,10 +85,10 @@ export default function Main() {
    * 좌우 스와이프 캐로셀 방식
    */
   return (
-    <div className='h-[calc(100vh-64px)] w-full'>
+    <div className='max-h-[calc(100vh-180px)] w-full'>
       <MainCarousel
         slides={[
-          // 슬라이드 1: 메인 검색 화면
+          // 슬라이드 1: 메인 검색 화면 : 최원빈 작업
           <MainSearchSection key='search' />,
 
           // 슬라이드 2: 식단표
