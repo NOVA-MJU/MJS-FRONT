@@ -44,7 +44,7 @@ export default function MainSearchSection() {
   };
 
   return (
-    <div className='relative flex h-screen w-full flex-col items-center justify-start px-6 pt-12'>
+    <div className='relative flex h-full w-full flex-col items-center justify-start px-6 pt-8'>
       {/* 검색창 영역 */}
       <div className='flex h-[230px] w-full max-w-md flex-col items-center justify-center gap-2'>
         {/* 안내 텍스트 */}
@@ -68,7 +68,7 @@ export default function MainSearchSection() {
       </div>
 
       {/* 추천 검색어 영역 */}
-      <div className='-mt-5 flex w-full max-w-md flex-col items-center gap-1.5'>
+      <div className='-mt-5 mb-18 flex w-full max-w-md flex-col items-center gap-1.5'>
         <p className='text-body04 text-grey-30'>추천 검색어 예시</p>
 
         {/* 카테고리 버튼 Flex 레이아웃 */}
@@ -91,14 +91,14 @@ export default function MainSearchSection() {
       </div>
 
       {/* 좌우 화살표 + 말풍선 영역 */}
-      <div className='absolute inset-x-0 bottom-90'>
+      <div className='absolute inset-x-0 -bottom-10'>
         <div className='flex items-center justify-between'>
-          <div className='pl-2'>
+          <div className='slide-indicator-anim-left pl-2'>
             <img src='/main/leftArrow.png' alt='이전' className='h-auto w-8' />
           </div>
 
           {/* 오른쪽 화살표 + 말풍선 */}
-          <div className='relative flex items-center justify-center pr-2'>
+          <div className='slide-indicator-anim-right relative flex items-center justify-center pr-2'>
             <img src='/main/rightArrow.png' alt='다음' className='h-auto w-8' />
 
             {/* 말풍선은 화살표 기준으로 살짝 왼쪽으로 이동 */}
