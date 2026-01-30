@@ -9,6 +9,7 @@ import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
 import { IoIosArrowDown } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
+import { Link } from 'react-router-dom';
 
 const TABS = {
   schedule: '소속 일정',
@@ -16,7 +17,7 @@ const TABS = {
   'student-council-notice': '학생회 공지사항',
 };
 
-export default function DepartmentDetailPage() {
+export default function DepartmentMainPage() {
   // 단과대 필터
   const [selectedCollege] = useState('인공지능 소프트웨어융합대학');
 
@@ -41,7 +42,7 @@ export default function DepartmentDetailPage() {
   const [feeds] = useState(FEED_DATA);
 
   return (
-    <section className='flex flex-1 flex-col'>
+    <section>
       {/* 단과대 필터 */}
       <div className='flex gap-2 px-5 py-4'>
         <button
@@ -169,13 +170,17 @@ export default function DepartmentDetailPage() {
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
               {feeds.map((instagram) => (
-                <button key={instagram.id} className='bg-grey-02 aspect-[4/5] cursor-pointer'>
+                <Link
+                  key={instagram.id}
+                  to={`${instagram.id}`}
+                  className='bg-grey-02 aspect-[4/5] cursor-pointer'
+                >
                   <img
                     src={instagram.imageUrl}
                     alt='instagram'
                     className='h-full w-full object-cover'
                   />
-                </button>
+                </Link>
               ))}
             </div>
           </section>

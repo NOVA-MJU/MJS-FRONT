@@ -27,7 +27,8 @@ import AdminNoticeWrite from '@/pages/admin/notice/write';
 import AdminNoticeEdit from '@/pages/admin/notice/edit';
 import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
-import DepartmentDetailPage from '@/pages/main/department';
+import DepartmentMainPage from '@/pages/main/department';
+import DepartmentDetailPage from '@/pages/main/department-detail';
 
 const App = () => {
   return (
@@ -70,7 +71,8 @@ const App = () => {
         <Route path='*' element={<GlobalErrorPage />} />
 
         {/* 디버깅용 */}
-        <Route path='/main/department' element={<DepartmentDetailPage />} />
+        <Route path='/main/department' element={<DepartmentMainPage />} />
+        <Route path='/main/department/:uuid' element={<DepartmentDetailPage />} />
       </Route>
 
       <Route element={<Layout className='bg-grey-05' />}>
