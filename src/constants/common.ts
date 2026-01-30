@@ -2,11 +2,9 @@
  * 공통 상수 정의
  */
 
-// 이메일 도메인
 export const EMAIL_DOMAIN = '@mju.ac.kr';
 export const EMAIL_DOMAIN_FULL = 'mju.ac.kr';
 
-// 페이지네이션
 export const DEFAULT_PAGE_SIZE = 10;
 export const BOARD_PAGE_SIZE = 10;
 export const BROADCAST_PAGE_SIZE = 9;
@@ -18,20 +16,16 @@ export const NOTICE_API_DEFAULT_SIZE = 8;
 export const CALENDAR_API_DEFAULT_SIZE = 100;
 export const SEARCH_API_DEFAULT_SIZE = 10;
 
-// 시간 관련 (밀리초)
-export const MENU_STALE_TIME_MS = 5 * 60 * 1000; // 5분
-export const REALTIME_RANK_INTERVAL_MS = 10000; // 10초
-export const AD_CAROUSEL_INTERVAL_MS = 4000; // 4초
+export const MENU_STALE_TIME_MS = 5 * 60 * 1000;
+export const REALTIME_RANK_INTERVAL_MS = 10000;
+export const AD_CAROUSEL_INTERVAL_MS = 4000;
 
-// 아이콘 사이즈
 export const ICON_SIZE_SM = 12;
 export const ICON_SIZE_MD = 16;
 export const ICON_SIZE_LG = 20;
 export const ICON_SIZE_XL = 22;
 
-// 이미지 관련
 export const IMAGE_MAX_WIDTH_OR_HEIGHT = 1920;
 export const IMAGE_COMPRESSION_QUALITY = 0.9;
 
-// 기타
 export const REALTIME_RANK_DEFAULT_LIMIT = 10;

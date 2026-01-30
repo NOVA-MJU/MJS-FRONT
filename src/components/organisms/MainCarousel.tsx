@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
-// Swiper 스타일 import
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';

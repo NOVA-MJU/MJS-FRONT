@@ -13,7 +13,7 @@ import { Agentation } from 'agentation';
  * @see https://agentation.dev/
  */
 export const AgentationTool = () => {
-  // 프로덕션 환경에서는 렌더링하지 않음
+  // 배포 환경에서는 렌더링하지 않음
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }
