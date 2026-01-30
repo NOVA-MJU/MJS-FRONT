@@ -39,7 +39,6 @@ const App = () => {
 
   return (
     <>
-      {/* 기본 라우팅: backgroundLocation 이 있으면 그 위치를 기준으로 렌더 */}
       <Routes location={backgroundLocation || location}>
         <Route element={<Layout />}>
           <Route path='/' element={<Main />} />
@@ -89,7 +88,6 @@ const App = () => {
         </Route>
       </Routes>
 
-      {/* route-modal 방식의 검색 오버레이 */}
       {backgroundLocation && (
         <Routes>
           <Route path='/search' element={<SearchOverlay />} />

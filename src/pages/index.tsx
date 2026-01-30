@@ -14,32 +14,10 @@ import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-// 새로운 캐로셀 컴포넌트들
 import MainCarousel from '@/components/organisms/MainCarousel';
 import MainSearchSection from '@/components/molecules/MainSearchSection';
 import SectionSlide from '@/components/molecules/SectionSlide';
 
-/**
- * 메인 페이지
- *
- * **데스크톱**: 기존 2열 레이아웃 유지
- * - 좌측: 식단, 공지사항, 명대신문, 명대방송
- * - 우측: 프로필, 날씨, 광고, 실시간 랭킹 등
- *
- * **모바일**: 좌우 스와이프 캐로셀 방식 (V3 디자인)
- * - 슬라이드 1: 검색 메인 화면 (추천 카테고리)
- * - 슬라이드 2: 식단표
- * - 슬라이드 3: 공지사항
- * - 슬라이드 4: 학사일정
- * - 슬라이드 5: 게시판
- * - 슬라이드 6: 명대신문
- * - 슬라이드 7: 명대뉴스
- *
- * 사용자 인터랙션:
- * - 터치/마우스 드래그로 슬라이드 전환
- * - 좌우 화살표 버튼으로 이동
- * - 하단 인디케이터로 현재 위치 확인
- */
 export default function Main() {
   const { isDesktop } = useResponsive();
 
@@ -82,21 +60,17 @@ export default function Main() {
 
   /**
    * 모바일 레이아웃 (V3 디자인)
-   * 좌우 스와이프 캐로셀 방식
    */
   return (
     <div className='max-h-[calc(100vh-180px)] w-full'>
       <MainCarousel
         slides={[
-          // 슬라이드 1: 메인 검색 화면 : 최원빈 작업
           <MainSearchSection key='search' />,
 
-          // 슬라이드 2: 식단표
           <SectionSlide key='meal' title='오늘의 식단' backgroundColor='bg-blue-05'>
             <MealSection />
           </SectionSlide>,
 
-          // 슬라이드 3: 공지사항
           <SectionSlide key='notice' title='공지사항' backgroundColor='bg-white'>
             <div className='flex flex-col gap-4'>
               <NoticeSection />
@@ -109,7 +83,6 @@ export default function Main() {
             </div>
           </SectionSlide>,
 
-          // 슬라이드 4: 학사일정
           <SectionSlide key='schedule' title='학사일정' backgroundColor='bg-blue-05'>
             <div className='flex flex-col gap-4'>
               <AcademicScheduleWidget />
@@ -122,7 +95,6 @@ export default function Main() {
             </div>
           </SectionSlide>,
 
-          // 슬라이드 5: 게시판
           <SectionSlide key='board' title='게시판' backgroundColor='bg-white'>
             <div className='flex flex-col gap-4'>
               <BoardSection />
@@ -135,7 +107,6 @@ export default function Main() {
             </div>
           </SectionSlide>,
 
-          // 슬라이드 6: 명대신문
           <SectionSlide key='news' title='명대신문' backgroundColor='bg-blue-05'>
             <div className='flex flex-col gap-4'>
               <NewsSection />
@@ -148,7 +119,6 @@ export default function Main() {
             </div>
           </SectionSlide>,
 
-          // 슬라이드 7: 명대뉴스
           <SectionSlide key='broadcast' title='명대뉴스' backgroundColor='bg-white'>
             <div className='flex flex-col gap-4'>
               <BroadcastSection />

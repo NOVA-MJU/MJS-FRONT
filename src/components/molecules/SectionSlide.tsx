@@ -4,11 +4,8 @@ import type { ReactNode } from 'react';
  * 섹션 슬라이드 Props
  */
 interface SectionSlideProps {
-  /** 슬라이드 제목 */
   title: string;
-  /** 슬라이드에 표시될 컨텐츠 */
   children: ReactNode;
-  /** 배경색 (선택사항) */
   backgroundColor?: string;
 }
 
