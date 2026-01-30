@@ -61,6 +61,7 @@ export default function MainCarousel({ slides }: MainCarouselProps) {
         speed={400}
         grabCursor={true}
         keyboard={{ enabled: true }}
+        allowTouchMove={false}
         className='h-full w-full'
       >
         {slides.map((slide, index) => (
