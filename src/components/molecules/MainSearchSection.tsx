@@ -72,8 +72,6 @@ function RecommendedCategoriesSection({
 }) {
   return (
     <div className='-mt-5 mb-18 flex w-full max-w-md flex-col items-center gap-1.5'>
-      <p className='text-body04 text-grey-40'>추천 검색어 예시</p>
-
       <div className='flex w-full justify-center gap-3'>
         {categories.map((category) => (
           <button
