@@ -1,33 +1,34 @@
-import { Routes, Route } from 'react-router-dom';
-import Board from '@/pages/board';
-import BoardDetail from '@/pages/board/detail';
-import BoardWrite from '@/pages/board/write';
-import Notice from '@/pages/notice';
-import Broadcast from '@/pages/broadcast';
-import News from '@/pages/news';
-import Main from '@/pages';
 import Layout from '@/components/templates/Layout';
-import Menu from '@/pages/menu';
+import Main from '@/pages';
 import AcademicCalendar from '@/pages/academic-calendar';
-import Search from '@/pages/search';
-import MyPage from '@/pages/mypage';
-import MyPageEdit from '@/pages/mypage/edit';
-import Department from '@/pages/department';
-import DepartmentDetail from '@/pages/department/detail';
-import Login from '@/pages/login';
-import Register from '@/pages/register';
 import Admin from '@/pages/admin/calendar';
 import AdminNotice from '@/pages/admin/notice';
 import AdminNoticeDetail from '@/pages/admin/notice/detail';
-import BoardEdit from '@/pages/board/edit';
-import ViewPosts from '@/pages/mypage/viewPosts';
-import ViewComments from '@/pages/mypage/viewComments';
-import ViewLikes from '@/pages/mypage/viewLikes';
-import AdminNoticeWrite from '@/pages/admin/notice/write';
 import AdminNoticeEdit from '@/pages/admin/notice/edit';
+import AdminNoticeWrite from '@/pages/admin/notice/write';
+import Board from '@/pages/board';
+import BoardDetail from '@/pages/board/detail';
+import BoardEdit from '@/pages/board/edit';
+import BoardWrite from '@/pages/board/write';
+import Broadcast from '@/pages/broadcast';
+import Department from '@/pages/department';
+import DepartmentDetail from '@/pages/department/detail';
 import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
+import Login from '@/pages/login';
 import DepartmentDetailPage from '@/pages/main/department';
+import Menu from '@/pages/menu';
+import MyPage from '@/pages/mypage';
+import MyPageEdit from '@/pages/mypage/edit';
+import ViewComments from '@/pages/mypage/viewComments';
+import ViewLikes from '@/pages/mypage/viewLikes';
+import ViewPosts from '@/pages/mypage/viewPosts';
+import News from '@/pages/news';
+import Notice from '@/pages/notice';
+import Register from '@/pages/register';
+import Search from '@/pages/search';
+import { Route, Routes } from 'react-router-dom';
+import Slides from './pages/slides';
 
 const App = () => {
   return (
@@ -71,6 +72,8 @@ const App = () => {
 
         {/* 디버깅용 */}
         <Route path='/main/department' element={<DepartmentDetailPage />} />
+        {/* 임시 우측 슬라이드 라우팅 */}
+        <Route path='/slides' element={<Slides />} />
       </Route>
 
       <Route element={<Layout className='bg-grey-05' />}>
