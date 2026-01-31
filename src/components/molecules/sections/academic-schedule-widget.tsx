@@ -141,7 +141,12 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
   const dailyScheduleList = useMemo(() => {
     if (!scheduleData) return [];
     const targetDate = selectedDate || new Date();
-    const dateStr = targetDate.toISOString().split('T')[0];
+
+    // 로컬 날짜 문자열 생성 (YYYY-MM-DD)
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    const day = String(targetDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
 
     // 전체 일정을 카테고리 정보와 함께 합침
     const allEventsWithCategory: (CalendarScheduleItem & { categoryLabel: string })[] = [];
@@ -207,6 +212,7 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
                 onNextMonth={handleNextMonth}
                 calendarDays={calendarDays}
                 todayDay={todayDay}
+                scheduleData={scheduleData}
               />
             </div>
 

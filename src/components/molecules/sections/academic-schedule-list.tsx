@@ -120,11 +120,15 @@ export function ScheduleList({
 }
 
 const formatDateRange = (startDate: string, endDate: string) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const f = (d: Date) =>
-    `${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`;
-  return startDate === endDate ? f(start) : `${f(start)} - ${f(end)}`;
+  // YYYY-MM-DD 형식의 문자열을 MM.DD 형식으로 변환
+  const formatDate = (dateStr: string) => {
+    const [, month, day] = dateStr.split('-');
+    return `${month}.${day}`;
+  };
+
+  return startDate === endDate
+    ? formatDate(startDate)
+    : `${formatDate(startDate)} - ${formatDate(endDate)}`;
 };
 
 function removeBracketedContent(str: string): string {
