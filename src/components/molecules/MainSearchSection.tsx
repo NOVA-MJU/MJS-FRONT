@@ -16,7 +16,7 @@ export default function MainSearchSection() {
     { id: 1, label: '학식', imageUrl: '/main/main_MJMeal.png', path: '/meal' },
     { id: 2, label: '명지도', imageUrl: '/main/main_MJMap.png', path: '/map' },
     { id: 3, label: '학사일정', imageUrl: '/main/main_MJCalender.png', path: '/academic-calendar' },
-    { id: 4, label: '멘토링', imageUrl: null, path: '/mentoring' },
+    { id: 4, label: '멘토관', imageUrl: null, path: '/mentoring' },
   ];
 
   const handleCategoryClick = (path: string) => {
