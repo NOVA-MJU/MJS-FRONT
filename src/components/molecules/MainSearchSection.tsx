@@ -42,7 +42,7 @@ export default function MainSearchSection() {
         <button
           type='button'
           onClick={handleSearchBarClick}
-          className='text-body03 text-grey-30 ring-blue-05/60 flex w-full items-center gap-3 rounded-full bg-white/95 px-6 py-3 text-left shadow-sm ring-1'
+          className='text-body03 text-grey-30 border-blue-35 flex w-full items-center gap-3 rounded-full border-2 bg-white px-6 py-3 text-left shadow-sm'
         >
           <FaSearch className='text-blue-35' />
           <span className='flex-1 truncate'>검색어를 입력해 주세요.</span>
@@ -50,8 +50,6 @@ export default function MainSearchSection() {
       </div>
 
       <div className='-mt-5 mb-18 flex w-full max-w-md flex-col items-center gap-1.5'>
-        <p className='text-body04 text-grey-30'>추천 검색어 예시</p>
-
         <div className='flex w-full justify-center gap-3'>
           {recommendedCategories.map((category) => (
             <button
@@ -59,7 +57,7 @@ export default function MainSearchSection() {
               onClick={() => handleCategoryClick(category.path)}
               className='flex flex-col items-center gap-1 rounded-2xl bg-white p-3 shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95'
             >
-              <div className='bg-blue-05 flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl'>
+              <div className='flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl'>
                 {category.imageUrl ? (
                   <img
                     src={category.imageUrl}
@@ -73,25 +71,6 @@ export default function MainSearchSection() {
               <span className='text-caption01 text-grey-40'>{category.label}</span>
             </button>
           ))}
-        </div>
-      </div>
-
-      <div className='absolute inset-x-0 -bottom-10'>
-        <div className='flex items-center justify-between'>
-          <div className='slide-indicator-anim-left pl-2'>
-            <img src='/main/leftArrow.png' alt='이전' className='h-auto w-8' />
-          </div>
-
-          <div className='slide-indicator-anim-right relative flex items-center justify-center pr-2'>
-            <img src='/main/rightArrow.png' alt='다음' className='h-auto w-8' />
-
-            <div className='absolute -top-10 translate-x-[-40%]'>
-              <div className='bg-blue-35 text-caption01 rounded-full px-4 py-2 whitespace-nowrap text-white shadow-md'>
-                옆으로 슬라이드
-              </div>
-              <div className='bg-blue-35 absolute right-4 -bottom-1 h-3 w-3 rotate-45' />
-            </div>
-          </div>
         </div>
       </div>
     </div>
