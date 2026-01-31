@@ -1,23 +1,26 @@
 import { fetchNotionInfo } from '@/api/main/notice-api';
-import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import { Tabs } from '@/components/atoms/Tabs';
-import { ICON_SIZE_LG } from '@/constants/common';
-import { useResponsive } from '@/hooks/useResponse';
+import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToElapsedTime } from '@/utils';
 import { handleError } from '@/utils/error';
-import React from 'react';
 import { useEffect, useState } from 'react';
-import { IoIosArrowForward } from 'react-icons/io';
-import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
   all: '전체',
-  general: '일반공지',
-  academic: '학사공지',
-  scholarship: '장학공지',
-  career: '진로공지',
+  general: '일반',
+  academic: '학사',
+  scholarship: '장학',
+  career: '진로',
+  activity: '학생활동',
+  rule: '학칙개정',
+};
+
+const categoryNameMap: Record<string, string> = {
+  general: '일반',
+  academic: '학사',
+  scholarship: '장학',
+  career: '진로',
   activity: '학생활동',
   rule: '학칙개정',
 };
@@ -33,7 +36,6 @@ export default function NoticeSection() {
   const [allDataCache, setAllDataCache] = useState<Record<string, NoticeItem[]>>({});
   const recentYear = new Date().getFullYear();
   const [isLoading, setIsLoading] = useState(true);
-  const { isDesktop } = useResponsive();
 
   /**
    * 공지사항 데이터 조회
@@ -74,74 +76,42 @@ export default function NoticeSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab, recentYear]);
 
-  if (isDesktop)
-    return (
-      <section className='flex flex-col gap-3'>
-        <div className='flex items-center justify-between px-3'>
-          <h2 className='text-heading02 text-mju-primary'>공지사항</h2>
-          <Link to='/notice'>
-            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
-          </Link>
-        </div>
-        <div className='px-3'>
-          <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
-        </div>
-        <div className='border-grey-05 flex flex-col gap-3 rounded-xl border-2 p-3'>
-          {isLoading &&
-            [...Array(CONTENT_LENGTH)].map((_, index) => (
-              <React.Fragment key={index}>
-                <Skeleton className='h-12' />
-                {index < CONTENT_LENGTH - 1 && <Divider variant='thin' />}
-              </React.Fragment>
-            ))}
-          {!isLoading &&
-            selectedInfo.map((info, i) => (
-              <React.Fragment key={info.link}>
-                <a
-                  href={info.link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='hover:bg-blue-05 flex cursor-pointer flex-col justify-between gap-2 rounded-xl p-3 transition md:flex-row'
-                >
-                  <p className='text-body02 line-clamp-2'>{info.title}</p>
-                  <span className='text-caption01 text-grey-40'>
-                    {formatToElapsedTime(info.date)}
-                  </span>
-                </a>
-                {i < CONTENT_LENGTH - 1 && <Divider variant='thin' />}
-              </React.Fragment>
-            ))}
-        </div>
-      </section>
-    );
+  /**
+   * 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
+   */
+  const NoticeCard = ({ info }: { info: NoticeItem }) => (
+    <a
+      href={info.link}
+      target='_blank'
+      rel='noopener noreferrer'
+      className='hover:bg-blue-05 active:bg-blue-10 flex flex-col gap-[3px] border-b border-[#f0f2f5] px-5 py-[10px] transition-colors last:border-0'
+    >
+      <span className='text-[12px] font-semibold text-[#5dabff]'>
+        {categoryNameMap[info.category] || info.category}
+      </span>
+      <p className='line-clamp-2 text-[14px] leading-[1.5] text-[#17171b]'>{info.title}</p>
+      <span className='text-[11px] text-[#aeb2b6]'>{formatToElapsedTime(info.date)}</span>
+    </a>
+  );
 
-  if (!isDesktop)
-    return (
-      <section>
-        <div className='flex flex-col gap-3'>
-          <Tabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+  return (
+    <section className='flex flex-col gap-4'>
+      <div className='px-3'>
+        <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+      </div>
 
-          {/* 학사공지 아이템 목록 */}
-          <div className='flex flex-col gap-1'>
-            {isLoading &&
-              [...Array(CONTENT_LENGTH)].map((_, index) => (
-                <Skeleton key={index} className='my-1 h-7' />
-              ))}
-            {!isLoading &&
-              selectedInfo.map((info, index) => (
-                <a
-                  key={index}
-                  href={info.link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='flex items-center justify-between gap-1.5 py-2'
-                >
-                  <span className='line-clamp-1 flex-1 text-[15px] text-black'>{info.title}</span>
-                  <span className='text-body05 text-grey-40'>{formatToElapsedTime(info.date)}</span>
-                </a>
-              ))}
-          </div>
-        </div>
-      </section>
-    );
+      <div className='flex flex-col'>
+        {isLoading &&
+          [...Array(CONTENT_LENGTH)].map((_, index) => (
+            <div key={index} className='border-b border-[#f0f2f5] px-5 py-[10px] last:border-0'>
+              <Skeleton className='mb-1 h-3 w-10' />
+              <Skeleton className='mb-1 h-5 w-full' />
+              <Skeleton className='h-3 w-16' />
+            </div>
+          ))}
+        {!isLoading &&
+          selectedInfo.map((info, i) => <NoticeCard key={`${info.link}-${i}`} info={info} />)}
+      </div>
+    </section>
+  );
 }

@@ -200,7 +200,7 @@ const Slides = () => {
   const ActiveContent = TAB_CONTENT[activeTab];
 
   return (
-    <div className='bg-grey-02 flex min-h-screen flex-col'>
+    <div className='flex min-h-screen flex-col bg-white'>
       {/* 상단 통합 탭 바 */}
       <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
