@@ -3,19 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '@/components/atoms/SearchBar';
 
-/**
- * 검색 오버레이 (route-modal)
- *
- * - 메인 등 기존 페이지 위에 덮어 쓰는 검색 전용 UI
- * - /search 경로로 진입했을 때 backgroundLocation 이 있는 경우에만 사용
- */
 export default function SearchOverlay() {
   const navigate = useNavigate();
 
   return (
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30'>
       <div className='flex h-full w-full max-w-[480px] flex-col bg-white'>
-        {/* 상단 검색바 영역 */}
         <header className='flex items-center gap-2 px-4 pt-5 pb-3'>
           <button
             type='button'
@@ -32,7 +25,6 @@ export default function SearchOverlay() {
         </header>
 
         <main className='flex-1 overflow-y-auto px-4 pb-6'>
-          {/* 최근 검색어 */}
           <section className='mt-4'>
             <div className='mb-2 flex items-center justify-between'>
               <h2 className='text-body03 font-semibold text-black'>최근 검색어</h2>
@@ -53,7 +45,6 @@ export default function SearchOverlay() {
             </div>
           </section>
 
-          {/* 추천 검색어 */}
           <section className='mt-6'>
             <h2 className='text-body03 mb-3 font-semibold text-black'>추천 검색어</h2>
             <div className='flex flex-wrap gap-2'>
@@ -69,7 +60,6 @@ export default function SearchOverlay() {
             </div>
           </section>
 
-          {/* 인기 검색어 */}
           <section className='mt-6'>
             <h2 className='text-body03 mb-3 font-semibold text-black'>인기 검색어</h2>
             <div className='text-caption01 grid grid-cols-2 gap-y-2'>

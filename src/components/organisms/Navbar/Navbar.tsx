@@ -23,7 +23,6 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
-  /** 로그인/로그아웃 */
   const handleAuthClick = async () => {
     if (!isLoggedIn) {
       navigate('/login');
@@ -45,7 +44,6 @@ export default function Navbar() {
     }
   };
 
-  /** 로그인 필요한 메뉴 클릭 시 */
   const handleProtectedNav = (item: NavItem, e: React.MouseEvent<HTMLAnchorElement>) => {
     trackNavClick(item.key);
 
@@ -64,11 +62,9 @@ export default function Navbar() {
     return () => root.classList.remove('overflow-hidden');
   }, [isOpen]);
 
-  /** 공통 메뉴 렌더 */
   const renderMenuItem = (item: NavItem, isMobile = false) => {
     const clickAction = () => trackNavClick(item.key);
 
-    // 외부 링크 로직
     if (item.href) {
       return (
         <a
@@ -86,7 +82,6 @@ export default function Navbar() {
       );
     }
 
-    // 로그인 필요 여부 체크
     return (
       <Link
         key={item.key}
@@ -108,7 +103,6 @@ export default function Navbar() {
     );
   };
 
-  /** 데스크톱 */
   if (isDesktop)
     return (
       <nav className='bg-mju-primary w-full'>
@@ -146,7 +140,6 @@ export default function Navbar() {
       </nav>
     );
 
-  /** 모바일 */
   return (
     <nav className='bg-mju-primary h-fit w-full'>
       <div className='flex flex-col px-5 py-2'>

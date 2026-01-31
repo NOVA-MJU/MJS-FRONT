@@ -23,14 +23,9 @@ export default function Main() {
 
   const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';
 
-  /**
-   * 데스크톱 레이아웃
-   * 기존 2열 구조 유지
-   */
   if (isDesktop) {
     return (
       <div className='flex w-full flex-1 gap-6 px-7 py-12'>
-        {/* 좌측 메인 컨텐츠 영역 */}
         <div className='flex min-w-0 flex-2/3 flex-col gap-12'>
           <div className='flex flex-col gap-3'>
             <SearchBar />
@@ -45,7 +40,6 @@ export default function Main() {
           <BroadcastSection />
         </div>
 
-        {/* 우측 사이드바 영역 */}
         <div className='flex min-w-0 flex-1/3 flex-col gap-12'>
           <ProfileSection />
           <WeatherComponent />
@@ -58,9 +52,6 @@ export default function Main() {
     );
   }
 
-  /**
-   * 모바일 레이아웃 (V3 디자인)
-   */
   return (
     <div className='max-h-[calc(100vh-180px)] w-full'>
       <MainCarousel

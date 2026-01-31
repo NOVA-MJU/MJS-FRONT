@@ -77,7 +77,6 @@ const App = () => {
 
           <Route path='*' element={<GlobalErrorPage />} />
 
-          {/* 디버깅용 */}
           <Route path='/main/department' element={<DepartmentDetailPage />} />
         </Route>
 
