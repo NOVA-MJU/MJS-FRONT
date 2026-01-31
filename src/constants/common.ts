@@ -1,7 +1,3 @@
-/**
- * 공통 상수 정의
- */
-
 export const EMAIL_DOMAIN = '@mju.ac.kr';
 export const EMAIL_DOMAIN_FULL = 'mju.ac.kr';
 
