@@ -163,9 +163,9 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
     </TabWrapper>
   ),
   학사일정: () => (
-    <TabWrapper>
+    <div>
       <AcademicScheduleWidget />
-    </TabWrapper>
+    </div>
   ),
   학식: () => (
     <TabWrapper>
