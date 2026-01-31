@@ -6,13 +6,6 @@ import WeeklyMenuView from '@/components/atoms/Meal/Web/WeeklyMenuView';
 import { Typography } from '@/components/atoms/Typography';
 import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 
-/**
- * 학식 메뉴 페이지
- *
- * 일일 및 주간 학식 메뉴를 표시하는 페이지입니다.
- * 모바일에서는 DailyMenuView, 데스크톱에서는 WeeklyMenuView를 표시합니다.
- * (컴포넌트 내부에서 반응형 처리)
- */
 export default function MenuPage() {
   const { isLoading, error, groupedByDate, keys, todayKey, getByDate } = useMenuData();
 
@@ -60,20 +53,20 @@ export default function MenuPage() {
   if (error) return <div className='p-4 text-red-500'>식단 로딩 실패</div>;
 
   return (
-    <div className='w-full md:w-[1280px] flex-1 flex flex-col p-4 md:p-12 gap-2 mx-auto'>
+    <div className='mx-auto flex w-full flex-1 flex-col gap-2 p-4 md:w-[1280px] md:p-12'>
       <Link to='/menu'>
-        <Typography variant='heading02' className='md:hidden block  text-mju-primary'>
+        <Typography variant='heading02' className='text-mju-primary block md:hidden'>
           학식
         </Typography>
-        <Typography variant='heading01' className='hidden md:block text-mju-primary'>
+        <Typography variant='heading01' className='text-mju-primary hidden md:block'>
           학식
         </Typography>
       </Link>
-      <hr className='w-[381px] border-t-2 border-blue-10 rounded-xl md:hidden' />
-      <div className='flex flex-row justify-center mt-4 '>
+      <hr className='border-blue-10 w-[381px] rounded-xl border-t-2 md:hidden' />
+      <div className='mt-4 flex flex-row justify-center'>
         <Typography
           variant='heading02'
-          className='text-mju-primary text-center hidden md:flex flex-row justify-center '
+          className='text-mju-primary hidden flex-row justify-center text-center md:flex'
         >
           {new Date().toLocaleDateString('ko-KR', {
             month: 'long',

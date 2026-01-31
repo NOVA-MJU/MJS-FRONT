@@ -10,13 +10,7 @@ import LabelButton from '../../components/atoms/Button/LabelButton';
 import { handleError } from '../../utils/error';
 import toast from 'react-hot-toast';
 
-/**
- * 마이페이지
- *
- * 사용자 프로필, 활동 통계, 서비스 정보를 표시하는 페이지입니다.
- * 회원 탈퇴 기능을 제공합니다.
- */
-const Mypage = () => {
+const Mypage: React.FC = () => {
   const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [password, setPassword] = useState('');
@@ -61,12 +55,12 @@ const Mypage = () => {
   }, []);
 
   return (
-    <div className='w-full flex-1 bg-grey-05 flex flex-col p-6 md:p-12 gap-8'>
+    <div className='bg-grey-05 flex w-full flex-1 flex-col gap-8 p-6 md:p-12'>
       <Typography variant='heading01' className='text-mju-primary'>
         마이페이지
       </Typography>
       <div className='flex justify-center'>
-        <div className='w-full max-w-192 flex flex-col gap-8'>
+        <div className='flex w-full max-w-192 flex-col gap-8'>
           <div className='flex flex-col gap-2'>
             <Typography variant='title02' className='text-mju-primary'>
               프로필
@@ -82,7 +76,7 @@ const Mypage = () => {
             <Typography variant='title02' className='text-mju-primary'>
               정보
             </Typography>
-            <div className='min-h-32 flex flex-col justify-center bg-white rounded-lg p-8 gap-8 '>
+            <div className='flex min-h-32 flex-col justify-center gap-8 rounded-lg bg-white p-8'>
               <LabelButton label='커뮤니티 이용 규칙' />
               <hr className='text-grey-10 border-1' />
               <LabelButton label='서비스 이용 약관' />
@@ -101,7 +95,6 @@ const Mypage = () => {
           </Button>
         </div>
       </div>
-      {/*  비밀번호 입력 모달 */}
       <InputModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
