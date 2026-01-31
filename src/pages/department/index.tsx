@@ -7,12 +7,6 @@ import { COLLEGE_OPTIONS } from '../../constants/colleges';
 import { getDepartments, type DepartmentRes } from '../../api/departments';
 import GlobalErrorPage from '../error';
 
-/**
- * 학과별 서비스 페이지
- *
- * 단과대별로 학과 목록을 조회하고 표시하는 페이지입니다.
- * 단과대 필터를 통해 학과를 필터링할 수 있습니다.
- */
 export default function Department() {
   const [departments, setDepartments] = useState<DepartmentRes[]>([]);
   const [selectedCollege, setSelectedCollege] = useState<string>('');
@@ -33,13 +27,13 @@ export default function Department() {
   if (isError) return <GlobalErrorPage />;
 
   return (
-    <div className='flex-1 p-4 md:p-8 flex flex-col gap-6'>
+    <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
       <Typography variant='heading01' className='text-mju-primary'>
         학과별 서비스
       </Typography>
       <Divider />
-      <div className='w-full overflow-x-auto no-scrollbar'>
-        <div className='w-max flex gap-2 md:gap-4'>
+      <div className='no-scrollbar w-full overflow-x-auto'>
+        <div className='flex w-max gap-2 md:gap-4'>
           <Chip selected={selectedCollege === ''} onClick={() => setSelectedCollege('')}>
             전체
           </Chip>
@@ -54,7 +48,7 @@ export default function Department() {
           ))}
         </div>
       </div>
-      <div className='flex flex-col md:grid md:grid-cols-4 gap-6'>
+      <div className='flex flex-col gap-6 md:grid md:grid-cols-4'>
         {departments.map(
           ({ departmentUuid, college, departmentName, studentCouncilName, slogan }) => (
             <DepartmentButton
