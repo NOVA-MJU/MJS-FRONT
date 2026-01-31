@@ -1,9 +1,9 @@
 import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import { formatToLocalDate } from '@/utils';
-import { useEffect, useState } from 'react';
 import { BROADCAST_PAGE_SIZE } from '@/constants/common';
+import { formatToLocalDate } from '@/utils';
 import { handleError } from '@/utils/error';
+import { useEffect, useState } from 'react';
 
 export default function BroadcastSection() {
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
@@ -31,24 +31,27 @@ export default function BroadcastSection() {
   }, []);
 
   return (
-    <section>
-      <div className='flex gap-4 overflow-x-auto'>
+    <section className='px-3'>
+      <div className='flex flex-col gap-4'>
         {isLoading &&
           [...Array(5)].map((_, index) => (
-            <Skeleton key={index} className='w-95 h-80 bg-white flex-shrink-0' />
+            <Skeleton key={index} className='h-80 w-full bg-white' />
           ))}
         {!isLoading &&
           broadcasts.map((item, index) => (
-            <div key={index} className='w-60 flex flex-col gap-1 flex-shrink-0'>
+            <div
+              key={index}
+              className='border-grey-10 flex flex-col gap-3 rounded-lg border bg-white p-4'
+            >
               <iframe
-                className='h-40 rounded-lg'
+                className='h-52 w-full rounded-lg'
                 src={`https://www.youtube.com/embed/${extractYoutubeId(item.url)}`}
                 title={item.title}
                 allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
                 allowFullScreen
               />
-              <div className='px-4 py-2 flex flex-col rounded-lg border-1 border-grey-10 bg-white'>
-                <span className='text-body04 text-black line-clamp-1'>{item.title}</span>
+              <div className='flex flex-col gap-1'>
+                <span className='text-body04 line-clamp-2 text-black'>{item.title}</span>
                 {item.playlistTitle && (
                   <span className='text-caption01 text-grey-40 line-clamp-1'>
                     {item.playlistTitle}

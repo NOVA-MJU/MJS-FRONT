@@ -1,13 +1,13 @@
-import { type BoardItem, getBoards, type Category } from '@/api/board';
+import { getBoards, type BoardItem, type Category } from '@/api/board';
+import { SkeletonProfile } from '@/components/atoms/Skeleton';
 import { Tabs } from '@/components/atoms/Tabs';
+import { ICON_SIZE_SM } from '@/constants/common';
+import { formatToElapsedTime } from '@/utils';
+import { handleError } from '@/utils/error';
 import { useEffect, useState } from 'react';
+import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { IoIosHeartEmpty } from 'react-icons/io';
 import { Link } from 'react-router-dom';
-import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
-import { formatToElapsedTime } from '@/utils';
-import { SkeletonProfile } from '@/components/atoms/Skeleton';
-import { ICON_SIZE_SM } from '@/constants/common';
-import { handleError } from '@/utils/error';
 
 /**
  * 카테고리 및 페이지 길이 조절
@@ -46,7 +46,7 @@ export default function BoardSection() {
 
   return (
     <section>
-      <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 px-3'>
         {/* 탭 선택기 */}
         <Tabs tabs={CATEGORIES} currentTab={category} setCurrentTab={setCategory} />
 
@@ -61,21 +61,18 @@ export default function BoardSection() {
               return (
                 <Link
                   to={`/board/${content.uuid}`}
-                  className={`
-                  w-full h-fit
-                  ${!isLast && 'border-b border-grey-05'}
-                `}
+                  className={`h-fit w-full ${!isLast && 'border-grey-05 border-b'} `}
                 >
-                  <div className='flex flex-col gap-2 mb-2'>
+                  <div className='mb-2 flex flex-col gap-2'>
                     {/* 제목표시영역 */}
-                    <div className='px-1 flex flex-col gap-1'>
-                      <span className='text-body04 text-black line-clamp-1'>{content.title}</span>
-                      <span className='text-body05 text-black line-clamp-2'>
+                    <div className='flex flex-col gap-1 px-1'>
+                      <span className='text-body04 line-clamp-1 text-black'>{content.title}</span>
+                      <span className='text-body05 line-clamp-2 text-black'>
                         {content.previewContent}
                       </span>
                     </div>
                     {/* 날짜표시영역 */}
-                    <div className='px-1 flex items-center justify-between'>
+                    <div className='flex items-center justify-between px-1'>
                       <div className='flex items-center gap-1'>
                         <IoIosHeartEmpty size={ICON_SIZE_SM} className='text-blue-10' />
                         <span className='text-caption04 text-grey-40'>{content.likeCount}</span>
