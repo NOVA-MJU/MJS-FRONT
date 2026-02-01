@@ -1,15 +1,13 @@
 import { clsx, type ClassValue } from 'clsx';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
-import { Card, CardHeader } from '@/components/atoms/Card';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
 import BroadcastSection from '@/components/molecules/sections/broadcast';
 import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
-import NoticeSection from '@/components/molecules/sections/notice';
+import { NoticeSlideSection } from '@/components/molecules/sections/notice';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -75,66 +73,16 @@ const TabBar = ({
  * 'ALL' 탭 컨텐츠 컴포넌트
  */
 const AllTab = () => (
-  <div className='bg-grey-02 flex flex-col gap-2 p-2'>
+  <div className='bg-grey-02 flex flex-col gap-2'>
     {/* 식단 섹션 */}
-    <Card>
+    <div className='flex flex-col gap-4 bg-white p-4'>
       <MealSection />
-    </Card>
+    </div>
 
     {/* 공지사항 섹션 */}
-    <Card>
-      <CardHeader>
-        <h2 className='text-title01 text-blue-35'>공지사항</h2>
-        <Link to='/notice' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </CardHeader>
-      <NoticeSection />
-    </Card>
-
-    {/* 학사일정 섹션 */}
-    <Card>
-      <CardHeader>
-        <h3 className='text-title01 text-blue-35'>학사일정</h3>
-        <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </CardHeader>
-      <AcademicScheduleWidget />
-    </Card>
-
-    {/* 게시판 섹션 */}
-    <Card>
-      <CardHeader>
-        <h3 className='text-title01 text-blue-35'>게시판</h3>
-        <Link to='/board' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </CardHeader>
-      <BoardSection />
-    </Card>
-
-    {/* 명대신문 섹션 */}
-    <Card>
-      <CardHeader>
-        <h3 className='text-title01 text-blue-35'>명대신문</h3>
-        <Link to='/news' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </CardHeader>
-      <NewsSection />
-    </Card>
-
-    {/* 명대뉴스 섹션 */}
-    <Card>
-      <CardHeader>
-        <h3 className='text-title01 text-blue-35'>명대뉴스</h3>
-        <Link to='/broadcast' className='text-caption01 text-grey-20'>
-          더보기
-        </Link>
-      </CardHeader>
-      <BroadcastSection />
-    </Card>
+    <div className='flex flex-col gap-4 bg-white p-4'>
+      <NoticeSlideSection />
+    </div>
   </div>
 );
 
@@ -154,7 +102,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
   명지도: () => <CampusMap />,
   공지사항: () => (
     <TabWrapper>
-      <NoticeSection />
+      <NoticeSlideSection />
     </TabWrapper>
   ),
   학사일정: () => (
