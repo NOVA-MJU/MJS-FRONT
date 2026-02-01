@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 import { Card, CardHeader } from '@/components/atoms/Card';
@@ -191,8 +191,24 @@ const Slides = () => {
   // 현재 활성화된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
 
-  // 현재 선택된 탭에 대응하는 컴포넌트 선택
+  // 현재 선택된 탭에 대응하는 컴포넌트 매핑 데이터
   const ActiveContent = TAB_CONTENT[activeTab];
+
+  // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
+  useEffect(() => {
+    const footer = document.querySelector('footer');
+    if (activeTab === '명지도') {
+      if (footer) footer.style.display = 'none';
+      document.body.style.overflow = 'hidden';
+    } else {
+      if (footer) footer.style.display = 'block';
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      if (footer) footer.style.display = 'block';
+      document.body.style.overflow = 'auto';
+    };
+  }, [activeTab]);
 
   return (
     <div

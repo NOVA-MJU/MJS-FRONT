@@ -12,6 +12,7 @@ type BuildingInfo = {
   building: string;
   floors: string;
   rooms: string;
+  floorsInfo?: { floor: string; description: string }[];
 };
 
 /**
@@ -22,8 +23,15 @@ const CampusMap = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // 지도 초기화 완료 상태 관리
   const [isMapReady, setIsMapReady] = useState(false);
+  // 하단 시트 확장 상태 관리
+  const [isExpanded, setIsExpanded] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // 하단 시트 토글 함수
+  const toggleSheet = useCallback(() => {
+    setIsExpanded((prev) => !prev);
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pinchZoomRef = useRef<any>(null);
@@ -69,12 +77,19 @@ const CampusMap = () => {
     building: '건물',
     floors: '1~10',
     rooms: '01~',
+    floorsInfo: [
+      { floor: '1F', description: '장소 정보 내용' },
+      { floor: '2F', description: '장소 정보 내용' },
+      { floor: '3F', description: '장소 정보 내용' },
+      { floor: '4F', description: '장소 정보 내용' },
+      { floor: '10F', description: '대강당 채플관 위치...' },
+    ],
   };
 
   return (
-    <div className='flex h-full flex-col overflow-hidden bg-white'>
-      {/* 지도 이미지 영역  */}
-      <div className='relative flex-1 overflow-hidden'>
+    <div className='relative h-full overflow-hidden bg-white'>
+      {/* 지도 이미지 영역 (줌/팬 지원) - 부모 컨테이너를 가득 채우도록 수정 */}
+      <div className='absolute inset-0 overflow-hidden'>
         <QuickPinchZoom
           ref={pinchZoomRef}
           onUpdate={onUpdate}
@@ -105,28 +120,38 @@ const CampusMap = () => {
         {/* 지도 목록 버튼 */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className='absolute top-4 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-105'
+          className='fixed right-4 bottom-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-105'
           aria-label='건물 목록 열기'
         >
           <img src='/img/mapIcon.png' alt='지도 아이콘' className='h-8 w-8' />
         </button>
       </div>
 
-      {/* 하단 건물 정보 카드 */}
-      <div className='z-50 rounded-t-[20px] bg-white px-5 pt-4 pb-10 shadow-[0_-4px_8px_rgba(23,23,27,0.14)]'>
-        {/* 상단 핸들 */}
-        <div className='bg-grey-10 mx-auto mb-4 h-1 w-10 rounded-full' />
+      {/* 하단 건물 정보 카드  */}
+      <div
+        className={`fixed right-0 bottom-0 left-0 z-[100] flex flex-col rounded-t-[20px] bg-white p-5 shadow-[0_-4px_8px_rgba(23,23,27,0.14)] transition-all duration-300 ease-in-out ${
+          isExpanded ? 'max-h-[60dvh]' : 'max-h-[220px]'
+        }`}
+      >
+        {/* 상단 핸들 및 헤더 클릭 시 토글 */}
+        <div className='mb-4 cursor-pointer pt-2' onClick={toggleSheet}>
+          <div className='bg-grey-10 mx-auto mb-4 h-1 w-10 rounded-full' />
 
-        {/* 메인 정보 */}
-        <div className='mb-4 flex items-center gap-[14px]'>
-          <div className='bg-blue-15 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[6px]'>
-            <img src='/img/school-icon.png' alt='학교 아이콘' className='h-7 w-7 object-contain' />
-          </div>
-          <div className='flex flex-col gap-0.5'>
-            <span className='text-body05 text-grey-40 leading-tight'>{buildingInfo.campus}</span>
-            <h1 className='text-title02 leading-tight font-semibold text-black'>
-              {buildingInfo.name}
-            </h1>
+          {/* 메인 정보 */}
+          <div className='flex items-center gap-[14px]'>
+            <div className='border-blue-20 bg-blue-15 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border'>
+              <img
+                src='/img/school-icon.png'
+                alt='학교 아이콘'
+                className='h-7 w-7 object-contain'
+              />
+            </div>
+            <div className='flex flex-col gap-0.5'>
+              <span className='text-body05 text-grey-40 leading-tight'>{buildingInfo.campus}</span>
+              <h1 className='text-title02 leading-tight font-semibold text-black'>
+                {buildingInfo.name}
+              </h1>
+            </div>
           </div>
         </div>
 
@@ -134,18 +159,37 @@ const CampusMap = () => {
         <div className='bg-grey-02 mb-4 h-px w-full' />
 
         {/* 상세 정보 테이블 */}
-        <div className='flex gap-2.5'>
+        <div className='no-scrollbar flex justify-start gap-2.5 overflow-x-auto'>
           {[
             { value: 'S', label: '캠퍼스' },
             { value: buildingInfo.floors, label: '건물' },
             { value: '3', label: '층' },
             { value: buildingInfo.rooms, label: '강의실' },
           ].map((item, index) => (
-            <div key={index} className='flex flex-1 flex-col items-center gap-2'>
-              <div className='bg-blue-05 flex h-[50px] w-full items-center justify-center rounded-[4px]'>
-                <span className='text-title02 font-semibold text-black'>{item.value}</span>
+            <div key={index} className='flex flex-col items-center gap-2'>
+              <div className='bg-blue-05 flex h-8 items-center justify-center px-2'>
+                <span className='text-title03 font-bold text-black'>{item.value}</span>
               </div>
-              <span className='text-body05 text-grey-40 text-center'>{item.label}</span>
+              <span className='text-body06 text-grey-30 text-center'>{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* 층별 상세 정보 리스트 */}
+        <div
+          className={`no-scrollbar flex flex-col gap-5 overflow-y-auto transition-all duration-300 ${
+            isExpanded ? 'opacity-100' : 'pointer-events-none h-0 opacity-0'
+          }`}
+        >
+          {buildingInfo.floorsInfo?.map((info, idx) => (
+            <div key={idx} className='flex items-center gap-4'>
+              <div className='relative flex h-8 w-10 items-center justify-start'>
+                <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
+                  {info.floor}
+                </span>
+                <div className='bg-blue-15 absolute -bottom-1 left-4 h-[12px] w-[2px] rotate-45' />
+              </div>
+              <span className='text-body03 text-black'>{info.description}</span>
             </div>
           ))}
         </div>
