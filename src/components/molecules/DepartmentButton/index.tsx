@@ -12,28 +12,24 @@ interface DepartmentButtonProps {
   slogan?: string;
 }
 
-/**
- * 학생회 이름을 넣을 공간이 없는데요
- */
 export default function DepartmentButton({
   uuid,
   college,
   departmentName,
-  //   studentCouncilName,
   slogan,
 }: DepartmentButtonProps) {
   return (
     <Link
       to={uuid}
-      className='w-full h-fit px-5 py-4 flex flex-col gap-2 border-2 border-grey-05 rounded-[10px] hover:bg-grey-05 cursor-pointer'
+      className='border-grey-05 hover:bg-grey-05 flex h-fit w-full cursor-pointer flex-col gap-2 rounded-[10px] border-2 px-5 py-4'
     >
-      <div className='w-fit px-2 py-0.5 bg-blue-05 rounded-sm'>
+      <div className='bg-blue-05 w-fit rounded-sm px-2 py-0.5'>
         <Typography variant='caption02' className='text-blue-20'>
           {collegeMap.get(college) ?? college}
         </Typography>
       </div>
-      <div className='w-full flex items-center justify-between'>
-        <div className='flex-1 flex gap-2 items-start'>
+      <div className='flex w-full items-center justify-between'>
+        <div className='flex flex-1 items-start gap-2'>
           <Typography variant='title02'>
             {departmentMap.get(departmentName) ?? departmentName}
           </Typography>
