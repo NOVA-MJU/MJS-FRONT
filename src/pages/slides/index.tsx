@@ -2,12 +2,11 @@ import { clsx, type ClassValue } from 'clsx';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
-
-// 기존 섹션 컴포넌트 임포트 (각 서비스의 메인 위젯들)
 import { Card, CardHeader } from '@/components/atoms/Card';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
 import BroadcastSection from '@/components/molecules/sections/broadcast';
+import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import NoticeSection from '@/components/molecules/sections/notice';
@@ -152,11 +151,7 @@ const TabWrapper = ({ children }: { children: React.ReactNode }) => (
  */
 const TAB_CONTENT: Record<TabType, React.ComponentType> = {
   ALL: AllTab,
-  명지도: () => (
-    <div className='text-body02 text-grey-40 flex h-[calc(100vh-100px)] items-center justify-center bg-white p-5'>
-      명지도 이미지 준비 중
-    </div>
-  ),
+  명지도: () => <CampusMap />,
   공지사항: () => (
     <TabWrapper>
       <NoticeSection />
@@ -200,12 +195,17 @@ const Slides = () => {
   const ActiveContent = TAB_CONTENT[activeTab];
 
   return (
-    <div className='flex min-h-screen flex-col bg-white'>
+    <div
+      className={cn(
+        'flex flex-col overflow-hidden bg-white',
+        activeTab === '명지도' ? 'h-[calc(100dvh-39px)]' : 'min-h-screen',
+      )}
+    >
       {/* 상단 통합 탭 바 */}
       <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* 탭 메인 컨텐츠 영역 */}
-      <main className='flex-1'>
+      <main className='flex-1 overflow-hidden'>
         <ActiveContent />
       </main>
     </div>
