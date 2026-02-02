@@ -55,7 +55,7 @@ export function ScheduleList({
             <div
               className={clsx(
                 'flex h-[16px] w-[16px] items-center justify-center transition-transform',
-                isCategoryOpen ? 'rotate-90' : '-rotate-90',
+                isCategoryOpen ? '-rotate-90' : 'rotate-90',
               )}
             >
               <svg width='4.8' height='9.6' viewBox='0 0 4.8 9.6' fill='none'>
@@ -72,16 +72,14 @@ export function ScheduleList({
           {isCategoryOpen && (
             <>
               <div className='fixed inset-0 z-10' onClick={onCategoryToggle} />
-              <div className='border-grey-10 absolute top-full right-0 z-20 mt-1 flex w-20 flex-col overflow-hidden rounded-[4px] border bg-white shadow-[0_4px_12px_0_rgba(0,0,0,0.08)]'>
+              <div className='border-grey-10 absolute top-full right-0 z-20 mt-1 flex w-20 flex-col overflow-hidden border bg-white pt-1 shadow-[0_4px_12px_0_rgba(0,0,0,0.08)]'>
                 {(Object.keys(categoryMap) as CategoryKey[]).map((key) => (
                   <button
                     key={key}
                     onClick={() => onCategorySelect(key)}
                     className={clsx(
-                      'hover:bg-blue-05 w-full px-3 py-2 text-center text-[12px] transition-colors',
-                      selectedCategory === key
-                        ? 'text-blue-35 bg-blue-05 font-semibold'
-                        : 'text-grey-60',
+                      'hover:bg-blue-05 text-caption02 w-full px-3 py-2 text-center transition-colors',
+                      selectedCategory === key ? 'text-blue-35 bg-blue-05' : 'text-grey-30',
                     )}
                   >
                     {categoryMap[key]}

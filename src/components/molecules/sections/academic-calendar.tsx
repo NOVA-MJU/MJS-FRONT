@@ -239,8 +239,9 @@ export function Calendar({
           const topOffset = 20; // 20px from top (날짜 숫자 아래)
           const barHeight = 6; // 6px bar height
 
-          // top = (row * cellHeight) + (row * gap) + topOffset + (layer * barHeight)
-          const top = `calc(${bar.row} * (${cellHeight} + ${gapSize}px) + ${topOffset + bar.layer * barHeight}px)`;
+          // top = (row * cellHeight) + (row * gap) + topOffset + (layer * (barHeight + gap))
+          const barGap = 4; // 4px gap between bars
+          const top = `calc(${bar.row} * (${cellHeight} + ${gapSize}px) + ${topOffset + bar.layer * (barHeight + barGap)}px)`;
 
           return (
             <div
