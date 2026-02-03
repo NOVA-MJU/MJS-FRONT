@@ -1,6 +1,7 @@
 import { FaSearch } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -18,6 +19,7 @@ interface SearchBarProps {
   initialContent?: string;
 
   className?: string;
+  iconClassName?: string;
 }
 
 /**
@@ -30,6 +32,7 @@ export default function SearchBar({
   domain = 'search',
   initialContent,
   className,
+  iconClassName,
 }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -163,18 +166,24 @@ export default function SearchBar({
     <div className='relative' ref={searchBarRef}>
       {/* 검색바 */}
       <div
-        className={clsx(
-          'border-blue-35 flex items-center gap-3 border-2 bg-white px-5 py-3 shadow-sm transition-all hover:shadow-md',
-          suggestedKeywords.length === 0 ? 'rounded-full' : 'rounded-t-2xl border-b-0',
+        className={twMerge(
+          clsx(
+            'border-blue-35 flex items-center gap-3 border-2 bg-white px-5 py-3 transition-all md:shadow-sm md:hover:shadow-md',
+            suggestedKeywords.length === 0 ? 'rounded-full' : 'rounded-t-2xl border-b-0',
+          ),
           className,
         )}
       >
-        <p className='text-body04 md:text-body01 text-blue-35'>
+        <p
+          className={twMerge(
+            clsx('text-body04 md:text-body01 text-blue-35 cursor-pointer', iconClassName),
+          )}
+        >
           <FaSearch />
         </p>
         <input
           type='text'
-          className='text-body04 md:text-body01 placeholder-grey-20 flex-1 bg-transparent text-black outline-none'
+          className='text-body06 md:text-body01 placeholder-grey-20 flex-1 bg-transparent text-black outline-none'
           placeholder={'검색어를 입력하세요'}
           value={value}
           onChange={(e) => {
