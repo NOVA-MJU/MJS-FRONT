@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getSearchWordcompletion } from '@/api/search';
+import { addRecentKeyword } from '@/utils/recentSearch';
 
 interface SearchBarProps {
   /**
@@ -89,6 +90,7 @@ export default function SearchBar({
    * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
    */
   const handleKeywordClick = (keyword: string) => {
+    addRecentKeyword(keyword);
     if (
       location.pathname === `/${domain}` &&
       location.search === `?keyword=${encodeURIComponent(keyword)}`
@@ -150,15 +152,17 @@ export default function SearchBar({
     abortControllerRef.current?.abort();
     setSuggestedKeywords([]);
 
-    if (value)
+    if (value) {
+      addRecentKeyword(value);
       navigate({
         pathname: `/${domain}`,
         search: `?keyword=${encodeURIComponent(value.trim())}`,
       });
-    else
+    } else {
       navigate({
         pathname: `/${domain}`,
       });
+    }
     setSuggestedKeywords([]);
   };
 
