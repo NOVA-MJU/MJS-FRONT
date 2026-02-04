@@ -97,7 +97,7 @@ const CampusMap = () => {
         >
           <div
             ref={mapRef}
-            className={`flex h-full w-fit items-start justify-center transition-opacity duration-300 will-change-transform ${
+            className={`flex h-fit w-fit flex-col items-center transition-opacity duration-300 will-change-transform ${
               isMapReady ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -105,11 +105,13 @@ const CampusMap = () => {
               ref={imgRef}
               src='/img/school_map.png'
               alt='명지대학교 캠퍼스 지도'
-              className='pointer-events-none h-full w-auto max-w-none'
+              className='pointer-events-none block h-[calc(100dvh-39px)] w-auto max-w-none'
               onLoad={() => {
                 setInitialZoom();
               }}
             />
+            {/* 하단 정보창(바텀 시트) 높이만큼 여백을 추가하여 지도가 가려지는 것을 방지 */}
+            <div className='h-[220px] w-full shrink-0' />
           </div>
         </QuickPinchZoom>
 
@@ -125,13 +127,13 @@ const CampusMap = () => {
 
       {/* 하단 건물 정보 카드  */}
       <div
-        className={`fixed right-0 bottom-0 left-0 z-[100] flex flex-col rounded-t-[20px] bg-white p-5 shadow-[0_-4px_8px_rgba(23,23,27,0.14)] transition-all duration-300 ease-in-out ${
+        className={`fixed right-0 bottom-0 left-0 z-[100] flex flex-col rounded-t-[20px] bg-white px-5 pt-0 pb-10 shadow-[0_-4px_8px_rgba(23,23,27,0.14)] transition-all duration-300 ease-in-out ${
           isExpanded ? 'max-h-[60dvh]' : 'max-h-[220px]'
         }`}
       >
         {/* 상단 핸들 및 헤더 클릭 시 토글 */}
-        <div className='mb-4 cursor-pointer pt-2' onClick={toggleSheet}>
-          <div className='bg-grey-10 mx-auto mb-4 h-1 w-10 rounded-full' />
+        <div className='mb-4 cursor-pointer pt-0' onClick={toggleSheet}>
+          <div className='bg-grey-10 mx-auto mt-4 mb-4 h-1 w-10 rounded-full' />
 
           {/* 메인 정보 */}
           <div className='flex items-center gap-[14px]'>
