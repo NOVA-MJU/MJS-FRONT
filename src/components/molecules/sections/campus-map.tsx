@@ -1,19 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { type Building } from '@/constants/map';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import QuickPinchZoom, { make3dTransformValue } from 'react-quick-pinch-zoom';
 import MapSidebar from './map-sidebar';
-
-/**
- * 건물 정보 타입 정의
- */
-type BuildingInfo = {
-  id: string;
-  name: string;
-  campus: string;
-  building: string;
-  floors: string;
-  rooms: string;
-  floorsInfo?: { floor: string; description: string }[];
-};
 
 /**
  * 명지도 컴포넌트
@@ -69,22 +57,30 @@ const CampusMap = () => {
     }
   }, []);
 
-  // 건물 정보
-  const buildingInfo: BuildingInfo = {
-    id: 'inmun',
-    name: '인문캠퍼스',
-    campus: '캠퍼스',
-    building: '건물',
-    floors: '1~10',
-    rooms: '01~',
-    floorsInfo: [
-      { floor: '1F', description: '장소 정보 내용' },
-      { floor: '2F', description: '장소 정보 내용' },
-      { floor: '3F', description: '장소 정보 내용' },
-      { floor: '4F', description: '장소 정보 내용' },
-      { floor: '10F', description: '대강당 채플관 위치...' },
-    ],
-  };
+  // 선택된 건물 정보 상태 관리
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
+
+  // 건물 선택 핸들러
+  const handleBuildingSelect = useCallback((building: Building) => {
+    setSelectedBuilding(building);
+    setIsSidebarOpen(false);
+    setIsExpanded(true); // 정보창 펼치기
+  }, []);
+
+  // 표시할 건물 정보 (기본값 설정 - 타입 오류 방지를 위해 명시적 타입 지정)
+  const displayInfo: Building =
+    (selectedBuilding as Building) ||
+    ({
+      name: '인문캠퍼스',
+      category: '건물',
+      subItems: [
+        { location: 'F10', name: '대강당(채플관)' },
+        { location: 'F5-6', name: '생활관 연결 통로' },
+        { location: 'F4', name: '편의점(emart24)' },
+        { location: 'F2', name: '학관 구름다리(학생회관 4층 연결)' },
+        { location: 'F1', name: '프린터, 증명서 발급기' },
+      ],
+    } as unknown as Building);
 
   return (
     <div className='relative h-full overflow-hidden bg-white'>
@@ -120,10 +116,10 @@ const CampusMap = () => {
         {/* 지도 목록 버튼 */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className='fixed right-4 bottom-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:scale-105'
+          className='absolute top-4 right-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md transition-all active:scale-95'
           aria-label='건물 목록 열기'
         >
-          <img src='/img/mapIcon.png' alt='지도 아이콘' className='h-8 w-8' />
+          <img src='/img/mapIcon.png' alt='지도 아이콘' className='h-7 w-7' />
         </button>
       </div>
 
@@ -147,9 +143,11 @@ const CampusMap = () => {
               />
             </div>
             <div className='flex flex-col gap-0.5'>
-              <span className='text-body05 text-grey-40 leading-tight'>{buildingInfo.campus}</span>
+              <span className='text-body05 text-grey-40 leading-tight'>
+                {displayInfo.category || '캠퍼스'}
+              </span>
               <h1 className='text-title02 leading-tight font-semibold text-black'>
-                {buildingInfo.name}
+                {displayInfo.name}
               </h1>
             </div>
           </div>
@@ -158,45 +156,37 @@ const CampusMap = () => {
         {/* 구분선 */}
         <div className='bg-grey-02 mb-4 h-px w-full' />
 
-        {/* 상세 정보 테이블 */}
-        <div className='no-scrollbar flex justify-start gap-2.5 overflow-x-auto'>
-          {[
-            { value: 'S', label: '캠퍼스' },
-            { value: buildingInfo.floors, label: '건물' },
-            { value: '3', label: '층' },
-            { value: buildingInfo.rooms, label: '강의실' },
-          ].map((item, index) => (
-            <div key={index} className='flex flex-col items-center gap-2'>
-              <div className='bg-blue-05 flex h-8 items-center justify-center px-2'>
-                <span className='text-title03 font-bold text-black'>{item.value}</span>
-              </div>
-              <span className='text-body06 text-grey-30 text-center'>{item.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* 층별 상세 정보 리스트 */}
+        {/* 상세 정보 리스트 (subItems) */}
         <div
           className={`no-scrollbar flex flex-col gap-5 overflow-y-auto transition-all duration-300 ${
             isExpanded ? 'opacity-100' : 'pointer-events-none h-0 opacity-0'
           }`}
         >
-          {buildingInfo.floorsInfo?.map((info, idx) => (
+          {displayInfo.subItems?.map((info, idx) => (
             <div key={idx} className='flex items-center gap-4'>
-              <div className='relative flex h-8 w-10 items-center justify-start'>
-                <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
-                  {info.floor}
+              <div className='flex h-8 min-w-[54px] items-center justify-start gap-1'>
+                <span className='text-body02 text-blue-35 italic-skew shrink-0 font-bold italic'>
+                  {info.location}
                 </span>
-                <div className='bg-blue-15 absolute -bottom-1 left-4 h-[12px] w-[2px] rotate-45' />
+                <div className='bg-blue-15 relative top-2 h-[10px] w-[1px] rotate-45' />
               </div>
-              <span className='text-body03 text-black'>{info.description}</span>
+              <div className='flex flex-col'>
+                <span className='text-body03 text-black'>{info.name}</span>
+                {info.description && (
+                  <span className='text-grey-40 text-[10px]'>{info.description}</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       {/* 사이드바 */}
-      <MapSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <MapSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onBuildingSelect={handleBuildingSelect}
+      />
     </div>
   );
 };

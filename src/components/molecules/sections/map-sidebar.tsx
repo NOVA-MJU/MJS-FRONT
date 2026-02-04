@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
 import { MAP_DATA, type Building, type BuildingCategory } from '@/constants/map';
+import { useMemo, useState } from 'react';
 
 type SidebarSection = BuildingCategory | 'CAMPUS';
 
@@ -19,6 +19,7 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
   const currentCampusData = MAP_DATA.campuses[0];
   const selectedCampus = currentCampusData.name;
 
+  // 확장된 카테고리를 관리하는 상태
   const [expandedCategories, setExpandedCategories] = useState<Set<SidebarSection>>(
     new Set(['CAMPUS', '건물']),
   );
@@ -53,6 +54,7 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
   // 건물 선택 핸들러
   const handleBuildingClick = (building: Building) => {
     onBuildingSelect?.(building);
+    onClose();
   };
 
   return (
@@ -67,7 +69,7 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
 
       {/* 사이드바 */}
       <div
-        className={`fixed top-[100px] right-0 bottom-0 z-50 w-[280px] transform bg-white shadow-xl transition-transform duration-200 ${
+        className={`fixed top-[100px] right-0 bottom-0 z-50 flex w-[280px] transform flex-col bg-white shadow-xl transition-transform duration-200 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -96,18 +98,18 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
           </button>
         </div>
 
-        {/* 컨텐츠 영역 */}
-        <div className='flex flex-col overflow-y-auto pb-5'>
+        {/* 컨텐츠 영역 (스크롤 가능) */}
+        <div className='no-scrollbar flex-1 overflow-y-auto pb-[300px]'>
           {/* 섹션 목록 */}
           <div className='flex-1 space-y-0'>
             {/* 캠퍼스 섹션 */}
-            <div key='campus-section' className='px-5 py-6'>
-              <div className='mb-3 flex items-center justify-between'>
-                <h2 className='text-body02 text-mju-primary'>{MAP_DATA.titles.CAMPUS}</h2>
-                <button
-                  onClick={() => toggleCategory('CAMPUS')}
-                  className='text-grey-30 hover:text-grey-50 -mr-2 p-2 transition-colors'
-                >
+            <div key='campus-section' className='border-grey-02 border-b py-6'>
+              <div
+                className='flex cursor-pointer items-center justify-between px-5'
+                onClick={() => toggleCategory('CAMPUS')}
+              >
+                <h2 className='text-body02 text-mju-primary font-bold'>{MAP_DATA.titles.CAMPUS}</h2>
+                <div className='text-grey-30 p-2'>
                   <svg
                     width='24'
                     height='24'
@@ -129,7 +131,7 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
                       strokeLinejoin='round'
                     />
                   </svg>
-                </button>
+                </div>
               </div>
               {expandedCategories.has('CAMPUS') && (
                 <div className='mt-1 ml-3 space-y-1'>
@@ -144,13 +146,13 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
               if (!buildings || buildings.length === 0) return null;
 
               return (
-                <div key={category} className='border-grey-02 border-t py-6'>
-                  <div className='mb-3 flex items-center justify-between px-5'>
-                    <h2 className='text-body02 text-mju-primary'>{category}</h2>
-                    <button
-                      onClick={() => toggleCategory(category)}
-                      className='text-grey-30 hover:text-grey-50 -mr-2 p-2 transition-colors'
-                    >
+                <div key={category} className='border-grey-02 border-b py-6'>
+                  <div
+                    className='flex cursor-pointer items-center justify-between px-5'
+                    onClick={() => toggleCategory(category)}
+                  >
+                    <h2 className='text-body02 text-mju-primary font-bold'>{category}</h2>
+                    <div className='text-grey-30 p-2'>
                       <svg
                         width='24'
                         height='24'
@@ -172,7 +174,7 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
                           strokeLinejoin='round'
                         />
                       </svg>
-                    </button>
+                    </div>
                   </div>
 
                   {/* 건물 목록 */}
@@ -182,9 +184,9 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
                         <button
                           key={building.id}
                           onClick={() => handleBuildingClick(building)}
-                          className='text-body05 text-grey-50 hover:bg-blue-02 hover:text-mju-primary w-full rounded px-3 py-2 text-left transition-colors'
+                          className='text-body05 text-grey-50 hover:bg-blue-02 hover:text-mju-primary flex w-full items-center justify-between rounded px-3 py-4 text-left transition-colors'
                         >
-                          {building.name}
+                          <span className='font-medium text-black'>{building.name}</span>
                         </button>
                       ))}
                     </div>
