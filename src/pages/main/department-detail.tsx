@@ -1,11 +1,14 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import { format } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import Avatar from '@/components/atoms/Avatar';
+import { useAuthStore } from '@/store/useAuthStore';
+import { FiEdit } from 'react-icons/fi';
 
 export default function DepartmentDetailPage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const post = POST_DETAIL_DUMMY;
   const { authorName, createdAt, medias, currentMediaIndex, content } = post;
@@ -18,12 +21,23 @@ export default function DepartmentDetailPage() {
         <button
           type='button'
           onClick={() => navigate(-1)}
-          className='absolute left-2 cursor-pointer p-2'
+          className='absolute left-3 cursor-pointer p-0.5'
           aria-label='뒤로 가기'
         >
           <IoIosArrowBack className='text-2xl text-black' />
         </button>
         <p className='text-body02 text-black'>게시물</p>
+
+        {/* 관리자 권한이 있는 경우 수정 버튼 표시 */}
+        {user?.role === 'OPERATOR' && (
+          <Link
+            to={`edit/${post.uuid}`}
+            type='button'
+            className='absolute right-4 cursor-pointer p-1'
+          >
+            <FiEdit className='text-grey-30 text-xl' />
+          </Link>
+        )}
       </header>
 
       {/* 작성자 정보 */}
@@ -61,6 +75,7 @@ export default function DepartmentDetailPage() {
 
 // 더미 데이터
 const POST_DETAIL_DUMMY = {
+  uuid: '1234567890',
   authorName: '작성자 이름',
   createdAt: '2025-01-15T10:00:00.000Z',
   currentMediaIndex: 1,

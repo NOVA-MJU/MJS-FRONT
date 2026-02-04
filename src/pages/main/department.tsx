@@ -7,9 +7,10 @@ import { Tabs } from '@/components/atoms/Tabs';
 import Calendar from '@/components/molecules/Calendar';
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosAdd, IoIosArrowDown } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const TABS = {
   schedule: '소속 일정',
@@ -17,7 +18,12 @@ const TABS = {
   'student-council-notice': '학생회 공지사항',
 };
 
+const TAB_KEYS = Object.keys(TABS) as (keyof typeof TABS)[];
+
 export default function DepartmentMainPage() {
+  const { user } = useAuthStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   // 단과대 필터
   const [selectedCollege] = useState('인공지능 소프트웨어융합대학');
 
@@ -26,7 +32,15 @@ export default function DepartmentMainPage() {
   function handleDepartmentFilter() {}
 
   // 탭 선택
-  const [currentTab, setCurrentTab] = useState(Object.keys(TABS)[0]);
+  const tabFromUrl = searchParams.get('tab');
+  const currentTab: string =
+    tabFromUrl && TAB_KEYS.includes(tabFromUrl as keyof typeof TABS) ? tabFromUrl : TAB_KEYS[0];
+
+  function handleTabChange(tab: string) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  }
 
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
@@ -103,14 +117,14 @@ export default function DepartmentMainPage() {
           <Tabs
             tabs={TABS}
             currentTab={currentTab}
-            setCurrentTab={setCurrentTab}
+            setCurrentTab={handleTabChange}
             className='text-body04 border-b-0'
           />
         </div>
 
         {/* 소속 일정 탭 */}
         {currentTab === 'schedule' && (
-          <section>
+          <section className='relative'>
             <div className='flex flex-col'>
               <Calendar
                 className='m-5'
@@ -119,6 +133,7 @@ export default function DepartmentMainPage() {
                 onMonthChange={setCurrentMonth}
                 onDateSelect={setSelectedDate}
               />
+
               {/* 선택한 날짜 이벤트 목록 */}
               <div className='border-grey-02 mb-2 border-b-1 px-5 py-1'>
                 <span className='text-body02 text-mju-primary'>
@@ -127,17 +142,39 @@ export default function DepartmentMainPage() {
               </div>
               <div>
                 {dayEvents.map((event) => (
-                  <div key={event.id} className='flex items-start gap-2 px-5 py-2'>
+                  <button
+                    key={event.id}
+                    className={clsx(
+                      'flex items-start gap-2 px-5 py-2',
+                      user?.role === 'OPERATOR' && 'cursor-pointer',
+                    )}
+                    onClick={() => {
+                      // TODO: 권한이 OPERATOR인 경우 일정 수정 페이지로 이동
+                    }}
+                  >
                     <span className='text-caption02 text-grey-40 min-w-19'>
                       {format(new Date(event.startDate), 'MM.dd', { locale: ko })}
                       {event.endDate &&
                         ` - ${format(new Date(event.endDate), 'MM.dd', { locale: ko })}`}
                     </span>
                     <span className='text-caption02 flex-1 text-black'>{event.title}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
+
+            {/* 일정 추가 버튼 */}
+            {user?.role === 'OPERATOR' && (
+              <button
+                type='button'
+                className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
+                onClick={() => {
+                  // TODO: 일정 추가 기능 구현
+                }}
+              >
+                <IoIosAdd className='text-4xl text-white' />
+              </button>
+            )}
           </section>
         )}
 
@@ -169,11 +206,16 @@ export default function DepartmentMainPage() {
         {currentTab === 'student-council-notice' && (
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
+              {user?.role === 'OPERATOR' && (
+                <Link to='new' className='bg-grey-02 flex aspect-[4/5] items-center justify-center'>
+                  <IoIosAdd className='text-grey-30 text-4xl' />
+                </Link>
+              )}
               {feeds.map((instagram) => (
                 <Link
                   key={instagram.id}
                   to={`${instagram.id}`}
-                  className='bg-grey-02 aspect-[4/5] cursor-pointer'
+                  className='bg-grey-10 aspect-[4/5] cursor-pointer'
                 >
                   <img
                     src={instagram.imageUrl}
