@@ -1,5 +1,14 @@
 import { MAP_DATA, type Building, type BuildingCategory } from '@/constants/map';
+import { clsx, type ClassValue } from 'clsx';
 import { useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
+/**
+ * 전역 클래스 통합 유틸리티
+ */
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 type SidebarSection = BuildingCategory | 'CAMPUS';
 
@@ -7,6 +16,7 @@ type MapSidebarProps = {
   isOpen: boolean;
   onClose: () => void;
   onBuildingSelect?: (building: Building) => void;
+  selectedBuildingId?: string;
 };
 
 const CATEGORY_ORDER: BuildingCategory[] = ['건물', '캠퍼스 시설', '편의시설', '기타'];
@@ -14,7 +24,7 @@ const CATEGORY_ORDER: BuildingCategory[] = ['건물', '캠퍼스 시설', '편�
 /**
  * 지도 사이드바 컴포넌트
  */
-const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
+const MapSidebar = ({ isOpen, onClose, onBuildingSelect, selectedBuildingId }: MapSidebarProps) => {
   // 현재 첫 번째 캠퍼스 데이터를 명시적으로 사용
   const currentCampusData = MAP_DATA.campuses[0];
   const selectedCampus = currentCampusData.name;
@@ -179,16 +189,22 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect }: MapSidebarProps) => {
 
                   {/* 건물 목록 */}
                   {expandedCategories.has(category) && (
-                    <div className='mt-1 space-y-1 px-8'>
-                      {buildings.map((building) => (
-                        <button
-                          key={building.id}
-                          onClick={() => handleBuildingClick(building)}
-                          className='text-body05 text-grey-50 hover:bg-blue-02 hover:text-mju-primary flex w-full items-center justify-between rounded px-3 py-4 text-left transition-colors'
-                        >
-                          <span className='font-medium text-black'>{building.name}</span>
-                        </button>
-                      ))}
+                    <div className='mt-1 space-y-1'>
+                      {buildings.map((building) => {
+                        const isSelected = selectedBuildingId === building.id;
+                        return (
+                          <button
+                            key={building.id}
+                            onClick={() => handleBuildingClick(building)}
+                            className={cn(
+                              'text-body05 flex w-full items-center justify-between px-8 py-4 text-left transition-all',
+                              isSelected ? 'bg-blue-05' : 'hover:bg-blue-02',
+                            )}
+                          >
+                            <span>{building.name}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

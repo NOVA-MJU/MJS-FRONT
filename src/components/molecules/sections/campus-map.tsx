@@ -160,17 +160,17 @@ const CampusMap = () => {
 
         {/* 상세 정보 리스트 (subItems) */}
         <div
-          className={`no-scrollbar flex flex-col gap-5 overflow-y-auto transition-all duration-300 ${
+          className={`no-scrollbar flex flex-col gap-5 overflow-y-auto pb-2 transition-all duration-300 ${
             isExpanded ? 'opacity-100' : 'pointer-events-none h-0 opacity-0'
           }`}
         >
           {displayInfo.subItems?.map((info, idx) => (
-            <div key={idx} className='flex items-center gap-4'>
-              <div className='flex h-8 min-w-[54px] items-center justify-start gap-1'>
-                <span className='text-body02 text-blue-35 italic-skew shrink-0 font-bold italic'>
+            <div key={idx} className='flex items-start gap-4'>
+              <div className='flex w-32 shrink-0 items-start gap-1 pt-0.5'>
+                <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
                   {info.location}
                 </span>
-                <div className='bg-blue-15 relative top-2 h-[10px] w-[1px] rotate-45' />
+                <div className='bg-blue-15 mt-4 h-[10px] w-[1px] rotate-45' />
               </div>
               <div className='flex flex-col'>
                 <span className='text-body03 text-black'>{info.name}</span>
@@ -188,6 +188,7 @@ const CampusMap = () => {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         onBuildingSelect={handleBuildingSelect}
+        selectedBuildingId={selectedBuilding?.id}
       />
     </div>
   );

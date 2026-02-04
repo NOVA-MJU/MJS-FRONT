@@ -171,12 +171,17 @@ export const MAP_DATA = {
             { location: '종합관 F5-6 지상', name: '후문 지름길' },
             {
               location: '종합관 F2-학생회관 F4',
-              name: '종합관-학생회관 연결 통로 (a.k.a. 학관 구름다리)',
+              name: '종합관-학생회관 연결 통로',
+              description: 'a.k.a. 학관 구름다리',
             },
             { location: '국제관 F4-5', name: '국제관-생활관 연결 통로' },
             { location: '국제관 F3', name: '국제관 출입구' },
             { location: '학생회관 F3', name: '학생회관 출입구' },
-            { location: '방목학술정보관 F3', name: '외부 연결 통로 (a.k.a. 도서관 구름다리)' },
+            {
+              location: '방목학술정보관 F3',
+              name: '외부 연결 통로',
+              description: 'a.k.a. 도서관 구름다리',
+            },
           ],
         },
         {
@@ -219,8 +224,8 @@ export const MAP_DATA = {
           category: '캠퍼스 시설',
           campus: '인문캠퍼스',
           subItems: [
-            { location: '종합관 1F 후문', name: '흡연부스 (a.k.a. 종합관 뒷골목)' },
-            { location: '학생회관 뒤', name: '흡연부스 (a.k.a. 담배나무)' },
+            { location: '종합관 1F 후문', name: '흡연부스', description: 'a.k.a. 종합관 뒷골목' },
+            { location: '학생회관 뒤', name: '흡연부스', description: 'a.k.a. 담배나무' },
             { location: 'MCC 농구장 옆', name: '흡연구역' },
             { location: '방목학술정보관 앞/행정동 옆', name: '흡연구역' },
           ],
@@ -290,7 +295,7 @@ export const MAP_DATA = {
           subItems: [
             {
               location: '인문캠퍼스 후문',
-              name: '통닭트럭_인문캠퍼스 후문(도서관 뒤) (a.k.a. 통트)',
+              name: '통닭트럭_인문캠퍼스 후문(도서관 뒤)',
               description: '도서관 뒤 (a.k.a. 통트), 매주 수/금, 22시~',
             },
             { location: '인문캠퍼스 정문', name: '꼬치트럭' },
