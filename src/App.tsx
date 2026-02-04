@@ -11,7 +11,7 @@ import Main from '@/pages';
 import Layout from '@/components/templates/Layout';
 import Menu from '@/pages/menu';
 import AcademicCalendar from '@/pages/academic-calendar';
-import Search from '@/pages/search';
+import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from './pages/search/SearchOverlay';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
@@ -64,7 +64,7 @@ const App = () => {
           <Route path='/department' element={<Department />} />
           <Route path='/department/:uuid' element={<DepartmentDetail />} />
 
-          <Route path='/search' element={<Search />} />
+          <Route path='/search' element={<SearchEntry />} />
 
           <Route path='/admin/:departmentUuid' element={<Admin />} />
           <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
