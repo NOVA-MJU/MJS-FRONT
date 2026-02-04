@@ -139,8 +139,14 @@ const CampusMap = () => {
           <div className='flex items-center gap-[14px]'>
             <div className='border-blue-20 bg-blue-15 flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[8px] border'>
               <img
-                src='/img/school-icon.png'
-                alt='학교 아이콘'
+                src={
+                  displayInfo.category === '건물'
+                    ? '/img/building-icon.png'
+                    : displayInfo.category === '편의시설'
+                      ? '/img/shop-icon.png'
+                      : '/img/school-icon.png'
+                }
+                alt='카테고리 아이콘'
                 className='h-7 w-7 object-contain'
               />
             </div>
@@ -154,19 +160,37 @@ const CampusMap = () => {
             </div>
           </div>
         </div>
-
         {/* 구분선 */}
         <div className='bg-grey-02 mb-4 h-px w-full' />
 
+        {/* 건물 카테고리일 때만 표시되는 S1~S4 정보 블록 */}
+        {displayInfo.category === '건물' && (
+          <div className='mb-6 flex gap-2'>
+            {[
+              { label: '캠퍼스', value: 'S' },
+              { label: '건물', value: '1~10' },
+              { label: '층', value: '3' },
+              { label: '강의실', value: '01~' },
+            ].map((item, idx) => (
+              <div key={idx} className='flex flex-col items-center gap-1.5'>
+                <div className='bg-blue-05 text-title02 flex h-[38px] min-w-[50px] items-center justify-center px-2'>
+                  {item.value}
+                </div>
+                <span className='text-body05 text-grey-40'>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* 상세 정보 리스트 (subItems) */}
         <div
-          className={`no-scrollbar flex flex-col gap-5 overflow-y-auto pb-2 transition-all duration-300 ${
+          className={`no-scrollbar grid grid-cols-[max-content_1fr] gap-x-4 gap-y-5 overflow-y-auto pb-2 transition-all duration-300 ${
             isExpanded ? 'opacity-100' : 'pointer-events-none h-0 opacity-0'
           }`}
         >
           {displayInfo.subItems?.map((info, idx) => (
-            <div key={idx} className='flex items-start gap-4'>
-              <div className='flex w-32 shrink-0 items-start gap-1 pt-0.5'>
+            <div key={idx} className='contents'>
+              <div className='flex items-start gap-1 pt-0.5'>
                 <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
                   {info.location}
                 </span>
