@@ -29,6 +29,7 @@ import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
 import DepartmentMainPage from '@/pages/main/department';
 import DepartmentDetailPage from '@/pages/main/department-detail';
+import DepartmentNewPost from '@/pages/main/department-new-post';
 
 const App = () => {
   return (
@@ -73,6 +74,7 @@ const App = () => {
         {/* 디버깅용 */}
         <Route path='/main/department' element={<DepartmentMainPage />} />
         <Route path='/main/department/:uuid' element={<DepartmentDetailPage />} />
+        <Route path='/main/department/new' element={<DepartmentNewPost />} />
       </Route>
 
       <Route element={<Layout className='bg-grey-05' />}>
