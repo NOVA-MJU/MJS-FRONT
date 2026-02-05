@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
-const tabNameMap: Record<string, string> = {
+export const tabNameMap: Record<string, string> = {
   all: '전체',
   general: '일반공지',
   academic: '학사공지',

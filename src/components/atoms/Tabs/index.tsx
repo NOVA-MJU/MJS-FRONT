@@ -80,4 +80,37 @@ function ChipTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
   );
 }
 
-export { Tabs, ChipTabs };
+/**
+ * 칩 네비게이션 컴포넌트
+ * `tabs` prop을 기반으로 클릭 가능한 칩 목록을 표시하고, 활성화된 칩은 색상이 변경됩니다.
+ *
+ * @param tabs - 탭을 정의하는 객체. 객체의 **키(key)**는 영문 식별자, **값(value)**은 탭에 표시될 **레이블(label)**입니다. (예: { 'all': '전체', 'in-progress': '진행 중' })
+ * @param currentTab - 현재 활성화된 탭의 고유 **식별자(key)**입니다.
+ * @param setCurrentTab - 탭 클릭 시 호출되는 함수. 클릭된 탭의 **식별자(key)**를 인자로 받습니다.
+ * @returns JSX Element
+ */
+function SegmentedControlTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
+  const tabEntries = Object.entries(tabs);
+
+  return (
+    <div className='bg-grey-02 mb-3 flex w-full overflow-x-auto pt-2'>
+      {tabEntries.map(([key, label]) => {
+        const isSelected = currentTab === key;
+        return (
+          <button
+            key={key}
+            role='tab'
+            aria-selected={isSelected}
+            aria-controls={`tab-panel-${key}`}
+            onClick={() => setCurrentTab(key)}
+            className={clsx`text-body04 w-1/2 cursor-pointer rounded-t-[4px] py-2 whitespace-nowrap ${isSelected ? 'border-grey-10 border-x-1 border-t-1 bg-white text-black' : 'text-grey-40 bg-grey-02 border-grey-10 border-b-1'} `}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+export { Tabs, ChipTabs, SegmentedControlTabs };

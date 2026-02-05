@@ -2,7 +2,7 @@ import { FaSearch } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getSearchWordcompletion } from '@/api/search';
@@ -37,7 +37,19 @@ export default function SearchBar({
 }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [value, setValue] = useState('');
+
+  /** 통합검색(domain=search)일 때 기존 쿼리(tab 등) 유지 */
+  const getSearchQuery = (keyword: string) => {
+    if (domain !== 'search' || !keyword.trim())
+      return `?keyword=${encodeURIComponent(keyword.trim())}`;
+    const next = new URLSearchParams();
+    next.set('keyword', keyword.trim());
+    const tab = searchParams.get('tab');
+    if (tab) next.set('tab', tab);
+    return `?${next.toString()}`;
+  };
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const initialized = useRef(true);
   const prevLengthRef = useRef(0);
@@ -91,15 +103,13 @@ export default function SearchBar({
    */
   const handleKeywordClick = (keyword: string) => {
     addRecentKeyword(keyword);
-    if (
-      location.pathname === `/${domain}` &&
-      location.search === `?keyword=${encodeURIComponent(keyword)}`
-    ) {
+    const search = getSearchQuery(keyword);
+    if (location.pathname === `/${domain}` && location.search === search) {
       window.location.reload();
     } else {
       navigate({
         pathname: `/${domain}`,
-        search: `?keyword=${encodeURIComponent(keyword.trim())}`,
+        search,
       });
     }
   };
@@ -152,11 +162,11 @@ export default function SearchBar({
     abortControllerRef.current?.abort();
     setSuggestedKeywords([]);
 
-    if (value) {
+    if (value?.trim()) {
       addRecentKeyword(value);
       navigate({
         pathname: `/${domain}`,
-        search: `?keyword=${encodeURIComponent(value.trim())}`,
+        search: getSearchQuery(value.trim()),
       });
     } else {
       navigate({
