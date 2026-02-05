@@ -47,7 +47,7 @@ export default function Search() {
   }
 
   return (
-    <div className='p-4 md:p-8 flex flex-col gap-4 md:gap-12'>
+    <div className='flex flex-col gap-4 p-4 md:gap-12 md:p-8'>
       <SearchBar initialContent={initialContent} />
       <Divider variant='default' />
       <div className='flex flex-col gap-12 md:gap-24'>
@@ -58,9 +58,9 @@ export default function Search() {
           <Typography variant='heading02' className='text-mju-primary'>
             공지사항
           </Typography>
-          <div className='border-2 border-grey-05 rounded-lg flex flex-col p-3 gap-3'>
+          <div className='border-grey-05 flex flex-col gap-3 rounded-lg border-2 p-3'>
             {noticeItems.map((notice, idx) => (
-              <>
+              <div key={idx}>
                 <SearchResultItem
                   key={notice.id}
                   variant='notice'
@@ -69,10 +69,10 @@ export default function Search() {
                   link={notice.link}
                 />
                 {idx < noticeItems.length - 1 && <Divider variant='thin' />}
-              </>
+              </div>
             ))}
             {noticeItems.length === 0 && (
-              <div className='min-h-20 flex justify-center items-center'>
+              <div className='flex min-h-20 items-center justify-center'>
                 <Typography>검색 결과가 없습니다</Typography>
               </div>
             )}
@@ -83,7 +83,7 @@ export default function Search() {
                 pathname: `/notice`,
                 search: `?keyword=${initialContent}`,
               }}
-              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg cursor-pointer'
+              className='bg-grey-05 w-fit cursor-pointer gap-2.5 self-center rounded-lg px-4 py-2'
             >
               <Typography variant='body03'>더보기</Typography>
             </Link>
@@ -96,9 +96,9 @@ export default function Search() {
           <Typography variant='heading02' className='text-mju-primary'>
             자유게시판
           </Typography>
-          <div className='border-2 border-grey-05 rounded-lg flex flex-col p-3 gap-3'>
+          <div className='border-grey-05 flex flex-col gap-3 rounded-lg border-2 p-3'>
             {boardItems.map((board, idx) => (
-              <>
+              <div key={idx}>
                 <SearchResultItem
                   key={board.id}
                   variant='community'
@@ -108,10 +108,10 @@ export default function Search() {
                   link={board.link}
                 />
                 {idx < boardItems.length - 1 && <Divider variant='thin' />}
-              </>
+              </div>
             ))}
             {boardItems.length === 0 && (
-              <div className='min-h-20 flex justify-center items-center'>
+              <div className='flex min-h-20 items-center justify-center'>
                 <Typography>검색 결과가 없습니다</Typography>
               </div>
             )}
@@ -122,7 +122,7 @@ export default function Search() {
                 pathname: `/board`,
                 search: `?keyword=${initialContent}`,
               }}
-              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg'
+              className='bg-grey-05 w-fit gap-2.5 self-center rounded-lg px-4 py-2'
             >
               <Typography variant='body03'>더보기</Typography>
             </Link>
@@ -135,9 +135,9 @@ export default function Search() {
           <Typography variant='heading02' className='text-mju-primary'>
             명대신문
           </Typography>
-          <div className='border-2 border-grey-05 rounded-lg flex flex-col p-3 gap-3'>
+          <div className='border-grey-05 flex flex-col gap-3 rounded-lg border-2 p-3'>
             {newsItems.map((news, idx) => (
-              <>
+              <div key={idx}>
                 <SearchResultItem
                   key={news.id}
                   variant='news'
@@ -148,10 +148,10 @@ export default function Search() {
                   link={news.link}
                 />
                 {idx < newsItems.length - 1 && <Divider variant='thin' />}
-              </>
+              </div>
             ))}
             {newsItems.length === 0 && (
-              <div className='min-h-20 flex justify-center items-center'>
+              <div className='flex min-h-20 items-center justify-center'>
                 <Typography>검색 결과가 없습니다</Typography>
               </div>
             )}
@@ -162,7 +162,7 @@ export default function Search() {
                 pathname: `/news`,
                 search: `?keyword=${initialContent}`,
               }}
-              className='self-center w-fit px-4 py-2 gap-2.5 bg-grey-05 rounded-lg'
+              className='bg-grey-05 w-fit gap-2.5 self-center rounded-lg px-4 py-2'
             >
               <Typography variant='body03'>더보기</Typography>
             </Link>
