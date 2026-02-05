@@ -33,7 +33,7 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
   });
   if (isDesktop) {
     return (
-      <article className='flex-col overflow-hidden rounded-2xl border-grey-20 bg-white shadow-sm transition hover:shadow-lg'>
+      <article className='border-grey-20 flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition hover:shadow-lg'>
         <a href={news.link} target='_blank' rel='noopener noreferrer' className='block'>
           <div className='aspect-[16/9] w-full overflow-hidden bg-gray-100'>
             <img
@@ -53,11 +53,11 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
               <time className='text-gray-500'>{formatToLocalDate(news.date)}</time>
             </div>
             <p
-              className='line-clamp-2 search-result__highlight text-title02'
+              className='search-result__highlight text-title02 line-clamp-2'
               dangerouslySetInnerHTML={{ __html: safeTitle }}
             />
             <p
-              className='text-grey-40 line-clamp-2 md:line-clamp-3 text-body03 search-result__highlight'
+              className='text-grey-40 text-body03 search-result__highlight line-clamp-2 md:line-clamp-3'
               dangerouslySetInnerHTML={{ __html: safeContent }}
             />
           </div>
@@ -67,8 +67,8 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
   }
   if (!isDesktop) {
     return (
-      <article>
-        <a href={news.link} target='_blank' rel='noopener noreferrer' className='flex gap-4 px-2.5'>
+      <article className='hover:bg-blue-05 border-grey-02 border-b-1 px-5 py-4'>
+        <a href={news.link} target='_blank' rel='noopener noreferrer' className='flex gap-4'>
           <img
             src={news.imageUrl?.trim() || fallbackSrc}
             onError={(e) => {
@@ -76,23 +76,23 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
             }}
             alt={news.title}
             loading='lazy'
-            className='min-w-28 max-w-28 h-24 border border-grey-10 rounded object-cover'
+            className='border-grey-10 h-27 max-w-28 min-w-28 rounded border object-cover'
             sizes='(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw'
           />
 
-          <div className='w-full h-24'>
+          <div className='flex w-full flex-col gap-0.5'>
             <p
-              className='line-clamp-1 search-result__highlight text-body04'
+              className='search-result__highlight text-body02 line-clamp-1'
               dangerouslySetInnerHTML={{ __html: safeTitle }}
             />
             <p
-              className='text-grey-40 line-clamp-2 md:line-clamp-3 text-caption02'
+              className='text-body05 line-clamp-2 text-black md:line-clamp-3'
               dangerouslySetInnerHTML={{ __html: safeContent }}
             />
-            <p className='text-grey-20 text-caption04 line-clamp-2 md:line-clamp-3'>
+            <p className='text-grey-20 text-caption01 line-clamp-2 md:line-clamp-3'>
               {news.reporter}
             </p>
-            <time className='text-grey-10 text-caption05'>{formatToLocalDate(news.date)}</time>
+            <time className='text-grey-10 text-caption02'>{formatToLocalDate(news.date)}</time>
           </div>
         </a>
       </article>
