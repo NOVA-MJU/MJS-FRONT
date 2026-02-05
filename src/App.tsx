@@ -28,8 +28,10 @@ import AdminNoticeEdit from '@/pages/admin/notice/edit';
 import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
 import DepartmentMainPage from '@/pages/main/department';
-import DepartmentDetailPage from '@/pages/main/department-detail';
-import DepartmentNewPost from '@/pages/main/department-new-post';
+import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
+import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
+import DepartmentEventsNewPage from './pages/main/department-events-new';
+import DepartmentEventsEditPage from './pages/main/department-events-edit';
 
 const App = () => {
   return (
@@ -73,8 +75,12 @@ const App = () => {
 
         {/* 디버깅용 */}
         <Route path='/main/department' element={<DepartmentMainPage />} />
-        <Route path='/main/department/:uuid' element={<DepartmentDetailPage />} />
-        <Route path='/main/department/new' element={<DepartmentNewPost />} />
+
+        <Route path='/main/department/posts/:uuid' element={<DepartmentPostsDetailPage />} />
+        <Route path='/main/department/posts/new' element={<DepartmentPostsNewPage />} />
+
+        <Route path='/main/department/events/new' element={<DepartmentEventsNewPage />} />
+        <Route path='/main/department/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
       </Route>
 
       <Route element={<Layout className='bg-grey-05' />}>

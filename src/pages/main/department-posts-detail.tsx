@@ -6,7 +6,12 @@ import Avatar from '@/components/atoms/Avatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { FiEdit } from 'react-icons/fi';
 
-export default function DepartmentDetailPage() {
+// 관리자 권한 체크 헬퍼 함수
+const hasAdminPermission = (role: string | undefined): boolean => {
+  return role === 'OPERATOR' || role === 'ADMIN';
+};
+
+export default function DepartmentPostsDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
@@ -29,7 +34,7 @@ export default function DepartmentDetailPage() {
         <p className='text-body02 text-black'>게시물</p>
 
         {/* 관리자 권한이 있는 경우 수정 버튼 표시 */}
-        {user?.role === 'OPERATOR' && (
+        {hasAdminPermission(user?.role) && (
           <Link
             to={`edit/${post.uuid}`}
             type='button'

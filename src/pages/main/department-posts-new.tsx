@@ -4,9 +4,9 @@ import { IoIosAdd, IoIosArrowBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import TextareaAutosize from 'react-textarea-autosize';
 
-export default function DepartmentNewPost() {
-  const MAX_CONTENT_LENGTH = 2200;
+const MAX_CONTENT_LENGTH = 2200;
 
+export default function DepartmentPostsNewPage() {
   const navigate = useNavigate();
 
   const [medias] = useState<string[]>([]);
@@ -53,9 +53,7 @@ export default function DepartmentNewPost() {
 
       {medias.length > 0 && (
         <p className='text-body04 text-grey-80 mt-2 justify-self-center'>
-          {currentMediaIndex}
-          {' / '}
-          {medias.length}
+          {`${currentMediaIndex} / ${medias.length}`}
         </p>
       )}
 
