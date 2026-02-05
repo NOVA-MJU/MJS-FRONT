@@ -1,4 +1,5 @@
 import { FaSearch } from 'react-icons/fa';
+import { IoCloseCircle } from 'react-icons/io5';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -188,13 +189,15 @@ export default function SearchBar({
           className,
         )}
       >
-        <p
-          className={twMerge(
-            clsx('text-body04 md:text-body01 text-blue-35 cursor-pointer', iconClassName),
-          )}
-        >
-          <FaSearch />
-        </p>
+        {!value.trim() && (
+          <p
+            className={twMerge(
+              clsx('text-body04 md:text-body01 text-blue-35 cursor-pointer', iconClassName),
+            )}
+          >
+            <FaSearch />
+          </p>
+        )}
         <input
           type='text'
           className='text-body06 md:text-body01 placeholder-grey-20 flex-1 bg-transparent text-black outline-none'
@@ -209,6 +212,14 @@ export default function SearchBar({
             }
           }}
         />
+        {value.trim() && (
+          <div>
+            <IoCloseCircle
+              className='text-grey-20 h-5 w-5 cursor-pointer'
+              onClick={() => setValue('')}
+            />
+          </div>
+        )}
       </div>
 
       {/* 키워드 자동완성 박스 */}
