@@ -7,10 +7,12 @@ import { Tabs } from '@/components/atoms/Tabs';
 import Calendar from '@/components/molecules/Calendar';
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
-import { IoIosAdd, IoIosArrowDown } from 'react-icons/io';
+import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
+import Drawer from '@/components/molecules/Drawer';
+import { COLLEGE_OPTIONS, collegeMap } from '@/constants/colleges';
 
 // 페이지 탭 구성
 const TABS = {
@@ -32,9 +34,12 @@ export default function DepartmentMainPage() {
   const navigate = useNavigate();
 
   // 단과대 필터
-  const [selectedCollege] = useState('인공지능 소프트웨어융합대학');
+  const [selectedCollege, setSelectedCollege] = useState('AI_SOFTWARE');
+  const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
-  function handleCollegeFilter() {}
+  function handleCollegeFilter() {
+    setIsCollegeDrawerOpen(true);
+  }
 
   function handleDepartmentFilter() {}
 
@@ -74,7 +79,7 @@ export default function DepartmentMainPage() {
           )}
           onClick={handleCollegeFilter}
         >
-          {selectedCollege}
+          {collegeMap.get(selectedCollege) || '전체'}
           <IoIosArrowDown className='text-grey-40' />
         </button>
         <button
@@ -240,6 +245,40 @@ export default function DepartmentMainPage() {
           </section>
         )}
       </div>
+
+      {/* 단과대 필터 Drawer */}
+      <Drawer open={isCollegeDrawerOpen} onOpenChange={setIsCollegeDrawerOpen}>
+        <div className='flex flex-col gap-4 py-1.5'>
+          <div className='px-5'>
+            <h2 className='text-title02 text-black'>단과대 필터</h2>
+          </div>
+
+          <div className='flex flex-col'>
+            {COLLEGE_OPTIONS.map((college) => {
+              const isSelected = selectedCollege === college.value;
+              return (
+                <button
+                  key={college.value}
+                  type='button'
+                  onClick={() => {
+                    setSelectedCollege(college.value);
+                    setIsCollegeDrawerOpen(false);
+                  }}
+                  className={clsx(
+                    'flex w-full items-center justify-between px-5 py-2.5',
+                    'text-body03 text-grey-80 cursor-pointer',
+                    'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                    isSelected && 'text-mju-primary',
+                  )}
+                >
+                  {college.label}
+                  {isSelected && <IoIosCheckmark className='text-2xl' />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </Drawer>
     </section>
   );
 }
