@@ -7,16 +7,12 @@ import {
   type GetSearchAISummaryRes,
   type SearchResultItemRes,
 } from '../../api/search';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
 import { IoMdLink } from 'react-icons/io';
-import { IoIosArrowForward } from 'react-icons/io';
-import NoticeItem from '@/components/molecules/NoticeItem';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
-import NewsCard from '../news/NewsCard';
-import BroadcastCard from '../broadcast/BroadcastCard';
-import BoardCard from '../board/BoardCard';
-import SortButtons, { type Sort } from '@/components/molecules/SortButtons';
+import { type Sort } from '@/components/molecules/SortButtons';
+import ListEntry, { type SearchTabKey } from './ListEntry';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -31,7 +27,7 @@ const tapLabel: Record<string, SearchResultType | 'ALL'> = {
 };
 
 /** 탭별 공지/방송 섹션 "더보기" 경로 */
-const NOTICE_SECTION_MORE_PATH: Record<keyof typeof tapLabel, string> = {
+const NOTICE_SECTION_MORE_PATH: Record<SearchTabKey, string> = {
   ALL: '/notice',
   공지사항: '/notice',
   학사일정: '/academic-calendar',
@@ -41,8 +37,7 @@ const NOTICE_SECTION_MORE_PATH: Record<keyof typeof tapLabel, string> = {
   명대뉴스: '/news',
 };
 
-//더 많은 정보 navigate 설정
-function getNoticeSectionMorePath(tab: keyof typeof tapLabel) {
+function getNoticeSectionMorePath(tab: SearchTabKey) {
   return NOTICE_SECTION_MORE_PATH[tab] ?? '/notice';
 }
 
@@ -52,35 +47,22 @@ function getNoticeSectionMorePath(tab: keyof typeof tapLabel) {
  * 통합 검색 결과를 표시하는 페이지입니다.
  * 공지사항, 자유게시판, 명대신문 검색 결과를 한 번에 보여줍니다.
  */
-function isValidTab(tab: string | null): tab is keyof typeof tapLabel {
+function isValidTab(tab: string | null): tab is SearchTabKey {
   return tab !== null && tapLabel[tab] !== undefined;
 }
 
 export default function SearchDetail() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [currentTab, setCurrentTab] = useState<keyof typeof tapLabel>(() => {
+  const [currentTab, setCurrentTab] = useState<SearchTabKey>(() => {
     const tab = searchParams.get('tab');
-    return isValidTab(tab) ? tab : 'ALL';
+    return (isValidTab(tab) ? tab : 'ALL') as SearchTabKey;
   });
-
-  /** URL의 tab 쿼리와 동기화 (ALL이면 tab 파라미터 없음) */
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (isValidTab(tab) && tab !== currentTab) setCurrentTab(tab);
-    if (!tab && currentTab !== 'ALL') setCurrentTab('ALL');
-  }, [searchParams]);
-
-  const handleSetCurrentTab = (tab: keyof typeof tapLabel) => {
-    setCurrentTab(tab);
-    const next = new URLSearchParams(searchParams);
-    if (tab === 'ALL') next.delete('tab');
-    else next.set('tab', tab);
-    setSearchParams(next, { replace: true });
-  };
+  const [categoryTab, setCategoryTab] = useState<string>('all');
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
+  const [items, setItems] = useState<SearchResultItemRes[]>([]);
 
   const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
     query: '',
@@ -93,10 +75,52 @@ export default function SearchDetail() {
 
   const keyword = searchParams.get('keyword');
 
+  /** URL의 tab 쿼리와 동기화 (ALL이면 tab 파라미터 없음) */
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (isValidTab(tab) && tab !== currentTab) setCurrentTab(tab);
+  }, [searchParams]);
+
+  const handleSetCurrentTab = (tab: string) => {
+    if (!isValidTab(tab)) return;
+    setCurrentTab(tab);
+    const next = new URLSearchParams(searchParams);
+    if (tab === 'ALL') next.delete('tab');
+    else next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  };
+
+  /**
+   * 검색 요청 function
+   */
+  async function handleSearch(text: string) {
+    if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
+      const res = await getSearchOverview(text, sort);
+      setNoticeItems(res.notice);
+      setBoardItems(res.community);
+      setNewsItems(res.news);
+    } else {
+      let type = tapLabel[currentTab];
+      if (categoryTab === 'department') {
+        type = 'DEPARTMENT_NOTICE';
+      }
+      const res = await getSearchResult(text, type, sort, 0, 5);
+      const items = res.content as unknown as SearchResultItemRes[];
+      setItems(items);
+    }
+  }
+
+  async function handleGetAiSummary(text: string) {
+    const res = await getSearchAISummary(text);
+    setAiSummary(res);
+  }
+
   /**
    * 검색어 초기값 반영 (search parameter 반영)
    */
   useEffect(() => {
+    //추후 로직 수정
+    if (currentTab === 'ALL') handleGetAiSummary(keyword ?? '');
     setSort('relevance');
     (async () => {
       if (!keyword) return;
@@ -111,36 +135,23 @@ export default function SearchDetail() {
 
   useEffect(() => {
     handleSearch(keyword ?? '');
-  }, [sort]);
-
-  /**
-   * 검색 요청 function
-   */
-  async function handleSearch(text: string) {
-    if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
-      const res = await getSearchOverview(text, sort);
-      setNoticeItems(res.notice);
-      setBoardItems(res.community);
-      setNewsItems(res.news);
-    } else {
-      const type = tapLabel[currentTab];
-      const res = await getSearchResult(text, type, sort, 0, 5);
-      const items = res.content as unknown as SearchResultItemRes[];
-      setNoticeItems(items);
-    }
-
-    const summaryRes = await getSearchAISummary(text);
-    setAiSummary(summaryRes);
-  }
+  }, [sort, categoryTab]);
 
   useEffect(() => {
     setSort('relevance');
+    setCategoryTab('all');
     handleSearch(keyword ?? '');
   }, [currentTab]);
+
+  useEffect(() => {
+    if (currentTab !== '학사일정') return;
+    handleSearch(keyword ?? '');
+  }, [categoryTab]);
 
   return (
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
+        {/* 검색바 */}
         <header className='flex items-center gap-4 px-4 py-2'>
           <div className='bg-blue-05 h-12 w-12' onClick={() => navigate('/')}>
             logo
@@ -154,6 +165,7 @@ export default function SearchDetail() {
             />
           </div>
         </header>
+        {/* 탭 */}
         <section>
           <ScrollableTap
             tabs={{
@@ -169,219 +181,41 @@ export default function SearchDetail() {
           />
         </section>
         <div className='no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto'>
-          <section className='border-grey-10 flex flex-col gap-3.5 border-b-1 p-5'>
-            <div className='text-body02 flex w-full items-center justify-between text-black'>
-              <div className='flex gap-1'>
-                <p className='text-mju-primary'>AI</p>
-                <p>요약 검색 결과</p>
-              </div>
-              <a
-                href='https://www.google.com'
-                className='bg-blue-05 cursor-pointer rounded-full p-1'
-              >
-                <IoMdLink size={20} className='text-mju-primary rotate-135' />
-              </a>
-            </div>
-            <div className='text-body05 text-grey-80 break-words'>
-              <HighlightedText>{aiSummary.summary}</HighlightedText>
-            </div>
-          </section>
-          {currentTab === 'ALL' ? (
-            <div className='flex flex-col gap-5'>
-              {/* 공지사항 검색결과 */}
-              <div className='border-grey-02 flex flex-col border-t-[8px]'>
-                <div className='flex flex-row items-center justify-between p-5 pb-0'>
-                  <SortButtons sort={sort} onSortChange={setSort} />
+          {/* ai요약 */}
+          {currentTab === 'ALL' && (
+            <section className='border-grey-10 flex flex-col gap-3.5 border-b-1 p-5'>
+              <div className='text-body02 flex w-full items-center justify-between text-black'>
+                <div className='flex gap-1'>
+                  <p className='text-mju-primary'>AI</p>
+                  <p>요약 검색 결과</p>
                 </div>
-                <div className='flex items-center justify-between'>
-                  <p className='text-body02 px-5 py-2 text-black'>공지사항</p>
-                  {noticeItems.length === 5 && (
-                    <Link
-                      to={{
-                        pathname: getNoticeSectionMorePath(currentTab),
-                        search: `?keyword=${initialContent}`,
-                      }}
-                      className='mt-3 mr-5 w-fit cursor-pointer'
-                    >
-                      <p className='text-body05 text-grey-30'>
-                        <IoIosArrowForward size={20} />
-                      </p>
-                    </Link>
-                  )}
-                </div>
-                <div className='flex flex-col'>
-                  {noticeItems.map((notice) => {
-                    return (
-                      <NoticeItem
-                        key={notice.id}
-                        id={notice.id}
-                        category={notice.category}
-                        title={notice.highlightedTitle}
-                        date={notice.date}
-                        link={notice.link}
-                      />
-                    );
-                  })}
-                  {noticeItems.length === 0 && (
-                    <div className='border-grey-10 mx-5 flex h-26 items-center justify-center rounded-[4px] border-1'>
-                      <p className='text-body05 text-grey-30'>'{keyword}'을 찾을 수 없습니다.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* 커뮤니티 검색결과 */}
-              {tapLabel[currentTab] === 'ALL' && (
-                <>
-                  <div className='flex flex-col'>
-                    <div className='flex items-center justify-between'>
-                      <p className='text-body02 p-5 pb-2 text-black'>커뮤니티</p>
-                      {boardItems.length === 5 && (
-                        <Link
-                          to={{ pathname: '/board', search: `?keyword=${initialContent}` }}
-                          className='mt-3 mr-5 w-fit cursor-pointer'
-                        >
-                          <p className='text-body05 text-grey-30'>
-                            <IoIosArrowForward size={20} />
-                          </p>
-                        </Link>
-                      )}
-                    </div>
-                    <div className='flex flex-col'>
-                      {boardItems.map((board) => {
-                        return (
-                          <BoardCard
-                            key={board.id}
-                            id={board.id}
-                            title={board.highlightedTitle}
-                            previewContent={board.highlightedContent}
-                            likeCount={0}
-                            commentCount={0}
-                            publishedAt={board.date}
-                            isPopular={false}
-                          />
-                        );
-                      })}
-                      {boardItems.length === 0 && (
-                        <div className='border-grey-10 mx-5 flex h-26 items-center justify-center rounded-[4px] border-1'>
-                          <p className='text-body05 text-grey-30'>
-                            '{keyword}'을 찾을 수 없습니다.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* 명대신문 검색결과 */}
-                  <div className='flex flex-col'>
-                    <div className='flex items-center justify-between'>
-                      <p className='text-body02 p-5 pb-2 text-black'>명대신문</p>
-                      {newsItems.length === 5 && (
-                        <Link
-                          to={{ pathname: '/news', search: `?keyword=${initialContent}` }}
-                          className='mt-3 mr-5 w-fit cursor-pointer'
-                        >
-                          <p className='text-body05 text-grey-30'>
-                            <IoIosArrowForward size={20} />
-                          </p>
-                        </Link>
-                      )}
-                    </div>
-                    <div className='flex flex-col'>
-                      {newsItems.map((news, index) => (
-                        <NewsCard
-                          key={index}
-                          news={{
-                            title: news.highlightedTitle,
-                            date: news.date,
-                            reporter: news.type,
-                            imageUrl: news.imageUrl,
-                            summary: news.highlightedContent,
-                            link: news.link,
-                            category: 'ALL',
-                          }}
-                        />
-                      ))}
-                      {newsItems.length === 0 && (
-                        <div className='border-grey-10 mx-5 flex h-26 items-center justify-center rounded-[4px] border-1'>
-                          <p className='text-body05 text-grey-30'>
-                            '{keyword}'을 찾을 수 없습니다.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className='flex flex-col gap-5'>
-              <div className='flex flex-row items-center justify-between p-5 pb-0'>
-                <SortButtons sort={sort} onSortChange={setSort} />
-                <Link
-                  to={{
-                    pathname: getNoticeSectionMorePath(currentTab),
-                    search: `?keyword=${initialContent}`,
-                  }}
-                  className='w-fit cursor-pointer'
+                <a
+                  href='https://www.google.com'
+                  className='bg-blue-05 cursor-pointer rounded-full p-1'
                 >
-                  <p className='text-body05 text-grey-30'>
-                    <IoIosArrowForward size={20} />
-                  </p>
-                </Link>
+                  <IoMdLink size={20} className='text-mju-primary rotate-135' />
+                </a>
               </div>
-              <div className='flex flex-col'>
-                {noticeItems.map((notice) => {
-                  return currentTab === 'ALL' || currentTab === '공지사항' ? (
-                    <NoticeItem
-                      key={notice.id}
-                      id={notice.id}
-                      category={notice.category}
-                      title={notice.highlightedTitle}
-                      date={notice.date}
-                      link={notice.link}
-                    />
-                  ) : currentTab === '명대뉴스' ? (
-                    <BroadcastCard
-                      key={notice.id}
-                      title={notice.highlightedTitle}
-                      url={notice.link}
-                      playlistTitle={notice.highlightedContent}
-                      publishedAt={notice.date}
-                    />
-                  ) : currentTab === '명대신문' ? (
-                    <NewsCard
-                      key={notice.id}
-                      news={{
-                        title: notice.highlightedTitle,
-                        date: notice.date,
-                        reporter: notice.type,
-                        imageUrl: notice.imageUrl,
-                        summary: notice.highlightedContent,
-                        link: notice.link,
-                        category: 'ALL',
-                      }}
-                    />
-                  ) : currentTab === '게시판' ? (
-                    <BoardCard
-                      key={notice.id}
-                      id={notice.id}
-                      title={notice.highlightedTitle}
-                      previewContent={notice.highlightedContent}
-                      likeCount={0}
-                      commentCount={0}
-                      publishedAt={notice.date}
-                      isPopular={false}
-                    />
-                  ) : null;
-                })}
-                {noticeItems.length === 0 && (
-                  <div className='border-grey-10 mx-5 flex h-26 items-center justify-center rounded-[4px] border-1'>
-                    <p className='text-body05 text-grey-30'>'{keyword}'을 찾을 수 없습니다.</p>
-                  </div>
-                )}
+              <div className='text-body05 text-grey-80 break-words'>
+                <HighlightedText>{aiSummary.summary}</HighlightedText>
               </div>
-            </div>
+            </section>
           )}
+          {/* 검색결과 */}
+          <ListEntry
+            currentTab={currentTab}
+            noticeItems={noticeItems}
+            boardItems={boardItems}
+            newsItems={newsItems}
+            items={items}
+            keyword={keyword}
+            initialContent={initialContent}
+            getMorePath={getNoticeSectionMorePath}
+            sort={sort}
+            onSortChange={setSort}
+            categoryTab={categoryTab}
+            setCategoryTab={setCategoryTab}
+          />
         </div>
       </div>
     </div>
