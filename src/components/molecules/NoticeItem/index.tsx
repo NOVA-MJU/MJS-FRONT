@@ -27,7 +27,7 @@ export default function NoticeItem({ id, category, title, date, link }: NoticeIt
     <div className='flex flex-col'>
       <a key={id} href={link} target='_blank' rel='noopener noreferrer'>
         <div
-          className={`border-grey-02 hover:bg-blue-05 h-fit w-full cursor-pointer border-b-1 px-5 py-2.5`}
+          className={`border-grey-02 hover:bg-blue-05 h-fit w-full cursor-pointer border-b-1 px-5 py-2.5 transition-colors`}
         >
           <div className='flex flex-col gap-0.5'>
             <span className='text-caption03 text-blue-10'>

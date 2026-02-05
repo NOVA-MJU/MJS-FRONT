@@ -67,7 +67,7 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
   }
   if (!isDesktop) {
     return (
-      <article className='hover:bg-blue-05 border-grey-02 border-b-1 px-5 py-4'>
+      <article className='hover:bg-blue-05 border-grey-02 border-b-1 px-5 py-4 transition-colors'>
         <a href={news.link} target='_blank' rel='noopener noreferrer' className='flex gap-4'>
           <img
             src={news.imageUrl?.trim() || fallbackSrc}
