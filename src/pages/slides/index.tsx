@@ -46,7 +46,7 @@ const TabBar = ({
   onTabChange: (tab: TabType) => void;
 }) => {
   return (
-    <div className='border-grey-10 no-scrollbar sticky top-0 z-10 w-full overflow-x-auto border-b bg-white'>
+    <div className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto border-b bg-white'>
       <div className='flex h-[39px] min-w-max items-center px-5'>
         {TABS.map((tab) => {
           const isActive = activeTab === tab;

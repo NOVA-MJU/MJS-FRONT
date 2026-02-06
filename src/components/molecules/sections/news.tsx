@@ -74,7 +74,7 @@ export default function NewsSection() {
       )}
 
       {/* 가로 스크롤 칩 메뉴 */}
-      <div className='no-scrollbar flex items-center gap-2 overflow-x-auto px-5 py-4'>
+      <div className='no-scrollbar swiper-no-swiping flex items-center gap-2 overflow-x-auto px-5 py-4'>
         {CATEGORIES.map(([key, label]) => {
           const isSelected = categoryTab === key;
           return (
