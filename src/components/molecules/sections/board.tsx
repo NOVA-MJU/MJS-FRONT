@@ -11,7 +11,7 @@ import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
-import { IoIosHeartEmpty } from 'react-icons/io';
+import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 /**
@@ -95,32 +95,35 @@ export default function BoardSection() {
       </div>
 
       {/* 정렬 필터 */}
-      <div className='flex items-center gap-3 px-5 py-4'>
-        {SORT_OPTIONS.map((item, idx) => {
-          const isActive = sortConfig.label === item.label;
-          return (
-            <button
-              key={idx}
-              onClick={() => setSortConfig(item)}
-              className='flex items-center gap-1 transition-opacity active:opacity-60'
-            >
-              <div
-                className={clsx(
-                  'h-[3px] w-[3px] rounded-full',
-                  isActive ? 'bg-grey-80' : 'bg-grey-20',
-                )}
-              />
-              <span
-                className={clsx(
-                  'text-[12px] leading-[1.5]',
-                  isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                )}
+      <div className='flex items-center justify-between px-5 pt-3 pb-1'>
+        <div className='flex items-center gap-3'>
+          {SORT_OPTIONS.map((item, idx) => {
+            const isActive = sortConfig.label === item.label;
+            return (
+              <button
+                key={idx}
+                onClick={() => setSortConfig(item)}
+                className='flex items-center gap-1 transition-opacity active:opacity-60'
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+                <div
+                  className={clsx(
+                    'h-[3px] w-[3px] rounded-full',
+                    isActive ? 'bg-grey-80' : 'bg-grey-20',
+                  )}
+                />
+                <span
+                  className={clsx(
+                    'text-[12px] leading-[1.5]',
+                    isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
+                  )}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <IoIosArrowForward className='text-grey-20' size={16} />
       </div>
 
       {/* 게시글 리스트 */}

@@ -1,26 +1,29 @@
 import { fetchNewsInfo } from '@/api/news';
-import Divider from '@/components/atoms/Divider';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import { Tabs } from '@/components/atoms/Tabs';
 import { ICON_SIZE_LG } from '@/constants/common';
 import { useResponsive } from '@/hooks/useResponse';
 import type { NewsInfo } from '@/types/news/newsInfo';
 import { formatToLocalDate } from '@/utils';
 import { handleError } from '@/utils/error';
-import React from 'react';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
+  ALL: '전체',
   REPORT: '보도',
   SOCIETY: '사회',
 };
 
+type SortType = 'LATEST' | 'HOT' | 'PAST';
+
 export default function NewsSection() {
-  const [categoryTab, setCategoryTab] = useState<string>('REPORT');
+  const [categoryTab, setCategoryTab] = useState<string>('ALL');
   const [fetchedNews, setFetchedNews] = useState<NewsInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortType, setSortType] = useState<SortType>('LATEST');
+  const [page, setPage] = useState(0);
   const { isDesktop } = useResponsive();
 
   /**
@@ -30,13 +33,23 @@ export default function NewsSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const response = await fetchNewsInfo(categoryTab);
+        const response = await fetchNewsInfo(categoryTab, page, isDesktop ? 5 : 10);
         const items = response.data.content ?? [];
+
+        // 정렬 로직 (클라이언트 측 혹은 API 연동 확인 필요 - 현재 API 파라미터에 sortBy가 없으므로 클라이언트 정렬)
         const toTS = (d?: string) => {
           const t = d ? Date.parse(d) : NaN;
           return Number.isNaN(t) ? 0 : t;
         };
-        const sorted = [...items].sort((a: NewsInfo, b: NewsInfo) => toTS(b.date) - toTS(a.date));
+
+        const sorted = [...items];
+        if (sortType === 'LATEST') {
+          sorted.sort((a, b) => toTS(b.date) - toTS(a.date));
+        } else if (sortType === 'PAST') {
+          sorted.sort((a, b) => toTS(a.date) - toTS(b.date));
+        }
+        // HOT (추천순)의 경우 NewsInfo에 likeCount 등의 필드가 없으므로 현재는 최신순과 동일하게 처리하거나 임의 가공
+
         setFetchedNews(sorted);
       } catch (e) {
         handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
@@ -44,96 +57,177 @@ export default function NewsSection() {
         setIsLoading(false);
       }
     })();
-  }, [categoryTab]);
+  }, [categoryTab, page, sortType, isDesktop]);
 
-  if (isDesktop)
-    return (
-      <section className='flex flex-col gap-3'>
-        <div className='flex items-center justify-between px-3'>
+  const CATEGORIES = Object.entries(tabNameMap);
+
+  return (
+    <section className='flex flex-col bg-white'>
+      {/* 데스크탑 헤더 */}
+      {isDesktop && (
+        <div className='mb-3 flex items-center justify-between px-3'>
           <h2 className='text-heading02 text-mju-primary'>명대신문</h2>
           <Link to='/news'>
             <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
-        <div className='px-3'>
-          <Tabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
+      )}
+
+      {/* 가로 스크롤 칩 메뉴 */}
+      <div className='no-scrollbar flex items-center gap-2 overflow-x-auto px-5 py-4'>
+        {CATEGORIES.map(([key, label]) => {
+          const isSelected = categoryTab === key;
+          return (
+            <button
+              key={key}
+              onClick={() => {
+                setCategoryTab(key);
+                setPage(0);
+              }}
+              className={clsx(
+                'flex shrink-0 items-center justify-center rounded-full px-3 py-1.5 transition-colors',
+                isSelected
+                  ? 'bg-mju-primary font-semibold text-white'
+                  : 'border-grey-10 text-grey-40 border bg-white font-normal',
+              )}
+            >
+              <span className='text-[14px] leading-tight'>{label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className='flex flex-col'>
+        {/* 정렬 필터 */}
+        <div className='flex items-center justify-between px-5 pb-1'>
+          <div className='flex items-center gap-3'>
+            {[
+              { label: '추천순', type: 'HOT' as SortType },
+              { label: '최신순', type: 'LATEST' as SortType },
+              { label: '과거순', type: 'PAST' as SortType },
+            ].map((item, idx) => {
+              const isActive = sortType === item.type;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSortType(item.type)}
+                  className='flex items-center gap-1 transition-opacity active:opacity-60'
+                >
+                  <div
+                    className={clsx(
+                      'h-[3px] w-[3px] rounded-full',
+                      isActive ? 'bg-grey-80' : 'bg-grey-20',
+                    )}
+                  />
+                  <span
+                    className={clsx(
+                      'text-[12px] leading-[1.5]',
+                      isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <IoIosArrowForward className='text-grey-20' size={16} />
         </div>
-        <div className='border-grey-05 flex flex-col gap-3 rounded-xl border-2 p-3'>
+
+        {/* 뉴스 리스트 컨텐츠 */}
+        <div className='flex flex-col'>
           {isLoading &&
             [...Array(5)].map((_, index) => (
-              <React.Fragment key={index}>
-                <Skeleton className='h-40' />
-                {index < 4 && <Divider variant='thin' />}
-              </React.Fragment>
+              <div key={index} className='px-5 py-4'>
+                <Skeleton className='h-[130px] rounded-lg' />
+              </div>
             ))}
-          {!isLoading &&
-            fetchedNews.slice(0, 5).map((news, index) => (
-              <React.Fragment key={index}>
-                <a
-                  href={news.link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='hover:bg-blue-05 flex w-full cursor-pointer gap-6 rounded-xl p-3 transition'
-                >
-                  <img
-                    src={news.imageUrl?.trim() || '/default-thumbnail.png'}
-                    alt={news.title}
-                    className='h-34 w-46 rounded-xl object-cover'
-                    onError={(e) => {
-                      e.currentTarget.src = '/default-thumbnail.png';
-                    }}
-                  />
-                  <div className='flex flex-1 flex-col justify-center gap-3'>
-                    <h2 className='text-title02 line-clamp-1 text-black'>{news.title}</h2>
-                    <p className='text-body03 line-clamp-3 text-black'>{news.summary}</p>
-                  </div>
-                </a>
-                {index < 4 && <Divider variant='thin' />}
-              </React.Fragment>
-            ))}
-        </div>
-      </section>
-    );
 
-  if (!isDesktop)
-    return (
-      <section>
-        <div className='flex flex-col gap-4'>
-          <Tabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
-          <div className='flex flex-col gap-2'>
-            {isLoading &&
-              [...Array(5)].map((_, index) => <Skeleton key={index} className='h-32' />)}
-            {!isLoading &&
-              fetchedNews.slice(0, 5).map((news, index) => (
-                <a
-                  key={index}
-                  href={news.link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='border-blue-05 hover:bg-blue-05 flex h-32 w-full cursor-pointer gap-2.5 rounded-sm border-1 px-2.5 py-4 transition hover:duration-0'
-                >
+          {!isLoading &&
+            fetchedNews.map((news, index) => (
+              <a
+                key={index}
+                href={news.link}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='border-grey-02 hover:bg-blue-05 flex items-center gap-4 border-b px-5 py-4 transition-colors'
+              >
+                {/* 썸네일 */}
+                <div className='border-grey-10 relative h-[103px] w-[110px] shrink-0 overflow-hidden rounded-[4px] border'>
                   <img
                     src={news.imageUrl?.trim() || '/default-thumbnail.png'}
                     alt={news.title}
-                    className='border-grey-10 h-26 w-26 rounded-sm border-1 object-cover'
+                    className='h-full w-full object-cover'
                     onError={(e) => {
                       e.currentTarget.src = '/default-thumbnail.png';
                     }}
                   />
-                  <div className='flex flex-1 flex-col gap-2'>
-                    <div className='flex flex-1 flex-col gap-1'>
-                      <h3 className='text-body04 line-clamp-1'>{news.title}</h3>
-                      <p className='text-caption01 text-grey-40 line-clamp-2'>{news.summary}</p>
-                    </div>
-                    <div className='flex flex-col gap-0.5'>
-                      <p className='text-caption03 text-grey-20'>{news.reporter}</p>
-                      <p className='text-caption03 text-grey-10'>{formatToLocalDate(news.date)}</p>
-                    </div>
+                </div>
+
+                {/* 텍스트 정보 */}
+                <div className='flex flex-1 flex-col justify-between self-stretch py-1'>
+                  <div className='flex flex-col gap-1'>
+                    <h3 className='text-body02 line-clamp-1 font-semibold text-black'>
+                      {news.title}
+                    </h3>
+                    <p className='text-body05 line-clamp-2 leading-tight text-black'>
+                      {news.summary}
+                    </p>
                   </div>
-                </a>
-              ))}
-          </div>
+                  <div className='flex flex-col'>
+                    <span className='text-caption01 text-grey-20 line-clamp-1 font-semibold'>
+                      {news.reporter}
+                    </span>
+                    <span className='text-caption02 text-grey-10 font-normal'>
+                      {formatToLocalDate(news.date)}
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
+
+          {!isLoading && fetchedNews.length === 0 && (
+            <div className='flex items-center justify-center py-20'>
+              <span className='text-body05 text-grey-20'>등록된 뉴스가 없습니다.</span>
+            </div>
+          )}
         </div>
-      </section>
-    );
+
+        {/* 페이지네이션 (간이 구현) */}
+        {!isLoading && fetchedNews.length > 0 && (
+          <div className='flex items-center justify-center gap-4 py-8'>
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              className='text-caption02 text-grey-20 flex items-center gap-1 disabled:opacity-30'
+            >
+              <IoIosArrowBack size={14} />
+              이전
+            </button>
+            <div className='flex items-center gap-3'>
+              {[1, 2, 3, 4, 5].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setPage(num - 1)}
+                  className={clsx(
+                    'flex h-6 w-6 items-center justify-center text-[12px] transition-colors',
+                    page === num - 1 ? 'text-blue-10 font-semibold' : 'text-grey-20',
+                  )}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              className='text-caption02 text-grey-20 flex items-center gap-1'
+            >
+              다음
+              <IoIosArrowForward size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }
