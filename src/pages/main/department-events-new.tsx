@@ -1,7 +1,22 @@
+import { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import { FaRegCalendarAlt } from 'react-icons/fa';
+import DatePickerDrawer from '@/components/molecules/DatePickerDrawer';
 
 export default function DepartmentEventsNewPage() {
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
+  const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+
+  // 날짜를 "YYYY. MM. DD" 형식으로 포맷
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}. ${month}. ${day}`;
+  };
+
   return (
     <section className='flex flex-1 flex-col'>
       {/* 헤더 */}
@@ -26,13 +41,11 @@ export default function DepartmentEventsNewPage() {
       <div className='flex items-center gap-3 px-5'>
         <span className='text-body05 text-grey-40 shrink-0'>시작</span>
         <div className='border-grey-10 flex flex-1 items-center justify-between rounded-lg border'>
-          <span className='text-body06 p-3 text-black'>2025. 08. 07</span>
+          <span className='text-body06 p-3 text-black'>{formatDate(startDate)}</span>
           <button
             className='cursor-pointer p-3'
             aria-label='시작 날짜 선택'
-            onClick={() => {
-              // TODO: 시작 날짜 선택
-            }}
+            onClick={() => setIsStartDatePickerOpen(true)}
           >
             <FaRegCalendarAlt className='text-grey-40 shrink-0 text-lg' aria-hidden />
           </button>
@@ -41,13 +54,11 @@ export default function DepartmentEventsNewPage() {
       <div className='mt-2 flex items-center gap-3 px-5'>
         <span className='text-body05 text-grey-40 shrink-0'>종료</span>
         <div className='border-grey-10 flex flex-1 items-center justify-between rounded-lg border'>
-          <span className='text-body06 p-3 text-black'>2025. 08. 07</span>
+          <span className='text-body06 p-3 text-black'>{formatDate(endDate)}</span>
           <button
             className='cursor-pointer p-3'
             aria-label='종료 날짜 선택'
-            onClick={() => {
-              // TODO: 종료 날짜 선택
-            }}
+            onClick={() => setIsEndDatePickerOpen(true)}
           >
             <FaRegCalendarAlt className='text-grey-40 shrink-0 text-lg' aria-hidden />
           </button>
@@ -64,6 +75,22 @@ export default function DepartmentEventsNewPage() {
           완료
         </button>
       </div>
+
+      {/* 시작 날짜 선택 Drawer */}
+      <DatePickerDrawer
+        open={isStartDatePickerOpen}
+        onOpenChange={setIsStartDatePickerOpen}
+        value={startDate}
+        onChange={setStartDate}
+      />
+
+      {/* 종료 날짜 선택 Drawer */}
+      <DatePickerDrawer
+        open={isEndDatePickerOpen}
+        onOpenChange={setIsEndDatePickerOpen}
+        value={endDate}
+        onChange={setEndDate}
+      />
     </section>
   );
 }
