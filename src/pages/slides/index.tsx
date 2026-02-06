@@ -118,11 +118,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
       <MealSection />
     </TabWrapper>
   ),
-  게시판: () => (
-    <TabWrapper>
-      <BoardSection />
-    </TabWrapper>
-  ),
+  게시판: () => <BoardSection />,
   명대신문: () => (
     <TabWrapper>
       <NewsSection />
