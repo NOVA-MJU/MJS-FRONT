@@ -17,7 +17,7 @@ export default function Drawer({
   showHandle = true,
 }: DrawerProps) {
   return (
-    <VaulDrawer.Root open={open} onOpenChange={onOpenChange}>
+    <VaulDrawer.Root open={open} onOpenChange={onOpenChange} handleOnly={!showHandle}>
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay className='bg-bg fixed inset-0 z-40' />
         <VaulDrawer.Content className='fixed right-0 bottom-0 left-0 z-50 mt-24 flex max-h-[80vh] flex-col rounded-t-[10px] bg-white'>

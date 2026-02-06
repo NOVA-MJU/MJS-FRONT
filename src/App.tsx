@@ -32,6 +32,7 @@ import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
 import DepartmentEventsNewPage from './pages/main/department-events-new';
 import DepartmentEventsEditPage from './pages/main/department-events-edit';
+import DepartmentPostsEditPage from './pages/main/department-posts-edit';
 
 const App = () => {
   return (
@@ -78,6 +79,7 @@ const App = () => {
 
         <Route path='/main/department/posts/:uuid' element={<DepartmentPostsDetailPage />} />
         <Route path='/main/department/posts/new' element={<DepartmentPostsNewPage />} />
+        <Route path='/main/department/posts/edit/:uuid' element={<DepartmentPostsEditPage />} />
 
         <Route path='/main/department/events/new' element={<DepartmentEventsNewPage />} />
         <Route path='/main/department/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
