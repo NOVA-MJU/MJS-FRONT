@@ -8,6 +8,9 @@ import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import { NoticeSlideSection } from '@/components/molecules/sections/notice';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperClass } from 'swiper';
+import 'swiper/css';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -138,9 +141,16 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
 const Slides = () => {
   // 현재 활성화된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
+  const [swiper, setSwiper] = useState<SwiperClass | null>(null);
 
-  // 현재 선택된 탭에 대응하는 컴포넌트 매핑 데이터
-  const ActiveContent = TAB_CONTENT[activeTab];
+  // 탭 변경 시 스위퍼 슬라이드 이동
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    if (swiper) {
+      const index = TABS.indexOf(tab);
+      swiper.slideTo(index);
+    }
+  };
 
   // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
   useEffect(() => {
@@ -159,18 +169,30 @@ const Slides = () => {
   }, [activeTab]);
 
   return (
-    <div
-      className={cn(
-        'flex flex-col overflow-hidden bg-white',
-        activeTab === '명지도' ? 'h-[calc(100dvh-39px)]' : 'min-h-screen',
-      )}
-    >
+    <div className={cn('flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}>
       {/* 상단 통합 탭 바 */}
-      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
 
       {/* 탭 메인 컨텐츠 영역 */}
       <main className='flex-1 overflow-hidden'>
-        <ActiveContent />
+        <Swiper
+          initialSlide={TABS.indexOf(activeTab)}
+          onSwiper={setSwiper}
+          onSlideChange={(s) => setActiveTab(TABS[s.activeIndex])}
+          className='h-full w-full'
+          nested={true}
+          resistance={true}
+          resistanceRatio={0}
+        >
+          {TABS.map((tab) => {
+            const Content = TAB_CONTENT[tab];
+            return (
+              <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
+                <Content />
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
       </main>
     </div>
   );

@@ -2,6 +2,9 @@ import { useResponsive } from '@/hooks/useResponse';
 import Main from '@/pages';
 import Slides from './slides';
 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+
 /**
  * 메인 페이지와 슬라이드 페이지를 가로 스크롤로 연결하는 스위퍼 컴포넌트
  */
@@ -15,17 +18,17 @@ const HomeSlider = () => {
   }
 
   return (
-    <div className='no-scrollbar flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth'>
+    <Swiper className='h-full w-full' slidesPerView={1} threshold={5}>
       {/* 1. 메인 홈 화면 */}
-      <section className='content-scroll h-full w-full shrink-0 snap-center overflow-x-hidden overflow-y-auto'>
+      <SwiperSlide className='h-full w-full overflow-y-auto'>
         <Main />
-      </section>
+      </SwiperSlide>
 
       {/* 2. 명지도/공지 등 슬라이드 페이지 */}
-      <section className='content-scroll h-full w-full shrink-0 snap-center overflow-x-hidden overflow-y-auto'>
+      <SwiperSlide className='h-full w-full overflow-x-hidden overflow-y-auto'>
         <Slides />
-      </section>
-    </div>
+      </SwiperSlide>
+    </Swiper>
   );
 };
 
