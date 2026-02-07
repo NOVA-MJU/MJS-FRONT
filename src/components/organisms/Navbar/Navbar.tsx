@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
-import { IoIosClose, IoIosMenu, IoIosSearch } from 'react-icons/io';
+import { IoIosClose, IoIosMenu } from 'react-icons/io';
 import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
@@ -108,7 +108,7 @@ export default function Navbar() {
       <nav className='bg-mju-primary w-full'>
         <div className='mx-auto flex w-[1280px] items-center justify-between'>
           <Link to='/' className='p-3' onClick={() => trackNavClick('home')}>
-            <img src='/logo/mjs-typography-primary.svg' alt='MJS' className='h-auto w-17' />
+            <img src='/logo/ThingoBigLogo.svg' alt='thingo' className='h-auto w-17' />
           </Link>
 
           <ul className='flex list-none items-center gap-1 text-sm leading-none font-medium text-white'>
@@ -141,22 +141,14 @@ export default function Navbar() {
     );
 
   return (
-    <nav className='bg-mju-primary h-fit w-full'>
+    <nav className='border-grey-10 h-fit w-full border-b-1 bg-white'>
       <div className='flex flex-col px-5 py-2'>
         <div className='flex items-center justify-between'>
           <Link to='/' onClick={() => trackNavClick('home')}>
-            <img src='/logo/mjs-typography-primary.svg' alt='logo' />
+            <img src='/logo/ThingoBigLogo.svg' alt='logo' />
           </Link>
 
-          <div className='flex items-center gap-2 text-xl text-white'>
-            <Link
-              to='search'
-              className='cursor-pointer rounded-md p-2 transition hover:bg-white/10'
-              onClick={() => trackNavClick('search')}
-            >
-              <IoIosSearch />
-            </Link>
-
+          <div className='flex items-center gap-2 text-xl text-black'>
             <button
               className='cursor-pointer rounded-md p-2 transition hover:bg-white/10'
               onClick={toggleMenu}
