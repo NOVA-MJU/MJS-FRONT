@@ -12,39 +12,37 @@ type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
 type MenuItem = { date: string; menuCategory: MenuCategory; meals: string[] };
 
-const DAY_KO = ['일', '월', '화', '수', '목', '금', '토'] as const;
+const getKSTInfo = (d: Date = new Date()) => {
+  const formatter = new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    weekday: 'short',
+    hour12: false,
+  });
 
-/**
- * 현재 한국 시간(KST)을 기준으로 Date 객체를 반환합니다.
- * 식단 컴포넌트는 무조건 한국 시간을 기준으로 동작합니다.
- */
-const getKSTDate = (): Date => {
-  const now = new Date(); // 현재 로컬 시간
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000; // UTC 시간 (밀리초)
-  const kstOffset = 9 * 60 * 60000; // KST는 UTC+9
-  return new Date(utc + kstOffset);
-};
+  const parts = formatter.formatToParts(d);
+  const find = (type: string) => parts.find((p) => p.type === type)?.value || '';
 
-/**
- * KST Date 객체를 API 응답 형식('MM.DD (요일)')으로 변환합니다.
- * @example "10.20 (월)"
- */
-const getApiDateLabel = (d: Date) => {
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const dow = DAY_KO[d.getDay()];
-  return `${mm}.${dd} (${dow})`;
-};
+  const month = find('month');
+  const day = find('day');
+  const dow = find('weekday');
+  const hour = parseInt(find('hour'));
+  const minute = parseInt(find('minute'));
 
-/**
- * KST Date 객체를 UI 표시 형식('M월 D일 (요일)')으로 변환합니다.
- * @example "10월 20일 (월)"
- */
-const getUIDateLabel = (d: Date) => {
-  const mm = d.getMonth() + 1;
-  const dd = d.getDate();
-  const dow = DAY_KO[d.getDay()];
-  return `${mm}월 ${dd}일 (${dow})`;
+  return {
+    month,
+    day,
+    dow,
+    hour,
+    minute,
+    // API 요청용 형식: "02.01 (일)"
+    apiDateLabel: `${month.padStart(2, '0')}.${day.padStart(2, '0')} (${dow})`,
+    // UI 표시용 형식: "2월 1일 (일)"
+    uiDateLabel: `${month}월 ${day}일 (${dow})`,
+  };
 };
 
 type MealTimeInfo = {
@@ -55,47 +53,30 @@ type MealTimeInfo = {
 };
 
 /**
- * KST 기준으로 현재 표시해야 할 식단 정보(시간, 날짜)를 반환합니다.
- * - 09:00 이전: 오늘 아침
- * - 14:00 이전: 오늘 점심
- * - 18:30 이전: 오늘 저녁
- * - 18:30 이후: 내일 아침
+ * KST 기준으로 현재 표시해야 할 식단 정보를 반환합니다.
  */
 const getTargetMealInfo = (): MealTimeInfo => {
-  const kstNow = getKSTDate();
-  const kstHour = kstNow.getHours();
-  const kstMinutes = kstNow.getMinutes();
-  const kstTime = kstHour + kstMinutes / 60; // 예: 18:30 -> 18.5
+  const kst = getKSTInfo();
+  const kstSum = kst.hour + kst.minute / 60;
 
-  let targetDate = kstNow;
   let uiMealKey: UIMealKey;
   let apiCategory: MenuCategory;
 
-  if (kstTime < 9.0) {
+  if (kstSum < 9.0) {
     uiMealKey = '아침';
     apiCategory = 'BREAKFAST';
-  } else if (kstTime < 14.0) {
+  } else if (kstSum < 14.0) {
     uiMealKey = '점심';
     apiCategory = 'LUNCH';
-  } else if (kstTime < 18.5) {
+  } else {
     uiMealKey = '저녁';
     apiCategory = 'DINNER';
-  } else {
-    // 18:30 이후는 다음날 아침
-    uiMealKey = '아침';
-    apiCategory = 'BREAKFAST';
-    const tomorrow = new Date(kstNow);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    targetDate = tomorrow;
   }
-
-  const apiDateLabel = getApiDateLabel(targetDate);
-  const uiDateLabel = getUIDateLabel(targetDate);
 
   return {
     uiMealKey,
-    apiDateLabel,
-    uiFullLabel: `${uiDateLabel} ${uiMealKey}`,
+    apiDateLabel: kst.apiDateLabel,
+    uiFullLabel: `${kst.uiDateLabel} ${uiMealKey}`,
     apiCategory,
   };
 };
@@ -108,8 +89,8 @@ export default function MealSection() {
   const [isLoading, setIsLoading] = useState(true);
 
   // KST 기준으로 주말인지 확인
-  const kstDay = getKSTDate().getDay();
-  const isWeekend = kstDay === 0 || kstDay === 6;
+  const kst = getKSTInfo();
+  const isWeekend = kst.dow === '토' || kst.dow === '일';
 
   const { isDesktop } = useResponsive();
 
@@ -149,8 +130,6 @@ export default function MealSection() {
     })();
   }, [isWeekend]);
 
-  if (isWeekend) return null;
-
   /**
    * 데스크탑 뷰
    */
@@ -187,32 +166,34 @@ export default function MealSection() {
    */
   if (!isDesktop)
     return (
-      <section>
-        <Link to='/menu'>
-          <div className='flex flex-col items-center gap-2'>
-            <h3 className='text-body02'>{mealInfo.uiFullLabel}</h3>
-            <Divider variant='thin' />
-            <div className='flex flex-wrap justify-center gap-x-2 gap-y-1'>
-              {isLoading && (
-                <>
-                  <Skeleton className='h-5 w-40' />
-                  <Skeleton className='h-5 w-32' />
-                  <Skeleton className='h-5 w-28' />
-                  <Skeleton className='h-5 w-40' />
-                  <Skeleton className='h-5 w-28' />
-                </>
-              )}
-              {!isLoading && !meals && (
-                <li className='text-body03 text-center'>식단 정보가 없습니다.</li>
-              )}
-              {!isLoading &&
-                meals &&
-                meals.map((meal, index) => (
-                  <span key={index} className='text-body03 whitespace-nowrap'>
+      <section className='border-grey-10 flex w-full flex-col gap-2 rounded-[10px] border-[1px] p-4'>
+        <Link to='/menu' className='flex flex-col gap-2'>
+          {/* 헤더: 아이콘 + 현재 식단 라벨 (날짜/시간) */}
+          <div className='flex items-center gap-2'>
+            <img src='/img/meal-icon.png' alt='식단 아이콘' className='h-6 w-6 object-contain' />
+            <span className='text-body02 font-semibold text-black'>{mealInfo.uiFullLabel}</span>
+          </div>
+
+          {/* 바디: 식단 내용 */}
+          <div className='px-[3px] py-1'>
+            {isLoading && (
+              <div className='flex flex-col gap-1'>
+                <Skeleton className='h-5 w-full' />
+                <Skeleton className='h-5 w-3/4' />
+              </div>
+            )}
+            {!isLoading && meals.length === 0 && (
+              <p className='text-body05 text-grey-80'>등록된 식단 내용이 없습니다.</p>
+            )}
+            {!isLoading && meals.length > 0 && (
+              <ul className='flex flex-wrap gap-x-2 gap-y-1'>
+                {meals.map((meal, index) => (
+                  <li key={index} className='text-body05 text-grey-80'>
                     {meal}
-                  </span>
+                  </li>
                 ))}
-            </div>
+              </ul>
+            )}
           </div>
         </Link>
       </section>

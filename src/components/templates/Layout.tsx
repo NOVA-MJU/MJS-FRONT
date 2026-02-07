@@ -1,7 +1,7 @@
+import { useResponsive } from '@/hooks/useResponse';
+import { Outlet, useLocation } from 'react-router-dom';
 import Footer from '../organisms/Footer';
 import Navbar from '../organisms/Navbar/Navbar';
-import { Outlet, useLocation } from 'react-router-dom';
-import { useResponsive } from '@/hooks/useResponse';
 
 interface LayoutProps {
   className?: string;
@@ -16,7 +16,7 @@ const Layout = ({ className }: LayoutProps) => {
     return (
       <div className={`flex h-[100svh] w-full flex-col overflow-hidden ${className}`}>
         <Navbar />
-        <main className='min-h-0 flex-1 overflow-y-auto'>
+        <main className='min-h-0 flex-1 overflow-hidden'>
           <Outlet />
         </main>
       </div>
