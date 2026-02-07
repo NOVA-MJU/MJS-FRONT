@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosInformationCircleOutline } from 'react-icons/io';
 import NoticeItem from '@/components/molecules/NoticeItem';
 import NewsCard from '@/pages/news/NewsCard';
 import BroadcastCard from '@/pages/broadcast/BroadcastCard';
@@ -9,7 +10,7 @@ import SortButtons, { type Sort } from '@/components/molecules/SortButtons';
 import type { SearchResultItemRes } from '@/api/search';
 import { ChipTabs, SegmentedControlTabs } from '@/components/atoms/Tabs';
 import { filterByCategoryTab, type FilterCategory } from '@/utils/filterList';
-import AcademicCalendar from '../academic-calendar';
+import AcademicScheduleInSearch from './AcademicScheduleInSearch';
 
 export type SearchTabKey =
   | 'ALL'
@@ -61,8 +62,12 @@ const CommunityLabel: Record<string, string> = {
   free: '자유 게시판',
 };
 
-const EMPTY_MESSAGE_CLASS =
-  'flex h-26 items-center justify-center mx-5 border-1 border-grey-10 rounded-[4px]';
+const EMPTY_MESSAGE_CLASS = ({ isLong }: { isLong: boolean }) => {
+  if (!isLong) {
+    return 'flex h-26 items-center justify-center mx-5 border-1 border-grey-10 rounded-[4px]';
+  }
+  return 'flex h-full items-center justify-center mx-5';
+};
 
 // 검색 결과 아이템 렌더링
 function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
@@ -149,9 +154,9 @@ function SectionHeader({
 }
 
 // 검색 결과 없을 경우
-function EmptyState({ keyword }: { keyword: string | null }) {
+function EmptyState({ keyword, isLong }: { keyword: string | null; isLong: boolean }) {
   return (
-    <div className={EMPTY_MESSAGE_CLASS}>
+    <div className={EMPTY_MESSAGE_CLASS({ isLong })}>
       <p className='text-body05 text-grey-30'>'{keyword ?? ''}'을 찾을 수 없습니다.</p>
     </div>
   );
@@ -210,7 +215,7 @@ export default function ListEntry({
           />
           <div className='flex flex-col'>
             {noticeItems.map((notice) => renderItem(notice, '공지사항'))}
-            {noticeItems.length === 0 && <EmptyState keyword={keyword} />}
+            {noticeItems.length === 0 && <EmptyState keyword={keyword} isLong={false} />}
           </div>
         </div>
 
@@ -224,7 +229,7 @@ export default function ListEntry({
           />
           <div className='flex flex-col'>
             {boardItems.map((board) => renderItem(board, '게시판'))}
-            {boardItems.length === 0 && <EmptyState keyword={keyword} />}
+            {boardItems.length === 0 && <EmptyState keyword={keyword} isLong={false} />}
           </div>
         </div>
 
@@ -251,7 +256,7 @@ export default function ListEntry({
                 }}
               />
             ))}
-            {newsItems.length === 0 && <EmptyState keyword={keyword} />}
+            {newsItems.length === 0 && <EmptyState keyword={keyword} isLong={false} />}
           </div>
         </div>
       </div>
@@ -288,7 +293,7 @@ export default function ListEntry({
 
         {/* 더보기 버튼과 sort 관리 */}
         <div className='flex flex-row items-center justify-between px-5 py-2'>
-          {(categoryTab !== 'all' || currentTab !== '학사일정') && (
+          {(categoryTab !== 'all' || currentTab !== '학사일정') && filteredItems.length !== 0 && (
             <SortButtons sort={sort} onSortChange={onSortChange} />
           )}
           {filteredItems.length > 5 && (
@@ -305,9 +310,14 @@ export default function ListEntry({
 
         {/* 학사일정 카테고리일 경우 학사일정 캘린더 출력, 나머지는 필터링 한 결과 출력 */}
         <div className='flex flex-col'>
-          {categoryTab === 'all' && currentTab === '학사일정' && <AcademicCalendar />}
+          {categoryTab === 'all' && currentTab === '학사일정' && <AcademicScheduleInSearch />}
           {filteredItems.map((item) => renderItem(item, currentTab))}
-          {filteredItems.length === 0 && <EmptyState keyword={keyword} />}
+          {filteredItems.length === 0 && !(categoryTab === 'all' && currentTab === '학사일정') && (
+            <div className='flex flex-col items-center justify-center py-50'>
+              <IoIosInformationCircleOutline size={35} className='text-grey-10' />
+              <EmptyState keyword={keyword} isLong={true} />
+            </div>
+          )}
         </div>
       </div>
     </div>

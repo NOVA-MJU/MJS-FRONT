@@ -99,9 +99,10 @@ export const getSearchResult = async (
   return res.data.data;
 };
 
-export const getSearchAISummary = async (keyword: string) => {
-  const res = await apiClient.get<ApiResponse<GetSearchAISummaryRes>>('/ai/summary', {
-    params: { keyword },
+/** AI 요약 API는 ApiResponse 래퍼 없이 payload만 반환합니다. */
+export const getSearchAISummary = async (keyword: string): Promise<GetSearchAISummaryRes> => {
+  const res = await apiClient.get<GetSearchAISummaryRes>('/ai/summary', {
+    params: { query: keyword },
   });
-  return res.data.data;
+  return res.data;
 };

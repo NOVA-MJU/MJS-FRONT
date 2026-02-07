@@ -10,9 +10,10 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
 import { IoMdLink } from 'react-icons/io';
-import { HighlightedText } from '@/components/atoms/HighlightedText';
+import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
+import ThingoLogoSmall from '../../../public/logo/ThingoSmallLogo.svg';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -119,8 +120,7 @@ export default function SearchDetail() {
    * 검색어 초기값 반영 (search parameter 반영)
    */
   useEffect(() => {
-    //추후 로직 수정
-    if (currentTab === 'ALL') handleGetAiSummary(keyword ?? '');
+    handleGetAiSummary(keyword ?? '');
     setSort('relevance');
     (async () => {
       if (!keyword) return;
@@ -153,8 +153,8 @@ export default function SearchDetail() {
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
         <header className='flex items-center gap-4 px-4 py-2'>
-          <div className='bg-blue-05 h-12 w-12' onClick={() => navigate('/')}>
-            logo
+          <div className='h-12 w-12' onClick={() => navigate('/')}>
+            <img src={ThingoLogoSmall} />
           </div>
 
           <div className='flex-1 py-2'>
@@ -196,8 +196,8 @@ export default function SearchDetail() {
                   <IoMdLink size={20} className='text-mju-primary rotate-135' />
                 </a>
               </div>
-              <div className='text-body05 text-grey-80 break-words'>
-                <HighlightedText>{aiSummary.summary}</HighlightedText>
+              <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
+                <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
               </div>
             </section>
           )}
