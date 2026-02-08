@@ -89,7 +89,7 @@ function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
         news={{
           title: item.highlightedTitle,
           date: item.date,
-          reporter: item.type,
+          reporter: item.authorName ?? 'NEWS',
           imageUrl: item.imageUrl,
           summary: item.highlightedContent,
           link: item.link,
@@ -105,8 +105,8 @@ function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
         id={item.id}
         title={item.highlightedTitle}
         previewContent={item.highlightedContent}
-        likeCount={0}
-        commentCount={0}
+        likeCount={item.likeCount ?? 0}
+        commentCount={item.commentCount ?? 0}
         publishedAt={item.date}
         isPopular={false}
       />

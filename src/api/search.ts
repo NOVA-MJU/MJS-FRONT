@@ -27,6 +27,9 @@ export interface SearchResultItemRes {
   type: string;
   imageUrl: string;
   score: number;
+  authorName?: string;
+  likeCount?: number;
+  commentCount?: number;
 }
 
 export interface GetSearchResultRes {
@@ -39,13 +42,19 @@ export interface GetSearchResultRes {
   type: string;
   imageUrl: string;
   score: number;
+  authorName?: string;
+  likeCount?: number;
+  commentCount?: number;
 }
 
 export interface GetSearchAISummaryRes {
   query: string;
   summary: string;
   document_count: number;
-  source_links: string[];
+  sources?: {
+    title: string;
+    url: string;
+  }[];
 }
 
 export const getSearchOverview = async (

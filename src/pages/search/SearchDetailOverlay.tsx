@@ -9,7 +9,7 @@ import {
 } from '../../api/search';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
-import { IoMdLink } from 'react-icons/io';
+import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
@@ -60,6 +60,7 @@ export default function SearchDetail() {
     return (isValidTab(tab) ? tab : 'ALL') as SearchTabKey;
   });
   const [categoryTab, setCategoryTab] = useState<string>('all');
+  const [isLinkOpen, setIsLinkOpen] = useState(false);
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
@@ -69,7 +70,7 @@ export default function SearchDetail() {
     query: '',
     summary: '',
     document_count: 0,
-    source_links: [],
+    sources: [],
   });
   const [initialContent, setInitialContent] = useState('');
   const [sort, setSort] = useState<Sort>('relevance');
@@ -184,21 +185,57 @@ export default function SearchDetail() {
           {/* ai요약 */}
           {currentTab === 'ALL' && (
             <section className='border-grey-10 flex flex-col gap-3.5 border-b-1 p-5'>
-              <div className='text-body02 flex w-full items-center justify-between text-black'>
+              <div className='text-body02 flex w-full items-center text-black'>
                 <div className='flex gap-1'>
                   <p className='text-mju-primary'>AI</p>
                   <p>요약 검색 결과</p>
                 </div>
-                <a
-                  href='https://www.google.com'
-                  className='bg-blue-05 cursor-pointer rounded-full p-1'
-                >
-                  <IoMdLink size={20} className='text-mju-primary rotate-135' />
-                </a>
               </div>
               <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
                 <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
               </div>
+
+              {/* ai 출처 링크 */}
+              {aiSummary.document_count > 0 && (
+                <div>
+                  <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
+                    <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
+                    <div className='flex items-center gap-1'>
+                      {aiSummary.document_count > 1 && (
+                        <div
+                          onClick={() => setIsLinkOpen(!isLinkOpen)}
+                          className='text-caption01 bg-grey-02 text-grey-20 flex cursor-pointer items-center gap-1 rounded-full px-2'
+                        >
+                          +{aiSummary.document_count}
+                          {isLinkOpen ? (
+                            <IoIosArrowUp size={10} className='text-grey-30' />
+                          ) : (
+                            <IoIosArrowDown size={10} className='text-grey-30' />
+                          )}
+                        </div>
+                      )}
+                      <a
+                        href={aiSummary.sources?.[0]?.url}
+                        className='bg-blue-05 rounded-full p-0.5'
+                      >
+                        <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                      </a>
+                    </div>
+                  </div>
+                  {isLinkOpen &&
+                    aiSummary.sources?.slice(1).map((source, idx) => (
+                      <div
+                        key={idx}
+                        className='text-body05 text-grey-30 flex items-center justify-between py-1'
+                      >
+                        <p className='w-3/4 break-words'>{source.title}</p>
+                        <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
+                          <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                        </a>
+                      </div>
+                    ))}
+                </div>
+              )}
             </section>
           )}
           {/* 검색결과 */}
