@@ -64,6 +64,7 @@ export default function SearchDetail() {
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
+  const [broadcastItems, setBroadcastItems] = useState<SearchResultItemRes[]>([]);
   const [items, setItems] = useState<SearchResultItemRes[]>([]);
 
   const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
@@ -101,6 +102,7 @@ export default function SearchDetail() {
       setNoticeItems(res.notice);
       setBoardItems(res.community);
       setNewsItems(res.news);
+      setBroadcastItems(res.broadcast);
     } else {
       let type = tapLabel[currentTab];
       if (categoryTab === 'department') {
@@ -244,6 +246,7 @@ export default function SearchDetail() {
             noticeItems={noticeItems}
             boardItems={boardItems}
             newsItems={newsItems}
+            broadcastItems={broadcastItems}
             items={items}
             keyword={keyword}
             initialContent={initialContent}

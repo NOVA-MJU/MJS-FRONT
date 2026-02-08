@@ -26,6 +26,7 @@ interface ListEntryProps {
   noticeItems: SearchResultItemRes[];
   boardItems: SearchResultItemRes[];
   newsItems: SearchResultItemRes[];
+  broadcastItems: SearchResultItemRes[];
   items: SearchResultItemRes[];
   keyword: string | null;
   initialContent: string;
@@ -189,6 +190,7 @@ export default function ListEntry({
   noticeItems,
   boardItems,
   newsItems,
+  broadcastItems,
   items,
   keyword,
   initialContent,
@@ -257,6 +259,19 @@ export default function ListEntry({
               />
             ))}
             {newsItems.length === 0 && <EmptyState keyword={keyword} isLong={false} />}
+          </div>
+        </div>
+        {/* 명대뉴스 */}
+        <div className='mt-3 flex flex-col'>
+          <SectionHeader
+            title='명대뉴스'
+            showMore={broadcastItems.length === 5}
+            moreTo='/broadcast'
+            moreSearch={initialContent}
+          />
+          <div className='flex flex-col'>
+            {broadcastItems.map((broadcast) => renderItem(broadcast, '명대뉴스'))}
+            {broadcastItems.length === 0 && <EmptyState keyword={keyword} isLong={false} />}
           </div>
         </div>
       </div>
