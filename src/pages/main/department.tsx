@@ -7,25 +7,52 @@ import { Tabs } from '@/components/atoms/Tabs';
 import Calendar from '@/components/molecules/Calendar';
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
+import Drawer from '@/components/molecules/Drawer';
+import { COLLEGE_OPTIONS, collegeMap } from '@/constants/colleges';
 
+// 페이지 탭 구성
 const TABS = {
-  schedule: '소속 일정',
-  'department-notice': '소속 공지사항',
-  'student-council-notice': '학생회 공지사항',
+  events: '소속 일정',
+  notices: '소속 공지사항',
+  posts: '학생회 공지사항',
 };
 
-export default function DepartmentDetailPage() {
-  // 단과대 필터
-  const [selectedCollege] = useState('인공지능 소프트웨어융합대학');
+const TAB_KEYS = Object.keys(TABS) as (keyof typeof TABS)[];
 
-  function handleCollegeFilter() {}
+// 관리자 권한 체크
+const hasAdminPermission = (role: string | undefined): boolean => {
+  return role === 'OPERATOR' || role === 'ADMIN';
+};
+
+export default function DepartmentMainPage() {
+  const { user } = useAuthStore();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // 단과대 필터
+  const [selectedCollege, setSelectedCollege] = useState('AI_SOFTWARE');
+  const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
+
+  function handleCollegeFilter() {
+    setIsCollegeDrawerOpen(true);
+  }
 
   function handleDepartmentFilter() {}
 
   // 탭 선택
-  const [currentTab, setCurrentTab] = useState(Object.keys(TABS)[0]);
+  const tabFromUrl = searchParams.get('tab');
+  const currentTab: string =
+    tabFromUrl && TAB_KEYS.includes(tabFromUrl as keyof typeof TABS) ? tabFromUrl : TAB_KEYS[0];
+
+  function handleTabChange(tab: string) {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', tab);
+    setSearchParams(next, { replace: true });
+  }
 
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
@@ -41,7 +68,7 @@ export default function DepartmentDetailPage() {
   const [feeds] = useState(FEED_DATA);
 
   return (
-    <section className='flex flex-1 flex-col'>
+    <section>
       {/* 단과대 필터 */}
       <div className='flex gap-2 px-5 py-4'>
         <button
@@ -52,7 +79,7 @@ export default function DepartmentDetailPage() {
           )}
           onClick={handleCollegeFilter}
         >
-          {selectedCollege}
+          {collegeMap.get(selectedCollege) || '전체'}
           <IoIosArrowDown className='text-grey-40' />
         </button>
         <button
@@ -102,14 +129,14 @@ export default function DepartmentDetailPage() {
           <Tabs
             tabs={TABS}
             currentTab={currentTab}
-            setCurrentTab={setCurrentTab}
+            setCurrentTab={handleTabChange}
             className='text-body04 border-b-0'
           />
         </div>
 
         {/* 소속 일정 탭 */}
-        {currentTab === 'schedule' && (
-          <section>
+        {currentTab === 'events' && (
+          <section className='relative'>
             <div className='flex flex-col'>
               <Calendar
                 className='m-5'
@@ -118,6 +145,7 @@ export default function DepartmentDetailPage() {
                 onMonthChange={setCurrentMonth}
                 onDateSelect={setSelectedDate}
               />
+
               {/* 선택한 날짜 이벤트 목록 */}
               <div className='border-grey-02 mb-2 border-b-1 px-5 py-1'>
                 <span className='text-body02 text-mju-primary'>
@@ -126,22 +154,46 @@ export default function DepartmentDetailPage() {
               </div>
               <div>
                 {dayEvents.map((event) => (
-                  <div key={event.id} className='flex items-start gap-2 px-5 py-2'>
+                  <button
+                    key={event.id}
+                    className={clsx(
+                      'flex w-full items-start gap-2 px-5 py-2 text-start',
+                      hasAdminPermission(user?.role) && 'cursor-pointer',
+                    )}
+                    onClick={() => {
+                      // 권한이 OPERATOR 또는 ADMIN인 경우 일정 수정 페이지로 이동
+                      if (hasAdminPermission(user?.role)) {
+                        navigate(`events/edit/${event.id}`);
+                      }
+                    }}
+                  >
                     <span className='text-caption02 text-grey-40 min-w-19'>
                       {format(new Date(event.startDate), 'MM.dd', { locale: ko })}
                       {event.endDate &&
                         ` - ${format(new Date(event.endDate), 'MM.dd', { locale: ko })}`}
                     </span>
                     <span className='text-caption02 flex-1 text-black'>{event.title}</span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
+
+            {hasAdminPermission(user?.role) && (
+              <button
+                type='button'
+                className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
+                onClick={() => {
+                  navigate('events/new');
+                }}
+              >
+                <IoIosAdd className='text-4xl text-white' />
+              </button>
+            )}
           </section>
         )}
 
         {/* 소속 공지사항 탭 */}
-        {currentTab === 'department-notice' && (
+        {currentTab === 'notices' && (
           <section>
             <div className='flex flex-col py-5'>
               {noticeData.map((notice) => (
@@ -165,22 +217,68 @@ export default function DepartmentDetailPage() {
         )}
 
         {/* 학생회 공지사항 탭 */}
-        {currentTab === 'student-council-notice' && (
+        {currentTab === 'posts' && (
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
+              {hasAdminPermission(user?.role) && (
+                <Link
+                  to='posts/new'
+                  className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
+                >
+                  <IoIosAdd className='text-grey-30 text-4xl' />
+                </Link>
+              )}
               {feeds.map((instagram) => (
-                <button key={instagram.id} className='bg-grey-02 aspect-[4/5] cursor-pointer'>
+                <Link
+                  key={instagram.id}
+                  to={`posts/${instagram.id}`}
+                  className='bg-grey-10 aspect-[4/5] cursor-pointer'
+                >
                   <img
                     src={instagram.imageUrl}
                     alt='instagram'
                     className='h-full w-full object-cover'
                   />
-                </button>
+                </Link>
               ))}
             </div>
           </section>
         )}
       </div>
+
+      {/* 단과대 필터 Drawer */}
+      <Drawer open={isCollegeDrawerOpen} onOpenChange={setIsCollegeDrawerOpen}>
+        <div className='flex flex-col gap-4 py-1.5'>
+          <div className='px-5'>
+            <h2 className='text-title02 text-black'>단과대 필터</h2>
+          </div>
+
+          <div className='flex flex-col'>
+            {COLLEGE_OPTIONS.map((college) => {
+              const isSelected = selectedCollege === college.value;
+              return (
+                <button
+                  key={college.value}
+                  type='button'
+                  onClick={() => {
+                    setSelectedCollege(college.value);
+                    setIsCollegeDrawerOpen(false);
+                  }}
+                  className={clsx(
+                    'flex w-full items-center justify-between px-5 py-2.5',
+                    'text-body03 text-grey-80 cursor-pointer',
+                    'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                    isSelected && 'text-mju-primary',
+                  )}
+                >
+                  {college.label}
+                  {isSelected && <IoIosCheckmark className='text-2xl' />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </Drawer>
     </section>
   );
 }
