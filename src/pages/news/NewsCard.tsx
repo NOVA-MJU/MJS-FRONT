@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { NewsCategoryLabel } from '../../constants/news';
 import type { NewsInfo } from '../../types/news/newsInfo';
-import { formatToLocalDate } from '../../utils';
+import { formatToDotDate } from '../../utils';
 import { useResponsive } from '@/hooks/useResponse';
 
 interface NewsCardProps {
@@ -50,7 +50,7 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
           <div className='flex flex-col gap-2 p-4'>
             <div className='flex items-center gap-4'>
               <p className='text-caption02'> {NewsCategoryLabel[news.category]}</p>
-              <time className='text-gray-500'>{formatToLocalDate(news.date)}</time>
+              <time className='text-gray-500'>{formatToDotDate(news.date)}</time>
             </div>
             <p
               className='search-result__highlight text-title02 line-clamp-2'
@@ -92,7 +92,7 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
             <p className='text-grey-20 text-caption01 line-clamp-2 md:line-clamp-3'>
               {news.reporter}
             </p>
-            <time className='text-grey-10 text-caption02'>{formatToLocalDate(news.date)}</time>
+            <time className='text-grey-10 text-caption02'>{formatToDotDate(news.date)}</time>
           </div>
         </a>
       </article>

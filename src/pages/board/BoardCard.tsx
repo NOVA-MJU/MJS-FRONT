@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { IoIosHeartEmpty } from 'react-icons/io';
 import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
-import { formatToLocalDate } from '@/utils';
+import { formatToDotDate } from '@/utils';
 import { blockNoteContentToPreview } from '@/components/organisms/BlockTextEditor/util';
 
 interface BoardCardProps {
-  id: number;
+  id: number | string;
   title: string;
   previewContent: string;
   likeCount: number;
@@ -25,10 +25,11 @@ export default function BoardCard({
   publishedAt,
   isPopular,
 }: BoardCardProps) {
+  const boardId = typeof id === 'string' ? id.replace(/^COMMUNITY:/, '') : String(id);
   return (
     <Link
       className='hover:bg-blue-05 border-grey-02 flex cursor-pointer border-b-1 px-5 py-4 transition-colors'
-      to={`/board/${id}`}
+      to={`/board/${boardId}`}
     >
       <div
         className={clsx(
@@ -55,7 +56,7 @@ export default function BoardCard({
           </div>
           <div className='flex min-w-[70px] items-center justify-center'>
             <Typography variant='caption02' className='text-grey-40 font-normal'>
-              {formatToLocalDate(publishedAt)}
+              {formatToDotDate(publishedAt)}
             </Typography>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { HighlightedText } from '@/components/atoms/HighlightedText';
-import { formatToLocalDate } from '@/utils';
+import { formatToDotDate } from '@/utils';
 import { extractYoutubeId } from '.';
 
 interface BroadcastCardProps {
@@ -42,7 +42,9 @@ export default function BroadcastCard({
                 {playlistTitle}
               </HighlightedText>
             )}
-            <span className='text-caption04 text-grey-40'>{formatToLocalDate(publishedAt)}</span>
+            {publishedAt && (
+              <span className='text-caption04 text-grey-40'>{formatToDotDate(publishedAt)}</span>
+            )}
           </div>
         </div>
       </article>

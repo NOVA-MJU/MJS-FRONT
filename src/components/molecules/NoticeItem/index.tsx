@@ -1,5 +1,5 @@
 import { HighlightedText } from '@/components/atoms/HighlightedText';
-import { formatToLocalDate } from '@/utils';
+import { formatToDotDate } from '@/utils';
 
 interface NoticeItemProps {
   id: number;
@@ -34,7 +34,7 @@ export default function NoticeItem({ id, category, title, date, link }: NoticeIt
               {categoryLabel[category] ?? category}
             </span>
             <HighlightedText className='text-body05 text-black'>{title}</HighlightedText>
-            {date && <span className='text-caption04 text-grey-30'>{formatToLocalDate(date)}</span>}
+            {date && <span className='text-caption04 text-grey-30'>{formatToDotDate(date)}</span>}
           </div>
         </div>
       </a>

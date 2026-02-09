@@ -203,7 +203,7 @@ export default function ListEntry({
   // tab이 all일 경우 3가지 카테고리 출력
   if (currentTab === 'ALL') {
     return (
-      <div className='flex flex-col gap-5'>
+      <div className='mb-5 flex flex-col gap-5'>
         {/* 공지사항 */}
         <div className='border-grey-02 flex flex-col border-t-[8px]'>
           <div className='flex flex-row items-center justify-between p-5 pb-0'>
@@ -250,7 +250,7 @@ export default function ListEntry({
                 news={{
                   title: news.highlightedTitle,
                   date: news.date,
-                  reporter: news.type,
+                  reporter: news.authorName ?? 'NEWS',
                   imageUrl: news.imageUrl,
                   summary: news.highlightedContent,
                   link: news.link,
