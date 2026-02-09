@@ -2,11 +2,13 @@ export interface UserInfo {
   uuid: string;
   name: string;
   email: string;
+  profileImageUrl: string;
   gender: string;
   nickname: string;
-  profileImageUrl: string;
   departmentName: string;
+  departmentUuid: string;
   studentNumber: string;
+  role: string;
 }
 
 export interface AuthState {
