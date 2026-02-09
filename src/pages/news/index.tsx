@@ -14,52 +14,27 @@ import { NEWS_MOBILE_PAGE_SIZE, NEWS_DESKTOP_PAGE_SIZE } from '@/constants/commo
 import { handleError } from '@/utils/error';
 
 const News = () => {
-  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
   const { isDesktop } = useResponsive();
+  const ITEMS_PER_PAGE = isDesktop ? NEWS_DESKTOP_PAGE_SIZE : NEWS_MOBILE_PAGE_SIZE;
 
-  /**
-   * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
-   * setter 를 추가하여, 카테고리가 바뀌면 url에 쿼리가 찍히도록 합니다.
-   */
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
-  const [initialContent, setInitialContent] = useState('');
-
-  /**
-   * 서버에서 내려온 카테고리 값을 탭 이름(한글)으로 변환합니다.
-   */
-  const translateCategory = (serverValue: string): string => {
-    const entries = Object.entries(NewsCategory);
-    const entry = entries.find((entryItem) => {
-      const value = entryItem[1];
-      return value === serverValue;
-    });
-
-    if (entry) {
-      const key = entry[0]; //한국어 탭 이름
-      return key;
-    }
-    return '전체';
-  };
-
   const categoryParam = searchParams.get('category') ?? 'ALL';
-  const initialSelectedCategory = translateCategory(categoryParam);
   const pageParam = Number(searchParams.get('page') ?? '1');
   const initialPage = pageParam > 0 ? pageParam - 1 : 0;
 
-  /**
-   * 주소에 search parameter 값이 있으면 검색바에 반영합니다
-   */
+  const translateCategory = (serverValue: string): string => {
+    const entries = Object.entries(NewsCategory);
+    const entry = entries.find(([, value]) => value === serverValue);
+    return entry ? entry[0] : '전체';
+  };
+  const initialSelectedCategory = translateCategory(categoryParam);
+
+  const [initialContent, setInitialContent] = useState('');
+
   useEffect(() => {
-    (async () => {
-      if (!keyword) return;
-      setInitialContent(keyword);
-      try {
-        // await handleSearch(keyword);
-      } catch (e) {
-        handleError(e, '검색 중 오류가 발생했습니다.', { showToast: false });
-      }
-    })();
+    if (!keyword) return;
+    setInitialContent(keyword);
   }, [keyword]);
 
   const [page, setPage] = useState(initialPage);
@@ -68,12 +43,7 @@ const News = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
 
-  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
-
   useEffect(() => {
-    /**
-     * search parameter가 있는 경우 검색을 수행합니다
-     */
     if (keyword)
       (async () => {
         try {
@@ -95,9 +65,7 @@ const News = () => {
           setIsError(true);
         }
       })();
-    /**
-     * search parameter가 없는 경우 모든 결과를 출력합니다
-     */ else
+    else
       (async () => {
         try {
           const categoryParam = NewsCategory[selectedCategory] ?? 'REPORT';
@@ -126,13 +94,9 @@ const News = () => {
           onChange={(category) => {
             setSelectedCategory(category);
             setPage(0);
-
             const nextParams = new URLSearchParams(searchParams);
-            const serverCategory = NewsCategory[category]; //서버 enum 값으로
-
-            nextParams.set('category', serverCategory ?? 'ALL');
+            nextParams.set('category', NewsCategory[category] ?? 'ALL');
             nextParams.set('page', '1');
-
             setSearchParams(nextParams);
           }}
         />
@@ -143,9 +107,6 @@ const News = () => {
             <NewsCard key={index} news={news} />
           ))}
         </div>
-        {/**
-         * 키워드를 입력했는데 검색 결과가 없는 경우
-         */}
         {keyword && newsList.length === 0 && (
           <div className='flex-1 content-center text-center'>
             <p className='text-title02'>검색 결과가 없습니다</p>
@@ -155,11 +116,10 @@ const News = () => {
       <Pagination
         page={page}
         totalPages={totalPages}
-        onChange={(page) => {
-          setPage(page);
+        onChange={(newPage) => {
+          setPage(newPage);
           const nextParams = new URLSearchParams(searchParams);
-          const appPage = page + 1;
-          nextParams.set('page', appPage.toString());
+          nextParams.set('page', String(newPage + 1));
           setSearchParams(nextParams);
         }}
       />

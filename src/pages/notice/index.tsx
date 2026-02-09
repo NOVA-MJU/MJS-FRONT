@@ -12,9 +12,10 @@ import NoticeList from '@/components/organisms/CommonList';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import { formatToLocalDate } from '@/utils';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
-import { NOTICE_PAGE_SIZE } from '@/constants/common';
-import { handleError } from '@/utils/error';
 
+/**
+ * 카테고리 매핑
+ */
 const categoryMap: Record<string, string> = {
   all: '전체',
   general: '일반공지',
@@ -25,17 +26,9 @@ const categoryMap: Record<string, string> = {
   rule: '학칙개정',
 };
 
-/**
- * 공지사항 페이지
- *
- * - 검색어(keyword)가 있으면 검색 API(getSearchResult) 호출
- * - 검색어가 없으면 카테고리별 공지사항 API(fetchNotionInfo) 호출
- * - "전체" 탭 선택 시 category=all 로 모든 공지를 최신순 조회
- * - Pagination 은 0-base 로 동작 (백엔드 스펙)
- * - 데스크톱과 모바일에서 완전히 다른 레이아웃으로 표시됩니다.
- */
+const ITEMS_PER_PAGE = 10;
+
 export default function Notice() {
-  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
   const { isDesktop } = useResponsive();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,7 +54,7 @@ export default function Notice() {
       (async () => {
         try {
           setIsLoading(true);
-          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, NOTICE_PAGE_SIZE);
+          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, ITEMS_PER_PAGE);
           const parsed: ListItemProps[] = res.content.map(
             (item: GetSearchResultRes, idx: number) => ({
               id: idx,
@@ -85,7 +78,7 @@ export default function Notice() {
           setIsError(false);
         } catch (e) {
           setIsError(true);
-          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
+          console.error('/src/pages/notice/index.tsx::Notice()', e);
         } finally {
           setIsLoading(false);
         }
@@ -101,7 +94,7 @@ export default function Notice() {
             selectedCategory,
             undefined,
             page,
-            NOTICE_PAGE_SIZE,
+            ITEMS_PER_PAGE,
             'desc',
           );
 
@@ -121,7 +114,7 @@ export default function Notice() {
           setIsError(false);
         } catch (e) {
           setIsError(true);
-          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
+          console.error('/src/pages/notice/index.tsx::Notice()', e);
         } finally {
           setIsLoading(false);
         }
@@ -148,7 +141,7 @@ export default function Notice() {
    */
   if (isDesktop)
     return (
-      <div className='w-[1280px] flex-1 flex flex-col p-12 gap-6 mx-auto'>
+      <div className='mx-auto flex w-[1280px] flex-1 flex-col gap-6 p-12'>
         <Link to='/notice'>
           <h2 className='text-heading01 text-mju-primary'>공지사항</h2>
         </Link>
@@ -160,18 +153,18 @@ export default function Notice() {
               currentTab={selectedCategory}
               setCurrentTab={setSelectedCategory}
             />
-            <hr className='w-full border-blue-05 border-2' />
+            <hr className='border-blue-05 w-full border-2' />
           </>
         )}
-        <div className='flex-1 flex flex-col'>
+        <div className='flex flex-1 flex-col'>
           <NoticeList
             items={items}
             category='notice'
             page={page + 1}
-            itemsPerPage={NOTICE_PAGE_SIZE}
+            itemsPerPage={ITEMS_PER_PAGE}
           />
           {!isLoading && keyword && items.length === 0 && (
-            <div className='flex-1 text-center content-center'>
+            <div className='flex-1 content-center text-center'>
               <span className='text-title02'>검색 결과가 없습니다</span>
             </div>
           )}
@@ -185,7 +178,7 @@ export default function Notice() {
    */
   if (!isDesktop)
     return (
-      <div className='flex-1 flex flex-col p-5 gap-5'>
+      <div className='flex flex-1 flex-col gap-5 p-5'>
         <div className='flex flex-col gap-3'>
           <Link to='/notice' className='w-fit'>
             <h2 className='text-title01 text-blue-35'>공지사항</h2>
@@ -202,23 +195,18 @@ export default function Notice() {
         </div>
 
         {/* 공지사항 데이터 표시 */}
-        <div className='flex-1 flex flex-col'>
+        <div className='flex flex-1 flex-col'>
           {items.map((item, index) => {
             const isEnd = items.length - 1 === index;
 
             return (
               <a key={item.id} href={item.link} target='_blank' rel='noopener noreferrer'>
-                <div
-                  className={`
-                    w-full h-fit p-2.5
-                    ${!isEnd && 'border-b border-blue-05'}
-                  `}
-                >
+                <div className={`h-fit w-full p-2.5 ${!isEnd && 'border-blue-05 border-b'} `}>
                   <div className='flex flex-col gap-0.5'>
                     <span className='text-caption03 text-blue-10'>
                       {categoryMap[item.category] ?? item.category}
                     </span>
-                    <HighlightedText className='text-body05 text-black line-clamp-2'>
+                    <HighlightedText className='text-body05 line-clamp-2 text-black'>
                       {item.title}
                     </HighlightedText>
                     {item.date && (
@@ -234,7 +222,7 @@ export default function Notice() {
 
           {/* 검색 결과 없음 페이지 */}
           {!isLoading && keyword && items.length === 0 && (
-            <div className='flex-1 flex justify-center items-center'>
+            <div className='flex flex-1 items-center justify-center'>
               <span className='font-bold'>{keyword}</span>
               <span>{`에 대한 검색 결과가 없습니다`}</span>
             </div>
