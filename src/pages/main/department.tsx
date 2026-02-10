@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiHome } from 'react-icons/fi';
 import { format } from 'date-fns';
@@ -45,6 +45,20 @@ export default function DepartmentMainPage() {
   // 학과 필터
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
+
+  // 사용자의 departmentName에 해당하는 단과대로 자동 설정
+  useEffect(() => {
+    if (user?.departmentName) {
+      for (const option of DEPARTMENT_OPTIONS) {
+        const department = option.departments.find((dept) => dept.value === user.departmentName);
+        if (department) {
+          setSelectedCollege(option.college.value);
+          setSelectedDepartment(department.value);
+          break;
+        }
+      }
+    }
+  }, [user?.departmentName]);
 
   function handleCollegeFilter() {
     setIsCollegeDrawerOpen(true);
