@@ -12,7 +12,12 @@ import { InstagramIcon } from '@/components/atoms/Icon';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import Drawer from '@/components/molecules/Drawer';
-import { COLLEGE_OPTIONS, collegeMap } from '@/constants/colleges';
+import {
+  COLLEGE_OPTIONS,
+  collegeMap,
+  DEPARTMENT_OPTIONS,
+  departmentMap,
+} from '@/constants/departments';
 
 // 페이지 탭 구성
 const TABS = {
@@ -37,11 +42,22 @@ export default function DepartmentMainPage() {
   const [selectedCollege, setSelectedCollege] = useState('AI_SOFTWARE');
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
+  // 학과 필터
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
+  const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
+
   function handleCollegeFilter() {
     setIsCollegeDrawerOpen(true);
   }
 
-  function handleDepartmentFilter() {}
+  function handleDepartmentFilter() {
+    setIsDepartmentDrawerOpen(true);
+  }
+
+  // 선택된 단과대에 해당하는 학과 목록 가져오기
+  const availableDepartments =
+    DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
+    [];
 
   // 탭 선택
   const tabFromUrl = searchParams.get('tab');
@@ -69,8 +85,8 @@ export default function DepartmentMainPage() {
 
   return (
     <section>
-      {/* 단과대 필터 */}
       <div className='flex gap-2 px-5 py-4'>
+        {/* 단과대 필터 */}
         <button
           className={clsx(
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
@@ -82,15 +98,18 @@ export default function DepartmentMainPage() {
           {collegeMap.get(selectedCollege) || '전체'}
           <IoIosArrowDown className='text-grey-40' />
         </button>
+
+        {/* 학과 필터 */}
         <button
           className={clsx(
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
-            'text-body06 text-grey-60',
-            'border-grey-10 border-1',
+            selectedDepartment
+              ? 'text-body06 text-mju-primary border-mju-primary border-1'
+              : 'text-body06 text-grey-60 border-grey-10 border-1',
           )}
           onClick={handleDepartmentFilter}
         >
-          학과 필터
+          {selectedDepartment ? departmentMap.get(selectedDepartment) || '학과 필터' : '학과 필터'}
           <IoIosArrowDown className='text-grey-40' />
         </button>
       </div>
@@ -262,6 +281,7 @@ export default function DepartmentMainPage() {
                   type='button'
                   onClick={() => {
                     setSelectedCollege(college.value);
+                    setSelectedDepartment(null); // 단과대 변경 시 학과 필터 초기화
                     setIsCollegeDrawerOpen(false);
                   }}
                   className={clsx(
@@ -272,6 +292,59 @@ export default function DepartmentMainPage() {
                   )}
                 >
                   {college.label}
+                  {isSelected && <IoIosCheckmark className='text-2xl' />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </Drawer>
+
+      {/* 학과 필터 Drawer */}
+      <Drawer open={isDepartmentDrawerOpen} onOpenChange={setIsDepartmentDrawerOpen}>
+        <div className='flex flex-col gap-4 py-1.5'>
+          <div className='px-5'>
+            <h2 className='text-title02 text-black'>학과 필터</h2>
+          </div>
+
+          <div className='flex flex-col'>
+            {/* 전체 옵션 */}
+            <button
+              type='button'
+              onClick={() => {
+                setSelectedDepartment(null);
+                setIsDepartmentDrawerOpen(false);
+              }}
+              className={clsx(
+                'flex w-full items-center justify-between px-5 py-2.5',
+                'text-body03 text-grey-80 cursor-pointer',
+                'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                !selectedDepartment && 'text-mju-primary',
+              )}
+            >
+              전체
+              {!selectedDepartment && <IoIosCheckmark className='text-2xl' />}
+            </button>
+
+            {/* 학과 목록 */}
+            {availableDepartments.map((department) => {
+              const isSelected = selectedDepartment === department.value;
+              return (
+                <button
+                  key={department.value}
+                  type='button'
+                  onClick={() => {
+                    setSelectedDepartment(department.value);
+                    setIsDepartmentDrawerOpen(false);
+                  }}
+                  className={clsx(
+                    'flex w-full items-center justify-between px-5 py-2.5',
+                    'text-body03 text-grey-80 cursor-pointer',
+                    'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                    isSelected && 'text-mju-primary',
+                  )}
+                >
+                  {department.label}
                   {isSelected && <IoIosCheckmark className='text-2xl' />}
                 </button>
               );
