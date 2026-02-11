@@ -14,7 +14,6 @@ import Department from '@/pages/department';
 import DepartmentDetail from '@/pages/department/detail';
 import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
-import DepartmentMainPage from '@/pages/main/department';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
 import DepartmentEventsNewPage from './pages/main/department-events-new';
@@ -83,15 +82,12 @@ const App = () => {
 
           <Route path='*' element={<GlobalErrorPage />} />
 
-          {/* 디버깅용 */}
-          <Route path='/main/department' element={<DepartmentMainPage />} />
-
-          <Route path='/main/department/posts/:uuid' element={<DepartmentPostsDetailPage />} />
-          <Route path='/main/department/posts/new' element={<DepartmentPostsNewPage />} />
-          <Route path='/main/department/posts/edit/:uuid' element={<DepartmentPostsEditPage />} />
-
-          <Route path='/main/department/events/new' element={<DepartmentEventsNewPage />} />
-          <Route path='/main/department/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
+          {/* 학과별 정보 */}
+          <Route path='/departments/posts/:uuid' element={<DepartmentPostsDetailPage />} />
+          <Route path='/departments/posts/new' element={<DepartmentPostsNewPage />} />
+          <Route path='/departments/posts/edit/:uuid' element={<DepartmentPostsEditPage />} />
+          <Route path='/departments/events/new' element={<DepartmentEventsNewPage />} />
+          <Route path='/departments/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
 
           {/* 임시 우측 슬라이드 라우팅 */}
           <Route path='/slides' element={<Slides />} />

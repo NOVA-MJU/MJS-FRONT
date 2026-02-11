@@ -12,6 +12,7 @@ import { InstagramIcon } from '@/components/atoms/Icon';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import Drawer from '@/components/molecules/Drawer';
+import Footer from '@/components/organisms/Footer';
 import {
   COLLEGE_OPTIONS,
   collegeMap,
@@ -196,7 +197,7 @@ export default function DepartmentMainPage() {
                     onClick={() => {
                       // 권한이 OPERATOR 또는 ADMIN인 경우 일정 수정 페이지로 이동
                       if (hasAdminPermission(user?.role)) {
-                        navigate(`events/edit/${event.id}`);
+                        navigate(`/departments/events/edit/${event.id}`);
                       }
                     }}
                   >
@@ -216,7 +217,7 @@ export default function DepartmentMainPage() {
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
                 onClick={() => {
-                  navigate('events/new');
+                  navigate('/departments/events/new');
                 }}
               >
                 <IoIosAdd className='text-4xl text-white' />
@@ -255,7 +256,7 @@ export default function DepartmentMainPage() {
             <div className='grid grid-cols-3 gap-1 py-5'>
               {hasAdminPermission(user?.role) && (
                 <Link
-                  to='posts/new'
+                  to='/departments/posts/new'
                   className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
                 >
                   <IoIosAdd className='text-grey-30 text-4xl' />
@@ -264,7 +265,7 @@ export default function DepartmentMainPage() {
               {feeds.map((instagram) => (
                 <Link
                   key={instagram.id}
-                  to={`posts/${instagram.id}`}
+                  to={`/departments/posts/${instagram.id}`}
                   className='bg-grey-10 aspect-[4/5] cursor-pointer'
                 >
                   <img
@@ -366,6 +367,9 @@ export default function DepartmentMainPage() {
           </div>
         </div>
       </Drawer>
+
+      {/* Footer */}
+      <Footer />
     </section>
   );
 }
