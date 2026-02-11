@@ -20,7 +20,7 @@ const HomeSlider = () => {
 
   return (
     <Swiper className='h-full w-full' slidesPerView={1} threshold={5} initialSlide={1}>
-      {/* 1. 소속 페이지 (좌측 슬라이드) */}
+      {/* 1. 학과 페이지 (좌측 슬라이드) */}
       <SwiperSlide className='h-full w-full overflow-y-auto'>
         <DepartmentMainPage />
       </SwiperSlide>

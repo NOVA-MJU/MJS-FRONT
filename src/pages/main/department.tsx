@@ -12,6 +12,7 @@ import { InstagramIcon } from '@/components/atoms/Icon';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import Drawer from '@/components/molecules/Drawer';
+import Footer from '@/components/organisms/Footer';
 import {
   COLLEGE_OPTIONS,
   collegeMap,
@@ -366,6 +367,9 @@ export default function DepartmentMainPage() {
           </div>
         </div>
       </Drawer>
+
+      {/* Footer */}
+      <Footer />
     </section>
   );
 }
