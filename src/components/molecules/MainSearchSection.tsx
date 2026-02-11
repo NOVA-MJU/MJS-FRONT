@@ -13,10 +13,15 @@ export default function MainSearchSection() {
   };
 
   const recommendedCategories: CategoryItem[] = [
-    { id: 1, label: '학식', imageUrl: '/main/main_MJMeal.png', path: '/meal' },
-    { id: 2, label: '명지도', imageUrl: '/main/main_MJMap.png', path: '/map' },
-    { id: 3, label: '학사일정', imageUrl: '/main/main_MJCalender.png', path: '/academic-calendar' },
-    { id: 4, label: '멘토관', imageUrl: null, path: '/mentoring' },
+    { id: 1, label: '학식', imageUrl: '/main/main_v2_food.png', path: '/meal' },
+    { id: 2, label: '명지도', imageUrl: '/main/main_v2_map.png', path: '/map' },
+    {
+      id: 3,
+      label: '학사일정',
+      imageUrl: '/main/main_v2_calender.png',
+      path: '/academic-calendar',
+    },
+    { id: 4, label: '멘토관', imageUrl: '/main/main_v2_mentor.png', path: '/mentoring' },
   ];
 
   const handleCategoryClick = (path: string) => {
@@ -31,18 +36,18 @@ export default function MainSearchSection() {
 
   return (
     <div className='relative flex h-full w-full flex-col items-center justify-start px-6 pt-8'>
-      <div className='flex h-[230px] w-full max-w-md flex-col items-center justify-center gap-2'>
+      <div className='flex h-[230px] w-full max-w-md flex-col items-center justify-center gap-4'>
         <div className='relative'>
-          <div className='bg-blue-35 text-caption01 absolute -top-10 left-1/2 -translate-x-1/2 rounded-full px-4 py-2 whitespace-nowrap text-white shadow-md'>
+          <div className='bg-blue-35 text-caption01 rounded-2xl px-5 py-2.5 whitespace-nowrap text-white shadow-md'>
             명지대에 대한 무엇이든 Go!
           </div>
-          <div className='bg-blue-35 absolute -top-4 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45'></div>
+          <div className='bg-blue-35 absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45'></div>
         </div>
 
         <button
           type='button'
           onClick={handleSearchBarClick}
-          className='text-body03 text-grey-30 border-blue-35 flex w-full items-center gap-3 rounded-full border-2 bg-white px-6 py-3 text-left shadow-sm'
+          className='text-body03 text-grey-30 border-blue-35 flex w-full items-center gap-3 rounded-full border-2 bg-white px-6 py-4 text-left shadow-sm'
         >
           <FaSearch className='text-blue-35' />
           <span className='flex-1 truncate'>검색어를 입력해 주세요.</span>
@@ -50,19 +55,19 @@ export default function MainSearchSection() {
       </div>
 
       <div className='-mt-5 mb-18 flex w-full max-w-md flex-col items-center gap-1.5'>
-        <div className='flex w-full justify-center gap-3'>
+        <div className='flex w-full justify-center gap-5'>
           {recommendedCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => handleCategoryClick(category.path)}
-              className='flex flex-col items-center gap-1 rounded-2xl bg-white p-3 shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95'
+              className='flex flex-col items-center gap-2 transition-transform hover:scale-105 active:scale-95'
             >
-              <div className='flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl'>
+              <div className='mt-10 flex h-9 w-10 items-center justify-center'>
                 {category.imageUrl ? (
                   <img
                     src={category.imageUrl}
                     alt={category.label}
-                    className='h-full w-full object-contain p-2'
+                    className='h-full w-full object-contain'
                   />
                 ) : (
                   <div className='h-full w-full' />
@@ -71,6 +76,28 @@ export default function MainSearchSection() {
               <span className='text-caption01 text-grey-40'>{category.label}</span>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className='pointer-events-none absolute inset-x-0 bottom-3 flex flex-col gap-1 px-0'>
+        <div className='pointer-events-auto mr-5 -mb-10 flex justify-end pr-0'>
+          <div className='relative'>
+            <div className='bg-blue-35 text-caption01 flex h-9 w-24 items-center justify-center rounded-2xl text-white shadow-md'>
+              옆으로 슬라이드
+            </div>
+            <div className='bg-blue-35 absolute right-5 -bottom-1 h-3 w-3 rotate-45' />
+          </div>
+        </div>
+
+        {/* 화살표 좌우 */}
+        <div className='pointer-events-auto flex items-center justify-between'>
+          <div>
+            <img src='/main/main_v2_leftArrow.png' alt='이전' className='h-35 w-35' />
+          </div>
+
+          <div>
+            <img src='/main/main_v2_rightArrow.png' alt='다음' className='h-35 w-35' />
+          </div>
         </div>
       </div>
     </div>
