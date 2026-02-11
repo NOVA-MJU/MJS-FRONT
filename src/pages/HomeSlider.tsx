@@ -1,6 +1,7 @@
 import { useResponsive } from '@/hooks/useResponse';
 import Main from '@/pages';
 import Slides from './slides';
+import DepartmentMainPage from './main/department';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -18,13 +19,18 @@ const HomeSlider = () => {
   }
 
   return (
-    <Swiper className='h-full w-full' slidesPerView={1} threshold={5}>
-      {/* 1. 메인 홈 화면 */}
+    <Swiper className='h-full w-full' slidesPerView={1} threshold={5} initialSlide={1}>
+      {/* 1. 소속 페이지 (좌측 슬라이드) */}
+      <SwiperSlide className='h-full w-full overflow-y-auto'>
+        <DepartmentMainPage />
+      </SwiperSlide>
+
+      {/* 2. 메인 홈 화면 */}
       <SwiperSlide className='h-full w-full overflow-y-auto'>
         <Main />
       </SwiperSlide>
 
-      {/* 2. 명지도/공지 등 슬라이드 페이지 */}
+      {/* 3. 명지도/공지 등 슬라이드 페이지 */}
       <SwiperSlide className='h-full w-full overflow-x-hidden overflow-y-auto'>
         <Slides />
       </SwiperSlide>

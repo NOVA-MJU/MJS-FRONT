@@ -36,7 +36,7 @@ export default function DepartmentPostsDetailPage() {
         {/* 관리자 권한이 있는 경우 수정 버튼 표시 */}
         {hasAdminPermission(user?.role) && (
           <Link
-            to={`edit/${post.uuid}`}
+            to={`/departments/posts/edit/${post.uuid}`}
             type='button'
             className='absolute right-4 cursor-pointer p-1'
           >
