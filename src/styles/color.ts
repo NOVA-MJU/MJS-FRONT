@@ -5,6 +5,7 @@ export const colors = {
   black: '#17171B',
   white: '#FFFFFF',
   error: '#DA4747',
+  errorBackground: '#fee2e2', // 에러 배경색
 
   grey40: '#979999',
   grey20: '#CACCCC',
@@ -15,4 +16,6 @@ export const colors = {
   blue20: '#2F65CB',
   blue15: '#4762DA',
   blue10: '#6C9EC6',
+
+  yellow: '#FFD700', // sub 버튼용 노란색
 };

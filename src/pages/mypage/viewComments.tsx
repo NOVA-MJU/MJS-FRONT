@@ -1,57 +1,110 @@
 import { useEffect, useState } from 'react';
-import { getMyCommentedPosts, type MyCommentedPostItem } from '../../api/mypage';
-import { useNavigate } from 'react-router-dom';
+import { getMyComments } from '../../api/mypage';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
-import { Typography } from '../../components/atoms/Typography';
 import Button from '../../components/atoms/Button';
-import NavigationUp from '../../components/molecules/NavigationUp';
 import MyListItem from '../../components/molecules/MyListItem';
-import { formatToElapsedTime } from '../../utils';
+import Pagination from '@/components/molecules/common/Pagination';
+import { FormatToDotDate } from '../../utils';
 
+interface GroupedCommentPost {
+  boardUuid: string;
+  boardTitle: string;
+  boardPreviewContent: string;
+  boardViewCount: number;
+  boardLikeCount: number;
+  boardCreatedAt: string;
+  comments: string[];
+}
+
+const PAGE_SIZE = 10;
+
+/**
+ * 내가 쓴 댓글 페이지
+ *
+ * 사용자가 작성한 댓글이 포함된 게시글 목록을 표시하는 페이지입니다.
+ * 댓글 미리보기와 해당 게시글 정보를 함께 보여줍니다.
+ */
 const ViewComments = () => {
-  const [contents, setContents] = useState<MyCommentedPostItem[]>([]);
+  const [contents, setContents] = useState<GroupedCommentPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const navigate = useNavigate();
+
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchComments = async (currentPage: number) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+
+      const res = await getMyComments(currentPage, PAGE_SIZE);
+      const grouped = res.content.reduce<Record<string, GroupedCommentPost>>((acc, cur) => {
+        const id = cur.boardUuid;
+
+        if (!acc[id]) {
+          acc[id] = {
+            boardUuid: cur.boardUuid,
+            boardTitle: cur.boardTitle,
+            boardPreviewContent: cur.boardPreviewContent,
+            boardViewCount: cur.boardViewCount,
+            boardLikeCount: cur.boardLikeCount,
+            boardCreatedAt: cur.boardCreatedAt,
+            comments: [],
+          };
+        }
+
+        if (cur.commentPreviewContent) {
+          acc[id].comments.push(cur.commentPreviewContent);
+        }
+
+        return acc;
+      }, {});
+
+      const groupedArray = Object.values(grouped);
+
+      setContents(groupedArray);
+      setTotalPages(res.totalPages);
+    } catch (e) {
+      console.error(e);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getMyCommentedPosts();
-        setContents(res);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+    void fetchComments(page);
+  }, [page]);
+
+  const handlePageChange = (nextPage: number) => {
+    if (nextPage === page) return;
+    setPage(nextPage);
+  };
 
   if (isLoading)
     return (
-      <div className='w-full flex-1 flex items-center justify-center'>
+      <div className='flex w-full flex-1 items-center justify-center'>
         <LoadingIndicator />
       </div>
     );
 
   if (isError)
     return (
-      <div className='flex-1 flex flex-col items-center justify-center gap-4'>
-        <Typography variant='body01'>문제가 발생했습니다</Typography>
-        <Button shape='rounded'>다시 시도하기</Button>
+      <div className='flex flex-1 flex-col items-center justify-center gap-4'>
+        <p className='text-body01'>문제가 발생했습니다</p>
+        <Button shape='rounded' onClick={() => window.location.reload()}>
+          다시 시도하기
+        </Button>
       </div>
     );
 
+  const hasContents = contents.length > 0;
+
   return (
-    <div className='w-full flex-1 bg-grey-05 flex flex-col p-4 md:p-8 gap-3 md:gap-6'>
-      <NavigationUp onClick={() => navigate(-1)} />
-      <Typography variant='heading01' className='text-mju-primary'>
-        내가 쓴 댓글
-      </Typography>
-      {contents ? (
-        <div className='bg-white p-3 flex flex-col gap-3 rounded-lg'>
+    <div className='flex w-full flex-1 flex-col bg-white p-4 md:gap-2 md:p-8'>
+      <p className='text-title02 text-blue-35 mt-2 ml-2'>내가 쓴 댓글</p>
+      {hasContents ? (
+        <div className='bg-white'>
           {contents.map((content, index) => (
             <MyListItem
               key={content.boardUuid}
@@ -60,14 +113,15 @@ const ViewComments = () => {
               contentPreview={content.boardPreviewContent}
               commentCount={content.boardViewCount}
               likeCount={content.boardLikeCount}
-              publishedDate={formatToElapsedTime(content.boardCreatedAt)}
-              commentPreview={content.commentPreviewContent}
+              publishedDate={FormatToDotDate(content.boardCreatedAt)}
+              commentPreview={content.comments}
               isLast={index === contents.length - 1}
             />
           ))}
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
         </div>
       ) : (
-        <Typography variant='body01'>아직 작성한 게시글이 없습니다</Typography>
+        <p className='text-body01'>아직 작성한 댓글이 없습니다</p>
       )}
     </div>
   );

@@ -19,7 +19,7 @@ interface InputModalProps {
   disabled?: boolean;
 }
 
-const InputModal: React.FC<InputModalProps> = ({
+const InputModal = ({
   isOpen,
   onClose,
   onSubmit,
@@ -33,7 +33,7 @@ const InputModal: React.FC<InputModalProps> = ({
   helperText = '',
   type = 'text',
   disabled = false,
-}) => {
+}: InputModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!value.trim()) return;

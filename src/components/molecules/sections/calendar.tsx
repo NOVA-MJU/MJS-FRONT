@@ -10,22 +10,13 @@ export default function AcademicCalendarSection() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const [events] = useState([]);
 
-  /**
-   * year, month 반영
-   */
   useEffect(() => {
     fetchData();
   }, [currentYear, currentMonth]);
 
-  /**
-   * 캘린더 데이터 불러오기
-   */
   async function fetchData() {
     try {
       setIsLoading(true);
-      /**
-       * TODO: 캘린더 api 연결
-       */
       setIsError(false);
     } catch (e) {
       setIsError(true);
@@ -35,9 +26,6 @@ export default function AcademicCalendarSection() {
     }
   }
 
-  /**
-   * 이전 월 보기
-   */
   function handlePreviousMonth() {
     if (currentMonth === 1) {
       setCurrentMonth(12);
@@ -47,9 +35,6 @@ export default function AcademicCalendarSection() {
     }
   }
 
-  /**
-   * 다음 월 보기
-   */
   function handleNextMonth() {
     if (currentMonth === 12) {
       setCurrentMonth(1);

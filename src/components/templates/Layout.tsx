@@ -1,21 +1,34 @@
+import { useResponsive } from '@/hooks/useResponse';
+import { Outlet, useLocation } from 'react-router-dom';
 import Footer from '../organisms/Footer';
 import Navbar from '../organisms/Navbar/Navbar';
-import { Outlet } from 'react-router-dom';
 
 interface LayoutProps {
   className?: string;
 }
 
 const Layout = ({ className }: LayoutProps) => {
+  const location = useLocation();
+  const { isDesktop } = useResponsive();
+  const isMobileMain = location.pathname === '/' && !isDesktop;
+
+  if (isMobileMain) {
+    return (
+      <div className={`flex h-[100svh] w-full flex-col overflow-hidden ${className}`}>
+        <Navbar />
+        <main className='min-h-0 flex-1 overflow-hidden'>
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`
-        w-full md:min-w-[1280px] min-h-screen flex flex-col items-center 
-        ${className}
-        `}
+      className={`flex min-h-screen w-full flex-col items-center md:min-w-[1280px] ${className} `}
     >
       <Navbar />
-      <main className='w-full flex-1 md:w-[1280px] h-auto mx-auto flex flex-col'>
+      <main className='mx-auto flex h-auto w-full flex-1 flex-col md:w-[1280px]'>
         <Outlet />
       </main>
       <Footer />

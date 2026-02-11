@@ -1,5 +1,7 @@
 import apiClient from './apiClient';
 import type { ApiResponse, Paginated } from './types';
+import { SEARCH_API_DEFAULT_SIZE } from '../constants/common';
+import type { Sort } from '@/components/molecules/SortButtons';
 
 /**
  * 카테고리별로 상위 검색 결과 5개를 표시합니다
@@ -25,11 +27,42 @@ export interface SearchResultItemRes {
   type: string;
   imageUrl: string;
   score: number;
+  authorName?: string;
+  likeCount?: number;
+  commentCount?: number;
 }
 
-export const getSearchOverview = async (keyword: string): Promise<SearchOverviewRes> => {
+export interface GetSearchResultRes {
+  id: string;
+  highlightedTitle: string;
+  highlightedContent: string;
+  date: string;
+  link: string;
+  category: string;
+  type: string;
+  imageUrl: string;
+  score: number;
+  authorName?: string;
+  likeCount?: number;
+  commentCount?: number;
+}
+
+export interface GetSearchAISummaryRes {
+  query: string;
+  summary: string;
+  document_count: number;
+  sources?: {
+    title: string;
+    url: string;
+  }[];
+}
+
+export const getSearchOverview = async (
+  keyword: string,
+  order: Sort,
+): Promise<SearchOverviewRes> => {
   const res = await apiClient.get<ApiResponse<SearchOverviewRes>>('/search/overview', {
-    params: { keyword },
+    params: { keyword, order },
   });
   return res.data.data;
 };
@@ -65,9 +98,9 @@ export const getSearchResult = async (
     | 'DEPARTMENT_SCHEDULE'
     | 'BROADCAST'
     | 'MJU_CALENDAR',
-  order: 'relevance' | 'latest' | 'oldest',
+  order: Sort,
   page = 0,
-  size = 10,
+  size = SEARCH_API_DEFAULT_SIZE,
 ) => {
   const res = await apiClient.get<ApiResponse<Paginated<GetSearchResultRes>>>('/search/detail', {
     params: { keyword, type, order, page, size },
@@ -75,14 +108,10 @@ export const getSearchResult = async (
   return res.data.data;
 };
 
-export interface GetSearchResultRes {
-  id: string;
-  highlightedTitle: string;
-  highlightedContent: string;
-  date: string;
-  link: string;
-  category: string;
-  type: string;
-  imageUrl: string;
-  score: number;
-}
+/** AI 요약 API는 ApiResponse 래퍼 없이 payload만 반환합니다. */
+export const getSearchAISummary = async (keyword: string): Promise<GetSearchAISummaryRes> => {
+  const res = await apiClient.get<GetSearchAISummaryRes>('/ai/summary', {
+    params: { query: keyword },
+  });
+  return res.data;
+};

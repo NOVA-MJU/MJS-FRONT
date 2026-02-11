@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
-import { IoIosClose, IoIosMenu, IoIosSearch } from 'react-icons/io';
+import { IoIosClose, IoIosMenu } from 'react-icons/io';
 import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
@@ -11,6 +11,7 @@ import { logout as apiLogout } from '@/api/user';
 
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavItem } from '@/types/nav/item';
+import SidebarV2 from '@/components/organisms/SidebarV2';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,7 +23,6 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
-  /** 로그인/로그아웃 */
   const handleAuthClick = async () => {
     if (!isLoggedIn) {
       navigate('/login');
@@ -44,7 +44,6 @@ export default function Navbar() {
     }
   };
 
-  /** 로그인 필요한 메뉴 클릭 시 */
   const handleProtectedNav = (item: NavItem, e: React.MouseEvent<HTMLAnchorElement>) => {
     trackNavClick(item.key);
 
@@ -63,11 +62,9 @@ export default function Navbar() {
     return () => root.classList.remove('overflow-hidden');
   }, [isOpen]);
 
-  /** 공통 메뉴 렌더 */
   const renderMenuItem = (item: NavItem, isMobile = false) => {
     const clickAction = () => trackNavClick(item.key);
 
-    // 외부 링크 로직
     if (item.href) {
       return (
         <a
@@ -75,8 +72,8 @@ export default function Navbar() {
           href={item.href}
           target='_blank'
           rel='noopener noreferrer'
-          className={`inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10 ${
-            isMobile ? 'px-3 py-2 block' : ''
+          className={`inline-flex h-10 items-center rounded-lg px-3 hover:bg-white/10 ${
+            isMobile ? 'block px-3 py-2' : ''
           }`}
           onClick={isMobile ? closeMenu : clickAction}
         >
@@ -85,7 +82,6 @@ export default function Navbar() {
       );
     }
 
-    // 로그인 필요 여부 체크
     return (
       <Link
         key={item.key}
@@ -98,8 +94,8 @@ export default function Navbar() {
           }
           if (isMobile) closeMenu();
         }}
-        className={`inline-flex items-center h-10 px-3 rounded-lg hover:bg-white/10 ${
-          isMobile ? 'px-3 py-2 block' : ''
+        className={`inline-flex h-10 items-center rounded-lg px-3 hover:bg-white/10 ${
+          isMobile ? 'block px-3 py-2' : ''
         }`}
       >
         {item.label}
@@ -107,16 +103,15 @@ export default function Navbar() {
     );
   };
 
-  /** 데스크톱 */
   if (isDesktop)
     return (
-      <nav className='w-full bg-mju-primary'>
-        <div className='w-[1280px] mx-auto flex items-center justify-between '>
+      <nav className='bg-mju-primary w-full'>
+        <div className='mx-auto flex w-[1280px] items-center justify-between'>
           <Link to='/' className='p-3' onClick={() => trackNavClick('home')}>
-            <img src='/logo/mjs-typography-primary.svg' alt='MJS' className='w-17 h-auto' />
+            <img src='/logo/ThingoBigLogo.svg' alt='thingo' className='h-auto w-17' />
           </Link>
 
-          <ul className='flex items-center gap-1 list-none text-white text-sm font-medium leading-none'>
+          <ul className='flex list-none items-center gap-1 text-sm leading-none font-medium text-white'>
             {NAV_ITEMS.map((item: NavItem) => (
               <li key={item.key}>{renderMenuItem(item)}</li>
             ))}
@@ -124,7 +119,7 @@ export default function Navbar() {
             <li>
               <button
                 onClick={handleAuthClick}
-                className='inline-flex items-center gap-2 h-10 px-3 rounded-lg hover:bg-white/10 transition-colors'
+                className='inline-flex h-10 items-center gap-2 rounded-lg px-3 transition-colors hover:bg-white/10'
                 title={isLoggedIn ? '로그아웃' : '로그인'}
               >
                 {isLoggedIn ? (
@@ -145,26 +140,17 @@ export default function Navbar() {
       </nav>
     );
 
-  /** 모바일 */
   return (
-    <nav className='w-full h-fit bg-mju-primary'>
-      <div className='px-5 py-2 flex flex-col'>
+    <nav className='border-grey-10 h-fit w-full border-b-1 bg-white'>
+      <div className='flex flex-col px-5 py-2'>
         <div className='flex items-center justify-between'>
           <Link to='/' onClick={() => trackNavClick('home')}>
-            <img src='/logo/mjs-typography-primary.svg' alt='logo' />
+            <img src='/logo/ThingoBigLogo.svg' alt='logo' />
           </Link>
 
-          <div className='flex items-center gap-2 text-white text-xl'>
-            <Link
-              to='search'
-              className='p-2 hover:bg-white/10 rounded-md cursor-pointer transition'
-              onClick={() => trackNavClick('search')}
-            >
-              <IoIosSearch />
-            </Link>
-
+          <div className='flex items-center gap-2 text-xl text-black'>
             <button
-              className='p-2 hover:bg-white/10 rounded-md cursor-pointer transition'
+              className='cursor-pointer rounded-md p-2 transition hover:bg-white/10'
               onClick={toggleMenu}
               aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
             >
@@ -172,35 +158,9 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-
-        {isOpen && (
-          <ul className='flex flex-col md:hidden bg-mju-primary text-white text-body03 list-none px-4 py-2 gap-1 leading-none'>
-            {NAV_ITEMS.map((item: NavItem) => (
-              <li key={item.key}>{renderMenuItem(item, true)}</li>
-            ))}
-
-            <li>
-              <button
-                onClick={() => {
-                  handleAuthClick();
-                  closeMenu();
-                }}
-                className='inline-flex items-center gap-2 px-3 h-10 rounded-lg hover:bg-white/10 transition-colors'
-              >
-                {isLoggedIn ? (
-                  <>
-                    <FiLogOut size={16} /> 로그아웃
-                  </>
-                ) : (
-                  <>
-                    <FiLogIn size={16} /> 로그인
-                  </>
-                )}
-              </button>
-            </li>
-          </ul>
-        )}
       </div>
+
+      <SidebarV2 isOpen={isOpen} onClose={closeMenu} />
     </nav>
   );
 }

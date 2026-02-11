@@ -4,6 +4,8 @@ import DropdownField from '../../molecules/common/DropdownField/index.tsx';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
 import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
+
+const ALL_DEPARTMENT_OPTIONS = DEPARTMENT_OPTIONS.flatMap((option) => option.departments);
 import { uploadProfileImage } from '../../../api/user';
 import { genderOptions } from '../../../constants/gender.ts';
 
@@ -20,7 +22,7 @@ type PersonalInfoProps = {
   defaultImg: string;
 };
 
-const PersonalInfo: React.FC<PersonalInfoProps> = ({
+const PersonalInfo = ({
   nickname,
   setNickname,
   department,
@@ -29,14 +31,13 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
   setStudentCode,
   gender,
   setGender,
-
   setUploadedImageUrl,
-}) => {
+}: PersonalInfoProps) => {
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className='w-full md:w-[648px] min-h-[770px] bg-white flex flex-col justify-center items-center rounded-2xl'>
-      <div className='w-[80%] md:w-[440px] flex flex-col gap-12 '>
+    <div className='flex min-h-[770px] w-full flex-col items-center justify-center rounded-2xl bg-white md:w-[648px]'>
+      <div className='flex w-[80%] flex-col gap-12 md:w-[440px]'>
         <ProfileImageUploader
           defaultImg={user?.profileImageUrl}
           onChange={(file) => {
@@ -60,7 +61,7 @@ const PersonalInfo: React.FC<PersonalInfoProps> = ({
           label='학과'
           selected={department}
           onSelect={setDepartment}
-          options={DEPARTMENT_OPTIONS}
+          options={ALL_DEPARTMENT_OPTIONS}
         />
         <InputField
           label='학번'

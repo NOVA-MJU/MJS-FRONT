@@ -3,7 +3,7 @@ import { Typography } from '../../components/atoms/Typography';
 import Chip from '../../components/atoms/Chip';
 import { useEffect, useState } from 'react';
 import DepartmentButton from '../../components/molecules/DepartmentButton';
-import { COLLEGE_OPTIONS } from '../../constants/colleges';
+import { COLLEGE_OPTIONS } from '../../constants/departments';
 import { getDepartments, type DepartmentRes } from '../../api/departments';
 import GlobalErrorPage from '../error';
 
@@ -27,13 +27,13 @@ export default function Department() {
   if (isError) return <GlobalErrorPage />;
 
   return (
-    <div className='flex-1 p-4 md:p-8 flex flex-col gap-6'>
+    <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
       <Typography variant='heading01' className='text-mju-primary'>
         학과별 서비스
       </Typography>
       <Divider />
-      <div className='w-full overflow-x-auto no-scrollbar'>
-        <div className='w-max flex gap-2 md:gap-4'>
+      <div className='no-scrollbar w-full overflow-x-auto'>
+        <div className='flex w-max gap-2 md:gap-4'>
           <Chip selected={selectedCollege === ''} onClick={() => setSelectedCollege('')}>
             전체
           </Chip>
@@ -48,7 +48,7 @@ export default function Department() {
           ))}
         </div>
       </div>
-      <div className='flex flex-col md:grid md:grid-cols-4 gap-6'>
+      <div className='flex flex-col gap-6 md:grid md:grid-cols-4'>
         {departments.map(
           ({ departmentUuid, college, departmentName, studentCouncilName, slogan }) => (
             <DepartmentButton

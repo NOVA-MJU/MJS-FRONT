@@ -33,7 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         alignItems: 'center',
       },
       labelfield: {
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.white,
         borderBottom: `1px solid ${colors.grey20}`,
       },
       outlined: {
@@ -56,7 +56,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       color: disabled ? colors.grey40 : undefined,
       backgroundColor: disabled ? colors.white : variantStyleMap[variant].backgroundColor,
       borderColor: error ? colors.error : variantStyleMap[variant].borderColor,
-      border: error && variant !== 'labelfield' ? `1px solid ${colors.error}` : '1px solid white',
+      outline:
+        error && variant !== 'labelfield'
+          ? `1px solid ${colors.error}`
+          : `1px solid ${colors.grey10}`,
     };
 
     const isMaxed = typeof value === 'string' && maxLength && value.length >= maxLength;
@@ -65,8 +68,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className='w-full'>
         {variant === 'labelfield' && label && (
           <label
-            className={`block mb-1 text-sm ${
-              disabled ? 'font-medium text-grey-40' : 'font-semibold'
+            className={`mb-1 block text-sm ${
+              disabled ? 'text-grey-40 font-medium' : 'font-semibold'
             }`}
             style={{ color: error ? colors.error : disabled ? colors.grey40 : colors.black }}
           >
@@ -78,14 +81,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`w-full ${variantExtraClass[variant]}`}
           style={{
             ...wrapperStyle,
-            ...(isMaxed && !error ? { backgroundColor: '#fee2e2', borderColor: colors.error } : {}),
+            ...(isMaxed && !error
+              ? { backgroundColor: colors.errorBackground, borderColor: colors.error }
+              : {}),
             cursor: disabled ? 'not-allowed' : 'text',
           }}
         >
           {icon && <span className='mr-2'>{icon}</span>}
           <input
             ref={ref}
-            className='bg-transparent w-full outline-none placeholder:text-grey-20'
+            className='placeholder:text-grey-20 w-full bg-transparent outline-none'
             maxLength={maxLength}
             value={value}
             defaultValue={defaultValue}
@@ -98,7 +103,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {variant === 'field' && showCount && typeof value === 'string' && maxLength && (
             <span
-              className='text-xs ml-2 whitespace-nowrap'
+              className='ml-2 text-xs whitespace-nowrap'
               style={{
                 color: isMaxed ? colors.error : colors.grey40,
                 fontWeight: isMaxed ? 600 : undefined,
@@ -110,7 +115,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {helperText && (
-          <p className='text-xs ml-1 mt-2' style={{ color: error ? colors.error : colors.grey40 }}>
+          <p className='mt-2 ml-1 text-xs' style={{ color: error ? colors.error : colors.grey40 }}>
             {helperText}
           </p>
         )}

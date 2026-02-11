@@ -8,6 +8,12 @@ import Pagination from '../../../components/molecules/common/Pagination';
 
 const PAGINATION_LENGTH = 10;
 
+/**
+ * 관리자 공지사항 목록 페이지
+ *
+ * 학과 관리자가 해당 학과의 공지사항 목록을 조회하고 관리할 수 있는 페이지입니다.
+ * 검색 기능과 페이지네이션을 제공합니다.
+ */
 export default function AdminNotice() {
   const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const [, setSearchParams] = useSearchParams();

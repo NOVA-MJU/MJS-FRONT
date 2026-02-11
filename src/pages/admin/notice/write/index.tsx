@@ -13,6 +13,12 @@ import Divider from '../../../../components/atoms/Divider';
 import BlockTextEditor from '../../../../components/organisms/BlockTextEditor';
 import { DOMAIN_VALUES } from '../../../../api/s3upload';
 
+/**
+ * 관리자 공지사항 작성 페이지
+ *
+ * 학과 관리자가 새로운 공지사항을 작성하는 페이지입니다.
+ * 제목과 본문을 입력하고 이미지를 첨부할 수 있습니다.
+ */
 export default function AdminNoticeWrite() {
   const { departmentUuid } = useParams<{ departmentUuid: string }>();
   const navigate = useNavigate();

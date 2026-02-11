@@ -3,26 +3,24 @@ import InputField from '../../molecules/common/InputField';
 import Button from '../../atoms/Button/Button';
 import UserFormButtons from '../../molecules/user/UserFormButtons';
 import { useNavigate } from 'react-router-dom';
+import { EMAIL_DOMAIN } from '../../../constants/common';
+import { isMjuEmailDomain } from '../../../utils/validation';
 
 const FindIdForm = () => {
   const navigate = useNavigate();
 
-  const [id, setId] = useState(''); // 이메일 입력값
-  const [code, setCode] = useState(''); // 인증코드
+  const [id, setId] = useState('');
+  const [code, setCode] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [showCodeInput, setShowCodeInput] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [isEmailChecked, setIsEmailChecked] = useState(false);
 
-  const isMjuEmail = (email: string) => /@mju\.ac\.kr$/i.test(email);
-
   const handleSendCode = async () => {
-    if (!isMjuEmail(id)) return;
+    if (!isMjuEmailDomain(id)) return;
     setIsSending(true);
     try {
-      // TODO: 인증코드 전송 API 호출
-      // await api.sendResetCode(id);
       setShowCodeInput(true);
       setIsEmailChecked(true);
     } finally {
@@ -34,8 +32,7 @@ const FindIdForm = () => {
     if (!code.trim()) return;
     setIsVerifying(true);
     try {
-      // 인증코드 검증 API 호출 로직 연결 예정
-      const ok = true; // 임시 코드
+      const ok = true;
       if (ok) setEmailVerified(true);
     } finally {
       setIsVerifying(false);
@@ -59,15 +56,15 @@ const FindIdForm = () => {
               setId(e.target.value);
               setIsEmailChecked(false);
             }}
-            error={!!id && !isMjuEmail(id)}
+            error={!!id && !isMjuEmailDomain(id)}
             rightElement={
               <div className='flex items-center gap-3'>
-                <p className='font-light ml-2'>@mju.ac.kr</p>
+                <p className='font-light ml-2'>{EMAIL_DOMAIN}</p>
                 <Button
                   type='button'
                   shape='rounded'
                   size='sm'
-                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmail(id)}
+                  disabled={isSending || emailVerified || isEmailChecked || !isMjuEmailDomain(id)}
                   onClick={handleSendCode}
                   fullWidth={false}
                   variant={emailVerified || isSending ? 'grey' : 'main'}
@@ -85,7 +82,7 @@ const FindIdForm = () => {
             }
           />
           <p className='hidden md:block text-xs font-normal text-grey-40 mt-2 ml-1'>
-            @mju.ac.kr 형식의 이메일만 지원
+            {EMAIL_DOMAIN} 형식의 이메일만 지원
           </p>
         </div>
 

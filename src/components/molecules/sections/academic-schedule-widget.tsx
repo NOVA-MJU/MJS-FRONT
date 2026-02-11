@@ -1,141 +1,282 @@
-import { getAcademicCalendar, type CalendarMonthlyRes } from '@/api/main/calendar';
+import {
+  getAcademicCalendar,
+  type CalendarMonthlyRes,
+  type CalendarScheduleItem,
+} from '@/api/main/calendar';
+import { fetchNotionInfo } from '@/api/main/notice-api';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import { useEffect, useState } from 'react';
+import type { NoticeItem } from '@/types/notice/noticeInfo';
+import { formatToLocalDate } from '@/utils';
+import clsx from 'clsx';
+import { useEffect, useMemo, useState } from 'react';
+import { Calendar } from './academic-calendar';
+import { ScheduleList } from './academic-schedule-list';
 
 /**
- * API 응답의 키와 화면에 표시될 라벨, Tailwind CSS 클래스를 매핑합니다.
+ * 학사 일정 카테고리 정의
  */
-const scheduleCategories = {
-  all: { label: '전체', className: 'bg-blue-20 text-white' },
-  undergrad: { label: '학부', className: 'bg-mju-primary text-white' },
-  graduate: { label: '대학원', className: 'bg-grey-40 text-white' },
-  holiday: { label: '휴일', className: 'bg-error text-white' },
+type CategoryKey = 'all' | 'undergrad' | 'graduate' | 'holiday';
+const categoryMap: Record<CategoryKey, string> = {
+  all: '전체',
+  undergrad: '학부',
+  graduate: '대학원',
+  holiday: '휴일',
 };
 
 interface AcademicScheduleWidgetProps {
   className?: string;
-  events?: CalendarMonthlyRes | null;
 }
 
-export default function AcademicScheduleWidget({ className, events }: AcademicScheduleWidgetProps) {
+export default function AcademicScheduleWidget({ className }: AcademicScheduleWidgetProps) {
+  const [activeTab, setActiveTab] = useState<'calendar' | 'notice'>('calendar');
+  const [viewDate, setViewDate] = useState(new Date()); // 현재 달력 뷰 기준일
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 사용자가 명시적으로 선택한 날짜
+  const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const [scheduleData, setScheduleData] = useState<CalendarMonthlyRes | null>(null);
-  const categoryOrder: (keyof typeof scheduleCategories)[] = [
-    'all',
-    'undergrad',
-    'graduate',
-    'holiday',
-  ];
+
+  const [notices, setNotices] = useState<NoticeItem[]>([]);
+  const [isNoticeLoading, setIsNoticeLoading] = useState(false);
 
   /**
-   * 부모 컴포넌트로부터 이벤트 데이터를 받지 못했으면 새롭게 api를 요청합니다.
+   * 캘린더 데이터 조회 (viewDate의 연/월 기준)
    */
   useEffect(() => {
-    if (events) setScheduleData(events);
-    else getData();
-  }, [events]);
+    if (activeTab === 'calendar') {
+      getCalendarData(viewDate.getFullYear(), viewDate.getMonth() + 1);
+    }
+  }, [activeTab, viewDate]);
 
   /**
-   * 캘린더 데이터를 불러옵니다
+   * 학사공지 탭 데이터 조회
    */
-  async function getData() {
+  useEffect(() => {
+    if (activeTab === 'notice' && notices.length === 0) {
+      getNoticeData();
+    }
+  }, [activeTab, notices.length]);
+
+  const getCalendarData = async (year: number, month: number) => {
     try {
       setIsLoading(true);
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-      const currentMonth = currentDate.getMonth() + 1;
-      const res = await getAcademicCalendar(currentYear, currentMonth);
+      const res = await getAcademicCalendar(year, month);
       setScheduleData(res);
     } catch (e) {
-      console.error('academic-schedule-widget.tsx', e);
+      console.error('calendar-fetch-error', e);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  /**
+   * 학사공지 탭 데이터 조회
+   */
+  const getNoticeData = async () => {
+    try {
+      setIsNoticeLoading(true);
+      const res = await fetchNotionInfo('academic', undefined, 0, 7);
+      setNotices(res.content);
+    } catch (e) {
+      console.error('notice-fetch-error', e);
+    } finally {
+      setIsNoticeLoading(false);
+    }
+  };
+
+  /**
+   * 달력 날짜 생성 (일요일 시작 기준)
+   */
+  const calendarDays = useMemo(() => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    const days = [];
+    const prevLastDay = new Date(year, month, 0);
+
+    // 일요일(0) 시작 기준
+    const startDayOfWeek = firstDay.getDay();
+
+    // 이전 달 패딩
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      days.push({
+        date: new Date(year, month - 1, prevLastDay.getDate() - i),
+        isCurrentMonth: false,
+      });
+    }
+
+    // 현재 달
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push({
+        date: new Date(year, month, i),
+        isCurrentMonth: true,
+      });
+    }
+
+    // 다음 달 패딩
+    const remainingCells = 42 - days.length;
+    for (let i = 1; i <= remainingCells; i++) {
+      days.push({
+        date: new Date(year, month + 1, i),
+        isCurrentMonth: false,
+      });
+    }
+
+    return days;
+  }, [viewDate]);
+
+  const handlePrevMonth = () =>
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+  const handleNextMonth = () =>
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+
+  const todayDay = new Date().getDay(); // 오늘 요일 인덱스 (0:일 ~ 6:토)
+
+  /**
+   * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜 기준, 없을 시 오늘 기준)
+   */
+  const dailyScheduleList = useMemo(() => {
+    if (!scheduleData) return [];
+    const targetDate = selectedDate || new Date();
+
+    // 로컬 날짜 문자열 생성 (YYYY-MM-DD)
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    const day = String(targetDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    // 전체 일정을 카테고리 정보와 함께 합침
+    const allEventsWithCategory: (CalendarScheduleItem & { categoryLabel: string })[] = [];
+
+    if (selectedCategory === 'all' || selectedCategory === 'undergrad') {
+      scheduleData.undergrad.forEach((e) =>
+        allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.undergrad }),
+      );
+    }
+    if (selectedCategory === 'all' || selectedCategory === 'graduate') {
+      scheduleData.graduate.forEach((e) =>
+        allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.graduate }),
+      );
+    }
+    if (selectedCategory === 'all' || selectedCategory === 'holiday') {
+      scheduleData.holiday.forEach((e) =>
+        allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.holiday }),
+      );
+    }
+
+    return allEventsWithCategory.filter((e) => dateStr >= e.startDate && dateStr <= e.endDate);
+  }, [scheduleData, selectedDate, selectedCategory]);
 
   return (
-    <section>
-      <div className={className}>
-        <div className='flex flex-col gap-3'>
-          {isLoading && (
-            <>
-              <Skeleton className='h-8' />
-              <Skeleton className='h-12' />
-              <Skeleton className='h-8' />
-              <Skeleton className='h-4' />
-            </>
-          )}
-          {!isLoading &&
-            scheduleData &&
-            categoryOrder.map((key, index) => {
-              const category = scheduleCategories[key];
-              const events = scheduleData[key];
-
-              /**
-               * 해당 카테고리에 일정이 없으면 렌더링하지 않습니다.
-               */
-              if (!events || events.length === 0) {
-                return null;
-              }
-
-              return (
-                <div key={key}>
-                  <div className='flex gap-2'>
-                    <div className={`w-12 flex items-center justify-center ${category.className}`}>
-                      <span className='text-[12px] text-white'>{category.label}</span>
-                    </div>
-                    <div className='flex-1 flex flex-col gap-0.5'>
-                      <ul>
-                        {events.map((event) => (
-                          <li key={event.id} className='flex items-center'>
-                            <span className='inline-block w-20 text-[12px] text-grey-40'>
-                              {formatDateRange(event.startDate, event.endDate)}
-                            </span>
-                            <span className='flex-1 text-[14px] text-black line-clamp-1'>
-                              {removeBracketedContent(event.description)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  {index < categoryOrder.length - 1 && <div className='h-[1px] mt-3 bg-grey-10' />}
-                </div>
-              );
-            })}
+    <section className='flex flex-col bg-white'>
+      {/* 탭 네비게이션 */}
+      <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+        <div className='flex flex-1 items-center overflow-hidden'>
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={clsx(
+              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+              activeTab === 'calendar'
+                ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+            )}
+          >
+            캘린더
+          </button>
+          <button
+            onClick={() => setActiveTab('notice')}
+            className={clsx(
+              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+              activeTab === 'notice'
+                ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+            )}
+          >
+            학사공지
+          </button>
         </div>
+      </div>
+
+      <div className={clsx('flex flex-col', className)}>
+        {activeTab === 'calendar' ? (
+          <div className='flex flex-col gap-4 pb-10'>
+            {/* 달력 컴포넌트 */}
+            <div className='p-4'>
+              <Calendar
+                viewDate={viewDate}
+                onDateSelect={setSelectedDate}
+                onPrevMonth={handlePrevMonth}
+                onNextMonth={handleNextMonth}
+                calendarDays={calendarDays}
+                todayDay={todayDay}
+                scheduleData={scheduleData}
+              />
+            </div>
+
+            {/* 일정 리스트 컴포넌트 */}
+            <ScheduleList
+              selectedDate={selectedDate}
+              selectedCategory={selectedCategory}
+              onCategoryToggle={() => setIsCategoryOpen(!isCategoryOpen)}
+              isCategoryOpen={isCategoryOpen}
+              onCategorySelect={(key) => {
+                setSelectedCategory(key);
+                setIsCategoryOpen(false);
+              }}
+              isLoading={isLoading}
+              dailyScheduleList={dailyScheduleList}
+            />
+          </div>
+        ) : (
+          /* 학사공지 탭 - 일반 공지 탭과 동일한 디자인 */
+          <div className='flex flex-1 flex-col'>
+            {isNoticeLoading ? (
+              [...Array(5)].map((_, i) => (
+                <div key={i} className='border-blue-05 h-fit w-full border-b'>
+                  <div className='flex flex-col gap-0.5 px-5 py-2.5'>
+                    <Skeleton className='h-3 w-16' />
+                    <Skeleton className='h-4 w-full' />
+                    <Skeleton className='h-3 w-20' />
+                  </div>
+                </div>
+              ))
+            ) : notices.length > 0 ? (
+              notices.map((notice, index) => {
+                const isEnd = notices.length - 1 === index;
+
+                return (
+                  <a
+                    key={index}
+                    href={notice.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='hover:bg-blue-05 active:bg-blue-10 transition-colors'
+                  >
+                    <div className={`h-fit w-full ${!isEnd && 'border-blue-05 border-b'}`}>
+                      <div className='flex flex-col gap-0.5 px-5 py-2.5'>
+                        <span className='text-caption03 text-blue-10'>학사공지</span>
+                        <span className='text-body05 line-clamp-2 text-black'>{notice.title}</span>
+                        {notice.date && (
+                          <span className='text-caption04 text-grey-20'>
+                            {formatToLocalDate(notice.date)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })
+            ) : (
+              <div className='flex flex-1 items-center justify-center'>
+                <span className='text-body05 text-grey-20'>등록된 학사 공지사항이 없습니다.</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
-}
-
-/**
- * 시작일과 종료일을 받아서 "MM.DD" 또는 "MM.DD - MM.DD" 형식으로 반환합니다.
- * @param startDate - 'YYYY-MM-DD'
- * @param endDate - 'YYYY-MM-DD'
- * @returns string - 포맷팅된 날짜 문자열
- */
-const formatDateRange = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const format = (date: Date) => {
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${month}.${day}`;
-  };
-
-  if (startDate === endDate) {
-    return format(start);
-  } else {
-    return `${format(start)} - ${format(end)}`;
-  }
-};
-
-/**
- * 이벤트 제목에서 대괄호 제거
- */
-function removeBracketedContent(inputString: string): string {
-  const regex = /\[.*?\]/g;
-  return inputString.replace(regex, '');
 }

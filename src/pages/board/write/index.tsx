@@ -14,6 +14,12 @@ const CATEGORY_LABEL: Record<Category, string> = {
   NOTICE: '정보게시판',
 };
 
+/**
+ * 게시글 작성 페이지
+ *
+ * 새로운 게시글을 작성하는 페이지입니다.
+ * 카테고리 선택(자유게시판/정보게시판), 제목, 본문을 입력할 수 있습니다.
+ */
 export default function BoardWrite() {
   const navigate = useNavigate();
   const titleRef = useRef<HTMLInputElement>(null);

@@ -8,25 +8,30 @@ import WeatherComponent from '@/components/molecules/sections/weather';
 import AdCarousel from '@/components/molecules/sections/advertise';
 import RealtimeRank from '@/components/molecules/sections/rank';
 import HotBoardList from '@/components/molecules/sections/hot-board';
+import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
+import BoardSection from '@/components/molecules/sections/board';
 import { useResponsive } from '@/hooks/useResponse';
 import { FaBullhorn } from 'react-icons/fa';
-import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import { Link } from 'react-router-dom';
-import BoardSection from '@/components/molecules/sections/board';
-import { Card, CardHeader } from '@/components/atoms/Card';
+
+import MainCarousel from '@/components/organisms/MainCarousel';
+import MainSearchSection from '@/components/molecules/MainSearchSection';
+import SectionSlide from '@/components/molecules/SectionSlide';
+import AdBannerSection from '@/components/molecules/AdBannerSection';
+import Footer from '@/components/organisms/Footer';
 
 export default function Main() {
   const { isDesktop } = useResponsive();
 
   const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';
 
-  if (isDesktop)
+  if (isDesktop) {
     return (
-      <div className='w-full flex-1 px-7 py-12 flex gap-6'>
-        <div className='min-w-0 flex-2/3 flex flex-col gap-12'>
+      <div className='flex w-full flex-1 gap-6 px-7 py-12'>
+        <div className='flex min-w-0 flex-2/3 flex-col gap-12'>
           <div className='flex flex-col gap-3'>
             <SearchBar />
-            <div className='px-3 flex items-center gap-2 text-body03 text-mju-secondary line-clamp-1'>
+            <div className='text-body03 text-mju-secondary line-clamp-1 flex items-center gap-2 px-3'>
               <FaBullhorn />
               <span>{ANNOUNCEMENT_TEXT}</span>
             </div>
@@ -36,7 +41,8 @@ export default function Main() {
           <NewsSection />
           <BroadcastSection />
         </div>
-        <div className='min-w-0 flex-1/3 flex flex-col gap-12'>
+
+        <div className='flex min-w-0 flex-1/3 flex-col gap-12'>
           <ProfileSection />
           <WeatherComponent />
           <AdCarousel />
@@ -46,79 +52,97 @@ export default function Main() {
         </div>
       </div>
     );
+  }
 
-  if (!isDesktop)
-    return (
-      <div className='flex-1 py-2 flex flex-col gap-2 bg-blue-05'>
-        {/* 확성기 위젯 */}
-        <section>
-          <div className='px-5 py-1 rounded-xl bg-blue-05'>
-            <div className='flex items-center gap-2 text-body04 text-[#2254F5] line-clamp-1'>
-              <FaBullhorn />
-              <span>{ANNOUNCEMENT_TEXT}</span>
-            </div>
-          </div>
-        </section>
+  const mobileSlides = [
+    <MainSearchSection key='search' />,
 
-        {/* 식단표 위젯 */}
-        <Card>
-          <MealSection />
-        </Card>
+    <SectionSlide key='meal' title='오늘의 식단' backgroundColor='bg-blue-05'>
+      <MealSection />
+    </SectionSlide>,
 
-        {/* 공지사항 위젯 */}
-        <Card>
-          <CardHeader>
-            <h2 className='text-title01 text-blue-35'>공지사항</h2>
-            <Link to='/notice' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </CardHeader>
-          <NoticeSection />
-        </Card>
-
-        {/* 학사일정 위젯 */}
-        <Card>
-          <CardHeader>
-            <h3 className='text-title01 text-blue-35'>학사일정</h3>
-            <Link to='/academic-calendar' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </CardHeader>
-          <AcademicScheduleWidget />
-        </Card>
-
-        {/* 게시판 위젯 */}
-        <Card>
-          <CardHeader>
-            <h3 className='text-title01 text-blue-35'>게시판</h3>
-            <Link to='/board' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </CardHeader>
-          <BoardSection />
-        </Card>
-
-        {/* 명대신문 위젯 */}
-        <Card>
-          <CardHeader>
-            <h3 className='text-title01 text-blue-35'>명대신문</h3>
-            <Link to='/news' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </CardHeader>
-          <NewsSection />
-        </Card>
-
-        {/* 명대뉴스 위젯 */}
-        <Card>
-          <CardHeader>
-            <h3 className='text-title01 text-blue-35'>명대뉴스</h3>
-            <Link to='/broadcast' className='text-caption01 text-grey-20'>
-              더보기
-            </Link>
-          </CardHeader>
-          <BroadcastSection />
-        </Card>
+    <SectionSlide key='notice' title='공지사항' backgroundColor='bg-white'>
+      <div className='flex flex-col gap-4'>
+        <NoticeSection />
+        <Link
+          to='/notice'
+          className='bg-blue-35 text-caption01 hover:bg-blue-40 mx-auto rounded-full px-6 py-3 text-white transition-all'
+        >
+          공지사항 전체보기
+        </Link>
       </div>
-    );
+    </SectionSlide>,
+
+    <SectionSlide key='schedule' title='학사일정' backgroundColor='bg-blue-05'>
+      <div className='flex flex-col gap-4'>
+        <AcademicScheduleWidget />
+        <Link
+          to='/academic-calendar'
+          className='bg-blue-35 text-caption01 hover:bg-blue-40 mx-auto rounded-full px-6 py-3 text-white transition-all'
+        >
+          학사일정 전체보기
+        </Link>
+      </div>
+    </SectionSlide>,
+
+    <SectionSlide key='board' title='게시판' backgroundColor='bg-white'>
+      <div className='flex flex-col gap-4'>
+        <BoardSection />
+        <Link
+          to='/board'
+          className='bg-blue-35 text-caption01 hover:bg-blue-40 mx-auto rounded-full px-6 py-3 text-white transition-all'
+        >
+          게시판 전체보기
+        </Link>
+      </div>
+    </SectionSlide>,
+
+    <SectionSlide key='news' title='명대신문' backgroundColor='bg-blue-05'>
+      <div className='flex flex-col gap-4'>
+        <NewsSection />
+        <Link
+          to='/news'
+          className='bg-blue-35 text-caption01 hover:bg-blue-40 mx-auto rounded-full px-6 py-3 text-white transition-all'
+        >
+          명대신문 전체보기
+        </Link>
+      </div>
+    </SectionSlide>,
+
+    <SectionSlide key='broadcast' title='명대뉴스' backgroundColor='bg-white'>
+      <div className='flex flex-col gap-4'>
+        <BroadcastSection />
+        <Link
+          to='/broadcast'
+          className='bg-blue-35 text-caption01 hover:bg-blue-40 mx-auto rounded-full px-6 py-3 text-white transition-all'
+        >
+          명대뉴스 전체보기
+        </Link>
+      </div>
+    </SectionSlide>,
+  ];
+
+  return (
+    <div className='w-full'>
+      {/* 첫 화면: White(MainCarousel) + Grey(Banner) = 한 뷰포트 */}
+      <section className='h-[calc(100svh-3.5rem)] w-full overflow-hidden'>
+        <div className='flex h-full min-h-0 flex-col'>
+          {/* White: MainCarousel 영역 (인디케이터는 이 영역 맨 아래에 absolute 고정) */}
+          <div className='min-h-0 flex-1 overflow-hidden bg-white'>
+            <MainCarousel slides={mobileSlides} />
+          </div>
+
+          {/* Grey: Banner 영역 (첫 화면에 항상 보임, clamp 높이) */}
+          <div className='bg-grey-10 h-[clamp(160px,22vh,220px)] shrink-0'>
+            <AdBannerSection />
+          </div>
+        </div>
+      </section>
+
+      {/* Blue: Footer (스크롤해야 보임) */}
+      <footer className='bg-blue-05 min-h-[104px]'>
+        <Footer />
+      </footer>
+    </div>
+  );
 }

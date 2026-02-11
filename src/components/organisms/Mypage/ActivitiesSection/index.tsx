@@ -7,11 +7,7 @@ interface ActivitiesSectionProps {
   commentCount: number;
   likedCount: number;
 }
-const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({
-  postCount,
-  commentCount,
-  likedCount,
-}) => {
+const ActivitiesSection = ({ postCount, commentCount, likedCount }: ActivitiesSectionProps) => {
   const user = useAuthStore();
   return (
     <div className='flex flex-col gap-2'>

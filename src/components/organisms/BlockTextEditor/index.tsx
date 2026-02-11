@@ -112,11 +112,6 @@ export default function BlockTextEditor({
       };
 
       const compressedImageFile = await imageCompression(file, options);
-      console.log(
-        'BlockTextEditor.tsx',
-        'image-compressor',
-        `${(file.size / 1024 / 1024).toFixed(2)} MB -> ${(compressedImageFile.size / 1024 / 1024).toFixed(2)} MB`,
-      );
 
       return await uploadS3(compressedImageFile, domain);
     }

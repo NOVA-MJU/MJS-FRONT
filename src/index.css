@@ -1,30 +1,7 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import 'tailwindcss';
 
-@theme {
-  --color-*: initial;
-
-  --color-black: #17171b;
-  --color-white: #ffffff;
-  --color-bg: rgba(23, 23, 27, 0.8);
-
-  --color-grey-40: #999999;
-  --color-grey-20: #cacccc;
-  --color-grey-10: #e3e6e6;
-  --color-grey-05: #f0f2f5;
-
-  --color-mju-primary: #002968;
-  --color-mju-secondary: #0386d0;
-
-  --color-blue-35: #124ca5;
-  --color-blue-20: #2f65cb;
-  --color-blue-15: #4782da;
-  --color-blue-10: #689bde;
-  --color-blue-05: #e9f1fb;
-
-  --color-error: #da4747;
-}
-
+/* font family */
 :root {
   font-family:
     'Pretendard Variable',
@@ -44,64 +21,166 @@
     sans-serif;
 }
 
-/**
- * typography
- * 그냥 className="text-title02" 이렇게 사용하시면 됩니다
- */
-@layer utilities {
-  .text-heading01 {
-    @apply font-bold text-[40px] leading-[1.5];
-  }
-  .text-heading02 {
-    @apply font-bold text-[28px] leading-[1.5];
-  }
+/* typography */
+@theme {
+  --text-heading01: 40px;
+  --text-heading01--font-weight: 700;
+  --text-heading01--line-height: 1.5;
 
-  .text-title01 {
-    @apply font-bold text-[20px] leading-[1.5];
-  }
-  .text-title02 {
-    @apply font-semibold text-[20px] leading-[1.5];
-  }
+  --text-heading02: 28px;
+  --text-heading02--font-weight: 700;
+  --text-heading02--line-height: 1.5;
 
-  .text-body01 {
-    @apply font-normal text-[20px] leading-[1.5];
-  }
-  .text-body02 {
-    @apply font-semibold text-[16px] leading-[1.5];
-  }
-  .text-body03 {
-    @apply font-normal text-[16px] leading-[1.5];
-  }
-  .text-body04 {
-    @apply font-semibold text-[14px] leading-[1.5];
-  }
-  .text-body05 {
-    @apply font-normal text-[14px] leading-[1.5];
-  }
+  --text-title01: 20px;
+  --text-title01--font-weight: 700;
+  --text-title01--line-height: 1.5;
 
-  .text-caption01 {
-    @apply font-semibold text-[12px] leading-[1.5];
-  }
-  .text-caption02 {
-    @apply font-normal text-[12px] leading-[1.5];
-  }
-  .text-caption03 {
-    @apply font-semibold text-[11px] leading-[1.5];
-  }
-  .text-caption04 {
-    @apply font-normal text-[11px] leading-[1.5];
-  }
-  .text-caption05 {
-    @apply font-semibold text-[10px] leading-[1.5];
-  }
-  .text-caption06 {
-    @apply font-extralight text-[10px] leading-[1.5];
+  --text-title02: 20px;
+  --text-title02--font-weight: 600;
+  --text-title02--line-height: 1.5;
+
+  --text-title03: 18px;
+  --text-title03--font-weight: 700;
+  --text-title03--line-height: 1.5;
+
+  --text-body01: 20px;
+  --text-body01--font-weight: 400;
+  --text-body01--line-height: 1.5;
+
+  --text-body02: 16px;
+  --text-body02--font-weight: 600;
+  --text-body02--line-height: 1.5;
+
+  --text-body03: 16px;
+  --text-body03--font-weight: 400;
+  --text-body03--line-height: 1.5;
+
+  --text-body04: 14px;
+  --text-body04--font-weight: 600;
+  --text-body04--line-height: 1.5;
+
+  --text-body05: 14px;
+  --text-body05--font-weight: 400;
+  --text-body05--line-height: 1.5;
+
+  --text-body06: 14px;
+  --text-body06--font-weight: 500;
+  --text-body06--line-height: 1.5;
+
+  --text-caption01: 12px;
+  --text-caption01--font-weight: 600;
+  --text-caption01--line-height: 1.5;
+
+  --text-caption02: 12px;
+  --text-caption02--font-weight: 400;
+  --text-caption02--line-height: 1.5;
+
+  --text-caption03: 11px;
+  --text-caption03--font-weight: 600;
+  --text-caption03--line-height: 1.5;
+
+  --text-caption04: 11px;
+  --text-caption04--font-weight: 400;
+  --text-caption04--line-height: 1.5;
+
+  --text-caption05: 10px;
+  --text-caption05--font-weight: 600;
+  --text-caption05--line-height: 1.5;
+
+  --text-caption06: 10px;
+  --text-caption06--font-weight: 200;
+  --text-caption06--line-height: 1.5;
+}
+
+/* tailwind color palette */
+@theme {
+  --color-*: initial;
+
+  --color-black: var(--color-black);
+  --color-white: var(--color-white);
+  --color-bg: var(--color-bg);
+
+  --color-grey-80: var(--color-grey-80);
+  --color-grey-60: var(--color-grey-60);
+  --color-grey-40: var(--color-grey-40);
+  --color-grey-30: var(--color-grey-30);
+  --color-grey-20: var(--color-grey-20);
+  --color-grey-10: var(--color-grey-10);
+  --color-grey-05: var(--color-grey-05);
+  --color-grey-02: var(--color-grey-02);
+
+  --color-mju-primary: var(--color-mju-primary);
+  --color-mju-secondary: var(--color-mju-secondary);
+
+  --color-blue-35: var(--color-blue-35);
+  --color-blue-20: var(--color-blue-20);
+  --color-blue-15: var(--color-blue-15);
+  --color-blue-10: var(--color-blue-10);
+  --color-blue-05: var(--color-blue-05);
+
+  --color-error: var(--color-error);
+}
+
+/* mobile web color palette */
+:root {
+  --color-*: initial;
+
+  --color-black: #17171b;
+  --color-white: #ffffff;
+  --color-bg: rgba(23, 23, 27, 0.6);
+
+  --color-grey-80: #4b4d4f;
+  --color-grey-60: #6d7073;
+  --color-grey-40: #909499;
+  --color-grey-30: #aeb2b6;
+  --color-grey-20: #cdd0d4;
+  --color-grey-10: #e3e6e6;
+  --color-grey-02: #f0f2f5;
+
+  --color-mju-primary: #1778ff;
+  --color-mju-secondary: #23aeff;
+
+  --color-blue-35: #2587ff;
+  --color-blue-20: #4593ff;
+  --color-blue-15: #5dabff;
+  --color-blue-10: #8bc7ff;
+  --color-blue-05: #e8f1ff;
+
+  --color-error: #f45353;
+}
+
+/* pc web color palette */
+@media (min-width: 769px) {
+  :root {
+    --color-*: initial;
+
+    --color-black: #17171b;
+    --color-white: #ffffff;
+    --color-bg: rgba(23, 23, 27, 0.6);
+
+    --color-grey-80: #4b4d4f;
+    --color-grey-60: #6d7073;
+    --color-grey-40: #999999;
+    --color-grey-30: #aeb2b6;
+    --color-grey-20: #cacccc;
+    --color-grey-10: #e3e6e6;
+    --color-grey-05: #f0f2f5;
+    --color-grey-02: #f0f2f5;
+
+    --color-mju-primary: #002968;
+    --color-mju-secondary: #0386d0;
+
+    --color-blue-35: #124ca5;
+    --color-blue-20: #2f65cb;
+    --color-blue-15: #4782da;
+    --color-blue-10: #689bde;
+    --color-blue-05: #e9f1fb;
+
+    --color-error: #da4747;
   }
 }
 
-/**
- * 스크롤바를 제거하는 스타일 입니다
- */
+/* 스크롤바 제거 */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -111,9 +190,7 @@
   display: none;
 }
 
-/**
- * 검색 결과에서 검색어를 highlight하는 스타일 입니다
- */
+/* 검색 결과 검색어 highlight */
 .search-result__highlight em {
   background-color: rgba(255, 235, 59, 0.4);
   font-style: normal;
@@ -121,9 +198,7 @@
   border-radius: 2px;
 }
 
-/**
- * BlockNote.js가 구동될 때 좌우 padding을 제거합니다
- */
+/* BlockNote.js 좌우 padding 제거 */
 @media (max-width: 768px) {
   .bn-editor {
     padding: 0 22px !important;
@@ -142,4 +217,48 @@
   left: auto;
   right: 0;
   transform: translateX(100%);
+}
+
+/* 메인 V3 "옆으로 슬라이드" 인디케이터 애니메이션 */
+@keyframes slide-indicator-right {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-indicator-left {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.slide-indicator-anim-right {
+  animation: slide-indicator-right 1.4s ease-in-out infinite;
+}
+
+.slide-indicator-anim-left {
+  animation: slide-indicator-left 1.4s ease-in-out infinite;
+}
+.main-arrow-blur {
+  background-color: rgba(37, 135, 255, 0.06);
+  backdrop-filter: blur(3px);
+  border-radius: 9999px;
 }

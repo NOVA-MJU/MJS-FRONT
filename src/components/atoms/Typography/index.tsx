@@ -46,12 +46,12 @@ const variantConfig: Record<
 /**
  * @deprecated tailwind css 속성을 사용하세요
  */
-export const Typography: React.FC<TypographyProps> = ({
+export const Typography = ({
   variant = 'body01',
   className,
   children,
   dangerouslySetInnerHTML,
-}) => {
+}: TypographyProps) => {
   const { tag: Tag, className: vClass } = variantConfig[variant];
   return (
     <Tag

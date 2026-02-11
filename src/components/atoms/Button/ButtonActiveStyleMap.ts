@@ -6,7 +6,7 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     color: colors.white,
   },
   sub: {
-    backgroundColor: '#FFD700',
+    backgroundColor: colors.yellow,
     color: colors.mju_primary,
   },
   basic: {
@@ -34,12 +34,12 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     color: colors.white,
   },
   greyLight: {
-    backgroundColor: '#E3E6E6',
-    color: '#999999',
+    backgroundColor: colors.grey10,
+    color: colors.grey40,
   },
   greyBlack: {
-    backgroundColor: '#E3E6E6',
-    color: '#17171B',
+    backgroundColor: colors.grey10,
+    color: colors.black,
   },
   borderRed: {
     backgroundColor: 'transparent',

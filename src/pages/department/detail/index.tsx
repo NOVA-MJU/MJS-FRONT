@@ -14,8 +14,14 @@ import DepartmentNoticeBoard, {
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import { departmentMap } from '../../../constants/departments';
 import GlobalErrorPage from '../../error';
-import { collegeMap } from '../../../constants/colleges';
+import { collegeMap } from '../../../constants/departments';
 
+/**
+ * 학과 상세 페이지
+ *
+ * 특정 학과의 일정과 학생회 공지사항을 표시하는 페이지입니다.
+ * 탭을 통해 학과일정과 학생회 공지사항을 전환할 수 있습니다.
+ */
 export default function DepartmentDetail() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
@@ -130,7 +136,7 @@ export default function DepartmentDetail() {
   if (isError) return <GlobalErrorPage />;
 
   return (
-    <div className='flex-1 p-4 md:p-8 flex flex-col gap-4 md:gap-8'>
+    <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
       <NavigationUp onClick={() => navigate(-1)} />
       {!isLoading && (
         <>
@@ -139,46 +145,46 @@ export default function DepartmentDetail() {
               <img
                 src={departmentImage}
                 alt='학과이미지'
-                className='hidden md:block w-46 h-46 rounded-full object-cover'
+                className='hidden h-46 w-46 rounded-full object-cover md:block'
                 onError={() => setDepartmentImage(null)}
               />
             )}
-            <div className='flex-1 flex flex-col gap-6'>
+            <div className='flex flex-1 flex-col gap-6'>
               <div className='flex flex-col gap-2 md:gap-3'>
-                <div className='flex flex-row md:flex-col gap-4 md:gap-3'>
+                <div className='flex flex-row gap-4 md:flex-col md:gap-3'>
                   {departmentImage && (
                     <img
                       src={departmentImage}
                       alt='학과이미지'
-                      className='md:hidden w-24 h-24 rounded-full object-cover'
+                      className='h-24 w-24 rounded-full object-cover md:hidden'
                       onError={() => setDepartmentImage(null)}
                     />
                   )}
                   <div className='flex flex-col gap-2 md:gap-3'>
-                    <button className='w-fit px-2 py-0.5 rounded-sm bg-blue-05'>
+                    <button className='bg-blue-05 w-fit rounded-sm px-2 py-0.5'>
                       <Typography variant='body03' className='text-blue-20'>
                         {collegeName}
                       </Typography>
                     </button>
-                    <div className='flex flex-col md:flex-row md:items-center gap-2 md:gap-6'>
+                    <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-6'>
                       <Typography variant='heading01'>{departmentName}</Typography>
                       <Typography variant='body01'>{departmentSlogan}</Typography>
                     </div>
                   </div>
                 </div>
-                <div className='p-6 gap-2.5 bg-grey-05 rounded-xl'>
+                <div className='bg-grey-05 gap-2.5 rounded-xl p-6'>
                   <Typography variant='body03' className='text-grey-40'>
                     {departmentDescription}
                   </Typography>
                 </div>
-                <div className='flex flex-col md:flex-row gap-4 md:gap-6'>
+                <div className='flex flex-col gap-4 md:flex-row md:gap-6'>
                   <a
                     href={departmentInstagramUrl}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='flex-1 px-5 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl cursor-pointer'
+                    className='border-grey-05 flex flex-1 cursor-pointer flex-col gap-2 rounded-xl border-2 px-5 py-4'
                   >
-                    <div className='w-full flex justify-between items-center'>
+                    <div className='flex w-full items-center justify-between'>
                       <Typography variant='title02'>인스타그램</Typography>
                       <IoIosArrowForward className='text-blue-10 text-xl' />
                     </div>
@@ -190,9 +196,9 @@ export default function DepartmentDetail() {
                     href={departmentLink}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='flex-1 px-5 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl cursor-pointer'
+                    className='border-grey-05 flex flex-1 cursor-pointer flex-col gap-2 rounded-xl border-2 px-5 py-4'
                   >
-                    <div className='w-full flex justify-between items-center'>
+                    <div className='flex w-full items-center justify-between'>
                       <Typography variant='title02'>학교 공식 홈페이지</Typography>
                       <IoIosArrowForward className='text-blue-10 text-xl' />
                     </div>
@@ -205,13 +211,13 @@ export default function DepartmentDetail() {
             </div>
           </div>
           <div className='flex flex-col gap-6'>
-            <div className='px-3 flex border-b-1 border-grey-10'>
+            <div className='border-grey-10 flex border-b-1 px-3'>
               {['학과일정', '학생회 공지사항'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as '학과일정' | '학생회 공지사항')}
-                  className={`flex-1 py-3 text-center font-semibold cursor-pointer ${
-                    activeTab === tab ? 'text-blue-35 border-b-2 border-blue-35' : 'text-grey-40'
+                  className={`flex-1 cursor-pointer py-3 text-center font-semibold ${
+                    activeTab === tab ? 'text-blue-35 border-blue-35 border-b-2' : 'text-grey-40'
                   }`}
                 >
                   <Typography variant='title02'>{tab}</Typography>

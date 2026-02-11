@@ -10,45 +10,40 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { getSearchResult } from '../../api/search';
 import GlobalErrorPage from '../error';
 import { useResponsive } from '@/hooks/useResponse';
-
-const MOBILE_ITEMS_PER_PAGE = 5;
-const DESKTOP_ITEMS_PER_PAGE = 8;
+import { NEWS_MOBILE_PAGE_SIZE, NEWS_DESKTOP_PAGE_SIZE } from '@/constants/common';
+import { handleError } from '@/utils/error';
 
 const News = () => {
-  /**
-   * search parameter를 이용해서 검색 키워드 초기값을 불러옵니다
-   */
-  const [searchParams] = useSearchParams();
+  const { isDesktop } = useResponsive();
+  const ITEMS_PER_PAGE = isDesktop ? NEWS_DESKTOP_PAGE_SIZE : NEWS_MOBILE_PAGE_SIZE;
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
+  const categoryParam = searchParams.get('category') ?? 'ALL';
+  const pageParam = Number(searchParams.get('page') ?? '1');
+  const initialPage = pageParam > 0 ? pageParam - 1 : 0;
+
+  const translateCategory = (serverValue: string): string => {
+    const entries = Object.entries(NewsCategory);
+    const entry = entries.find(([, value]) => value === serverValue);
+    return entry ? entry[0] : '전체';
+  };
+  const initialSelectedCategory = translateCategory(categoryParam);
+
   const [initialContent, setInitialContent] = useState('');
 
-  /**
-   * 주소에 search parameter 값이 있으면 검색바에 반영합니다
-   */
   useEffect(() => {
-    (async () => {
-      if (!keyword) return;
-      setInitialContent(keyword);
-      try {
-        // await handleSearch(keyword);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
+    if (!keyword) return;
+    setInitialContent(keyword);
   }, [keyword]);
 
-  const [page, setPage] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
+  const [page, setPage] = useState(initialPage);
+  const [selectedCategory, setSelectedCategory] = useState(initialSelectedCategory);
   const [newsList, setNewsList] = useState<NewsInfo[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isError, setIsError] = useState(false);
-  const { isDesktop } = useResponsive();
-  const ITEMS_PER_PAGE = isDesktop ? DESKTOP_ITEMS_PER_PAGE : MOBILE_ITEMS_PER_PAGE;
 
   useEffect(() => {
-    /**
-     * search parameter가 있는 경우 검색을 수행합니다
-     */
     if (keyword)
       (async () => {
         try {
@@ -66,13 +61,11 @@ const News = () => {
           setNewsList(parsed);
           setTotalPages(res.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '검색 결과를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();
-    /**
-     * search parameter가 없는 경우 모든 결과를 출력합니다
-     */ else
+    else
       (async () => {
         try {
           const categoryParam = NewsCategory[selectedCategory] ?? 'REPORT';
@@ -80,7 +73,7 @@ const News = () => {
           setNewsList(data.data.content);
           setTotalPages(data.data.totalPages);
         } catch (e) {
-          console.error(e);
+          handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
           setIsError(true);
         }
       })();
@@ -89,7 +82,7 @@ const News = () => {
   if (isError) return <GlobalErrorPage />;
 
   return (
-    <div className='flex-1 p-4 md:p-8 flex flex-col gap-4 md:gap-6'>
+    <div className='flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-8'>
       <Link to='/news'>
         <p className='text-blue-35 text-heading02 md:text-heading01'>명대신문</p>
       </Link>
@@ -101,25 +94,35 @@ const News = () => {
           onChange={(category) => {
             setSelectedCategory(category);
             setPage(0);
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.set('category', NewsCategory[category] ?? 'ALL');
+            nextParams.set('page', '1');
+            setSearchParams(nextParams);
           }}
         />
       </div>
-      <div className='flex-1 flex flex-col'>
-        <div className='grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+      <div className='flex flex-1 flex-col'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4'>
           {newsList.map((news, index) => (
             <NewsCard key={index} news={news} />
           ))}
         </div>
-        {/**
-         * 키워드를 입력했는데 검색 결과가 없는 경우
-         */}
         {keyword && newsList.length === 0 && (
-          <div className='flex-1 text-center content-center'>
+          <div className='flex-1 content-center text-center'>
             <p className='text-title02'>검색 결과가 없습니다</p>
           </div>
         )}
       </div>
-      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onChange={(newPage) => {
+          setPage(newPage);
+          const nextParams = new URLSearchParams(searchParams);
+          nextParams.set('page', String(newPage + 1));
+          setSearchParams(nextParams);
+        }}
+      />
     </div>
   );
 };

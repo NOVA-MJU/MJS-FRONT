@@ -9,6 +9,12 @@ import BlockTextEditor from '../../../../components/organisms/BlockTextEditor';
 import GlobalErrorPage from '../../../error';
 import toast from 'react-hot-toast';
 
+/**
+ * 관리자 공지사항 상세 페이지
+ *
+ * 학과 관리자가 공지사항 상세 내용을 조회하고 삭제할 수 있는 페이지입니다.
+ * 수정 페이지로 이동할 수 있는 버튼을 제공합니다.
+ */
 export default function AdminNoticeDetail() {
   const { departmentUuid, noticeUuid } = useParams<{
     departmentUuid: string;

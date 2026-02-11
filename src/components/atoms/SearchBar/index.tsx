@@ -1,10 +1,13 @@
 import { FaSearch } from 'react-icons/fa';
+import { IoCloseCircle } from 'react-icons/io5';
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { twMerge } from 'tailwind-merge';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getSearchWordcompletion } from '@/api/search';
+import { addRecentKeyword } from '@/utils/recentSearch';
 
 interface SearchBarProps {
   /**
@@ -18,6 +21,7 @@ interface SearchBarProps {
   initialContent?: string;
 
   className?: string;
+  iconClassName?: string;
 }
 
 /**
@@ -30,12 +34,26 @@ export default function SearchBar({
   domain = 'search',
   initialContent,
   className,
+  iconClassName,
 }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [value, setValue] = useState('');
+
+  /** 통합검색(domain=search)일 때 기존 쿼리(tab 등) 유지 */
+  const getSearchQuery = (keyword: string) => {
+    if (domain !== 'search' || !keyword.trim())
+      return `?keyword=${encodeURIComponent(keyword.trim())}`;
+    const next = new URLSearchParams();
+    next.set('keyword', keyword.trim());
+    const tab = searchParams.get('tab');
+    if (tab) next.set('tab', tab);
+    return `?${next.toString()}`;
+  };
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const initialized = useRef(true);
+  const prevLengthRef = useRef(0);
   const searchBarRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -54,7 +72,7 @@ export default function SearchBar({
    * 검색어 자동완성
    * `useDebounce`는 검색어 입력 후 0.1초 내에 키보드를 다시 입력하는 경우 검색어 자동완성을 수행하지 않도록 합니다 (트래픽 절약)
    */
-  const debounced = useDebounce(value, 100);
+  const debounced = useDebounce(value, 50);
   useEffect(() => {
     if (!debounced.trim()) return;
     if (!initialized.current) {
@@ -73,10 +91,9 @@ export default function SearchBar({
         if (!controller.signal.aborted) {
           if (res.length !== 0) setSuggestedKeywords(res);
         }
-      } catch (e) {
-        if (!controller.signal.aborted) {
-          console.error(e);
-        }
+      } catch {
+        // 에러는 상위에서 처리 (abort된 경우 무시)
+        // 자동완성 실패는 조용히 처리
       }
     })();
   }, [debounced]);
@@ -86,16 +103,14 @@ export default function SearchBar({
    * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
    */
   const handleKeywordClick = (keyword: string) => {
-    console.log(domain);
-    if (
-      location.pathname === `/${domain}` &&
-      location.search === `?keyword=${encodeURIComponent(keyword)}`
-    ) {
+    addRecentKeyword(keyword);
+    const search = getSearchQuery(keyword);
+    if (location.pathname === `/${domain}` && location.search === search) {
       window.location.reload();
     } else {
       navigate({
         pathname: `/${domain}`,
-        search: `?keyword=${encodeURIComponent(keyword.trim())}`,
+        search,
       });
     }
   };
@@ -104,7 +119,17 @@ export default function SearchBar({
    * 검색어를 지울 경우 검색어 자동완성 창 자동 닫기
    */
   useEffect(() => {
-    if (value.length === 0) setSuggestedKeywords([]);
+    // 완전히 비워졌을 때는 항상 닫기
+    if (value.length === 0) {
+      setSuggestedKeywords([]);
+    }
+
+    // 백스페이스 등으로 글자가 줄어들면 추천을 즉시 닫아 UX를 자연스럽게 유지
+    if (value.length < prevLengthRef.current) {
+      setSuggestedKeywords([]);
+    }
+
+    prevLengthRef.current = value.length;
   }, [value]);
 
   /**
@@ -138,15 +163,17 @@ export default function SearchBar({
     abortControllerRef.current?.abort();
     setSuggestedKeywords([]);
 
-    if (value)
+    if (value?.trim()) {
+      addRecentKeyword(value);
       navigate({
         pathname: `/${domain}`,
-        search: `?keyword=${encodeURIComponent(value.trim())}`,
+        search: getSearchQuery(value.trim()),
       });
-    else
+    } else {
       navigate({
         pathname: `/${domain}`,
       });
+    }
     setSuggestedKeywords([]);
   };
 
@@ -154,20 +181,26 @@ export default function SearchBar({
     <div className='relative' ref={searchBarRef}>
       {/* 검색바 */}
       <div
-        className={clsx(
-          'flex items-center bg-white border-grey-05 p-4 gap-3',
-          suggestedKeywords.length === 0
-            ? 'border rounded-lg'
-            : 'border-t border-s border-e rounded-t-lg',
+        className={twMerge(
+          clsx(
+            'border-blue-35 flex items-center gap-3 border-2 bg-white px-5 py-3 transition-all md:shadow-sm md:hover:shadow-md',
+            suggestedKeywords.length === 0 ? 'rounded-full' : 'rounded-t-2xl border-b-0',
+          ),
           className,
         )}
       >
-        <p className='text-body04 md:text-body01 text-grey-20'>
-          <FaSearch />
-        </p>
+        {!value.trim() && (
+          <p
+            className={twMerge(
+              clsx('text-body04 md:text-body01 text-blue-35 cursor-pointer', iconClassName),
+            )}
+          >
+            <FaSearch />
+          </p>
+        )}
         <input
           type='text'
-          className='text-body04 md:text-body01 flex-1 bg-transparent outline-none text-black placeholder-grey-20'
+          className='text-body06 md:text-body01 placeholder-grey-20 flex-1 bg-transparent text-black outline-none'
           placeholder={'검색어를 입력하세요'}
           value={value}
           onChange={(e) => {
@@ -179,29 +212,39 @@ export default function SearchBar({
             }
           }}
         />
+        {value.trim() && (
+          <div>
+            <IoCloseCircle
+              className='text-grey-20 h-5 w-5 cursor-pointer'
+              onClick={() => setValue('')}
+            />
+          </div>
+        )}
       </div>
 
       {/* 키워드 자동완성 박스 */}
       {suggestedKeywords.length !== 0 && (
-        <div className='w-full absolute top-full z-50'>
-          <div className='bg-white border border-grey-05 rounded-b-lg flex flex-col gap-1'>
-            <div className='flex flex-col max-h-80 overflow-y-auto border-b border-grey-05'>
+        <div className='absolute top-full left-0 z-50 mt-1 w-full'>
+          <div className='ring-blue-05 flex flex-col gap-1 rounded-2xl bg-white/95 shadow-lg ring-1 backdrop-blur-sm'>
+            <div className='border-blue-05/40 flex max-h-80 flex-col overflow-y-auto border-b'>
               {suggestedKeywords.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => {
                     handleKeywordClick(item);
                   }}
-                  className='w-full h-fit px-5 py-3 flex gap-3 items-center cursor-pointer hover:bg-grey-05 transition hover:duration-0'
+                  className='text-body04 text-grey-90 hover:bg-blue-05/40 active:bg-blue-05/60 flex h-fit w-full items-center gap-3 px-4 py-2.5 text-left transition'
                 >
-                  <FaSearch className='text-grey-20 text-xl p-1 bg-grey-05 rounded-full' />
-                  <span className='text-body03 flex-1 text-start'>{item}</span>
-                  <GoArrowUpRight />
+                  <span className='bg-blue-05 text-blue-35 flex h-7 w-7 items-center justify-center rounded-full text-xs'>
+                    <FaSearch />
+                  </span>
+                  <span className='text-body03 flex-1 truncate text-start'>{item}</span>
+                  <GoArrowUpRight className='text-blue-35' />
                 </button>
               ))}
             </div>
             <a
-              className='w-fit self-end py-2 px-4 text-caption02 text-grey-40 cursor-pointer'
+              className='text-caption02 text-grey-40 w-fit self-end px-4 py-2 underline-offset-2 hover:underline'
               onClick={handleCloseBox}
             >
               닫기

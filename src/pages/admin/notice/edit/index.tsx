@@ -14,6 +14,12 @@ import { getDepartmentNoticeDetail, updateDepartmentNotice } from '../../../../a
 import { DOMAIN_VALUES } from '../../../../api/s3upload';
 import GlobalErrorPage from '../../../error';
 
+/**
+ * 관리자 공지사항 수정 페이지
+ *
+ * 학과 관리자가 기존 공지사항을 수정하는 페이지입니다.
+ * 제목과 본문을 수정할 수 있으며, 수정 전 확인 모달을 표시합니다.
+ */
 export default function AdminNoticeEdit() {
   const { departmentUuid, noticeUuid } = useParams<{
     departmentUuid: string;

@@ -72,9 +72,6 @@ export default function Board() {
     navigate('/board/write');
   };
 
-  /** -------------------
-   *  공통 컨텐츠 블록
-   * ------------------- */
   const BoardContent = (
     <>
       <header className='flex flex-col gap-4'>
@@ -87,18 +84,18 @@ export default function Board() {
             <button
               type='button'
               onClick={handleWriteClick}
-              className='h-12 rounded-xl bg-blue-35 px-6 text-body02 font-semibold text-white transition-colors hover:bg-blue-30'
+              className='bg-blue-35 text-body02 hover:bg-blue-30 h-12 rounded-xl px-6 font-semibold text-white transition-colors'
             >
               글 남기기
             </button>
           )}
         </div>
-        <nav className='grid w-full grid-cols-2 border-b border-grey-10'>
+        <nav className='border-grey-10 grid w-full grid-cols-2 border-b'>
           {CATEGORY_TABS.map((tab) => (
             <button
               key={tab.key}
               className={clsx(
-                'relative py-3 text-center text-body02 md:text-body01 transition-colors',
+                'text-body02 md:text-body01 relative py-3 text-center transition-colors',
                 category === tab.key ? 'text-blue-20 font-semibold' : 'text-grey-30',
               )}
               onClick={() => setCategory(tab.key)}
@@ -106,7 +103,7 @@ export default function Board() {
               {tab.label}
               <span
                 className={clsx(
-                  'absolute left-0 bottom-0 h-[3px] w-full rounded-full',
+                  'absolute bottom-0 left-0 h-[3px] w-full rounded-full',
                   category === tab.key ? 'bg-blue-20' : 'bg-transparent',
                 )}
               />
@@ -123,15 +120,15 @@ export default function Board() {
             <LoadingIndicator />
           </div>
         ) : isError ? (
-          <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
+          <div className='text-body02 text-grey-30 flex h-full w-full items-center justify-center'>
             게시글을 불러오는 데 실패했습니다.
           </div>
         ) : contents.length === 0 ? (
-          <div className='flex h-full w-full items-center justify-center text-body02 text-grey-30'>
+          <div className='text-body02 text-grey-30 flex h-full w-full items-center justify-center'>
             게시글이 없습니다.
           </div>
         ) : (
-          <div className='flex h-full flex-col divide-y divide-grey-05 overflow-y-auto'>
+          <div className='divide-grey-05 flex h-full flex-col divide-y overflow-y-auto'>
             {contents.map((content) => (
               <BoardItem
                 key={content.uuid}
@@ -157,19 +154,18 @@ export default function Board() {
    * ------------------- */
   if (isDesktop)
     return (
-      <div className='relative flex flex-col items-center w-full bg-grey-00 pb-24 md:pb-12'>
-        <div className='w-[1200px] flex flex-col gap-6 p-8'>{BoardContent}</div>
+      <div className='bg-grey-00 relative flex w-full flex-col items-center pb-24 md:pb-12'>
+        <div className='flex w-[1200px] flex-col gap-6 p-8'>{BoardContent}</div>
       </div>
     );
 
-  // 모바일
   return (
-    <div className='relative flex h-full w-full flex-col bg-grey-00 pb-24 md:pb-12'>
+    <div className='bg-grey-00 relative flex h-full w-full flex-col pb-24 md:pb-12'>
       <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>{BoardContent}</div>
 
       <button
         type='button'
-        className='fixed bottom-40 right-5 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full bg-blue-35 text-white shadow-lg md:bottom-16'
+        className='bg-blue-35 fixed right-5 bottom-40 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full text-white shadow-lg md:bottom-16'
         onClick={handleWriteClick}
       >
         <HiOutlinePencilSquare size={22} />
@@ -179,9 +175,6 @@ export default function Board() {
   );
 }
 
-/** -------------------
- *  게시글 Item 컴포넌트
- * ------------------- */
 interface BoardItemProps {
   uuid: string;
   title: string;
@@ -203,34 +196,34 @@ function BoardItem({
 }: BoardItemProps) {
   return (
     <Link
-      className='flex cursor-pointer px-5 py-6 transition-colors hover:bg-blue-05/40'
+      className='hover:bg-blue-05/40 flex cursor-pointer px-5 py-6 transition-colors'
       to={`/board/${uuid}`}
     >
       <div
         className={clsx(
           'flex flex-1 flex-col gap-2',
-          isPopular && 'border-l-2 border-blue-05 pl-4',
+          isPopular && 'border-blue-05 border-l-2 pl-4',
         )}
       >
-        <Typography variant='body02' className='font-semibold text-grey-90'>
+        <Typography variant='body02' className='text-grey-90 font-semibold'>
           {title}
         </Typography>
-        <Typography variant='body03' className='line-clamp-2 text-grey-40'>
+        <Typography variant='body03' className='text-grey-40 line-clamp-2'>
           {previewContent}
         </Typography>
-        <div className='flex items-center gap-4 text-caption01 text-grey-30'>
-          <span className='flex items-center gap-1 text-blue-20'>
+        <div className='text-caption01 text-grey-30 flex items-center gap-4'>
+          <span className='text-blue-20 flex items-center gap-1'>
             <IoHeartOutline />
             <span className='text-grey-40'>{likeCount}</span>
           </span>
-          <span className='flex items-center gap-1 text-blue-20'>
+          <span className='text-blue-20 flex items-center gap-1'>
             <IoChatbubbleEllipsesOutline />
             <span className='text-grey-40'>{commentCount}</span>
           </span>
         </div>
       </div>
       <div className='flex min-w-[70px] items-center justify-center'>
-        <Typography variant='caption01' className='font-normal text-grey-30'>
+        <Typography variant='caption01' className='text-grey-30 font-normal'>
           {formatToElapsedTime(publishedAt)}
         </Typography>
       </div>

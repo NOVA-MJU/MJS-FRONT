@@ -66,3 +66,15 @@ export const formatToElapsedTime = (dateString: string): string => {
   }
   return `${Math.floor(diffInSeconds / YEAR)}년 전`;
 };
+/**
+ * ISO 날짜 문자열을 `YYYY.MM.DD` 형식으로 변환합니다.
+ * @param dateString 서버 응답 날짜 (예: `2025-11-13T10:55:57.233Z` 또는 `2025-11-13`)
+ * @returns `2025.11.13`
+ */
+export const formatToDotDate = (dateString: string): string => {
+  const dateOnly = dateString.slice(0, 10);
+  return dateOnly.replace(/-/g, '.');
+};
+
+/** @deprecated formatToDotDate 사용 */
+export const FormatToDotDate = formatToDotDate;
