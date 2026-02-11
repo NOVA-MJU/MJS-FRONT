@@ -30,11 +30,11 @@ import ViewPosts from '@/pages/mypage/viewPosts';
 import News from '@/pages/news';
 import Notice from '@/pages/notice';
 import Register from '@/pages/register';
-import Search from '@/pages/search';
 import { AgentationTool } from '@/utils/agentation';
 import type { Location } from 'react-router-dom';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import HomeSlider from './pages/HomeSlider';
+import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from './pages/search/SearchOverlay';
 import Slides from './pages/slides';
 
@@ -70,7 +70,7 @@ const App = () => {
           <Route path='/department' element={<Department />} />
           <Route path='/department/:uuid' element={<DepartmentDetail />} />
 
-          <Route path='/search' element={<Search />} />
+          <Route path='/search' element={<SearchEntry />} />
 
           <Route path='/admin/:departmentUuid' element={<Admin />} />
           <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
@@ -92,7 +92,7 @@ const App = () => {
 
           <Route path='/main/department/events/new' element={<DepartmentEventsNewPage />} />
           <Route path='/main/department/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
-          
+
           {/* 임시 우측 슬라이드 라우팅 */}
           <Route path='/slides' element={<Slides />} />
         </Route>

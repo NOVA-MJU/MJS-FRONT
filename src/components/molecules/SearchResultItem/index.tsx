@@ -56,15 +56,19 @@ export default function SearchResultItem({
   if (variant === 'news')
     return (
       <a
-        className='rounded-lg cursor-pointer p-1 md:p-3 flex gap-3 md:gap-6 items-center hover:bg-grey-05'
+        className='hover:bg-grey-05 flex cursor-pointer items-center gap-3 rounded-lg p-1 md:gap-6 md:p-3'
         target='_blank'
         rel='noopener noreferrer'
         href={link}
       >
-        {imageUrl && (
-          <img className='w-24 h-18 md:w-46 md:h-36 rounded-lg object-cover' src={imageUrl} />
-        )}
-        <div className='flex-1 py-3 flex flex-col gap-2 md:gap-3 items-start'>
+        <img
+          className='border-grey-10 h-18 w-24 rounded-lg border-1 object-cover md:h-36 md:w-46'
+          src={imageUrl ?? '/default-thumbnail.png'}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = '/default-thumbnail.png';
+          }}
+        />
+        <div className='flex flex-1 flex-col items-start gap-2 py-3 md:gap-3'>
           <Chip selected variant='caption02'>
             {koreanCategory}
           </Chip>
@@ -76,7 +80,7 @@ export default function SearchResultItem({
   else
     return (
       <a
-        className='rounded-lg cursor-pointer p-1 md:p-3 flex gap-3 md:gap-6 items-center hover:bg-grey-05'
+        className='hover:bg-grey-05 flex cursor-pointer items-center gap-3 rounded-lg p-1 md:gap-6 md:p-3'
         target='_blank'
         rel='noopener noreferrer'
         href={link}

@@ -10,9 +10,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className='w-full bg-blue-05'>
-      <div className='p-5 w-full md:w-[1280px] mx-auto flex flex-col gap-4'>
-        <img src='/logo/MJS_lightLogo.svg' alt='mjs' className='h-auto w-14' />
+    <footer className='bg-blue-05 w-full'>
+      <div className='mx-auto flex w-full flex-col gap-4 p-5 md:w-[1280px]'>
+        <img src='/logo/ThingoSmallLogo.svg' alt='mjs' className='h-auto w-14' />
         <div className='flex gap-4'>
           <a className='text-caption05 text-grey-40 cursor-pointer'>이용약관</a>
           <a className='text-caption05 text-grey-40 cursor-pointer'>개인정보 처리방침</a>
@@ -23,7 +23,7 @@ export default function Footer() {
             문의하기
           </button>
         </div>
-        <p className='text-caption05 text-grey-20'>© 2025 MJS. All rights reserved.</p>
+        <p className='text-caption05 text-grey-20'>© 2026 Thingo. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-const tabNameMap: Record<string, string> = {
+export const tabNameMap: Record<string, string> = {
   all: '전체',
   general: '일반',
   academic: '학사',
