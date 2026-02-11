@@ -4,8 +4,7 @@ import DepartmentDropdownField from '../../molecules/user/DepartmentDropdownFiel
 import StudentCodeFieldWithVerify from '../../molecules/user/StudentCodeFieldWithVerify';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import { genderOptions } from '../../../constants/gender';
-import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
-import { COLLEGE_OPTIONS } from '../../../constants/colleges';
+import { DEPARTMENT_OPTIONS, COLLEGE_OPTIONS } from '../../../constants/departments';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -60,7 +59,7 @@ const PersonalInfoSection = ({
 
   useEffect(() => {
     console.log(college);
-    const departmentData = DEPARTMENT_OPTIONS.find((dept) => dept.college === college);
+    const departmentData = DEPARTMENT_OPTIONS.find((dept) => dept.college.value === college);
     if (departmentData) {
       console.log(departmentData.departments);
       setDepartmentOptions(departmentData.departments);

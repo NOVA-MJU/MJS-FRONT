@@ -3,7 +3,7 @@ import { Typography } from '../../components/atoms/Typography';
 import Chip from '../../components/atoms/Chip';
 import { useEffect, useState } from 'react';
 import DepartmentButton from '../../components/molecules/DepartmentButton';
-import { COLLEGE_OPTIONS } from '../../constants/colleges';
+import { COLLEGE_OPTIONS } from '../../constants/departments';
 import { getDepartments, type DepartmentRes } from '../../api/departments';
 import GlobalErrorPage from '../error';
 

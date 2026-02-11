@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Typography } from '../../atoms/Typography';
 import { IoIosArrowForward } from 'react-icons/io';
 import { departmentMap } from '../../../constants/departments';
-import { collegeMap } from '../../../constants/colleges';
+import { collegeMap } from '../../../constants/departments';
 
 interface DepartmentButtonProps {
   uuid: string;

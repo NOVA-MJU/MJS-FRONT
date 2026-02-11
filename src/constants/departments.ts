@@ -1,7 +1,8 @@
 export const DEPARTMENT_OPTIONS = [
   {
-    college: 'HUMANITIES',
+    college: { value: 'HUMANITIES', label: '인문대학' },
     departments: [
+      { label: '아시아·중동어문학부', value: 'ASIA_MIDDLE_EAST_LANGUAGES' },
       { label: '중어중문학전공', value: 'CHINESE_LITERATURE' },
       { label: '일어일문학전공', value: 'JAPANESE_LITERATURE' },
       { label: '아랍지역학전공', value: 'ARABIC_STUDIES' },
@@ -9,15 +10,17 @@ export const DEPARTMENT_OPTIONS = [
       { label: '인문콘텐츠학부', value: 'CULTURAL_CONTENT_STUDIES' },
       { label: '국어국문학전공', value: 'KOREAN_LITERATURE' },
       { label: '영어영문학전공', value: 'ENGLISH_LITERATURE' },
-      { label: '미술사, 역사학전공', value: 'ART_HISTORY' },
+      { label: '미술사학과', value: 'ART_HISTORY_DEPARTMENT' },
+      { label: '사학과', value: 'HISTORY_DEPARTMENT' },
+      { label: '미술사·역사학전공', value: 'ART_HISTORY' },
       { label: '문헌정보학전공', value: 'LIBRARY_SCIENCE' },
-      { label: '글로벌문화콘텐츠학전공', value: 'CULTURAL_CONTENT_STUDIES' },
+      { label: '글로벌문화콘텐츠학전공', value: 'GLOBAL_CULTURAL_CONTENT_STUDIES' },
       { label: '문예창작학과', value: 'CREATIVE_WRITING' },
     ],
   },
 
   {
-    college: 'SOCIAL_SCIENCES',
+    college: { value: 'SOCIAL_SCIENCES', label: '사회과학대학' },
     departments: [
       { label: '공공인재학부', value: 'PUBLIC_ADMINISTRATION' },
       { label: '행정학전공', value: 'PUBLIC_ADMINISTRATION' },
@@ -31,7 +34,7 @@ export const DEPARTMENT_OPTIONS = [
   },
 
   {
-    college: 'BUSINESS',
+    college: { value: 'BUSINESS', label: '경영대학' },
     departments: [
       { label: '경영학부', value: 'BUSINESS_DEPARTMENT' },
       { label: '경영학전공', value: 'BUSINESS_ADMINISTRATION' },
@@ -42,9 +45,8 @@ export const DEPARTMENT_OPTIONS = [
   },
 
   {
-    college: 'MEDIA_HUMANLIFE',
+    college: { value: 'MEDIA_HUMANLIFE', label: '미디어·휴먼라이프대학' },
     departments: [
-      { label: '미디어·휴먼라이프대학', value: 'MEDIA_HUMANLIFE' },
       { label: '디지털미디어학부', value: 'DIGITAL_MEDIA_STUDIES' },
       { label: '청소년지도·아동학부', value: 'YOUTH_GUIDANCE_CHILD_STUDIES' },
       { label: '청소년지도학전공', value: 'YOUTH_GUIDANCE_STUDIES' },
@@ -53,18 +55,18 @@ export const DEPARTMENT_OPTIONS = [
   },
 
   {
-    college: 'AI_SOFTWARE',
+    college: { value: 'AI_SOFTWARE', label: '인공지능·소프트웨어융합대학' },
     departments: [
       { label: '융합소프트웨어학부', value: 'CONVERGENT_SOFTWARE_STUDIES' },
-      { label: '데이터사이언스전공', value: 'DATA_SCIENCE' },
       { label: '응용소프트웨어전공', value: 'APPLICATION_SOFTWARE' },
+      { label: '데이터사이언스전공', value: 'DATA_SCIENCE' },
       { label: '인공지능전공', value: 'AI' },
       { label: '디지털콘텐츠디자인학과', value: 'DIGITAL_CONTENT_DESIGN_STUDIES' },
     ],
   },
 
   {
-    college: 'FUTURE_CONVERGENCE',
+    college: { value: 'FUTURE_CONVERGENCE', label: '미래융합대학' },
     departments: [
       { label: '창의융합인재학부', value: 'CREATIVE_CONVERGENCE_TALENT_DEPARTMENT' },
       { label: '사회복지학과', value: 'SOCIAL_WELFARE' },
@@ -78,7 +80,10 @@ export const DEPARTMENT_OPTIONS = [
     ],
   },
 
-  { college: 'HONOR', departments: [{ label: '자율전공학부(인문)', value: 'FREE_MAJOR' }] },
+  {
+    college: { value: 'HONOR', label: '아너칼리지(전공자유대학)' },
+    departments: [{ label: '자율전공학부(인문)', value: 'FREE_MAJOR' }],
+  },
 ];
 
 /**
@@ -95,3 +100,20 @@ export const departmentMap = new Map(
     option.departments.map((department) => [department.value, department.label]),
   ),
 );
+
+/**
+ * 단과대 옵션 목록입니다.
+ * DEPARTMENT_OPTIONS에서 추출한 단과대 정보입니다.
+ */
+export const COLLEGE_OPTIONS = DEPARTMENT_OPTIONS.map((option) => option.college);
+
+/**
+ * value를 입력하면 label을 반환하는 함수입니다.
+ *
+ * `사용예시`
+ *
+ * ```javascript
+ * collegeMap.get(collegeName)
+ * ```
+ */
+export const collegeMap = new Map(COLLEGE_OPTIONS.map((option) => [option.value, option.label]));
