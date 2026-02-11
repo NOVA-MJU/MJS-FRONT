@@ -8,8 +8,7 @@ import {
 import { useEffect } from 'react';
 import { ko } from '@blocknote/core/locales';
 import { DOMAIN_VALUES, uploadS3, type UploadDomain } from '../../../api/s3upload';
-import imageCompression from 'browser-image-compression';
-import heic2any from 'heic2any';
+import { compressImage } from '../../../utils/imageCompression';
 
 interface BlockTextEditor {
   /**
@@ -78,45 +77,14 @@ export default function BlockTextEditor({
 }: BlockTextEditor) {
   /**
    * 파일 업로드 함수입니다. 업로드할 수 있는 파일의 최대 용량은 `1MB` 입니다.
-   * 사진 파일을 받는 경우, 사진 파일의 용량이 1mb보다 크면 사진 압축을 진행합니다. 사진 압축 결과물은 image/webp 형식이고 파일 크기가 1mb 이하임을 보장합니다.
+   * 사진 파일을 받는 경우, 사진 파일의 용량이 1mb보다 크면 사진 압축을 진행합니다. 사진 압축 결과물은 image/jpeg 형식이고 파일 크기가 1mb 이하임을 보장합니다.
    *
    * @param file 업로드할 파일을 선택하세요.
    * @returns 업로드된 파일의 s3 주소가 `return`됩니다.
    */
   async function uploadFile(file: File) {
-    /**
-     * 사진 파일의 용량이 1mb보다 크면 압축 처리
-     */
-    if (file.type.startsWith('image/') && file.size / 1024 / 1024 >= 1) {
-      /**
-       * heic이미지는 별도처리
-       */
-      if (file.type === 'image/heic' || file.type === 'image/heif') {
-        const blob = (await heic2any({
-          blob: file,
-          toType: 'image/jpeg',
-          quality: 1,
-        })) as Blob;
-
-        file = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpeg'), {
-          type: 'image/jpeg',
-        });
-      }
-
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 3840,
-        useWebWorker: true, // 백그라운드 스레드 사용 여부
-        preserveExif: false, // 이미지 메타데이터 유지 여부
-        fileType: 'image/jpeg', // 출력 이미지 형식
-      };
-
-      const compressedImageFile = await imageCompression(file, options);
-
-      return await uploadS3(compressedImageFile, domain);
-    }
-
-    return await uploadS3(file, domain);
+    const compressedFile = await compressImage(file);
+    return await uploadS3(compressedFile, domain);
   }
 
   /**
