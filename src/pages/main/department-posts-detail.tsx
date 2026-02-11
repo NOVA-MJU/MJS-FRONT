@@ -2,6 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import { format } from 'date-fns';
 import ko from 'date-fns/locale/ko';
+import { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperClass } from 'swiper';
+import 'swiper/css';
 import Avatar from '@/components/atoms/Avatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { FiEdit } from 'react-icons/fi';
@@ -14,9 +18,10 @@ const hasAdminPermission = (role: string | undefined): boolean => {
 export default function DepartmentPostsDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const post = POST_DETAIL_DUMMY;
-  const { authorName, createdAt, medias, currentMediaIndex, content } = post;
+  const { authorName, createdAt, medias, content } = post;
   const mediaCount = medias.length;
 
   return (
@@ -51,16 +56,27 @@ export default function DepartmentPostsDetailPage() {
         <span className='text-body06 text-black'>{authorName}</span>
       </div>
 
-      {/* 미디어 영역 (추후 swiper 적용 예정) */}
+      {/* 미디어 영역 */}
       <div className='bg-grey-02 relative aspect-[4/5] w-full'>
-        <img
-          src={medias[currentMediaIndex - 1]}
-          alt='게시물 미디어'
-          className='h-full w-full object-cover'
-        />
+        <Swiper
+          className='h-full w-full'
+          slidesPerView={1}
+          onSlideChange={(swiper: SwiperClass) => setActiveIndex(swiper.activeIndex)}
+          initialSlide={0}
+        >
+          {medias.map((media, index) => (
+            <SwiperSlide key={index} className='h-full w-full'>
+              <img
+                src={media}
+                alt={`게시물 미디어 ${index + 1}`}
+                className='h-full w-full object-cover'
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
         {mediaCount > 1 && (
-          <span className='text-caption02 bg-grey-40 absolute top-5 right-5 rounded-lg px-2 py-1 text-white'>
-            {currentMediaIndex}
+          <span className='text-caption02 bg-grey-40 absolute top-5 right-5 z-10 rounded-lg px-2 py-1 text-white'>
+            {activeIndex + 1}
             {' / '}
             {mediaCount}
           </span>
@@ -83,7 +99,6 @@ const POST_DETAIL_DUMMY = {
   uuid: '1234567890',
   authorName: '작성자 이름',
   createdAt: '2025-01-15T10:00:00.000Z',
-  currentMediaIndex: 1,
   content: `Lorem ipsum dolor sit amet consectetur. Diam turpis nisl enim sit at amet eu sit. Vitae nec cum amet leo nibh. Quis vitae blandit accumsan ultrices blandit volutpat massa elementum vel. Ut bibendum euismod mauris commodo diam tristique volutpat quam. Leo mauris ipsum suscipit adipiscing pharetra.`,
   medias: [
     'https://www.visitdubai.com/-/media/images/leisure/campaigns/delicious-dubai-nordics/nordics-campaign-arabic-food-dubai-header-2.jpg?&cw=256&ch=256',
