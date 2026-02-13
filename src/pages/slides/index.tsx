@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
@@ -45,14 +45,26 @@ const TabBar = ({
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
 }) => {
+  const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
+
+  useEffect(() => {
+    const selectedEl = tabRefs.current[activeTab];
+    if (selectedEl) {
+      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }
+  }, [activeTab]);
+
   return (
-    <div className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto border-b bg-white'>
+    <div className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto scroll-smooth border-b bg-white'>
       <div className='flex h-[39px] min-w-max items-center px-5'>
         {TABS.map((tab) => {
           const isActive = activeTab === tab;
           return (
             <button
               key={tab}
+              ref={(el) => {
+                tabRefs.current[tab] = el;
+              }}
               onClick={() => onTabChange(tab)}
               className={cn(
                 'relative flex h-full items-center justify-center px-3 transition-colors outline-none',
