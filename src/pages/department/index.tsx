@@ -1,36 +1,16 @@
 import Divider from '../../components/atoms/Divider';
-import { Typography } from '../../components/atoms/Typography';
 import Chip from '../../components/atoms/Chip';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DepartmentButton from '../../components/molecules/DepartmentButton';
 import { COLLEGE_OPTIONS } from '../../constants/departments';
-import { getDepartments, type DepartmentRes } from '../../api/departments';
-import GlobalErrorPage from '../error';
 
 export default function Department() {
-  const [departments, setDepartments] = useState<DepartmentRes[]>([]);
+  const [departments] = useState([]);
   const [selectedCollege, setSelectedCollege] = useState<string>('');
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getDepartments(selectedCollege);
-        setDepartments(res);
-      } catch (e) {
-        console.error(e);
-        setIsError(true);
-      }
-    })();
-  }, [selectedCollege]);
-
-  if (isError) return <GlobalErrorPage />;
 
   return (
     <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        학과별 서비스
-      </Typography>
+      <p className='text-heading01 text-mju-primary'>학과별 서비스</p>
       <Divider />
       <div className='no-scrollbar w-full overflow-x-auto'>
         <div className='flex w-max gap-2 md:gap-4'>
