@@ -16,6 +16,7 @@ export const DEPARTMENT_OPTIONS = [
       { label: '문헌정보학전공', value: 'LIBRARY_SCIENCE' },
       { label: '글로벌문화콘텐츠학전공', value: 'GLOBAL_CULTURAL_CONTENT_STUDIES' },
       { label: '문예창작학과', value: 'CREATIVE_WRITING' },
+      { label: '철학과', value: 'PHILOSOPHY' },
     ],
   },
 
