@@ -19,6 +19,7 @@ import {
   DEPARTMENT_OPTIONS,
   departmentMap,
 } from '@/constants/departments';
+import { getDepartmentInfo, type DepartmentInfo } from '@/api/departments';
 
 // 페이지 탭 구성
 const TABS = {
@@ -47,6 +48,9 @@ export default function DepartmentMainPage() {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
 
+  // 학과 정보 (API 응답)
+  const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
+
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
     if (user?.departmentName) {
@@ -61,13 +65,27 @@ export default function DepartmentMainPage() {
     }
   }, [user?.departmentName]);
 
-  function handleCollegeFilter() {
-    setIsCollegeDrawerOpen(true);
-  }
-
-  function handleDepartmentFilter() {
-    setIsDepartmentDrawerOpen(true);
-  }
+  // 선택된 college, department로 학과 정보 조회
+  useEffect(() => {
+    if (!selectedDepartment) {
+      setDepartmentInfo(null);
+      return;
+    }
+    (async () => {
+      try {
+        const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
+        const info = response.data;
+        if (info) {
+          setDepartmentInfo(info);
+        } else {
+          setDepartmentInfo(null);
+        }
+      } catch (e) {
+        console.error(e);
+        setDepartmentInfo(null);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment]);
 
   // 선택된 단과대에 해당하는 학과 목록 가져오기
   const availableDepartments =
@@ -107,11 +125,14 @@ export default function DepartmentMainPage() {
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
             'text-body06 text-mju-primary',
             'border-mju-primary border-1',
+            'min-w-0',
           )}
-          onClick={handleCollegeFilter}
+          onClick={() => setIsCollegeDrawerOpen(true)}
         >
-          {collegeMap.get(selectedCollege) || '전체'}
-          <IoIosArrowDown className='text-grey-40' />
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {collegeMap.get(selectedCollege) || '전체'}
+          </span>
+          <IoIosArrowDown className='text-grey-40 flex-shrink-0' />
         </button>
 
         {/* 학과 필터 */}
@@ -121,11 +142,16 @@ export default function DepartmentMainPage() {
             selectedDepartment
               ? 'text-body06 text-mju-primary border-mju-primary border-1'
               : 'text-body06 text-grey-60 border-grey-10 border-1',
+            'min-w-0',
           )}
-          onClick={handleDepartmentFilter}
+          onClick={() => setIsDepartmentDrawerOpen(true)}
         >
-          {selectedDepartment ? departmentMap.get(selectedDepartment) || '학과 필터' : '학과 필터'}
-          <IoIosArrowDown className='text-grey-40' />
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {selectedDepartment
+              ? departmentMap.get(selectedDepartment) || '학과 필터'
+              : '학과 필터'}
+          </span>
+          <IoIosArrowDown className='text-grey-40 flex-shrink-0' />
         </button>
       </div>
 
@@ -135,7 +161,11 @@ export default function DepartmentMainPage() {
         <div className='flex flex-col gap-3.5 pt-5 pb-6.5'>
           {/* 학과 정보 카드 */}
           <div className='flex flex-col gap-2 px-5'>
-            <span className='text-title03 text-black'>인공지능 소프트웨어융합대학</span>
+            <span className='text-title03 text-black'>
+              {selectedDepartment
+                ? departmentMap.get(selectedDepartment) || selectedDepartment
+                : collegeMap.get(selectedCollege) || selectedCollege}
+            </span>
             <div className='flex items-center gap-1'>
               <span className='text-body05 text-grey-80'>교학팀</span>
               <span className='text-body05 text-grey-30'>02-300-0733</span>
@@ -147,14 +177,28 @@ export default function DepartmentMainPage() {
 
           {/* 바로가기 버튼 */}
           <div className='flex gap-3 px-5'>
-            <a className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'>
-              <FiHome className='text-blue-10' />
-              경영대학
-            </a>
-            <a className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'>
-              <InstagramIcon />
-              단과대
-            </a>
+            {departmentInfo?.homepageUrl ? (
+              <a
+                href={departmentInfo.homepageUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'
+              >
+                <FiHome className='text-blue-10' />
+                홈페이지
+              </a>
+            ) : null}
+            {departmentInfo?.instagramUrl ? (
+              <a
+                href={departmentInfo.instagramUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'
+              >
+                <InstagramIcon />
+                인스타그램
+              </a>
+            ) : null}
           </div>
         </div>
 
