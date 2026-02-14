@@ -10,7 +10,7 @@ import SearchBar from '@/components/atoms/SearchBar';
 import Pagination from '@/components/molecules/common/Pagination';
 import NoticeList from '@/components/organisms/CommonList';
 import { ChipTabs } from '@/components/atoms/Tabs';
-import { formatToLocalDate } from '@/utils';
+import { formatToDotDate } from '@/utils';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
 
 /**
@@ -211,7 +211,7 @@ export default function Notice() {
                     </HighlightedText>
                     {item.date && (
                       <span className='text-caption04 text-grey-20'>
-                        {formatToLocalDate(item.date)}
+                        {formatToDotDate(item.date)}
                       </span>
                     )}
                   </div>
