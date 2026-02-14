@@ -351,9 +351,9 @@ export default function DepartmentMainPage() {
           <section>
             {studentCouncilNotices.length > 0 ? (
               <div className='grid grid-cols-3 gap-1 py-5'>
-                {hasAdminPermission(user?.role) && (
+                {hasAdminPermission(user?.role) && selectedDepartment && (
                   <Link
-                    to='/departments/posts/new'
+                    to={`/departments/posts/new?college=${selectedCollege}&department=${selectedDepartment}`}
                     className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
                   >
                     <IoIosAdd className='text-grey-30 text-4xl' />
