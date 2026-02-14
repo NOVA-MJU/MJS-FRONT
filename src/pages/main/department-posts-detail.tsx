@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
 import { format } from 'date-fns';
 import ko from 'date-fns/locale/ko';
@@ -9,12 +9,7 @@ import 'swiper/css';
 import Avatar from '@/components/atoms/Avatar';
 import { useAuthStore } from '@/store/useAuthStore';
 import { FiEdit } from 'react-icons/fi';
-import {
-  getStudentCouncilNoticeDetail,
-  type College,
-  type Department,
-  type StudentCouncilNoticeDetail,
-} from '@/api/departments';
+import { getStudentCouncilNoticeDetail, type StudentCouncilNoticeDetail } from '@/api/departments';
 import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 import GlobalErrorPage from '@/pages/error';
 
@@ -27,19 +22,14 @@ export default function DepartmentPostsDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { uuid } = useParams<{ uuid: string }>();
-  const [searchParams] = useSearchParams();
   const [activeIndex, setActiveIndex] = useState(0);
   const [post, setPost] = useState<StudentCouncilNoticeDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  // URL 쿼리 파라미터에서 college와 department 가져오기
-  const college = searchParams.get('college') as College | null;
-  const department = searchParams.get('department') as Department | null;
-
   // API 호출
   useEffect(() => {
-    if (!uuid || !college || !department) {
+    if (!uuid) {
       setIsError(true);
       setIsLoading(false);
       return;
@@ -49,7 +39,7 @@ export default function DepartmentPostsDetailPage() {
       try {
         setIsLoading(true);
         setIsError(false);
-        const response = await getStudentCouncilNoticeDetail(college, department, uuid);
+        const response = await getStudentCouncilNoticeDetail(uuid);
         if (response.data) {
           setPost(response.data);
         } else {
@@ -62,7 +52,7 @@ export default function DepartmentPostsDetailPage() {
         setIsLoading(false);
       }
     })();
-  }, [uuid, college, department]);
+  }, [uuid]);
 
   if (isLoading) {
     return (

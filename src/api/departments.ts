@@ -123,24 +123,12 @@ export interface StudentCouncilNoticeDetail {
 
 /**
  * 학생회 공지 상세 조회 API
- * @param college - 단과대학 (constants/departments의 COLLEGE_OPTIONS에서 가져온 값)
- * @param department - 학과명 (constants/departments의 DEPARTMENT_OPTIONS에서 가져온 값)
  * @param noticeUuid - 공지 UUID
  * @returns 학생회 공지 상세 정보
  */
-export const getStudentCouncilNoticeDetail = async (
-  college: College,
-  department: Department,
-  noticeUuid: string,
-) => {
+export const getStudentCouncilNoticeDetail = async (noticeUuid: string) => {
   const { data } = await apiClient.get<ApiResponse<StudentCouncilNoticeDetail>>(
     `/departments/student-council/notices/${noticeUuid}`,
-    {
-      params: {
-        college,
-        department,
-      },
-    },
   );
   return data;
 };

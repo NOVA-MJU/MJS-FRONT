@@ -362,7 +362,7 @@ export default function DepartmentMainPage() {
                 {studentCouncilNotices.map((notice) => (
                   <Link
                     key={notice.noticeUuid}
-                    to={`/departments/posts/${notice.noticeUuid}?college=${selectedCollege}&department=${selectedDepartment}`}
+                    to={`/departments/posts/${notice.noticeUuid}`}
                     className='bg-grey-10 aspect-[4/5] cursor-pointer'
                   >
                     <img
