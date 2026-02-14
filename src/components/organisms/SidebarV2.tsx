@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosClose } from 'react-icons/io';
 import { FiLogIn } from 'react-icons/fi';
+import { FiExternalLink } from 'react-icons/fi';
 
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
@@ -13,7 +14,7 @@ type SidebarV2Props = {
   onClose: () => void;
 };
 
-type SidebarSection = 'information' | 'community' | 'external';
+type SidebarSection = 'information' | 'community' | 'setting' | 'external';
 
 type SidebarItem = {
   id: string;
@@ -103,6 +104,15 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         navKey: mentor?.key,
       },
 
+      // Setting 섹션
+      {
+        id: 'mypage',
+        label: '마이페이지',
+        section: 'setting',
+        path: '/mypage',
+        requiresAuth: true,
+      },
+
       // External 섹션
       {
         id: 'msi',
@@ -122,6 +132,12 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   }, []);
 
   const handleItemClick = (item: SidebarItem) => {
+    if (item.requiresAuth && !isLoggedIn) {
+      onClose();
+      navigate('/login');
+      return;
+    }
+
     if (item.navKey) {
       trackNavClick(item.navKey);
     }
@@ -141,6 +157,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
 
   const informationItems = items.filter((item) => item.section === 'information');
   const communityItems = items.filter((item) => item.section === 'community');
+  const settingItems = items.filter((item) => item.section === 'setting');
   const externalItems = items.filter((item) => item.section === 'external');
 
   return (
@@ -195,7 +212,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         <div className='flex-1 overflow-y-auto px-5 py-4'>
           {/* Information 섹션 */}
           <section className='mb-6'>
-            <h3 className='text-caption02 text-grey-30 mb-2 font-semibold'>Information</h3>
+            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Information</h3>
             <nav className='flex flex-col'>
               {informationItems.map((item) => (
                 <button
@@ -212,9 +229,26 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
 
           {/* Community 섹션 */}
           <section className='mb-6'>
-            <h3 className='text-caption02 text-grey-30 mb-2 font-semibold'>Community</h3>
+            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Community</h3>
             <nav className='flex flex-col'>
               {communityItems.map((item) => (
+                <button
+                  key={item.id}
+                  type='button'
+                  onClick={() => handleItemClick(item)}
+                  className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </section>
+
+          {/* Setting 섹션 */}
+          <section className='mb-6'>
+            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Setting</h3>
+            <nav className='flex flex-col'>
+              {settingItems.map((item) => (
                 <button
                   key={item.id}
                   type='button'
@@ -238,9 +272,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                   className='text-caption01 text-blue-35 flex h-6 items-center gap-1 px-0'
                 >
                   <span>{item.label}</span>
-                  <span aria-hidden className='text-[10px] leading-none'>
-                    ↗
-                  </span>
+                  <FiExternalLink aria-hidden size={12} />
                 </button>
               ) : null,
             )}
