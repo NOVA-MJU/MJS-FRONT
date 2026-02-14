@@ -8,6 +8,7 @@ import { GoArrowUpRight } from 'react-icons/go';
 import { useDebounce } from '@/hooks/useDebounce';
 import { getSearchWordcompletion } from '@/api/search';
 import { addRecentKeyword } from '@/utils/recentSearch';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface SearchBarProps {
   /**
@@ -39,6 +40,8 @@ export default function SearchBar({
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const user = useAuthStore((state) => state.user);
+  const recentSearchScope = user?.uuid ?? undefined;
   const [value, setValue] = useState('');
 
   /** 통합검색(domain=search)일 때 기존 쿼리(tab 등) 유지 */
@@ -103,7 +106,7 @@ export default function SearchBar({
    * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
    */
   const handleKeywordClick = (keyword: string) => {
-    addRecentKeyword(keyword);
+    addRecentKeyword(keyword, undefined, recentSearchScope);
     const search = getSearchQuery(keyword);
     if (location.pathname === `/${domain}` && location.search === search) {
       window.location.reload();
@@ -164,7 +167,7 @@ export default function SearchBar({
     setSuggestedKeywords([]);
 
     if (value?.trim()) {
-      addRecentKeyword(value);
+      addRecentKeyword(value, undefined, recentSearchScope);
       navigate({
         pathname: `/${domain}`,
         search: getSearchQuery(value.trim()),
@@ -198,28 +201,30 @@ export default function SearchBar({
             <FaSearch />
           </p>
         )}
-        <input
-          type='text'
-          className='text-body06 md:text-body01 placeholder-grey-20 flex-1 bg-transparent text-black outline-none'
-          placeholder={'검색어를 입력하세요'}
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSubmitSearch();
-            }
-          }}
-        />
-        {value.trim() && (
-          <div>
-            <IoCloseCircle
-              className='text-grey-20 h-5 w-5 cursor-pointer'
-              onClick={() => setValue('')}
-            />
-          </div>
-        )}
+        <div className='flex min-w-0 flex-1 flex-row'>
+          <input
+            type='text'
+            className='text-body06 md:text-body01 placeholder-grey-20 min-w-0 flex-1 shrink bg-transparent text-black outline-none'
+            placeholder={'검색어를 입력하세요'}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSubmitSearch();
+              }
+            }}
+          />
+          {value.trim() && (
+            <div>
+              <IoCloseCircle
+                className='text-grey-20 h-5 w-5 cursor-pointer'
+                onClick={() => setValue('')}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 키워드 자동완성 박스 */}
