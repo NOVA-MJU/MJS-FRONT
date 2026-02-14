@@ -27,19 +27,16 @@ const tapLabel: Record<string, SearchResultType | 'ALL'> = {
   명대뉴스: 'BROADCAST',
 };
 
-/** 탭별 공지/방송 섹션 "더보기" 경로 */
-const NOTICE_SECTION_MORE_PATH: Record<SearchTabKey, string> = {
-  ALL: '/notice',
-  공지사항: '/notice',
-  학사일정: '/academic-calendar',
-  학사공지: '/department',
-  게시판: '/board',
-  명대신문: '/broadcast',
-  명대뉴스: '/news',
-};
+function getNoticeSectionMorePath() {
+  return '/search';
+}
 
-function getNoticeSectionMorePath(tab: SearchTabKey) {
-  return NOTICE_SECTION_MORE_PATH[tab] ?? '/notice';
+/** 더보기 링크의 search 문자열 (? 포함) */
+function getNoticeSectionMoreSearch(tab: SearchTabKey, keyword: string) {
+  const params = new URLSearchParams();
+  params.set('keyword', keyword);
+  if (tab !== 'ALL') params.set('tab', tab);
+  return `?${params.toString()}`;
 }
 
 /**
@@ -66,6 +63,9 @@ export default function SearchDetail() {
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
   const [broadcastItems, setBroadcastItems] = useState<SearchResultItemRes[]>([]);
   const [items, setItems] = useState<SearchResultItemRes[]>([]);
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
+  const [totalPages, setTotalPages] = useState(1);
 
   const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
     query: '',
@@ -108,9 +108,10 @@ export default function SearchDetail() {
       if (categoryTab === 'department') {
         type = 'DEPARTMENT_NOTICE';
       }
-      const res = await getSearchResult(text, type, sort, 0, 5);
+      const res = await getSearchResult(text, type, sort, page, 10);
       const items = res.content as unknown as SearchResultItemRes[];
       setItems(items);
+      setTotalPages(res.totalPages);
     }
   }
 
@@ -118,6 +119,15 @@ export default function SearchDetail() {
     const res = await getSearchAISummary(text);
     setAiSummary(res);
   }
+
+  /**
+   * 페이지 변경 시 url과 함께 반영
+   */
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(newPage + 1));
+    setSearchParams(newParams);
+  };
 
   /**
    * 검색어 초기값 반영 (search parameter 반영)
@@ -134,7 +144,7 @@ export default function SearchDetail() {
         // 에러는 상위에서 처리
       }
     })();
-  }, [keyword]);
+  }, [keyword, page]);
 
   useEffect(() => {
     handleSearch(keyword ?? '');
@@ -155,12 +165,12 @@ export default function SearchDetail() {
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
-        <header className='flex items-center gap-4 px-4 py-2'>
-          <div className='h-12 w-12' onClick={() => navigate('/')}>
-            <img src={ThingoLogoSmall} />
+        <header className='flex min-w-0 items-center gap-4 px-4 py-2'>
+          <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
+            <img src={ThingoLogoSmall} className='h-full w-full object-contain' />
           </div>
 
-          <div className='flex-1 py-2'>
+          <div className='min-w-0 flex-1 py-2'>
             <SearchBar
               initialContent={keyword ?? undefined}
               className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
@@ -251,10 +261,14 @@ export default function SearchDetail() {
             keyword={keyword}
             initialContent={initialContent}
             getMorePath={getNoticeSectionMorePath}
+            getMoreSearch={getNoticeSectionMoreSearch}
             sort={sort}
             onSortChange={setSort}
             categoryTab={categoryTab}
             setCategoryTab={setCategoryTab}
+            page={page}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>
