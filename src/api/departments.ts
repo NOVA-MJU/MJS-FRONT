@@ -12,6 +12,7 @@ export type Department = (typeof DEPARTMENT_OPTIONS)[number]['departments'][numb
 export interface DepartmentInfo {
   college: College;
   departmentName: string;
+  academicOfficePhone: string;
   instagramUrl: string;
   homepageUrl: string;
 }

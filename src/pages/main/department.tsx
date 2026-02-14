@@ -123,6 +123,20 @@ export default function DepartmentMainPage() {
   // 학생회 공지사항
   const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
 
+  // 교학팀 전화번호 복사 완료 상태
+  const [phoneCopied, setPhoneCopied] = useState(false);
+  const handleCopyPhone = async () => {
+    const phone = departmentInfo?.academicOfficePhone;
+    if (!phone) return;
+    try {
+      await navigator.clipboard.writeText(phone);
+      setPhoneCopied(true);
+      setTimeout(() => setPhoneCopied(false), 1500);
+    } catch (e) {
+      console.error('클립보드 복사 실패:', e);
+    }
+  };
+
   // 선택된 college, department로 학생회 공지사항 조회
   useEffect(() => {
     if (!selectedDepartment) {
@@ -191,13 +205,26 @@ export default function DepartmentMainPage() {
                 ? departmentMap.get(selectedDepartment) || selectedDepartment
                 : collegeMap.get(selectedCollege) || selectedCollege}
             </span>
-            <div className='flex items-center gap-1'>
-              <span className='text-body05 text-grey-80'>교학팀</span>
-              <span className='text-body05 text-grey-30'>02-300-0733</span>
-              <span className='text-blue-15 cursor-pointer p-0.75'>
-                <MdOutlineContentCopy />
-              </span>
-            </div>
+            {selectedDepartment && (
+              <div className='flex items-center gap-1'>
+                <span className='text-body05 text-grey-80'>교학팀</span>
+                <span className='text-body05 text-grey-30'>
+                  {departmentInfo?.academicOfficePhone ?? '-'}
+                </span>
+                <button
+                  type='button'
+                  onClick={handleCopyPhone}
+                  className='text-blue-15 cursor-pointer p-0.75'
+                  aria-label='전화번호 복사'
+                >
+                  {phoneCopied ? (
+                    <IoIosCheckmark className='text-green-50' />
+                  ) : (
+                    <MdOutlineContentCopy />
+                  )}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 바로가기 버튼 */}
