@@ -41,7 +41,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <div className='flex items-center gap-4 md:gap-6'>
           <label
             className={`text-md whitespace-nowrap md:text-xl ${
-              disabled ? 'text-grey-40 font-med' : 'text-blue-10 font-semibold'
+              disabled ? 'text-grey-40 font-med' : 'text-grey-80 text-body04'
             }`}
           >
             {label}

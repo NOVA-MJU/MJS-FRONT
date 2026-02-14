@@ -84,7 +84,7 @@ const LoginForm = () => {
 
   return (
     <form
-      className='mx-auto flex w-[300px] flex-col gap-12 md:w-[440px]'
+      className='mx-auto flex w-full flex-col gap-5 md:w-[440px] md:gap-12'
       onSubmit={handleLogin}
       autoComplete='on'
     >
@@ -95,6 +95,7 @@ const LoginForm = () => {
         type='email'
         placeholder={EMAIL_DOMAIN}
         defaultValue={id}
+        showHr={false}
         onChange={(e) => {
           setId(e.target.value);
           clearErrors();
@@ -111,6 +112,7 @@ const LoginForm = () => {
         type='password'
         placeholder='비밀번호를 입력하세요'
         value={pw}
+        showHr={false}
         onChange={(e) => {
           setPw(e.target.value);
           clearErrors();
@@ -120,18 +122,18 @@ const LoginForm = () => {
       />
 
       {formError && (
-        <div className='text-error -mt-6 -mb-6 flex w-full items-center gap-2 text-xs md:text-sm'>
+        <div className='text-error -mb-6 flex w-full items-center gap-2 text-xs md:text-sm'>
           <AiOutlineInfoCircle className='text-error' />
           <p>{formError}</p>
         </div>
       )}
 
-      <div className='flex flex-col gap-y-6'>
+      <div className='mt-2 flex flex-col gap-y-6'>
         <UserFormButtons
           label='로그인'
           loading={false}
           onSignUp={() => navigate('/register')}
-          disabled={false}
+          disabled={!id.trim() || !pw.trim()}
         />
       </div>
     </form>
