@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMenus, type MenuItem } from '@/api/menu';
 import { MENU_STALE_TIME_MS } from '@/constants/common';
@@ -47,17 +47,6 @@ export function useMenuData() {
   }, [keys]);
 
   const getByDate = (key: string) => groupedByDate.find(([d]) => d === key)?.[1] ?? [];
-
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    console.log('[menus] cache snapshot', {
-      rawCount: data.length,
-      groupedCount: groupedByDate.length,
-      keys,
-      todayKey,
-      sample: data.slice(0, 3),
-    });
-  }, [data, groupedByDate, keys, todayKey]);
 
   // ---------- shared date/week utilities (exported) ----------
   function startOfWeek(d: Date, weekStartsOn = 1) {

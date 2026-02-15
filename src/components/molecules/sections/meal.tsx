@@ -52,17 +52,6 @@ export default function MealSection() {
     return map;
   }, [dayItems]);
 
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    console.log('[meal-section] daily payload', {
-      dateKey,
-      breakfastCount: mealsByCategory.get('BREAKFAST')?.length ?? 0,
-      lunchCount: mealsByCategory.get('LUNCH')?.length ?? 0,
-      dinnerCount: mealsByCategory.get('DINNER')?.length ?? 0,
-      dayItems,
-    });
-  }, [dateKey, mealsByCategory, dayItems]);
-
   const atStart = (idx ?? 0) <= 0;
   const atEnd = (idx ?? 0) >= keys.length - 1;
 
