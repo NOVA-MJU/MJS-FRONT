@@ -116,9 +116,15 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
       });
     }
 
-    // 다음 달 패딩
-    const remainingCells = 42 - days.length;
-    for (let i = 1; i <= remainingCells; i++) {
+    // 다음 달 패딩: 마지막 주만 채우고, 총 4~6주(28~42일)로 제한
+    const n = days.length;
+    const minCells = 28; // 4주
+    const maxCells = 42; // 6주
+    let nextPadding = (7 - (n % 7)) % 7; // 마지막 주 채우기
+    if (n + nextPadding < minCells) nextPadding = minCells - n;
+    if (n + nextPadding > maxCells) nextPadding = maxCells - n;
+
+    for (let i = 1; i <= nextPadding; i++) {
       days.push({
         date: new Date(year, month + 1, i),
         isCurrentMonth: false,

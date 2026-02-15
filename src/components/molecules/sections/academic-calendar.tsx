@@ -138,6 +138,7 @@ export function Calendar({
   };
 
   const eventBars = getEventBars();
+  const rowCount = Math.ceil(calendarDays.length / 7); // 4~6주
 
   return (
     <div className='border-grey-02 flex w-full flex-col items-center gap-4 rounded-[4px] border px-[7px] py-[12px]'>
@@ -188,7 +189,7 @@ export function Calendar({
           <div
             key={label}
             className={clsx(
-              'text-caption04 flex h-[18px] w-full max-w-[46px] items-center justify-center rounded-[4px] leading-[1.5] transition-colors',
+              'text-caption04 flex h-[18px] w-full items-center justify-center rounded-[4px] leading-[1.5] transition-colors',
               i === todayDay ? 'bg-blue-15 text-white' : 'bg-grey-02 text-grey-30 opacity-80',
             )}
           >
@@ -230,17 +231,14 @@ export function Calendar({
           const left = `${bar.startCol * cellWidth}%`;
           const width = `${(bar.endCol - bar.startCol + 1) * cellWidth}%`;
 
-          // 각 행의 높이 계산 (aspect-square이므로 셀 너비와 동일)
-          // gap-y-4 = 1rem = 16px
-          const gapSize = 16; // 1rem in pixels
-          const cellHeight = `calc((100% - ${5 * gapSize}px) / 6)`; // 6 rows, 5 gaps
+          // 행 수(4~6주)에 맞춘 셀 높이
+          const gapSize = 16; // gap-y-4 = 1rem
+          const gapCount = Math.max(0, rowCount - 1);
+          const cellHeight = `calc((100% - ${gapCount * gapSize}px) / ${rowCount})`;
 
-          // 날짜 셀 상단에서 일정 바까지의 오프셋
-          const topOffset = 20; // 20px from top (날짜 숫자 아래)
-          const barHeight = 6; // 6px bar height
-
-          // top = (row * cellHeight) + (row * gap) + topOffset + (layer * (barHeight + gap))
-          const barGap = 4; // 4px gap between bars
+          const topOffset = 20;
+          const barHeight = 6;
+          const barGap = 4;
           const top = `calc(${bar.row} * (${cellHeight} + ${gapSize}px) + ${topOffset + bar.layer * (barHeight + barGap)}px)`;
 
           return (
