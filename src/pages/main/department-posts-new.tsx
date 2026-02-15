@@ -243,15 +243,22 @@ export default function DepartmentPostsNewPage() {
       </div>
 
       {/* 게시글 등록 버튼 */}
-      <button
-        type='button'
-        onClick={handleSubmit}
-        disabled={isSubmitting || medias.length === 0}
-        className='bg-grey-02 text-body05 text-grey-40 m-5 w-full cursor-pointer rounded-xl p-2.5 disabled:cursor-not-allowed disabled:opacity-50'
-        aria-label='완료'
-      >
-        {isSubmitting ? '등록 중...' : '완료'}
-      </button>
+      <div className='p-5'>
+        <button
+          type='button'
+          onClick={handleSubmit}
+          disabled={isSubmitting || medias.length === 0}
+          className={clsx(
+            'text-body05 w-full cursor-pointer rounded-xl p-2.5 disabled:cursor-not-allowed disabled:opacity-50',
+            isSubmitting || medias.length === 0
+              ? 'bg-grey-02 text-grey-40'
+              : 'bg-blue-35 text-white',
+          )}
+          aria-label='완료'
+        >
+          {isSubmitting ? '업로드 중...' : '완료'}
+        </button>
+      </div>
     </section>
   );
 }
