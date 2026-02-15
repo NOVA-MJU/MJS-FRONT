@@ -11,6 +11,7 @@ import 'swiper/css';
  */
 const HomeSlider = () => {
   const { isDesktop } = useResponsive();
+  const slideNames = ['department', 'main', 'slides'] as const;
 
   // 데스크톱에서는 슬라이드 기능 없이 각각의 페이지로 작동하게 할 수도 있지만
   // 모바일 중심의 기능이므로 모바일에서만 활성화하거나 구조를 맞춥니다.
@@ -19,7 +20,20 @@ const HomeSlider = () => {
   }
 
   return (
-    <Swiper className='h-full w-full' slidesPerView={1} threshold={5} initialSlide={1}>
+    <Swiper
+      className='h-full w-full'
+      slidesPerView={1}
+      threshold={5}
+      initialSlide={1}
+      onSlideChange={(s) => {
+        if (import.meta.env.DEV) {
+          console.log('[home-slider] swipe change', {
+            activeIndex: s.activeIndex,
+            page: slideNames[s.activeIndex] ?? 'unknown',
+          });
+        }
+      }}
+    >
       {/* 1. 학과 페이지 (좌측 슬라이드) */}
       <SwiperSlide className='h-full w-full overflow-y-auto'>
         <DepartmentMainPage />
