@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography } from '../../../components/atoms/Typography';
 import Divider from '../../../components/atoms/Divider';
 import CalendarGrid, { type CalendarEventItem } from '../../../components/organisms/CalendarGrid';
 import CalendarList from '../../../components/organisms/CalendarList';
@@ -13,7 +12,6 @@ import { BlockNoteEditor } from '@blocknote/core';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
 import GlobalErrorPage from '../../error';
 import Button from '../../../components/atoms/Button';
-import { getDepartmentSchedules } from '../../../api/departments';
 import DatePicker from '../../../components/organisms/DatePicker';
 import { postDepartmentSchedule } from '../../../api/admin';
 
@@ -46,16 +44,7 @@ export default function Admin() {
   const loadSchedules = useCallback(async () => {
     if (!departmentUuid) return;
     try {
-      const res = await getDepartmentSchedules(departmentUuid);
-      setEvents(
-        res.schedules.map(({ departmentScheduleUuid, title, startDateTime, endDateTime }) => ({
-          uuid: departmentScheduleUuid,
-          year: new Date(startDateTime).getFullYear(),
-          startDate: startDateTime.slice(0, 10),
-          endDate: endDateTime.slice(0, 10),
-          description: title,
-        })),
-      );
+      setEvents([]);
     } catch (e) {
       console.error(e);
       setIsError(true);
@@ -139,10 +128,8 @@ export default function Admin() {
   };
 
   return (
-    <div className='w-full flex-1 px-7 py-12 flex flex-col gap-6'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        학과일정 관리
-      </Typography>
+    <div className='flex w-full flex-1 flex-col gap-6 px-7 py-12'>
+      <p className='text-heading01 text-mju-primary'>학과일정 관리</p>
       <Divider />
       <div className='flex flex-col gap-6 md:flex-row'>
         <div className='w-full md:w-2/3'>
@@ -165,67 +152,61 @@ export default function Admin() {
        * 일정 추가 모달
        */}
       {isOpened && (
-        <div className='fixed inset-0 z-50 p-10 flex items-center justify-center bg-[#0008]'>
-          <div className='max-h-[calc(100vh-5rem)] max-w-128 overflow-y-auto  bg-white rounded-lg w-full h-fit'>
-            <div className='p-6 flex flex-col gap-6'>
-              <div className='flex justify-between items-center'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-[#0008] p-10'>
+          <div className='h-fit max-h-[calc(100vh-5rem)] w-full max-w-128 overflow-y-auto rounded-lg bg-white'>
+            <div className='flex flex-col gap-6 p-6'>
+              <div className='flex items-center justify-between'>
                 <button className='cursor-pointer' onClick={() => setIsOpened((p) => !p)}>
-                  <Typography variant='heading02'>
+                  <p className='text-heading02'>
                     <IoIosClose />
-                  </Typography>
+                  </p>
                 </button>
                 <Button variant='blue35' shape='rounded' onClick={handleSubmitEvent}>
                   완료
                 </Button>
               </div>
               <div className='flex flex-col gap-3'>
-                <Typography variant='title02' className='text-mju-primary'>
-                  학과일정
-                </Typography>
+                <p className='text-title02 text-mju-primary'>학과일정</p>
                 <div className='flex gap-3'>
                   {CALENDAR_COLORS.map((color) => (
                     <button
                       key={color}
                       style={{ backgroundColor: color }}
                       className={clsx(
-                        'w-5 h-5 rounded-full cursor-pointer',
-                        color === newColor && 'border-2 border-mju-primary',
+                        'h-5 w-5 cursor-pointer rounded-full',
+                        color === newColor && 'border-mju-primary border-2',
                       )}
                       onClick={() => setNewColor(color)}
                     />
                   ))}
                 </div>
                 <input
-                  className='w-full h-fit p-3 outline-none rounded-lg border-2 border-blue-05 bg-transparent placeholder:text-grey-20 placeholder:text-[16px]'
+                  className='border-blue-05 placeholder:text-grey-20 h-fit w-full rounded-lg border-2 bg-transparent p-3 outline-none placeholder:text-[16px]'
                   placeholder='학과일정을 입력하세요'
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
               </div>
               <div className='flex flex-col gap-3'>
-                <Typography variant='title02' className='text-mju-primary'>
-                  날짜
-                </Typography>
+                <p className='text-title02 text-mju-primary'>날짜</p>
                 <div className='flex gap-4'>
-                  <button className='w-full p-2 rounded-lg border-2 border-blue-05 '>
-                    <Typography variant='body02' className={clsx(!newStartDate && 'text-grey-20')}>
+                  <button className='border-blue-05 w-full rounded-lg border-2 p-2'>
+                    <p className={clsx('text-body02', !newStartDate && 'text-grey-20')}>
                       {newStartDate || '시작일'}
-                    </Typography>
+                    </p>
                   </button>
-                  <button className='w-full p-2 rounded-lg border-2 border-blue-05'>
-                    <Typography variant='body02' className={clsx(!newEndDate && 'text-grey-20')}>
+                  <button className='border-blue-05 w-full rounded-lg border-2 p-2'>
+                    <p className={clsx('text-body02', !newEndDate && 'text-grey-20')}>
                       {newEndDate || '종료일'}
-                    </Typography>
+                    </p>
                   </button>
                 </div>
                 <DatePicker onStartDateChange={setNewStartDate} onEndDateChange={setNewEndDate} />
               </div>
               <div className='flex flex-col gap-3'>
-                <Typography variant='title02' className='text-mju-primary'>
-                  내용
-                </Typography>
+                <p className='text-title02 text-mju-primary'>내용</p>
                 <div
-                  className='min-h-48 p-4  border-2 rounded-lg border-blue-05 cursor-text'
+                  className='border-blue-05 min-h-48 cursor-text rounded-lg border-2 p-4'
                   onClick={handleFocusEditor}
                 >
                   <div ref={editorWrapperRef}>
