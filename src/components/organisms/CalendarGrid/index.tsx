@@ -1,6 +1,6 @@
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { Typography } from '../../atoms/Typography';
-import CalendarGridItem from '../../molecules/CalendarGridItem';
+import CalendarGridItem from './calendar-grid-item';
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 
@@ -75,15 +75,15 @@ export default function CalendarGrid({ events, onYearChange, onMonthChange }: Ca
   };
 
   return (
-    <div className='w-full h-fit flex flex-col gap-12'>
+    <div className='flex h-fit w-full flex-col gap-12'>
       <div className='flex items-center'>
-        <button className='cursor-pointer text-blue-10 text-2xl' onClick={prevMonth}>
+        <button className='text-blue-10 cursor-pointer text-2xl' onClick={prevMonth}>
           <IoIosArrowBack />
         </button>
         <Typography variant='heading02' className='flex-1 text-center'>
           {`${year}년 ${month}월`}
         </Typography>
-        <button className='cursor-pointer text-blue-10 text-2xl' onClick={nextMonth}>
+        <button className='text-blue-10 cursor-pointer text-2xl' onClick={nextMonth}>
           <IoIosArrowForward />
         </button>
       </div>
@@ -93,7 +93,7 @@ export default function CalendarGrid({ events, onYearChange, onMonthChange }: Ca
             <button
               key={index}
               className={clsx(
-                'w-full h-10 rounded-xl',
+                'h-10 w-full rounded-xl',
                 currentYear === year && currentMonth === month && index === currentDayIndex
                   ? 'bg-blue-35 text-white'
                   : 'bg-blue-05 text-blue-10',

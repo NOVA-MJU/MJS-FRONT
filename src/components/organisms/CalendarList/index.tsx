@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Divider from '../../atoms/Divider';
 import { Typography } from '../../atoms/Typography';
-import CalendarListItem, { type CalendarListItemProps } from '../../molecules/CalendarListItem';
+import CalendarListItem, { type CalendarListItemProps } from './calendar-list-item';
 
 interface CalendarListProps {
   events: CalendarListItemProps[] | null;
@@ -25,7 +25,7 @@ export default function CalendarList({
   const [deleteMode, setDeleteMode] = useState(false);
 
   return (
-    <div className='w-full h-fit px-6 py-4 gap-2 flex flex-col border-2 border-grey-05 rounded-xl'>
+    <div className='border-grey-05 flex h-fit w-full flex-col gap-2 rounded-xl border-2 px-6 py-4'>
       <Typography variant='title02' className='text-mju-primary'>
         전체 학사일정
       </Typography>
@@ -40,7 +40,7 @@ export default function CalendarList({
         />
       ))}
       {filteredEvents.length === 0 && (
-        <div className='p-4 flex justify-center items-center'>
+        <div className='flex items-center justify-center p-4'>
           <Typography variant='body02'>등록된 일정이 없습니다</Typography>
         </div>
       )}
@@ -48,7 +48,7 @@ export default function CalendarList({
         (!deleteMode ? (
           <>
             <button
-              className='w-full h-fit p-3 bg-blue-35 rounded-xl cursor-pointer'
+              className='bg-blue-35 h-fit w-full cursor-pointer rounded-xl p-3'
               onClick={handleAddEvent}
             >
               <Typography variant='body02' className='text-white'>
@@ -56,7 +56,7 @@ export default function CalendarList({
               </Typography>
             </button>
             <button
-              className='w-full h-fit p-3 bg-grey-10 rounded-xl cursor-pointer'
+              className='bg-grey-10 h-fit w-full cursor-pointer rounded-xl p-3'
               onClick={() => setDeleteMode((p) => !p)}
             >
               <Typography variant='body02' className='text-error'>
@@ -67,14 +67,14 @@ export default function CalendarList({
         ) : (
           <>
             <button
-              className='w-full h-fit p-3 bg-grey-10 rounded-xl cursor-pointer'
+              className='bg-grey-10 h-fit w-full cursor-pointer rounded-xl p-3'
               onClick={() => setDeleteMode((p) => !p)}
             >
               <Typography variant='body02' className='text-blue-35'>
                 취소
               </Typography>
             </button>
-            <button className='w-full h-fit p-3 bg-error rounded-xl cursor-pointer'>
+            <button className='bg-error h-fit w-full cursor-pointer rounded-xl p-3'>
               <Typography variant='body02' className='text-white'>
                 삭제
               </Typography>

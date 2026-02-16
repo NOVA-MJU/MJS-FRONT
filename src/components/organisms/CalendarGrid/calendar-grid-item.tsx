@@ -23,7 +23,7 @@ export default function CalendarGridItem({
   return (
     <div
       className={clsx(
-        'w-full h-24 md:h-40 flex flex-col gap-0.5 md:gap-1.5',
+        'flex h-24 w-full flex-col gap-0.5 md:h-40 md:gap-1.5',
         outdated && 'text-grey-40',
         focused && 'text-blue-35',
         weekend && 'text-error',
@@ -38,7 +38,9 @@ export default function CalendarGridItem({
           focused ? 'bg-blue-10' : 'bg-grey-05',
         )}
       />
-      {events?.map((event) => <CalendarEventRibbon event={event.event} />)}
+      {events?.map((event) => (
+        <CalendarEventRibbon event={event.event} />
+      ))}
     </div>
   );
 }
@@ -49,8 +51,8 @@ interface CalendarEventRibbonProps {
 
 function CalendarEventRibbon({ event }: CalendarEventRibbonProps) {
   return (
-    <div className={`px-0.5 md:px-1.5 md:py-0.5 bg-blue-10`}>
-      <Typography variant='caption01' className='text-white line-clamp-1'>
+    <div className={`bg-blue-10 px-0.5 md:px-1.5 md:py-0.5`}>
+      <Typography variant='caption01' className='line-clamp-1 text-white'>
         {event}
       </Typography>
     </div>
