@@ -4,12 +4,12 @@ import {
   type CalendarScheduleItem,
 } from '@/api/main/calendar';
 import { fetchNotionInfo } from '@/api/main/notice-api';
+import Calendar from '@/components/molecules/Calendar';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToLocalDate } from '@/utils';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
-import { Calendar } from './academic-calendar';
 import { ScheduleList } from './academic-schedule-list';
 
 /**
@@ -85,61 +85,11 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
     }
   };
 
-  /**
-   * 달력 날짜 생성 (일요일 시작 기준)
-   */
-  const calendarDays = useMemo(() => {
-    const year = viewDate.getFullYear();
-    const month = viewDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const days = [];
-    const prevLastDay = new Date(year, month, 0);
-
-    // 일요일(0) 시작 기준
-    const startDayOfWeek = firstDay.getDay();
-
-    // 이전 달 패딩
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      days.push({
-        date: new Date(year, month - 1, prevLastDay.getDate() - i),
-        isCurrentMonth: false,
-      });
-    }
-
-    // 현재 달
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      days.push({
-        date: new Date(year, month, i),
-        isCurrentMonth: true,
-      });
-    }
-
-    // 다음 달 패딩: 마지막 주만 채우고, 총 4~6주(28~42일)로 제한
-    const n = days.length;
-    const minCells = 28; // 4주
-    const maxCells = 42; // 6주
-    let nextPadding = (7 - (n % 7)) % 7; // 마지막 주 채우기
-    if (n + nextPadding < minCells) nextPadding = minCells - n;
-    if (n + nextPadding > maxCells) nextPadding = maxCells - n;
-
-    for (let i = 1; i <= nextPadding; i++) {
-      days.push({
-        date: new Date(year, month + 1, i),
-        isCurrentMonth: false,
-      });
-    }
-
-    return days;
-  }, [viewDate]);
-
-  const handlePrevMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-  const handleNextMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-
-  const todayDay = new Date().getDay(); // 오늘 요일 인덱스 (0:일 ~ 6:토)
+  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회 */
+  const handleYearChange = (year: number) =>
+    setViewDate((prev) => new Date(year, prev.getMonth(), 1));
+  const handleMonthChange = (month: number) =>
+    setViewDate((prev) => new Date(prev.getFullYear(), month - 1, 1));
 
   /**
    * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜 기준, 없을 시 오늘 기준)
@@ -212,13 +162,10 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
             {/* 달력 컴포넌트 */}
             <div className='p-4'>
               <Calendar
-                viewDate={viewDate}
+                events={scheduleData}
                 onDateSelect={setSelectedDate}
-                onPrevMonth={handlePrevMonth}
-                onNextMonth={handleNextMonth}
-                calendarDays={calendarDays}
-                todayDay={todayDay}
-                scheduleData={scheduleData}
+                onYearChange={handleYearChange}
+                onMonthChange={handleMonthChange}
               />
             </div>
 
