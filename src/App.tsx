@@ -10,8 +10,6 @@ import BoardDetail from '@/pages/board/detail';
 import BoardEdit from '@/pages/board/edit';
 import BoardWrite from '@/pages/board/write';
 import Broadcast from '@/pages/broadcast';
-import Department from '@/pages/department';
-import DepartmentDetail from '@/pages/department/detail';
 import GlobalErrorPage from '@/pages/error';
 import FindPw from '@/pages/findPw';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
@@ -65,9 +63,6 @@ const App = () => {
 
           <Route path='/menu' element={<Menu />} />
           <Route path='/academic-calendar' element={<AcademicCalendar />} />
-
-          <Route path='/department' element={<Department />} />
-          <Route path='/department/:uuid' element={<DepartmentDetail />} />
 
           <Route path='/search' element={<SearchEntry />} />
 
