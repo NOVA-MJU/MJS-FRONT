@@ -1,10 +1,5 @@
 import Layout from '@/components/templates/Layout';
 import AcademicCalendar from '@/pages/academic-calendar';
-import Admin from '@/pages/admin/calendar';
-import AdminNotice from '@/pages/admin/notice';
-import AdminNoticeDetail from '@/pages/admin/notice/detail';
-import AdminNoticeEdit from '@/pages/admin/notice/edit';
-import AdminNoticeWrite from '@/pages/admin/notice/write';
 import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
 import BoardEdit from '@/pages/board/edit';
@@ -66,15 +61,7 @@ const App = () => {
 
           <Route path='/search' element={<SearchEntry />} />
 
-          <Route path='/admin/:departmentUuid' element={<Admin />} />
-          <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
-          <Route path='/admin/:departmentUuid/notice/:noticeUuid' element={<AdminNoticeDetail />} />
-          <Route path='/admin/:departmentUuid/notice/write' element={<AdminNoticeWrite />} />
-          <Route
-            path='/admin/:departmentUuid/notice/edit/:noticeUuid'
-            element={<AdminNoticeEdit />}
-          />
-
+          {/* 에러 페이지 */}
           <Route path='*' element={<GlobalErrorPage />} />
 
           {/* 학과별 정보 */}
