@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
 import { IoIosClose, IoIosMenu } from 'react-icons/io';
@@ -12,6 +12,8 @@ import { logout as apiLogout } from '@/api/user';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavItem } from '@/types/nav/item';
 import SidebarV2 from '@/components/organisms/SidebarV2';
+import ThingoLogoSmall from '../../../../public/logo/ThingoSmallLogo.svg';
+import SearchBar from '@/components/atoms/SearchBar';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +21,8 @@ export default function Navbar() {
   const { trackNavClick } = useNavTracking();
   const { isDesktop } = useResponsive();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get('keyword');
 
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
@@ -159,6 +163,20 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {/* 검색바 */}
+      <header className='flex min-w-0 items-center gap-4 px-4 py-2'>
+        <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
+          <img src={ThingoLogoSmall} className='h-full w-full object-contain' />
+        </div>
+
+        <div className='min-w-0 flex-1 py-2'>
+          <SearchBar
+            initialContent={keyword ?? undefined}
+            className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
+            iconClassName='text-grey-30'
+          />
+        </div>
+      </header>
 
       <SidebarV2 isOpen={isOpen} onClose={closeMenu} />
     </nav>

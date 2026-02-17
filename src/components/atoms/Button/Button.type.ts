@@ -6,6 +6,8 @@ export type ButtonVariant =
   | 'blue35'
   | 'danger'
   | 'grey'
+  | 'grey20'
+  | 'grey40'
   | 'greyLight'
   | 'greyBlack'
   | 'borderRed'

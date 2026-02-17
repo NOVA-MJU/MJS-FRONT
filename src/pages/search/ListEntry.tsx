@@ -11,6 +11,7 @@ import type { SearchResultItemRes } from '@/api/search';
 import { ChipTabs, SegmentedControlTabs } from '@/components/atoms/Tabs';
 import { filterByCategoryTab, type FilterCategory } from '@/utils/filterList';
 import AcademicScheduleInSearch from './AcademicScheduleInSearch';
+import Pagination from '@/components/molecules/common/Pagination';
 
 export type SearchTabKey =
   | 'ALL'
@@ -31,10 +32,14 @@ interface ListEntryProps {
   keyword: string | null;
   initialContent: string;
   getMorePath: (tab: SearchTabKey) => string;
+  getMoreSearch: (tab: SearchTabKey, keyword: string) => string;
   sort: Sort;
   onSortChange: (sort: Sort) => void;
   categoryTab: string;
   setCategoryTab: (tab: string) => void;
+  page: number;
+  totalPages: number;
+  handlePageChange: (newPage: number) => void;
 }
 
 const NewsLabel: Record<string, string> = {
@@ -135,6 +140,7 @@ function SectionHeader({
   title: string;
   showMore: boolean;
   moreTo: string;
+  /** 전체 search 문자열 (? 포함, pathname과 분리) */
   moreSearch: string;
 }) {
   return (
@@ -142,7 +148,7 @@ function SectionHeader({
       <p className='text-body02 px-5 py-2 text-black'>{title}</p>
       {showMore && (
         <Link
-          to={{ pathname: moreTo, search: `?keyword=${moreSearch}` }}
+          to={{ pathname: moreTo, search: moreSearch }}
           className='mt-3 mr-5 w-fit cursor-pointer'
         >
           <p className='text-body05 text-grey-30'>
@@ -195,10 +201,14 @@ export default function ListEntry({
   keyword,
   initialContent,
   getMorePath,
+  getMoreSearch,
   sort,
   onSortChange,
   categoryTab,
   setCategoryTab,
+  page,
+  totalPages,
+  handlePageChange,
 }: ListEntryProps) {
   // tab이 all일 경우 3가지 카테고리 출력
   if (currentTab === 'ALL') {
@@ -212,8 +222,8 @@ export default function ListEntry({
           <SectionHeader
             title='공지사항'
             showMore={noticeItems.length === 5}
-            moreTo={getMorePath('ALL')}
-            moreSearch={initialContent}
+            moreTo={getMorePath('공지사항')}
+            moreSearch={getMoreSearch('공지사항', initialContent)}
           />
           <div className='flex flex-col'>
             {noticeItems.map((notice) => renderItem(notice, '공지사항'))}
@@ -226,8 +236,8 @@ export default function ListEntry({
           <SectionHeader
             title='커뮤니티'
             showMore={boardItems.length === 5}
-            moreTo='/board'
-            moreSearch={initialContent}
+            moreTo={getMorePath('게시판')}
+            moreSearch={getMoreSearch('게시판', initialContent)}
           />
           <div className='flex flex-col'>
             {boardItems.map((board) => renderItem(board, '게시판'))}
@@ -240,8 +250,8 @@ export default function ListEntry({
           <SectionHeader
             title='명대신문'
             showMore={newsItems.length === 5}
-            moreTo='/news'
-            moreSearch={initialContent}
+            moreTo={getMorePath('명대신문')}
+            moreSearch={getMoreSearch('명대신문', initialContent)}
           />
           <div className='flex flex-col'>
             {newsItems.map((news) => (
@@ -266,8 +276,8 @@ export default function ListEntry({
           <SectionHeader
             title='명대뉴스'
             showMore={broadcastItems.length === 5}
-            moreTo='/broadcast'
-            moreSearch={initialContent}
+            moreTo={getMorePath('명대뉴스')}
+            moreSearch={getMoreSearch('명대뉴스', initialContent)}
           />
           <div className='flex flex-col'>
             {broadcastItems.map((broadcast) => renderItem(broadcast, '명대뉴스'))}
@@ -313,18 +323,17 @@ export default function ListEntry({
           )}
           {filteredItems.length > 5 && (
             <Link
-              to={{ pathname: getMorePath(currentTab), search: `?keyword=${initialContent}` }}
+              to={{
+                pathname: getMorePath(currentTab),
+                search: getMoreSearch(currentTab, initialContent),
+              }}
               className='w-fit cursor-pointer'
-            >
-              <p className='text-body05 text-grey-30'>
-                <IoIosArrowForward size={20} />
-              </p>
-            </Link>
+            ></Link>
           )}
         </div>
 
         {/* 학사일정 카테고리일 경우 학사일정 캘린더 출력, 나머지는 필터링 한 결과 출력 */}
-        <div className='flex flex-col'>
+        <div className='mb-5 flex flex-col'>
           {categoryTab === 'all' && currentTab === '학사일정' && <AcademicScheduleInSearch />}
           {filteredItems.map((item) => renderItem(item, currentTab))}
           {filteredItems.length === 0 && !(categoryTab === 'all' && currentTab === '학사일정') && (
@@ -332,6 +341,9 @@ export default function ListEntry({
               <IoIosInformationCircleOutline size={35} className='text-grey-10' />
               <EmptyState keyword={keyword} isLong={true} />
             </div>
+          )}
+          {filteredItems.length > 0 && (
+            <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
           )}
         </div>
       </div>

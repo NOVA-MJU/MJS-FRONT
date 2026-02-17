@@ -14,9 +14,9 @@ const UserFormButtons = ({
   onSignUp,
 }: LoginButtonsProps) => {
   const isLoginDisabled = disabled || loading;
-  const loginVariant = isLoginDisabled ? 'grey' : 'main';
+  const loginVariant = isLoginDisabled ? 'grey40' : 'main';
   return (
-    <div className='flex flex-col gap-3 w-full'>
+    <div className='flex w-full flex-col gap-2'>
       <Button
         type='submit'
         variant={loginVariant}
@@ -24,7 +24,7 @@ const UserFormButtons = ({
         shape='rounded'
         disabled={isLoginDisabled}
         fullWidth
-        className='md:hidden block'
+        className='text-body05 block md:hidden'
       >
         {label}
       </Button>
@@ -35,32 +35,32 @@ const UserFormButtons = ({
         shape='rounded'
         disabled={isLoginDisabled}
         fullWidth
-        className='hidden md:block'
+        className='text-body05 hidden md:block'
       >
         {label}
       </Button>
 
       <Button
         type='button'
-        variant='blue20'
+        variant='greyLight'
         size='md'
         shape='rounded'
         disabled={false}
         fullWidth
         onClick={onSignUp}
-        className='md:hidden block'
+        className='text-body05 block md:hidden'
       >
         회원가입
       </Button>
       <Button
         type='button'
-        variant='blue20'
+        variant='greyLight'
         size='lg'
         shape='rounded'
         disabled={false}
         fullWidth
         onClick={onSignUp}
-        className='hidden md:block'
+        className='text-body05 hidden md:block'
       >
         회원가입
       </Button>
