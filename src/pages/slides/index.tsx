@@ -105,7 +105,7 @@ const AllTab = () => (
  * 개별 탭 컨텐츠를 위한 공통 래퍼 컴포넌트
  */
 const TabWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className='flex flex-col gap-2 p-2'>{children}</div>
+  <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
 );
 
 /**
@@ -196,7 +196,11 @@ const Slides = () => {
             const Content = TAB_CONTENT[tab];
             return (
               <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
-                <Content />
+                {tab === '게시판' ? (
+                  <BoardSection showWriteButton={activeTab === '게시판'} />
+                ) : (
+                  <Content />
+                )}
               </SwiperSlide>
             );
           })}

@@ -1,134 +1,123 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getMenus } from '../../../api/menu';
 import { IoIosArrowForward } from 'react-icons/io';
-import Divider from '../../atoms/Divider';
+import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useResponsive } from '@/hooks/useResponse';
+import { useMenuData } from '@/hooks/menu/useMenuData';
 import { ICON_SIZE_LG } from '@/constants/common';
-import { handleError } from '@/utils/error';
 
-type UIMealKey = '아침' | '점심' | '저녁';
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
-type MenuItem = { date: string; menuCategory: MenuCategory; meals: string[] };
-
-const getKSTInfo = (d: Date = new Date()) => {
-  const formatter = new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'Asia/Seoul',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    weekday: 'short',
-    hour12: false,
-  });
-
-  const parts = formatter.formatToParts(d);
-  const find = (type: string) => parts.find((p) => p.type === type)?.value || '';
-
-  const month = find('month');
-  const day = find('day');
-  const dow = find('weekday');
-  const hour = parseInt(find('hour'));
-  const minute = parseInt(find('minute'));
-
-  return {
-    month,
-    day,
-    dow,
-    hour,
-    minute,
-    // API 요청용 형식: "02.01 (일)"
-    apiDateLabel: `${month.padStart(2, '0')}.${day.padStart(2, '0')} (${dow})`,
-    // UI 표시용 형식: "2월 1일 (일)"
-    uiDateLabel: `${month}월 ${day}일 (${dow})`,
-  };
-};
-
-type MealTimeInfo = {
-  uiMealKey: UIMealKey; // '아침', '점심', '저녁'
-  apiDateLabel: string; // "10.20 (월)" (API 요청용)
-  uiFullLabel: string; // "10월 20일 (월) 아침" (UI 표시용)
-  apiCategory: MenuCategory; // 'BREAKFAST', 'LUNCH', 'DINNER'
-};
-
-/**
- * KST 기준으로 현재 표시해야 할 식단 정보를 반환합니다.
- */
-const getTargetMealInfo = (): MealTimeInfo => {
-  const kst = getKSTInfo();
-  const kstSum = kst.hour + kst.minute / 60;
-
-  let uiMealKey: UIMealKey;
-  let apiCategory: MenuCategory;
-
-  if (kstSum < 9.0) {
-    uiMealKey = '아침';
-    apiCategory = 'BREAKFAST';
-  } else if (kstSum < 14.0) {
-    uiMealKey = '점심';
-    apiCategory = 'LUNCH';
-  } else {
-    uiMealKey = '저녁';
-    apiCategory = 'DINNER';
-  }
-
-  return {
-    uiMealKey,
-    apiDateLabel: kst.apiDateLabel,
-    uiFullLabel: `${kst.uiDateLabel} ${uiMealKey}`,
-    apiCategory,
-  };
-};
-
-const normalizeLabel = (s: string) => s.replace(/\s+/g, '');
+const EMPTY_MEAL_MARKERS = ['등록된 식단 내용이 없습니다.', '등록된 식단 내용이 없습니다'];
+const normalizeMealText = (s: string) => s.replace(/\s+/g, '').trim();
+const CATEGORY_ORDER: Array<{ category: MenuCategory; label: string }> = [
+  { category: 'BREAKFAST', label: '아침' },
+  { category: 'LUNCH', label: '점심' },
+  { category: 'DINNER', label: '저녁' },
+];
 
 export default function MealSection() {
-  const [mealInfo, setMealInfo] = useState<MealTimeInfo>(getTargetMealInfo());
-  const [meals, setMeals] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // KST 기준으로 주말인지 확인
-  const kst = getKSTInfo();
-  const isWeekend = kst.dow === '토' || kst.dow === '일';
-
   const { isDesktop } = useResponsive();
+  const { isLoading, keys, todayKey, getByDate } = useMenuData();
+  const [idx, setIdx] = useState<number | null>(null);
 
   useEffect(() => {
-    if (isWeekend) {
-      setIsLoading(false);
-      return;
-    }
-
-    (async () => {
-      try {
-        setIsLoading(true);
-
-        const list: MenuItem[] = await getMenus();
-
-        const currentMealInfo = getTargetMealInfo();
-        setMealInfo(currentMealInfo);
-
-        const targetApiDate = normalizeLabel(currentMealInfo.apiDateLabel);
-        const foundMeal = list.find(
-          (x) =>
-            normalizeLabel(x.date) === targetApiDate &&
-            x.menuCategory === currentMealInfo.apiCategory,
-        );
-
-        if (foundMeal) {
-          setMeals(foundMeal.meals ?? []);
-        } else {
-          setMeals([]);
-        }
-      } catch (e) {
-        handleError(e, '식단 정보를 불러오는 중 오류가 발생했습니다.', { showToast: false });
-        setMeals([]);
-      } finally {
-        setIsLoading(false);
+    if (!keys.length) return;
+    setIdx((prev) => {
+      if (prev === null) {
+        const i = keys.indexOf(todayKey);
+        return i >= 0 ? i : 0;
       }
-    })();
-  }, [isWeekend]);
+      const max = Math.max(0, keys.length - 1);
+      return Math.min(Math.max(prev, 0), max);
+    });
+  }, [keys, todayKey]);
+
+  const dateKey = keys[idx ?? 0] ?? todayKey;
+  const dayItems = useMemo(() => getByDate(dateKey), [dateKey, getByDate]);
+
+  const mealsByCategory = useMemo(() => {
+    const normalizedMarkers = EMPTY_MEAL_MARKERS.map(normalizeMealText);
+    const map = new Map<MenuCategory, string[]>();
+
+    CATEGORY_ORDER.forEach(({ category }) => map.set(category, []));
+
+    dayItems.forEach((item) => {
+      const sanitizedMeals = (item.meals ?? []).filter(
+        (meal) => !normalizedMarkers.includes(normalizeMealText(meal)),
+      );
+      map.set(item.menuCategory, sanitizedMeals);
+    });
+
+    return map;
+  }, [dayItems]);
+
+  const atStart = (idx ?? 0) <= 0;
+  const atEnd = (idx ?? 0) >= keys.length - 1;
+
+  const onPrev = () => {
+    if (atStart) return;
+    setIdx((i) => (i == null ? 0 : Math.max(0, i - 1)));
+  };
+
+  const onNext = () => {
+    if (atEnd) return;
+    setIdx((i) => (i == null ? 0 : Math.min(keys.length - 1, i + 1)));
+  };
+
+  const renderMealCards = ({
+    textClassName,
+    wrapperClassName,
+    cardClassName,
+    emptyTextClassName,
+    listClassName,
+    bodyClassName,
+  }: {
+    textClassName: string;
+    wrapperClassName?: string;
+    cardClassName?: string;
+    emptyTextClassName?: string;
+    listClassName?: string;
+    bodyClassName?: string;
+  }) => (
+    <div className={`flex flex-col gap-4 ${wrapperClassName ?? ''}`}>
+      {CATEGORY_ORDER.map(({ category, label }) => {
+        const meals = mealsByCategory.get(category) ?? [];
+        return (
+          <div
+            key={category}
+            className={`border-grey-10 rounded-2xl border p-4 ${cardClassName ?? ''}`}
+          >
+            <h4 className='text-title03 text-blue-20 text-center font-semibold'>{label}</h4>
+            <div className='bg-grey-10 mt-2 mb-3 h-px w-full' />
+            <div className={bodyClassName ?? ''}>
+              {isLoading ? (
+                <div className='flex flex-col gap-2'>
+                  <Skeleton className='h-5 w-full' />
+                  <Skeleton className='h-5 w-4/5' />
+                  <Skeleton className='h-5 w-3/5' />
+                </div>
+              ) : meals.length === 0 ? (
+                <div className='flex h-full min-h-[72px] items-center justify-center'>
+                  <p className={`${textClassName} text-center ${emptyTextClassName ?? ''}`}>
+                    등록된 식단 내용이 없습니다.
+                  </p>
+                </div>
+              ) : (
+                <ul className={`flex flex-col gap-1 text-center ${listClassName ?? ''}`}>
+                  {meals.map((meal, index) => (
+                    <li key={`${category}-${index}`} className={textClassName}>
+                      {meal}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   /**
    * 데스크탑 뷰
@@ -142,21 +131,29 @@ export default function MealSection() {
             <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
           </Link>
         </div>
-        <div className='border-grey-05 flex flex-col gap-6 rounded-xl border-2 p-6'>
-          <h3 className='text-body02 text-mju-secondary'>{mealInfo.uiFullLabel}</h3>
-          <Divider variant='thin' />
-          <ul className='grid grid-cols-1 gap-y-3 md:grid-cols-2'>
-            {isLoading && [...Array(6)].map((_, i) => <Skeleton key={i} className='h-6 w-48' />)}
-            {!isLoading && meals.length === 0 && (
-              <li className='text-body03'>식단 정보가 없습니다.</li>
-            )}
-            {!isLoading &&
-              meals.map((meal, index) => (
-                <li key={index} className='text-body03'>
-                  {meal}
-                </li>
-              ))}
-          </ul>
+        <div className='border-grey-05 flex flex-col gap-5 rounded-xl border-2 p-6'>
+          <div className='flex items-center justify-center gap-4'>
+            <button
+              type='button'
+              onClick={onPrev}
+              disabled={atStart}
+              className='text-grey-20 disabled:text-grey-10'
+              aria-label='이전 날짜'
+            >
+              <IoChevronBack size={24} />
+            </button>
+            <h3 className='text-heading03 text-black'>{dateKey || '-'}</h3>
+            <button
+              type='button'
+              onClick={onNext}
+              disabled={atEnd}
+              className='text-grey-20 disabled:text-grey-10'
+              aria-label='다음 날짜'
+            >
+              <IoChevronForward size={24} />
+            </button>
+          </div>
+          {renderMealCards({ textClassName: 'text-body03' })}
         </div>
       </section>
     );
@@ -166,36 +163,36 @@ export default function MealSection() {
    */
   if (!isDesktop)
     return (
-      <section className='border-grey-10 flex w-full flex-col gap-2 rounded-[10px] border-[1px] p-4'>
-        <Link to='/menu' className='flex flex-col gap-2'>
-          {/* 헤더: 아이콘 + 현재 식단 라벨 (날짜/시간) */}
-          <div className='flex items-center gap-2'>
-            <img src='/img/meal-icon.png' alt='식단 아이콘' className='h-6 w-6 object-contain' />
-            <span className='text-body02 font-semibold text-black'>{mealInfo.uiFullLabel}</span>
-          </div>
-
-          {/* 바디: 식단 내용 */}
-          <div className='px-[3px] py-1'>
-            {isLoading && (
-              <div className='flex flex-col gap-1'>
-                <Skeleton className='h-5 w-full' />
-                <Skeleton className='h-5 w-3/4' />
-              </div>
-            )}
-            {!isLoading && meals.length === 0 && (
-              <p className='text-body05 text-grey-80'>등록된 식단 내용이 없습니다.</p>
-            )}
-            {!isLoading && meals.length > 0 && (
-              <ul className='flex flex-wrap gap-x-2 gap-y-1'>
-                {meals.map((meal, index) => (
-                  <li key={index} className='text-body05 text-grey-80'>
-                    {meal}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </Link>
+      <section className='flex h-full min-h-full w-full flex-col gap-3 p-4'>
+        <div className='flex items-center justify-center gap-4'>
+          <button
+            type='button'
+            onClick={onPrev}
+            disabled={atStart}
+            className='text-grey-20 disabled:text-grey-10'
+            aria-label='이전 날짜'
+          >
+            <IoChevronBack size={24} />
+          </button>
+          <span className='text-title03 text-black'>{dateKey || '-'}</span>
+          <button
+            type='button'
+            onClick={onNext}
+            disabled={atEnd}
+            className='text-grey-20 disabled:text-grey-10'
+            aria-label='다음 날짜'
+          >
+            <IoChevronForward size={24} />
+          </button>
+        </div>
+        {renderMealCards({
+          textClassName: 'text-body05 text-grey-80',
+          wrapperClassName: 'min-h-0 flex-1 gap-3',
+          cardClassName: 'flex min-h-0 flex-1 flex-col',
+          emptyTextClassName: 'text-grey-30',
+          listClassName: 'min-h-0 flex-1 overflow-y-auto',
+          bodyClassName: 'flex min-h-0 flex-1 flex-col',
+        })}
       </section>
     );
 }

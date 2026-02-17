@@ -56,6 +56,7 @@ const App = () => {
           <Route path='/notice' element={<Notice />} />
           <Route path='/news' element={<News />} />
           <Route path='/broadcast' element={<Broadcast />} />
+          <Route path='/mypage' element={<MyPage />} />
           <Route path='/mypage/:uuid' element={<MyPage />} />
           <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
 
