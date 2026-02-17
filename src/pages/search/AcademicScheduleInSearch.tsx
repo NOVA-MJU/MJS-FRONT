@@ -3,7 +3,7 @@ import {
   type CalendarMonthlyRes,
   type CalendarScheduleItem,
 } from '@/api/main/calendar';
-import { Calendar } from '@/components/molecules/sections/academic-calendar';
+import Calendar from '@/components/molecules/Calendar';
 import { ScheduleList } from '@/components/molecules/sections/academic-schedule-list';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -43,42 +43,10 @@ export default function AcademicScheduleInSearch() {
     }
   };
 
-  const calendarDays = useMemo(() => {
-    const year = viewDate.getFullYear();
-    const month = viewDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const prevLastDay = new Date(year, month, 0);
-    const startDayOfWeek = firstDay.getDay();
-    const days: { date: Date; isCurrentMonth: boolean }[] = [];
-
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      days.push({
-        date: new Date(year, month - 1, prevLastDay.getDate() - i),
-        isCurrentMonth: false,
-      });
-    }
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      days.push({
-        date: new Date(year, month, i),
-        isCurrentMonth: true,
-      });
-    }
-    const remainingCells = 42 - days.length;
-    for (let i = 1; i <= remainingCells; i++) {
-      days.push({
-        date: new Date(year, month + 1, i),
-        isCurrentMonth: false,
-      });
-    }
-    return days;
-  }, [viewDate]);
-
-  const handlePrevMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-  const handleNextMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-  const todayDay = new Date().getDay();
+  const handleYearChange = (year: number) =>
+    setViewDate((prev) => new Date(year, prev.getMonth(), 1));
+  const handleMonthChange = (month: number) =>
+    setViewDate((prev) => new Date(prev.getFullYear(), month - 1, 1));
 
   const dailyScheduleList = useMemo(() => {
     if (!scheduleData) return [];
@@ -111,13 +79,10 @@ export default function AcademicScheduleInSearch() {
     <div className='flex flex-col gap-4 pb-10'>
       <div className='p-4'>
         <Calendar
-          viewDate={viewDate}
+          events={scheduleData}
           onDateSelect={setSelectedDate}
-          onPrevMonth={handlePrevMonth}
-          onNextMonth={handleNextMonth}
-          calendarDays={calendarDays}
-          todayDay={todayDay}
-          scheduleData={scheduleData}
+          onYearChange={handleYearChange}
+          onMonthChange={handleMonthChange}
         />
       </div>
       <ScheduleList

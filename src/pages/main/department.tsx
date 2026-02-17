@@ -19,6 +19,14 @@ import {
   DEPARTMENT_OPTIONS,
   departmentMap,
 } from '@/constants/departments';
+import {
+  getDepartmentInfo,
+  getStudentCouncilNotices,
+  type College,
+  type Department,
+  type DepartmentInfo,
+  type StudentCouncilNotice,
+} from '@/api/departments';
 
 // 페이지 탭 구성
 const TABS = {
@@ -40,12 +48,15 @@ export default function DepartmentMainPage() {
   const navigate = useNavigate();
 
   // 단과대 필터
-  const [selectedCollege, setSelectedCollege] = useState('AI_SOFTWARE');
+  const [selectedCollege, setSelectedCollege] = useState<College>('AI_SOFTWARE');
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
   // 학과 필터
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
+
+  // 학과 정보 (API 응답)
+  const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
 
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
@@ -61,13 +72,27 @@ export default function DepartmentMainPage() {
     }
   }, [user?.departmentName]);
 
-  function handleCollegeFilter() {
-    setIsCollegeDrawerOpen(true);
-  }
-
-  function handleDepartmentFilter() {
-    setIsDepartmentDrawerOpen(true);
-  }
+  // 선택된 college, department로 학과 정보 조회
+  useEffect(() => {
+    if (!selectedDepartment) {
+      setDepartmentInfo(null);
+      return;
+    }
+    (async () => {
+      try {
+        const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
+        const info = response.data;
+        if (info) {
+          setDepartmentInfo(info);
+        } else {
+          setDepartmentInfo(null);
+        }
+      } catch (e) {
+        console.error(e);
+        setDepartmentInfo(null);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment]);
 
   // 선택된 단과대에 해당하는 학과 목록 가져오기
   const availableDepartments =
@@ -96,10 +121,42 @@ export default function DepartmentMainPage() {
   const [noticeData] = useState(NOTICE_DATA);
 
   // 학생회 공지사항
-  const [feeds] = useState(FEED_DATA);
+  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
+
+  // 교학팀 전화번호 복사 완료 상태
+  const [phoneCopied, setPhoneCopied] = useState(false);
+  const handleCopyPhone = async () => {
+    const phone = departmentInfo?.academicOfficePhone;
+    if (!phone) return;
+    try {
+      await navigator.clipboard.writeText(phone);
+      setPhoneCopied(true);
+      setTimeout(() => setPhoneCopied(false), 1500);
+    } catch (e) {
+      console.error('클립보드 복사 실패:', e);
+    }
+  };
+
+  // 선택된 college, department로 학생회 공지사항 조회
+  useEffect(() => {
+    if (!selectedDepartment) {
+      setStudentCouncilNotices([]);
+      return;
+    }
+    (async () => {
+      try {
+        const response = await getStudentCouncilNotices(selectedCollege, selectedDepartment);
+        const notices = response.data?.content || [];
+        setStudentCouncilNotices(notices);
+      } catch (e) {
+        console.error(e);
+        setStudentCouncilNotices([]);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment]);
 
   return (
-    <section>
+    <section className='flex min-h-screen flex-col'>
       <div className='flex gap-2 px-5 py-4'>
         {/* 단과대 필터 */}
         <button
@@ -107,11 +164,14 @@ export default function DepartmentMainPage() {
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
             'text-body06 text-mju-primary',
             'border-mju-primary border-1',
+            'min-w-0',
           )}
-          onClick={handleCollegeFilter}
+          onClick={() => setIsCollegeDrawerOpen(true)}
         >
-          {collegeMap.get(selectedCollege) || '전체'}
-          <IoIosArrowDown className='text-grey-40' />
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {collegeMap.get(selectedCollege) || '전체'}
+          </span>
+          <IoIosArrowDown className='text-grey-40 flex-shrink-0' />
         </button>
 
         {/* 학과 필터 */}
@@ -121,11 +181,16 @@ export default function DepartmentMainPage() {
             selectedDepartment
               ? 'text-body06 text-mju-primary border-mju-primary border-1'
               : 'text-body06 text-grey-60 border-grey-10 border-1',
+            'min-w-0',
           )}
-          onClick={handleDepartmentFilter}
+          onClick={() => setIsDepartmentDrawerOpen(true)}
         >
-          {selectedDepartment ? departmentMap.get(selectedDepartment) || '학과 필터' : '학과 필터'}
-          <IoIosArrowDown className='text-grey-40' />
+          <span className='overflow-hidden text-ellipsis whitespace-nowrap'>
+            {selectedDepartment
+              ? departmentMap.get(selectedDepartment) || '학과 필터'
+              : '학과 필터'}
+          </span>
+          <IoIosArrowDown className='text-grey-40 flex-shrink-0' />
         </button>
       </div>
 
@@ -135,26 +200,57 @@ export default function DepartmentMainPage() {
         <div className='flex flex-col gap-3.5 pt-5 pb-6.5'>
           {/* 학과 정보 카드 */}
           <div className='flex flex-col gap-2 px-5'>
-            <span className='text-title03 text-black'>인공지능 소프트웨어융합대학</span>
-            <div className='flex items-center gap-1'>
-              <span className='text-body05 text-grey-80'>교학팀</span>
-              <span className='text-body05 text-grey-30'>02-300-0733</span>
-              <span className='text-blue-15 cursor-pointer p-0.75'>
-                <MdOutlineContentCopy />
-              </span>
-            </div>
+            <span className='text-title03 text-black'>
+              {selectedDepartment
+                ? departmentMap.get(selectedDepartment) || selectedDepartment
+                : collegeMap.get(selectedCollege) || selectedCollege}
+            </span>
+            {selectedDepartment && (
+              <div className='flex items-center gap-1'>
+                <span className='text-body05 text-grey-80'>교학팀</span>
+                <span className='text-body05 text-grey-30'>
+                  {departmentInfo?.academicOfficePhone ?? '-'}
+                </span>
+                <button
+                  type='button'
+                  onClick={handleCopyPhone}
+                  className='text-blue-15 cursor-pointer p-0.75'
+                  aria-label='전화번호 복사'
+                >
+                  {phoneCopied ? (
+                    <IoIosCheckmark className='text-green-50' />
+                  ) : (
+                    <MdOutlineContentCopy />
+                  )}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 바로가기 버튼 */}
           <div className='flex gap-3 px-5'>
-            <a className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'>
-              <FiHome className='text-blue-10' />
-              경영대학
-            </a>
-            <a className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'>
-              <InstagramIcon />
-              단과대
-            </a>
+            {departmentInfo?.homepageUrl ? (
+              <a
+                href={departmentInfo.homepageUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'
+              >
+                <FiHome className='text-blue-10' />
+                홈페이지
+              </a>
+            ) : null}
+            {departmentInfo?.instagramUrl ? (
+              <a
+                href={departmentInfo.instagramUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-grey-80 text-caption02 border-grey-10 flex cursor-pointer items-center gap-2 rounded-sm border-1 px-2 py-1'
+              >
+                <InstagramIcon />
+                인스타그램
+              </a>
+            ) : null}
           </div>
         </div>
 
@@ -253,29 +349,35 @@ export default function DepartmentMainPage() {
         {/* 학생회 공지사항 탭 */}
         {currentTab === 'posts' && (
           <section>
-            <div className='grid grid-cols-3 gap-1 py-5'>
-              {hasAdminPermission(user?.role) && (
-                <Link
-                  to='/departments/posts/new'
-                  className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
-                >
-                  <IoIosAdd className='text-grey-30 text-4xl' />
-                </Link>
-              )}
-              {feeds.map((instagram) => (
-                <Link
-                  key={instagram.id}
-                  to={`/departments/posts/${instagram.id}`}
-                  className='bg-grey-10 aspect-[4/5] cursor-pointer'
-                >
-                  <img
-                    src={instagram.imageUrl}
-                    alt='instagram'
-                    className='h-full w-full object-cover'
-                  />
-                </Link>
-              ))}
-            </div>
+            {studentCouncilNotices.length > 0 ? (
+              <div className='grid grid-cols-3 gap-1 py-5'>
+                {hasAdminPermission(user?.role) && selectedDepartment && (
+                  <Link
+                    to={`/departments/posts/new?college=${selectedCollege}&department=${selectedDepartment}`}
+                    className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
+                  >
+                    <IoIosAdd className='text-grey-30 text-4xl' />
+                  </Link>
+                )}
+                {studentCouncilNotices.map((notice) => (
+                  <Link
+                    key={notice.noticeUuid}
+                    to={`/departments/posts/${notice.noticeUuid}`}
+                    className='bg-grey-10 aspect-[4/5] cursor-pointer'
+                  >
+                    <img
+                      src={notice.thumbnailUrl}
+                      alt={notice.title || '학생회 공지사항'}
+                      className='h-full w-full object-cover'
+                    />
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className='flex items-center justify-center py-10'>
+                <span className='text-body03'>게시물 없음</span>
+              </div>
+            )}
           </section>
         )}
       </div>
@@ -369,7 +471,9 @@ export default function DepartmentMainPage() {
       </Drawer>
 
       {/* Footer */}
-      <Footer />
+      <div className='mt-auto'>
+        <Footer />
+      </div>
     </section>
   );
 }
@@ -421,55 +525,5 @@ const NOTICE_DATA = [
     id: 5,
     createdAt: '2025-02-05T16:45:00.000Z',
     title: '2025학년도 1학기 수강신청(데이터베이스 교과목) 관련 안내',
-  },
-];
-
-const FEED_DATA = [
-  {
-    id: 1,
-    imageUrl:
-      'https://www.visitdubai.com/-/media/images/leisure/campaigns/delicious-dubai-nordics/nordics-campaign-arabic-food-dubai-header-2.jpg?&cw=256&ch=256',
-  },
-  {
-    id: 2,
-    imageUrl: 'https://cookingqueens.nl/wp-content/uploads/2020/05/Arabische-platter.jpg',
-  },
-  {
-    id: 3,
-    imageUrl: 'https://arabiacatering.nl/wp-content/uploads/2020/03/pita-4576076_640.jpg',
-  },
-  {
-    id: 4,
-    imageUrl:
-      'https://media.triple.guide/triple-cms/c_fill,f_auto,h_256,w_256/ca370307-375e-47ec-a6d6-5d286eb849c2.jpeg',
-  },
-  {
-    id: 5,
-    imageUrl:
-      'https://media.triple.guide/triple-cms/c_fill,f_auto,h_256,w_256/3334d4c1-1eb3-457c-ad92-76c916b0e838.jpeg',
-  },
-  {
-    id: 6,
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmBltPcpSOX4-iGK6CkoVvyrhD-BlnhOCY6w&s',
-  },
-  {
-    id: 7,
-    imageUrl:
-      'https://djf7qc4xvps5h.cloudfront.net/user/collection/cover/resize/LTYxNjkzMjE1MWdvb2QzMDEwMTYxNzE1NDUxMTMyNA.jpg',
-  },
-  {
-    id: 8,
-    imageUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyuziTBSJr8l1ZB1FlEvaA3p7oBfpljIKhzQ&s',
-  },
-  {
-    id: 9,
-    imageUrl:
-      'https://triple.guide/api/images/cast?url=http%3A%2F%2Fblogthumb.pstatic.net%2FMjAyMDAzMThfMTA0%2FMDAxNTg0NTQxMjExMTc3.WCGQtKYZLSREgcDuCl2vUI0A5lme-bWeaM1_LKKw-Ksg.g6-20Y1tiHhMWYOQDIzm2bZX391d9y_8yo4ZYjWXx1og.JPEG.redhollyhock%2F1584541210508.jpg%3Ftype%3Dw2&transformation=c_fill%2Cf_auto%2Cq_auto%2Ch_256%2Cw_256&placeholder=%2Fcontent%2Fstatic%2Fimages%2Fexternal-link-img-blank-photo.svg',
-  },
-  {
-    id: 10,
-    imageUrl: 'https://dimg.donga.com/ugc/CDB/WEEKLY/Article/62/21/5a/b7/62215ab70a79d2738276.jpg',
   },
 ];

@@ -5,7 +5,7 @@ export const DOMAIN_VALUES = [
   'PROFILE_IMAGE',
   'DEPARTMENT_LOGO',
   'DEPARTMENT_SCHEDULE',
-  'DEPARTMENT_NOTICE',
+  'STUDENT_COUNCIL_NOTICE',
 ] as const;
 
 export type UploadDomain = (typeof DOMAIN_VALUES)[number];

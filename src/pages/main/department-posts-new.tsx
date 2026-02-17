@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { IoIosAdd, IoIosArrowBack } from 'react-icons/io';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CloseIcon } from '@/components/atoms/Icon';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -10,18 +10,24 @@ import 'swiper/css';
 import { compressImage } from '@/utils/imageCompression';
 import { uploadS3, DOMAIN_VALUES } from '@/api/s3upload';
 import toast from 'react-hot-toast';
+import { createStudentCouncilNotice, type College, type Department } from '@/api/departments-admin';
 
 const MAX_CONTENT_LENGTH = 2200;
 const MAX_MEDIA_COUNT = 20;
 
 export default function DepartmentPostsNewPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const college = searchParams.get('college') as College | null;
+  const department = searchParams.get('department') as Department | null;
 
   const [medias, setMedias] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [content, setContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * 게시글 이미지 업로드
@@ -93,6 +99,42 @@ export default function DepartmentPostsNewPage() {
     // 삭제 후 인덱스 조정
     if (activeIndex >= medias.length - 1 && activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
+    }
+  };
+
+  /**
+   * 게시글 등록 핸들러
+   */
+  const handleSubmit = async () => {
+    if (!college || !department) {
+      toast.error('college, department 정보가 없습니다. 학과 목록에서 다시 접근해 주세요.');
+      return;
+    }
+
+    if (medias.length === 0) {
+      toast.error('이미지를 1장 이상 추가해 주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await createStudentCouncilNotice(college, department, {
+        title: null,
+        content,
+        imageUrls: medias,
+      });
+      const noticeUuid = response.data?.uuid;
+      if (noticeUuid) {
+        toast.success('게시물이 등록되었습니다.');
+        navigate(`/departments/posts/${noticeUuid}`);
+      } else {
+        toast.error('게시물 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('게시물 등록 실패:', error);
+      toast.error('게시물 등록에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -201,13 +243,22 @@ export default function DepartmentPostsNewPage() {
       </div>
 
       {/* 게시글 등록 버튼 */}
-      <button
-        type='button'
-        className='bg-grey-02 text-body05 text-grey-40 m-5 w-full cursor-pointer rounded-xl p-2.5'
-        aria-label='완료'
-      >
-        완료
-      </button>
+      <div className='p-5'>
+        <button
+          type='button'
+          onClick={handleSubmit}
+          disabled={isSubmitting || medias.length === 0}
+          className={clsx(
+            'text-body05 w-full cursor-pointer rounded-xl p-2.5 disabled:cursor-not-allowed disabled:opacity-50',
+            isSubmitting || medias.length === 0
+              ? 'bg-grey-02 text-grey-40'
+              : 'bg-blue-35 text-white',
+          )}
+          aria-label='완료'
+        >
+          {isSubmitting ? '업로드 중...' : '완료'}
+        </button>
+      </div>
     </section>
   );
 }

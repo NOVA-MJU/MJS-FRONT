@@ -15,6 +15,7 @@ import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 
 /**
  * 카테고리 및 페이지 길이 조절
@@ -24,10 +25,16 @@ const ITEM_COUNT = 10;
 /**
  * 메인페이지에 표시할 자유게시판 위젯 컴포넌트
  */
-export default function BoardSection({ all = false }: { all?: boolean }) {
+interface BoardSectionProps {
+  showWriteButton?: boolean;
+  all?: boolean;
+}
+
+export default function BoardSection({ showWriteButton = false, all = false }: BoardSectionProps) {
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   // 정렬 상태 추가
   const [sortConfig, setSortConfig] = useState<{
@@ -60,6 +67,10 @@ export default function BoardSection({ all = false }: { all?: boolean }) {
       }
     })();
   }, [category, sortConfig]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const SORT_OPTIONS: { label: string; sortBy: BoardSortBy; direction: BoardDirection }[] = [
     { label: '추천순', sortBy: 'likeCount', direction: 'DESC' },
@@ -230,22 +241,26 @@ export default function BoardSection({ all = false }: { all?: boolean }) {
       </div>
 
       {/* 글 작성 버튼 (Floating Action Button) */}
-      {!all && (
-        <div className='fixed right-5 bottom-8 z-10'>
-          <Link to='/board/write'>
-            <div className='bg-blue-35 flex h-[56px] w-[56px] flex-col items-center justify-center rounded-full shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] transition-transform active:scale-95'>
-              <img
-                src='/img/icon-boardNew.png'
-                alt='icon-boardNew'
-                className='h-[24px] w-[24px] object-contain'
-              />
-              <span className='mt-0.5 text-[10px] leading-[1.2] font-medium text-white'>
-                글남기기
-              </span>
-            </div>
-          </Link>
-        </div>
-      )}
+      {!all &&
+        isMounted &&
+        showWriteButton &&
+        createPortal(
+          <div className='fixed right-5 bottom-8 z-50'>
+            <Link to='/board/write'>
+              <div className='bg-blue-35 flex h-[56px] w-[56px] flex-col items-center justify-center rounded-full shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] transition-transform active:scale-95'>
+                <img
+                  src='/img/icon-boardNew.png'
+                  alt='icon-boardNew'
+                  className='h-[24px] w-[24px] object-contain'
+                />
+                <span className='mt-0.5 text-[10px] leading-[1.2] font-medium text-white'>
+                  글남기기
+                </span>
+              </div>
+            </Link>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }
