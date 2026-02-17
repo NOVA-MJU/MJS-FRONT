@@ -1,8 +1,8 @@
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
-import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { twMerge } from 'tailwind-merge';
+import { CalendarItem } from './calendar-item';
 
 interface CalendarProps {
   className?: string;
@@ -89,22 +89,22 @@ export default function Calendar({
         ...events.all.map((e) => ({
           ...e,
           category: 'all',
-          color: 'bg-blue-20',
+          color: 'bg-blue-35',
         })),
         ...events.undergrad.map((e) => ({
           ...e,
           category: 'undergrad',
-          color: 'bg-mju-primary',
+          color: 'bg-blue-15',
         })),
         ...events.graduate.map((e) => ({
           ...e,
           category: 'graduate',
-          color: 'bg-grey-40',
+          color: 'bg-blue-05',
         })),
         ...events.holiday.map((e) => ({
           ...e,
           category: 'holiday',
-          color: 'bg-error',
+          color: 'bg-grey-02',
         })),
       ];
     }
@@ -167,8 +167,9 @@ export default function Calendar({
       });
     }
 
+    // 캘린더 주(week) 갯수 계산
     const totalCellsNeeded = startDayOfWeek + daysInMonth;
-    const totalGridCells = totalCellsNeeded > 35 ? 42 : 35;
+    const totalGridCells = totalCellsNeeded > 35 ? 42 : totalCellsNeeded > 28 ? 35 : 28;
     const remainingCells = totalGridCells - totalCellsNeeded;
 
     // 다음 달
@@ -231,7 +232,7 @@ export default function Calendar({
               return (
                 <div
                   key={index}
-                  className={`text-caption04 flex-1 rounded-sm p-1 text-center ${style} `}
+                  className={`text-caption03 h-4.5 flex-1 rounded-sm text-center ${style} `}
                 >
                   {day}
                 </div>
@@ -263,67 +264,5 @@ export default function Calendar({
         </div>
       </div>
     </section>
-  );
-}
-
-interface CalendarEvent {
-  id: number;
-  startDate: string;
-  endDate: string;
-  description: string;
-  category: string;
-  color: string;
-}
-
-interface CalendarItemProps {
-  day: number;
-  outdated?: boolean;
-  weekend?: boolean;
-  events?: CalendarEvent[];
-  onClick: () => void;
-  isHighlighted?: boolean;
-}
-
-// 캘린더 날짜 아이템
-function CalendarItem({
-  day,
-  outdated = false,
-  weekend = false,
-  events = [],
-  onClick,
-  isHighlighted = false,
-}: CalendarItemProps) {
-  return (
-    <button onClick={onClick} disabled={outdated}>
-      <div
-        className={clsx(
-          'flex min-h-15 flex-col py-1',
-          !outdated &&
-            'hover:bg-blue-05 cursor-pointer transition duration-50 hover:transition-none',
-          isHighlighted && !outdated && 'bg-blue-05',
-        )}
-      >
-        <span
-          className={clsx(
-            'text-caption04 mx-1 text-start text-black',
-            outdated && 'text-grey-10',
-            weekend && 'text-error',
-          )}
-        >
-          {String(day).padStart(2, '0')}
-        </span>
-
-        {/* 이벤트 막대(bar) 렌더링 영역 */}
-        <div className='mt-1 flex flex-col gap-0.5'>
-          {events.map((event) => (
-            <div
-              key={event.id}
-              title={event.description} // 마우스 호버 시 툴팁으로 설명 표시
-              className={clsx('h-1 w-full', event.color)}
-            />
-          ))}
-        </div>
-      </div>
-    </button>
   );
 }
