@@ -90,8 +90,8 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
 const AllTab = () => (
   <div className='bg-grey-02 flex flex-col gap-2'>
     {/* 식단 섹션 */}
-    <div className='flex flex-col gap-4 bg-white p-4'>
-      <MealSection />
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <MealSection all={true} />
     </div>
 
     {/* 공지사항 섹션 */}

@@ -177,14 +177,16 @@ export default function AcademicScheduleWidget({
         {activeTab === 'calendar' ? (
           <div className={clsx('flex flex-col gap-4 pb-0', !all && 'pb-10')}>
             {/* 달력 컴포넌트 */}
-            <div className='p-4'>
-              <Calendar
-                events={scheduleData}
-                onDateSelect={setSelectedDate}
-                onYearChange={handleYearChange}
-                onMonthChange={handleMonthChange}
-              />
-            </div>
+            {!all && (
+              <div className='p-4'>
+                <Calendar
+                  events={scheduleData}
+                  onDateSelect={setSelectedDate}
+                  onYearChange={handleYearChange}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            )}
 
             {/* 일정 리스트 컴포넌트 */}
             <ScheduleList

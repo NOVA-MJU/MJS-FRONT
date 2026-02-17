@@ -16,7 +16,7 @@ const CATEGORY_ORDER: Array<{ category: MenuCategory; label: string }> = [
   { category: 'DINNER', label: '저녁' },
 ];
 
-export default function MealSection() {
+export default function MealSection({ all = false }: { all?: boolean }) {
   const { isDesktop } = useResponsive();
   const { isLoading, keys, todayKey, getByDate } = useMenuData();
   const [idx, setIdx] = useState<number | null>(null);
@@ -164,27 +164,29 @@ export default function MealSection() {
   if (!isDesktop)
     return (
       <section className='flex h-full min-h-full w-full flex-col gap-3 p-4'>
-        <div className='flex items-center justify-center gap-4'>
-          <button
-            type='button'
-            onClick={onPrev}
-            disabled={atStart}
-            className='text-grey-20 disabled:text-grey-10'
-            aria-label='이전 날짜'
-          >
-            <IoChevronBack size={24} />
-          </button>
-          <span className='text-title03 text-black'>{dateKey || '-'}</span>
-          <button
-            type='button'
-            onClick={onNext}
-            disabled={atEnd}
-            className='text-grey-20 disabled:text-grey-10'
-            aria-label='다음 날짜'
-          >
-            <IoChevronForward size={24} />
-          </button>
-        </div>
+        {!all && (
+          <div className='flex items-center justify-center gap-4'>
+            <button
+              type='button'
+              onClick={onPrev}
+              disabled={atStart}
+              className='text-grey-20 disabled:text-grey-10'
+              aria-label='이전 날짜'
+            >
+              <IoChevronBack size={24} />
+            </button>
+            <span className='text-title03 text-black'>{dateKey || '-'}</span>
+            <button
+              type='button'
+              onClick={onNext}
+              disabled={atEnd}
+              className='text-grey-20 disabled:text-grey-10'
+              aria-label='다음 날짜'
+            >
+              <IoChevronForward size={24} />
+            </button>
+          </div>
+        )}
         {renderMealCards({
           textClassName: 'text-body05 text-grey-80',
           wrapperClassName: 'min-h-0 flex-1 gap-3',
