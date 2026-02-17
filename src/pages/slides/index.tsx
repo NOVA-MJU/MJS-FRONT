@@ -11,6 +11,7 @@ import { NoticeSlideSection } from '@/components/molecules/sections/notice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
+import NoticeSection from '@/components/molecules/sections/notice';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -94,8 +95,28 @@ const AllTab = () => (
     </div>
 
     {/* 공지사항 섹션 */}
-    <div className='flex flex-col gap-4 bg-white p-4'>
-      <NoticeSlideSection />
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <NoticeSlideSection all={true} />
+    </div>
+
+    {/* 학사일정 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <AcademicScheduleWidget all={true} />
+    </div>
+
+    {/* 게시판 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <BoardSection all={true} />
+    </div>
+
+    {/* 명대신문 섹션 */}
+    <div className='flex flex-col gap-4 bg-white pt-4'>
+      <NewsSection all={true} />
+    </div>
+
+    {/* 명대뉴스 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <BroadcastSection all={true} />
     </div>
   </div>
 );
@@ -116,7 +137,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
   명지도: () => <CampusMap />,
   공지사항: () => (
     <TabWrapper>
-      <NoticeSlideSection />
+      <NoticeSection />
     </TabWrapper>
   ),
   학사일정: () => (
