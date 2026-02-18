@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { useState, useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
 import BroadcastSection from '@/components/molecules/sections/broadcast';
@@ -148,8 +149,12 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
  */
 const Slides = () => {
   // 현재 활성화된 탭 상태 관리
+  const { setActiveMainSlide } = useHeaderStore();
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
+
+  // 첫 번째 탭에서 뒤로가기 제스처 감지용 ref
+  const touchStartX = useRef(0);
 
   // 탭 변경 시 스위퍼 슬라이드 이동
   const handleTabChange = (tab: TabType) => {
@@ -177,7 +182,7 @@ const Slides = () => {
   }, [activeTab]);
 
   return (
-    <div className={cn('flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}>
+    <div className={cn('relative flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}>
       {/* 상단 통합 탭 바 */}
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
 
@@ -188,9 +193,23 @@ const Slides = () => {
           onSwiper={setSwiper}
           onSlideChange={(s) => setActiveTab(TABS[s.activeIndex])}
           className='h-full w-full'
-          nested={true}
-          resistance={true}
-          resistanceRatio={0}
+          onTouchStart={(_swiper, e) => {
+            // 터치 시작 지점 기록
+            if ('touches' in e) {
+              touchStartX.current = e.touches[0].clientX;
+            }
+          }}
+          onTouchEnd={(swiperInstance, e) => {
+            // 첫 번째 탭(ALL)에서 오른쪽 스와이프(이전 페이지로 가기) 감지
+            if (swiperInstance.activeIndex === 0 && 'changedTouches' in e) {
+              const endX = e.changedTouches[0].clientX;
+              const diff = endX - touchStartX.current;
+              // diff > 0: 손가락이 왼→오른으로 이동 = 이전 페이지(메인)로 가기
+              if (diff > 80) {
+                setActiveMainSlide(1);
+              }
+            }
+          }}
         >
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
