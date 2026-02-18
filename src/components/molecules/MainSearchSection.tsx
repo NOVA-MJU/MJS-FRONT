@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import { useHeaderStore } from '@/store/useHeaderStore';
 
 export default function MainSearchSection() {
   const navigate = useNavigate();
@@ -24,7 +25,22 @@ export default function MainSearchSection() {
     { id: 4, label: '멘토관', imageUrl: '/main/main_v2_mentor.png', path: '/mentoring' },
   ];
 
-  const handleCategoryClick = (path: string) => {
+  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
+
+  const handleCategoryClick = (path: string, label: string) => {
+    // 특정 카테고리는 슬라이드 뷰의 탭으로 연결
+    const tabMap: Record<string, string> = {
+      학식: '학식',
+      명지도: '명지도',
+      학사일정: '학사일정',
+    };
+
+    if (tabMap[label]) {
+      setSelectedTab(tabMap[label]);
+      setActiveMainSlide(2); // 슬라이드 뷰로 이동
+      return;
+    }
+
     navigate(path);
   };
 
@@ -59,7 +75,7 @@ export default function MainSearchSection() {
           {recommendedCategories.map((category) => (
             <button
               key={category.id}
-              onClick={() => handleCategoryClick(category.path)}
+              onClick={() => handleCategoryClick(category.path, category.label)}
               className='flex flex-col items-center gap-2 transition-transform hover:scale-105 active:scale-95'
             >
               <div className='mt-10 flex h-9 w-10 items-center justify-center'>

@@ -148,12 +148,25 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
  * 슬라이드 메인 페이지 컴포넌트
  */
 const Slides = () => {
-  const { setActiveMainSlide } = useHeaderStore();
+  const { setActiveMainSlide, selectedTab, setSelectedTab } = useHeaderStore();
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   // ALL 탭에서 좌측 경계 드래그 감지용
   const touchStartX = useRef(0);
   const isDraggingPastLeft = useRef(false);
+
+  // 외부(메인 홈)에서 탭 선택 시 처리
+  useEffect(() => {
+    if (selectedTab && TABS.includes(selectedTab as TabType)) {
+      const tab = selectedTab as TabType;
+      setActiveTab(tab);
+      if (swiper) {
+        const index = TABS.indexOf(tab);
+        swiper.slideTo(index);
+      }
+      setSelectedTab(null); // 한 번 처리 후 초기화
+    }
+  }, [selectedTab, swiper, setSelectedTab]);
 
   // 탭 변경 시 스위퍼 슬라이드 이동
   const handleTabChange = (tab: TabType) => {
