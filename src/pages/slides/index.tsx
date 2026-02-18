@@ -8,6 +8,7 @@ import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import { NoticeSlideSection } from '@/components/molecules/sections/notice';
+import Footer from '@/components/organisms/Footer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
@@ -51,7 +52,7 @@ const TabBar = ({
   useEffect(() => {
     const selectedEl = tabRefs.current[activeTab];
     if (selectedEl) {
-      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, [activeTab]);
 
@@ -166,19 +167,15 @@ const Slides = () => {
     }
   };
 
-  // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
+  // 명지도 탭 활성화 시 body 스크롤 방지 (푸터는 CSS로 처리)
   useEffect(() => {
-    const footer = document.querySelector('footer');
     if (activeTab === '명지도') {
-      if (footer) footer.style.display = 'none';
       document.body.style.overflow = 'hidden';
     } else {
-      if (footer) footer.style.display = 'block';
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     }
     return () => {
-      if (footer) footer.style.display = 'block';
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     };
   }, [activeTab]);
 
@@ -227,6 +224,8 @@ const Slides = () => {
                 ) : (
                   <Content isActive={activeTab === tab} />
                 )}
+                {/* 명지도 제외 탭에서 스크롤 맨 아래 푸터 표시 */}
+                {tab !== '명지도' && <Footer />}
               </SwiperSlide>
             );
           })}
