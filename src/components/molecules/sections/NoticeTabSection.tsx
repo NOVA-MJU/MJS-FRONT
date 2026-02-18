@@ -33,7 +33,7 @@ const Chip = ({
   <button
     onClick={onClick}
     className={clsx(
-      'flex shrink-0 items-center justify-center rounded-[20px] px-3 py-4 whitespace-nowrap transition-colors',
+      'flex shrink-0 items-center justify-center rounded-[20px] px-3 py-1.5 whitespace-nowrap transition-colors',
       isSelected
         ? 'bg-[#1778ff] font-semibold text-white'
         : 'border border-[#e3e6e6] bg-white font-normal text-[#909499]',
