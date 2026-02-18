@@ -153,7 +153,7 @@ export default function BoardSection({
       )}
 
       {/* 게시글 리스트 */}
-      <div className={clsx('flex flex-1 flex-col', hideSort && 'pt-2')}>
+      <div className={clsx('flex flex-col', hideSort && 'pt-2')}>
         {isLoading && [...Array(ITEM_COUNT)].map((_, index) => <SkeletonProfile key={index} />)}
 
         {!isLoading &&

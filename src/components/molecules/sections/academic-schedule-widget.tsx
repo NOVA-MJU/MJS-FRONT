@@ -192,7 +192,7 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
           </div>
         ) : (
           /* 학사공지 탭 - 일반 공지 탭과 동일한 디자인 */
-          <div className='flex flex-1 flex-col'>
+          <div className='flex flex-col'>
             {isNoticeLoading ? (
               [...Array(5)].map((_, i) => (
                 <div key={i} className='border-blue-05 h-fit w-full border-b'>
