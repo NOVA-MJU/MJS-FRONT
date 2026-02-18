@@ -8,6 +8,7 @@ import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import { NoticeSlideSection } from '@/components/molecules/sections/notice';
+import NoticeTabSection from '@/components/molecules/sections/NoticeTabSection';
 import Footer from '@/components/organisms/Footer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
@@ -119,11 +120,7 @@ type TabPropType = { isActive?: boolean; showWriteButton?: boolean };
 const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
   ALL: AllTab,
   명지도: (props: { isActive?: boolean }) => <CampusMap {...props} />,
-  공지사항: () => (
-    <TabWrapper>
-      <NoticeSlideSection />
-    </TabWrapper>
-  ),
+  공지사항: () => <NoticeTabSection />,
   학사일정: () => (
     <div>
       <AcademicScheduleWidget />
