@@ -109,13 +109,15 @@ const TabWrapper = ({ children }: { children: React.ReactNode }) => (
   <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
 );
 
+type TabPropType = { isActive?: boolean; showWriteButton?: boolean };
+
 /**
  * 탭 타입별 렌더링 컴포넌트 매핑 객체
  * 컴포넌트들을 미리 정의 (Lazy Loading으로 성능 최적화)
  */
-const TAB_CONTENT: Record<TabType, React.ComponentType> = {
+const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
   ALL: AllTab,
-  명지도: () => <CampusMap />,
+  명지도: (props: { isActive?: boolean }) => <CampusMap {...props} />,
   공지사항: () => (
     <TabWrapper>
       <NoticeSlideSection />
@@ -182,7 +184,7 @@ const Slides = () => {
   }, [activeTab]);
 
   return (
-    <div className={cn('relative flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}>
+    <div className={cn('relative flex h-full flex-col overflow-hidden bg-white')}>
       {/* 상단 통합 탭 바 */}
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
 
@@ -214,11 +216,14 @@ const Slides = () => {
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
             return (
-              <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
+              <SwiperSlide
+                key={tab}
+                className={cn('h-full w-full', tab !== '명지도' && 'overflow-y-auto')}
+              >
                 {tab === '게시판' ? (
                   <BoardSection showWriteButton={activeTab === '게시판'} hideSort={true} />
                 ) : (
-                  <Content />
+                  <Content isActive={activeTab === tab} />
                 )}
               </SwiperSlide>
             );

@@ -105,7 +105,7 @@ const HomeSlider = () => {
       </div>
 
       {/* Index 2: 슬라이드 */}
-      <div className='h-full min-w-full snap-center overflow-x-hidden overflow-y-auto'>
+      <div className='h-full min-w-full snap-center overflow-hidden'>
         <Slides />
       </div>
     </div>

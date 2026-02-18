@@ -1,12 +1,13 @@
 import { type Building } from '@/constants/map';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import QuickPinchZoom, { make3dTransformValue } from 'react-quick-pinch-zoom';
 import MapSidebar from './map-sidebar';
 
 /**
  * 명지도 컴포넌트
  */
-const CampusMap = () => {
+const CampusMap = ({ isActive }: { isActive?: boolean }) => {
   // 사이드바 열림/닫힘 상태 관리
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // 지도 초기화 완료 상태 관리
@@ -82,10 +83,17 @@ const CampusMap = () => {
       ],
     } as unknown as Building);
 
+  // 탭이 변경되어 비활성화될 때 사이드바 닫기
+  useEffect(() => {
+    if (!isActive) {
+      setIsSidebarOpen(false);
+    }
+  }, [isActive]);
+
   return (
     <div className='relative h-full overflow-hidden bg-white'>
       {/* 지도 이미지 영역 (줌/팬 지원) - 부모 컨테이너를 가득 채우도록 수정 */}
-      <div className='absolute inset-0 overflow-hidden'>
+      <div className='absolute inset-0 z-0 overflow-hidden'>
         <QuickPinchZoom
           ref={pinchZoomRef}
           onUpdate={onUpdate}
@@ -105,24 +113,14 @@ const CampusMap = () => {
               ref={imgRef}
               src='/img/school_map.png'
               alt='명지대학교 캠퍼스 지도'
-              className='pointer-events-none block h-[calc(100dvh-39px)] w-auto max-w-none'
+              className='pointer-events-none block h-[calc(100dvh-99px)] w-auto max-w-none'
               onLoad={() => {
                 setInitialZoom();
               }}
             />
-            {/* 하단 정보창(바텀 시트) 높이만큼 여백을 추가하여 지도가 가려지는 것을 방지 */}
-            <div className='h-[220px] w-full shrink-0' />
+            {/* 하단 정보창(바텀 시트) 여백 제거 (스크롤 방지) */}
           </div>
         </QuickPinchZoom>
-
-        {/* 지도 목록 버튼 */}
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className='absolute top-4 right-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md transition-all active:scale-95'
-          aria-label='건물 목록 열기'
-        >
-          <img src='/img/mapIcon.png' alt='지도 아이콘' className='h-7 w-7' />
-        </button>
       </div>
 
       {/* 하단 건물 정보 카드  */}
@@ -207,13 +205,26 @@ const CampusMap = () => {
         </div>
       </div>
 
-      {/* 사이드바 */}
-      <MapSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        onBuildingSelect={handleBuildingSelect}
-        selectedBuildingId={selectedBuilding?.id}
-      />
+      {/* 지도 목록 버튼 */}
+      <button
+        onClick={() => setIsSidebarOpen(true)}
+        className='absolute top-2 right-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md transition-all active:scale-95'
+        aria-label='건물 목록 열기'
+      >
+        <img src='/img/mapIcon.png' alt='지도 아이콘' className='h-7 w-7' />
+      </button>
+
+      {/* 사이드바 (Portal 사용으로 Swiper 스택 탈출) */}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <MapSidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            onBuildingSelect={handleBuildingSelect}
+            selectedBuildingId={selectedBuilding?.id}
+          />,
+          document.body,
+        )}
     </div>
   );
 };
