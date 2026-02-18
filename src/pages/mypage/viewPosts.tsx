@@ -62,7 +62,7 @@ const ViewPosts = () => {
 
   return (
     <div className='flex w-full flex-1 flex-col gap-3 bg-white p-4 md:gap-6 md:p-8'>
-      <p className='text-title02 text-blue-35 mt-2 ml-2'>내가 쓴 게시물</p>
+      <p className='text-title03 text-grey-80 md:text-4xl'>내가 쓴 게시물</p>
       {contents && contents.length > 0 ? (
         <div className='bg-white'>
           {contents.map((content, index) => (
