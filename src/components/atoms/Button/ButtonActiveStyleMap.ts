@@ -33,6 +33,10 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     backgroundColor: colors.grey40,
     color: colors.white,
   },
+  grey20: {
+    backgroundColor: colors.grey20,
+    color: colors.white,
+  },
   greyLight: {
     backgroundColor: colors.grey10,
     color: colors.grey40,

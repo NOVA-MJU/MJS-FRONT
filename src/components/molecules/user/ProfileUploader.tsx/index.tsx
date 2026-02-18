@@ -21,10 +21,9 @@ const ProfileImageUploader = ({ onChange, label = '프로필', defaultImg = null
   return (
     <div className='w-full'>
       <div className='flex items-center gap-6'>
-        <label className='text-blue-10 text-md md:text-xl font-semibold whitespace-nowrap'>
+        <label className='text-grey-80 text-md text-body04 whitespace-nowrap md:text-xl'>
           {label}
         </label>
-        <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
       </div>
       <ImageInput imageUrl={preview} onImageChange={handleChange} />
     </div>
