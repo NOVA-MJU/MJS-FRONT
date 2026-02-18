@@ -12,7 +12,7 @@ import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
 import DepartmentEventsNewPage from './pages/main/department-events-new';
 import DepartmentEventsEditPage from './pages/main/department-events-edit';
 import DepartmentPostsEditPage from './pages/main/department-posts-edit';
-import Login from '@/pages/login';
+import LoginPage from '@/pages/login';
 import Menu from '@/pages/menu';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
@@ -77,7 +77,7 @@ const App = () => {
         </Route>
 
         <Route element={<Layout className='bg-grey-05' />}>
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
           <Route path='/find-pw' element={<FindPw />} />
         </Route>
