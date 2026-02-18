@@ -9,6 +9,8 @@ interface Props {
   isNicknameChecked: boolean;
   handleVerifyNickname: () => void;
   setIsNicknameChecked: (val: boolean) => void;
+  /** 제공 시, 이 값과 다를 때만 중복 확인 버튼이 활성화 */
+  initialNickname?: string;
 }
 
 const NicknameFieldWithVerify = ({
@@ -18,7 +20,10 @@ const NicknameFieldWithVerify = ({
   isNicknameChecked,
   handleVerifyNickname,
   setIsNicknameChecked,
+  initialNickname,
 }: Props) => {
+  const isChanged = initialNickname === undefined || nickname.trim() !== initialNickname.trim();
+
   const isValidName = useMemo(() => {
     if (!nickname) return true;
 
@@ -50,11 +55,21 @@ const NicknameFieldWithVerify = ({
               type='button'
               shape='rounded'
               size='sm'
-              disabled={isSending || nickname === '' || isNicknameChecked || showError}
+              disabled={
+                !isChanged || isSending || nickname === '' || isNicknameChecked || showError
+              }
               onClick={handleVerifyNickname}
               fullWidth={false}
               variant={
-                isNicknameChecked ? 'grey20' : isSending ? 'grey20' : nickname ? 'main' : 'grey20'
+                !isChanged
+                  ? 'grey20'
+                  : isNicknameChecked
+                    ? 'grey20'
+                    : isSending
+                      ? 'grey20'
+                      : nickname
+                        ? 'main'
+                        : 'grey20'
               }
               className='ml-4 h-12 w-20 md:h-12 md:w-34'
             >

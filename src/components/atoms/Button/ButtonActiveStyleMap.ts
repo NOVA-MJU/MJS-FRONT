@@ -29,6 +29,10 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     backgroundColor: colors.grey02,
     color: colors.black,
   },
+  chipActive: {
+    backgroundColor: colors.grey02,
+    color: colors.grey40,
+  },
   grey: {
     backgroundColor: colors.grey40,
     color: colors.white,

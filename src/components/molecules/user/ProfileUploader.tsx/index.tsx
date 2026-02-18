@@ -19,7 +19,7 @@ const ProfileImageUploader = ({ onChange, label = '프로필', defaultImg = null
   };
 
   return (
-    <div className='w-full'>
+    <div className='w-fit'>
       <div className='flex items-center gap-6'>
         <label className='text-grey-80 text-md text-body04 whitespace-nowrap md:text-xl'>
           {label}

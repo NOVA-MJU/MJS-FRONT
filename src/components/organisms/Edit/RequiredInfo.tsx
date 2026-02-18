@@ -56,18 +56,19 @@ const RequiredInfo = ({
   };
   return (
     <div
-      className={`w-full md:w-[648px] ${
-        openForm ? 'h-[718px]' : 'h-[308px]'
-      } bg-white flex flex-col justify-center items-center rounded-2xl`}
+      className={`w-full ${
+        openForm ? 'h-[580px]' : 'h-[256px]'
+      } flex flex-col items-center justify-center rounded-2xl bg-white p-6`}
     >
-      <div className='w-[80%] md:w-[440px] flex flex-col gap-12 '>
+      <div className='flex w-full flex-col gap-6'>
         <InputField
           label={'이메일'}
           placeholder={`${user?.email ?? ''}`}
           type={'text'}
           value={user?.email ?? ''}
+          showHr={false}
           disabled={true}
-          helperText={'이메일은 수정할 수 없습니다.'}
+          helperText={'*이메일은 수정할 수 없습니다.'}
         />
         <div className='flex flex-col gap-4'>
           {!openForm && <Label lab={'비밀번호 변경'} disabled={false} />}
@@ -85,18 +86,15 @@ const RequiredInfo = ({
                 placeholder='현재 비밀번호를 입력하세요'
                 type='password'
                 value={currentPw}
+                showHr={false}
                 onChange={(e) => setCurrentPw(e.target.value)}
               />
-              <div className='flex flex-col ml-1'>
-                <p className='text-xs font-normal text-grey-40'>8~16자의 영문 대소문자</p>
-                <p className='text-xs font-normal text-grey-40'>숫자 1개 이상 포함</p>
-                <p className='text-xs font-normal text-grey-40'>특수문자 1개 이상 포함</p>
-              </div>
               <InputField
                 label='새 비밀번호'
                 placeholder='새 비밀번호를 입력하세요'
                 type='password'
                 value={pw}
+                showHr={false}
                 onChange={(e) => setPw(e.target.value)}
               />
 
@@ -106,6 +104,7 @@ const RequiredInfo = ({
                 autoComplete='new-password'
                 placeholder='비밀번호를 다시 입력하세요'
                 value={confirmPw}
+                showHr={false}
                 onChange={(e) => setConfirmPw(e.target.value)}
                 error={confirmError}
                 helperText={confirmError ? '입력한 비밀번호와 일치하지 않습니다.' : ''}
@@ -124,7 +123,7 @@ const RequiredInfo = ({
             </form>
           )}
           <Button
-            variant='greyBlack'
+            variant='chipActive'
             size='md'
             shape='rounded'
             disabled={false}
