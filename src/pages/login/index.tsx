@@ -132,7 +132,10 @@ export default function LoginPage() {
           <div className='flex items-center'>
             <span className='text-caption02 text-grey-20 flex-1 py-3 text-center'>아이디 찾기</span>
             <span className='text-grey-20 text-caption02'>|</span>
-            <Link to='/find-pw' className='text-caption02 text-grey-20 flex-1 py-3 text-center'>
+            <Link
+              to='/find-password'
+              className='text-caption02 text-grey-20 flex-1 py-3 text-center'
+            >
               비밀번호 찾기
             </Link>
           </div>

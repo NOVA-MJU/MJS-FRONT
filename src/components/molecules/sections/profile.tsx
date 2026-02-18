@@ -132,7 +132,7 @@ export default function ProfileSection({ className }: ProfileSectionProps) {
           아이디 찾기
         </button>
         <span className='text-body03 text-grey-40'>|</span>
-        <Link to='/find-pw' className='text-body03 text-grey-40 flex-1 text-center'>
+        <Link to='/find-password' className='text-body03 text-grey-40 flex-1 text-center'>
           비밀번호 찾기
         </Link>
       </div>

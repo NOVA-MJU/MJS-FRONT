@@ -6,7 +6,6 @@ import BoardEdit from '@/pages/board/edit';
 import BoardWrite from '@/pages/board/write';
 import Broadcast from '@/pages/broadcast';
 import GlobalErrorPage from '@/pages/error';
-import FindPw from '@/pages/findPw';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
 import DepartmentEventsNewPage from './pages/main/department-events-new';
@@ -29,6 +28,7 @@ import HomeSlider from './pages/HomeSlider';
 import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from './pages/search/SearchOverlay';
 import Slides from './pages/slides';
+import FindPasswordPage from './pages/find-password';
 
 const App = () => {
   const location = useLocation();
@@ -79,7 +79,7 @@ const App = () => {
         <Route element={<Layout className='bg-grey-05' />}>
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
-          <Route path='/find-pw' element={<FindPw />} />
+          <Route path='/find-password' element={<FindPasswordPage />} />
         </Route>
       </Routes>
 
