@@ -7,7 +7,8 @@ import { formatToLocalDate } from '@/utils';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import Pagination from '@/components/molecules/common/Pagination';
+import { IoIosArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
@@ -28,6 +29,7 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>('LATEST');
   const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const { isDesktop } = useResponsive();
 
   /**
@@ -55,6 +57,7 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
         // HOT (추천순)의 경우 NewsInfo에 likeCount 등의 필드가 없으므로 현재는 최신순과 동일하게 처리하거나 임의 가공
 
         setFetchedNews(sorted);
+        setTotalPages(response.data.totalPages || 0);
       } catch (e) {
         handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
@@ -199,38 +202,10 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
           )}
         </div>
 
-        {/* 페이지네이션 (간이 구현) */}
-        {!isLoading && fetchedNews.length > 0 && (
-          <div className='flex items-center justify-center gap-4 py-8'>
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              className='text-caption02 text-grey-20 flex items-center gap-1 disabled:opacity-30'
-            >
-              <IoIosArrowBack size={14} />
-              이전
-            </button>
-            <div className='flex items-center gap-3'>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setPage(num - 1)}
-                  className={clsx(
-                    'flex h-6 w-6 items-center justify-center text-[12px] transition-colors',
-                    page === num - 1 ? 'text-blue-10 font-semibold' : 'text-grey-20',
-                  )}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className='text-caption02 text-grey-20 flex items-center gap-1'
-            >
-              다음
-              <IoIosArrowForward size={14} />
-            </button>
+        {/* 페이지네이션 */}
+        {!isLoading && totalPages > 1 && (
+          <div className='pb-4'>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>

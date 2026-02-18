@@ -4,6 +4,7 @@ import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToElapsedTime } from '@/utils';
 import { handleError } from '@/utils/error';
 import { useEffect, useState, useRef } from 'react';
+import Pagination from '@/components/molecules/common/Pagination';
 import clsx from 'clsx';
 
 const CATEGORIES = {
@@ -78,6 +79,8 @@ export function NoticeTabSection() {
   const [activeCategory, setActiveCategory] = useState<CategoryKey>('all');
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [clickedLink, setClickedLink] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -86,8 +89,9 @@ export function NoticeTabSection() {
       try {
         setIsLoading(true);
         const year = new Date().getFullYear();
-        const response = await fetchNotionInfo(activeCategory, year, 0, 15);
+        const response = await fetchNotionInfo(activeCategory, year, page, 15);
         setNotices(response.content);
+        setTotalPages(response.totalPages);
       } catch (error) {
         handleError(error, '공지사항을 불러오던 중 오류가 발생했습니다.');
       } finally {
@@ -95,10 +99,10 @@ export function NoticeTabSection() {
       }
     };
     loadNotices();
-  }, [activeCategory]);
+  }, [activeCategory, page]);
 
   return (
-    <div className='flex h-full flex-col bg-white'>
+    <div className='flex flex-col bg-white'>
       <div className='no-scrollbar flex gap-2 overflow-x-auto px-5 py-4' ref={scrollContainerRef}>
         {Object.entries(CATEGORIES).map(([key, label]) => (
           <Chip
@@ -107,14 +111,15 @@ export function NoticeTabSection() {
             isSelected={activeCategory === key}
             onClick={() => {
               setActiveCategory(key as CategoryKey);
-              setClickedLink(null); // 카테고리 변경 시 클릭 상태 초기화
+              setPage(0); // 페이지 초기화
+              setClickedLink(null); // 클릭 상태 초기화
             }}
           />
         ))}
       </div>
 
       {/* 공지 리스트 */}
-      <div className='flex flex-col overflow-y-auto'>
+      <div className='flex flex-col'>
         {isLoading ? (
           [...Array(6)].map((_, i) => (
             <div key={i} className='border-b border-[#f0f2f5] px-5 py-[10px]'>
@@ -138,6 +143,13 @@ export function NoticeTabSection() {
           </div>
         )}
       </div>
+
+      {/* 페이지네이션 */}
+      {!isLoading && totalPages > 1 && (
+        <div className='pb-4'>
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        </div>
+      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
+import Pagination from '@/components/molecules/common/Pagination';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 
@@ -47,26 +48,29 @@ export default function BoardSection({
     sortBy: 'likeCount',
     direction: 'DESC',
   });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
         const res = await getBoards({
-          page: 0,
+          page,
           size: ITEM_COUNT,
           communityCategory: category as Category,
           sortBy: sortConfig.sortBy,
           direction: sortConfig.direction,
         });
         setContents(res.content);
+        setTotalPages(res.totalPages);
       } catch (e) {
         handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [category, sortConfig]);
+  }, [category, sortConfig, page]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -79,12 +83,15 @@ export default function BoardSection({
   ];
 
   return (
-    <section className='relative flex min-h-[500px] flex-col bg-white'>
+    <section className='relative flex flex-col bg-white'>
       {/* 탭 네비게이션 */}
       <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
         <div className='flex flex-1 items-center overflow-hidden'>
           <button
-            onClick={() => setCategory('NOTICE')}
+            onClick={() => {
+              setCategory('NOTICE');
+              setPage(0);
+            }}
             className={clsx(
               'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
               category === 'NOTICE'
@@ -95,7 +102,10 @@ export default function BoardSection({
             정보게시판
           </button>
           <button
-            onClick={() => setCategory('FREE')}
+            onClick={() => {
+              setCategory('FREE');
+              setPage(0);
+            }}
             className={clsx(
               'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
               category === 'FREE'
@@ -213,6 +223,13 @@ export default function BoardSection({
         {!isLoading && contents.length === 0 && (
           <div className='flex flex-1 items-center justify-center py-10'>
             <span className='text-body05 text-grey-20'>등록된 게시글이 없습니다.</span>
+          </div>
+        )}
+
+        {/* 페이지네이션 */}
+        {!isLoading && totalPages > 1 && (
+          <div className='pb-4'>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>
