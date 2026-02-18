@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { useState, useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { useHeaderStore } from '@/store/useHeaderStore';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
 import BroadcastSection from '@/components/molecules/sections/broadcast';
@@ -12,6 +11,7 @@ import { NoticeSlideSection } from '@/components/molecules/sections/notice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
+import { useHeaderStore } from '@/store/useHeaderStore';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -150,13 +150,12 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
  * 슬라이드 메인 페이지 컴포넌트
  */
 const Slides = () => {
-  // 현재 활성화된 탭 상태 관리
   const { setActiveMainSlide } = useHeaderStore();
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
-
-  // 첫 번째 탭에서 뒤로가기 제스처 감지용 ref
+  // ALL 탭에서 좌측 경계 드래그 감지용
   const touchStartX = useRef(0);
+  const isDraggingPastLeft = useRef(false);
 
   // 탭 변경 시 스위퍼 슬라이드 이동
   const handleTabChange = (tab: TabType) => {
@@ -196,21 +195,24 @@ const Slides = () => {
           onSlideChange={(s) => setActiveTab(TABS[s.activeIndex])}
           className='h-full w-full'
           onTouchStart={(_swiper, e) => {
-            // 터치 시작 지점 기록
-            if ('touches' in e) {
-              touchStartX.current = e.touches[0].clientX;
+            isDraggingPastLeft.current = false;
+            if ('touches' in e) touchStartX.current = e.touches[0].clientX;
+          }}
+          onSetTranslate={(s) => {
+            // ALL 탭에서 translate가 양수(좌측 경계 초과)일 때 감지
+            if (activeTab === 'ALL' && s.translate > 0) {
+              isDraggingPastLeft.current = true;
             }
           }}
-          onTouchEnd={(swiperInstance, e) => {
-            // 첫 번째 탭(ALL)에서 오른쪽 스와이프(이전 페이지로 가기) 감지
-            if (swiperInstance.activeIndex === 0 && 'changedTouches' in e) {
-              const endX = e.changedTouches[0].clientX;
-              const diff = endX - touchStartX.current;
-              // diff > 0: 손가락이 왼→오른으로 이동 = 이전 페이지(메인)로 가기
-              if (diff > 80) {
+          onTouchEnd={(_swiper, e) => {
+            // ALL 탭에서 좌측 경계를 충분히 넘갼 드래그했으면 메인으로
+            if (activeTab === 'ALL' && 'changedTouches' in e) {
+              const diff = e.changedTouches[0].clientX - touchStartX.current;
+              if (isDraggingPastLeft.current || diff < -60) {
                 setActiveMainSlide(1);
               }
             }
+            isDraggingPastLeft.current = false;
           }}
         >
           {TABS.map((tab) => {
