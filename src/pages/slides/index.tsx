@@ -134,12 +134,12 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
   게시판: () => <BoardSection />,
   명대신문: () => (
     <TabWrapper>
-      <NewsSection />
+      <NewsSection hideSort={true} />
     </TabWrapper>
   ),
   명대뉴스: () => (
     <TabWrapper>
-      <BroadcastSection />
+      <BroadcastSection hideSort={true} />
     </TabWrapper>
   ),
 };
@@ -216,7 +216,7 @@ const Slides = () => {
             return (
               <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
                 {tab === '게시판' ? (
-                  <BoardSection showWriteButton={activeTab === '게시판'} />
+                  <BoardSection showWriteButton={activeTab === '게시판'} hideSort={true} />
                 ) : (
                   <Content />
                 )}

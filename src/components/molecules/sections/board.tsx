@@ -25,9 +25,13 @@ const ITEM_COUNT = 10;
  */
 interface BoardSectionProps {
   showWriteButton?: boolean;
+  hideSort?: boolean;
 }
 
-export default function BoardSection({ showWriteButton = false }: BoardSectionProps) {
+export default function BoardSection({
+  showWriteButton = false,
+  hideSort = false,
+}: BoardSectionProps) {
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,39 +109,41 @@ export default function BoardSection({ showWriteButton = false }: BoardSectionPr
       </div>
 
       {/* 정렬 필터 */}
-      <div className='flex items-center justify-between px-5 pt-3 pb-1'>
-        <div className='flex items-center gap-3'>
-          {SORT_OPTIONS.map((item, idx) => {
-            const isActive = sortConfig.label === item.label;
-            return (
-              <button
-                key={idx}
-                onClick={() => setSortConfig(item)}
-                className='flex items-center gap-1 transition-opacity active:opacity-60'
-              >
-                <div
-                  className={clsx(
-                    'h-[3px] w-[3px] rounded-full',
-                    isActive ? 'bg-grey-80' : 'bg-grey-20',
-                  )}
-                />
-                <span
-                  className={clsx(
-                    'text-[12px] leading-[1.5]',
-                    isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                  )}
+      {!hideSort && (
+        <div className='flex items-center justify-between px-5 pt-3 pb-1'>
+          <div className='flex items-center gap-3'>
+            {SORT_OPTIONS.map((item, idx) => {
+              const isActive = sortConfig.label === item.label;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSortConfig(item)}
+                  className='flex items-center gap-1 transition-opacity active:opacity-60'
                 >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+                  <div
+                    className={clsx(
+                      'h-[3px] w-[3px] rounded-full',
+                      isActive ? 'bg-grey-80' : 'bg-grey-20',
+                    )}
+                  />
+                  <span
+                    className={clsx(
+                      'text-[12px] leading-[1.5]',
+                      isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
+                    )}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <IoIosArrowForward className='text-grey-20' size={16} />
         </div>
-        <IoIosArrowForward className='text-grey-20' size={16} />
-      </div>
+      )}
 
       {/* 게시글 리스트 */}
-      <div className='flex flex-1 flex-col'>
+      <div className={clsx('flex flex-1 flex-col', hideSort && 'pt-2')}>
         {isLoading && [...Array(ITEM_COUNT)].map((_, index) => <SkeletonProfile key={index} />)}
 
         {!isLoading &&

@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useResponsive } from '@/hooks/useResponse';
 import Main from '@/pages';
 import Slides from './slides';
@@ -25,7 +24,6 @@ const HomeSlider = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const location = useLocation();
   const isInitialJump = useRef(true);
 
   // 클라이언트 마운트 후 렌더링
@@ -69,16 +67,6 @@ const HomeSlider = () => {
       }
     }
   }, [activeMainSlide, initialized]);
-
-  // 3. 경로 이동 시 리셋 ('/' 인 경우)
-  useEffect(() => {
-    if (location.pathname === '/' && initialized) {
-      // 로고 클릭 등을 통해 다시 '/'로 올 때 초기화 상태로 돌림
-      setInitialized(false);
-      isInitialJump.current = true;
-      setActiveMainSlide(1);
-    }
-  }, [location.pathname, setActiveMainSlide]);
 
   const handleScroll = () => {
     if (!containerRef.current || !initialized || isInitialJump.current) return;

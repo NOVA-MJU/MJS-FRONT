@@ -15,7 +15,11 @@ const tabNameMap: Record<string, string> = {
 
 type SortType = 'LATEST' | 'HOT' | 'PAST';
 
-export default function BroadcastSection() {
+interface BroadcastSectionProps {
+  hideSort?: boolean;
+}
+
+export default function BroadcastSection({ hideSort = false }: BroadcastSectionProps) {
   const [categoryTab, setCategoryTab] = useState<string>('ALL');
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -86,43 +90,45 @@ export default function BroadcastSection() {
 
       <div className='flex flex-col'>
         {/* 정렬 필터 */}
-        <div className='flex items-center justify-between px-5 pb-1'>
-          <div className='flex items-center gap-3'>
-            {[
-              { label: '추천순', type: 'HOT' as SortType },
-              { label: '최신순', type: 'LATEST' as SortType },
-              { label: '과거순', type: 'PAST' as SortType },
-            ].map((item, idx) => {
-              const isActive = sortType === item.type;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setSortType(item.type)}
-                  className='flex items-center gap-1 transition-opacity active:opacity-60'
-                >
-                  <div
-                    className={clsx(
-                      'h-[3px] w-[3px] rounded-full',
-                      isActive ? 'bg-grey-80' : 'bg-grey-20',
-                    )}
-                  />
-                  <span
-                    className={clsx(
-                      'text-[12px] leading-[1.5]',
-                      isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                    )}
+        {!hideSort && (
+          <div className='flex items-center justify-between px-5 pb-1'>
+            <div className='flex items-center gap-3'>
+              {[
+                { label: '추천순', type: 'HOT' as SortType },
+                { label: '최신순', type: 'LATEST' as SortType },
+                { label: '과거순', type: 'PAST' as SortType },
+              ].map((item, idx) => {
+                const isActive = sortType === item.type;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setSortType(item.type)}
+                    className='flex items-center gap-1 transition-opacity active:opacity-60'
                   >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
+                    <div
+                      className={clsx(
+                        'h-[3px] w-[3px] rounded-full',
+                        isActive ? 'bg-grey-80' : 'bg-grey-20',
+                      )}
+                    />
+                    <span
+                      className={clsx(
+                        'text-[12px] leading-[1.5]',
+                        isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <IoIosArrowForward className='text-grey-20' size={16} />
           </div>
-          <IoIosArrowForward className='text-grey-20' size={16} />
-        </div>
+        )}
 
         {/* 방송 리스트 컨텐츠 */}
-        <div className='flex flex-col gap-4 px-5 py-4'>
+        <div className={clsx('flex flex-col gap-4 px-5 py-4', hideSort && 'pt-8')}>
           {isLoading &&
             [...Array(3)].map((_, index) => (
               <div key={index} className='flex flex-col gap-2'>
