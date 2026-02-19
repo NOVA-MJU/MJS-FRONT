@@ -2,6 +2,7 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'HUMANITIES', label: '인문대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '아시아·중동어문학부', value: 'ASIA_MIDDLE_EAST_LANGUAGES' },
       { label: '중어중문학전공', value: 'CHINESE_LITERATURE' },
       { label: '일어일문학전공', value: 'JAPANESE_LITERATURE' },
@@ -10,9 +11,9 @@ export const DEPARTMENT_OPTIONS = [
       { label: '인문콘텐츠학부', value: 'CULTURAL_CONTENT_STUDIES' },
       { label: '국어국문학전공', value: 'KOREAN_LITERATURE' },
       { label: '영어영문학전공', value: 'ENGLISH_LITERATURE' },
+      { label: '미술사·역사학전공', value: 'ART_HISTORY' },
       { label: '미술사학과', value: 'ART_HISTORY_DEPARTMENT' },
       { label: '사학과', value: 'HISTORY_DEPARTMENT' },
-      { label: '미술사·역사학전공', value: 'ART_HISTORY' },
       { label: '문헌정보학전공', value: 'LIBRARY_SCIENCE' },
       { label: '글로벌문화콘텐츠학전공', value: 'GLOBAL_CULTURAL_CONTENT_STUDIES' },
       { label: '문예창작학과', value: 'CREATIVE_WRITING' },
@@ -23,6 +24,7 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'SOCIAL_SCIENCES', label: '사회과학대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '공공인재학부', value: 'PUBLIC_ADMINISTRATION' },
       { label: '행정학전공', value: 'PUBLIC_ADMINISTRATION' },
       { label: '정치외교학전공', value: 'POLITICAL_DIPLOMACY' },
@@ -37,17 +39,18 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'BUSINESS', label: '경영대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '경영학부', value: 'BUSINESS_DEPARTMENT' },
       { label: '경영학전공', value: 'BUSINESS_ADMINISTRATION' },
       { label: '글로벌비즈니스학전공', value: 'GLOBAL_BUSINESS_STUDIES' },
       { label: '경영정보학과', value: 'MANAGEMENT_INFORMATION_SYSTEMS' },
-      { label: '국제통상학과', value: 'INTERNATIONAL_TRADE' },
     ],
   },
 
   {
     college: { value: 'MEDIA_HUMANLIFE', label: '미디어·휴먼라이프대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '디지털미디어학부', value: 'DIGITAL_MEDIA_STUDIES' },
       { label: '청소년지도·아동학부', value: 'YOUTH_GUIDANCE_CHILD_STUDIES' },
       { label: '청소년지도학전공', value: 'YOUTH_GUIDANCE_STUDIES' },
@@ -58,6 +61,7 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'AI_SOFTWARE', label: '인공지능·소프트웨어융합대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '융합소프트웨어학부', value: 'CONVERGENT_SOFTWARE_STUDIES' },
       { label: '응용소프트웨어전공', value: 'APPLICATION_SOFTWARE' },
       { label: '데이터사이언스전공', value: 'DATA_SCIENCE' },
@@ -69,6 +73,7 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'FUTURE_CONVERGENCE', label: '미래융합대학' },
     departments: [
+      { label: '전체', value: 'ALL' },
       { label: '창의융합인재학부', value: 'CREATIVE_CONVERGENCE_TALENT_DEPARTMENT' },
       { label: '사회복지학과', value: 'SOCIAL_WELFARE' },
       { label: '부동산학과', value: 'REAL_ESTATE' },
