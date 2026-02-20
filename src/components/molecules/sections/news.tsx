@@ -148,7 +148,7 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
         )}
 
         {/* 뉴스 리스트 컨텐츠 */}
-        <div className='flex flex-col'>
+        <div className={clsx('flex flex-col', !all && 'pt-3')}>
           {isLoading &&
             [...Array(5)].map((_, index) => (
               <div key={index} className='px-5 py-4'>

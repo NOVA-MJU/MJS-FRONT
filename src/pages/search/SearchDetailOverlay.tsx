@@ -13,7 +13,6 @@ import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
-import ThingoLogoSmall from '../../../public/logo/ThingoSmallLogo.svg';
 import { Skeleton } from '@/components/atoms/Skeleton';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
@@ -180,7 +179,7 @@ export default function SearchDetail() {
         {/* 검색바 */}
         <header className='flex min-w-0 items-center gap-4 px-4 py-2'>
           <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
-            <img src={ThingoLogoSmall} className='h-full w-full object-contain' />
+            <img src='/logo/ThingoSmallLogo.svg' className='h-full w-full object-contain' />
           </div>
 
           <div className='min-w-0 flex-1 py-2'>

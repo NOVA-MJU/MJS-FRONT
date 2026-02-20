@@ -9,7 +9,8 @@ import { Skeleton } from '@/components/atoms/Skeleton';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToLocalDate } from '@/utils';
 import clsx from 'clsx';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
+import Pagination from '@/components/molecules/common/Pagination';
 import { ScheduleList } from './academic-schedule-list';
 import { CardHeader } from '@/components/atoms/Card';
 import { Link } from 'react-router-dom';
@@ -46,26 +47,10 @@ export default function AcademicScheduleWidget({
 
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [isNoticeLoading, setIsNoticeLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  /**
-   * 캘린더 데이터 조회 (viewDate의 연/월 기준)
-   */
-  useEffect(() => {
-    if (activeTab === 'calendar') {
-      getCalendarData(viewDate.getFullYear(), viewDate.getMonth() + 1);
-    }
-  }, [activeTab, viewDate]);
-
-  /**
-   * 학사공지 탭 데이터 조회
-   */
-  useEffect(() => {
-    if (activeTab === 'notice' && notices.length === 0) {
-      getNoticeData();
-    }
-  }, [activeTab, notices.length]);
-
-  const getCalendarData = async (year: number, month: number) => {
+  const getCalendarData = useCallback(async (year: number, month: number) => {
     try {
       setIsLoading(true);
       const res = await getAcademicCalendar(year, month);
@@ -75,22 +60,41 @@ export default function AcademicScheduleWidget({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   /**
    * 학사공지 탭 데이터 조회
    */
-  const getNoticeData = async () => {
+  const getNoticeData = useCallback(async () => {
     try {
       setIsNoticeLoading(true);
-      const res = await fetchNotionInfo('academic', undefined, 0, 7);
+      const res = await fetchNotionInfo('academic', undefined, page, 10);
       setNotices(res.content);
+      setTotalPages(res.totalPages);
     } catch (e) {
       console.error('notice-fetch-error', e);
     } finally {
       setIsNoticeLoading(false);
     }
-  };
+  }, [page]);
+
+  /**
+   * 캘린더 데이터 조회 (viewDate의 연/월 기준)
+   */
+  useEffect(() => {
+    if (activeTab === 'calendar') {
+      getCalendarData(viewDate.getFullYear(), viewDate.getMonth() + 1);
+    }
+  }, [activeTab, viewDate, getCalendarData]);
+
+  /**
+   * 학사공지 탭 데이터 조회
+   */
+  useEffect(() => {
+    if (activeTab === 'notice') {
+      getNoticeData();
+    }
+  }, [activeTab, page, getNoticeData]);
 
   /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회 */
   const handleYearChange = (year: number) =>
@@ -144,6 +148,35 @@ export default function AcademicScheduleWidget({
         </CardHeader>
       )}
       {/* 탭 네비게이션 */}
+      {/* <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+        <div className='flex flex-1 items-center overflow-hidden'>
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={clsx(
+              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+              activeTab === 'calendar'
+                ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+            )}
+          >
+            캘린더
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('notice');
+              setPage(0);
+            }}
+            className={clsx(
+              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+              activeTab === 'notice'
+                ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+            )}
+          >
+            학사공지
+          </button>
+        </div>
+      </div> */}
       {!all && (
         <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
           <div className='flex flex-1 items-center overflow-hidden'>
@@ -205,7 +238,7 @@ export default function AcademicScheduleWidget({
           </div>
         ) : (
           /* 학사공지 탭 - 일반 공지 탭과 동일한 디자인 */
-          <div className='flex flex-1 flex-col'>
+          <div className='flex flex-col'>
             {isNoticeLoading ? (
               [...Array(5)].map((_, i) => (
                 <div key={i} className='border-blue-05 h-fit w-full border-b'>
@@ -243,8 +276,15 @@ export default function AcademicScheduleWidget({
                 );
               })
             ) : (
-              <div className='flex flex-1 items-center justify-center'>
+              <div className='flex flex-1 items-center justify-center py-20'>
                 <span className='text-body05 text-grey-20'>등록된 학사 공지사항이 없습니다.</span>
+              </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {!isNoticeLoading && totalPages > 1 && (
+              <div className='pb-4'>
+                <Pagination page={page} totalPages={totalPages} onChange={setPage} />
               </div>
             )}
           </div>

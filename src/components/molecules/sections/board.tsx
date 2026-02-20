@@ -13,6 +13,7 @@ import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
+import Pagination from '@/components/molecules/common/Pagination';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
@@ -27,10 +28,15 @@ const ITEM_COUNT = 10;
  */
 interface BoardSectionProps {
   showWriteButton?: boolean;
+  hideSort?: boolean;
   all?: boolean;
 }
 
-export default function BoardSection({ showWriteButton = false, all = false }: BoardSectionProps) {
+export default function BoardSection({
+  showWriteButton = false,
+  hideSort = false,
+  all = false,
+}: BoardSectionProps) {
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,18 +52,22 @@ export default function BoardSection({ showWriteButton = false, all = false }: B
     sortBy: 'likeCount',
     direction: 'DESC',
   });
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     (async () => {
       try {
         setIsLoading(true);
         const res = await getBoards({
-          page: 0,
+          page,
           size: ITEM_COUNT,
           communityCategory: category as Category,
           sortBy: sortConfig.sortBy,
           direction: sortConfig.direction,
         });
+        setContents(res.content);
+        setTotalPages(res.totalPages);
         if (all) setContents(res.content.slice(0, 5));
         else setContents(res.content);
       } catch (e) {
@@ -66,7 +76,7 @@ export default function BoardSection({ showWriteButton = false, all = false }: B
         setIsLoading(false);
       }
     })();
-  }, [category, sortConfig]);
+  }, [category, sortConfig, page]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -153,7 +163,7 @@ export default function BoardSection({ showWriteButton = false, all = false }: B
       )}
 
       {/* 게시글 리스트 */}
-      <div className='flex flex-1 flex-col'>
+      <div className={clsx('flex flex-col', hideSort && 'pt-2')}>
         {isLoading && [...Array(ITEM_COUNT)].map((_, index) => <SkeletonProfile key={index} />)}
 
         {!isLoading &&
@@ -236,6 +246,13 @@ export default function BoardSection({ showWriteButton = false, all = false }: B
         {!isLoading && contents.length === 0 && (
           <div className='flex flex-1 items-center justify-center py-10'>
             <span className='text-body05 text-grey-20'>등록된 게시글이 없습니다.</span>
+          </div>
+        )}
+
+        {/* 페이지네이션 */}
+        {!isLoading && totalPages > 1 && (
+          <div className='pb-4'>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>

@@ -212,13 +212,21 @@ export default function ListEntry({
 }: ListEntryProps) {
   // tab이 all일 경우 3가지 카테고리 출력
   if (currentTab === 'ALL') {
+    const hasResults =
+      noticeItems.length > 0 ||
+      boardItems.length > 0 ||
+      newsItems.length > 0 ||
+      broadcastItems.length > 0;
+
     return (
       <div className='mb-5 flex flex-col gap-5'>
         {/* 공지사항 */}
         <div className='border-grey-02 flex flex-col border-t-[8px]'>
-          <div className='flex flex-row items-center justify-between p-5 pb-0'>
-            <SortButtons sort={sort} onSortChange={onSortChange} />
-          </div>
+          {hasResults && (
+            <div className='flex flex-row items-center justify-between p-5 pb-0'>
+              <SortButtons sort={sort} onSortChange={onSortChange} />
+            </div>
+          )}
           <SectionHeader
             title='공지사항'
             showMore={noticeItems.length === 5}

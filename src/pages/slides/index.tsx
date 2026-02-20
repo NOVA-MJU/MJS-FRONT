@@ -8,10 +8,12 @@ import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import { NoticeSlideSection } from '@/components/molecules/sections/notice';
+import NoticeTabSection from '@/components/molecules/sections/NoticeTabSection';
+import Footer from '@/components/organisms/Footer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
-import NoticeSection from '@/components/molecules/sections/notice';
+import { useHeaderStore } from '@/store/useHeaderStore';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -47,10 +49,9 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
   const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
-    if (!isPanelVisible) return;
-    const el = tabRefs.current[activeTab];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    const selectedEl = tabRefs.current[activeTab];
+    if (selectedEl) {
+      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   }, [activeTab, isPanelVisible]);
 
@@ -125,21 +126,19 @@ const AllTab = () => (
  * 개별 탭 컨텐츠를 위한 공통 래퍼 컴포넌트
  */
 const TabWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
+  <div className='flex flex-col gap-2 p-2'>{children}</div>
 );
+
+type TabPropType = { isActive?: boolean; showWriteButton?: boolean };
 
 /**
  * 탭 타입별 렌더링 컴포넌트 매핑 객체
  * 컴포넌트들을 미리 정의 (Lazy Loading으로 성능 최적화)
  */
-const TAB_CONTENT: Record<TabType, React.ComponentType> = {
+const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
   ALL: AllTab,
-  명지도: () => <CampusMap />,
-  공지사항: () => (
-    <TabWrapper>
-      <NoticeSection />
-    </TabWrapper>
-  ),
+  명지도: (props: { isActive?: boolean }) => <CampusMap {...props} />,
+  공지사항: () => <NoticeTabSection />,
   학사일정: () => (
     <div>
       <AcademicScheduleWidget />
@@ -150,15 +149,15 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
       <MealSection />
     </TabWrapper>
   ),
-  게시판: () => <BoardSection />,
+  게시판: () => <BoardSection all={true} />,
   명대신문: () => (
     <TabWrapper>
-      <NewsSection />
+      <NewsSection all={true} />
     </TabWrapper>
   ),
   명대뉴스: () => (
     <TabWrapper>
-      <BroadcastSection />
+      <BroadcastSection all={false} />
     </TabWrapper>
   ),
 };
@@ -168,9 +167,25 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
  * 탭 상태는 Slides 내부에서만 관리. 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
-  // 현재 활성화된 탭 상태 관리
+  const { setActiveMainSlide, selectedTab, setSelectedTab } = useHeaderStore();
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
+  // ALL 탭에서 좌측 경계 드래그 감지용
+  const touchStartX = useRef(0);
+  const isDraggingPastLeft = useRef(false);
+
+  // 외부(메인 홈)에서 탭 선택 시 처리
+  useEffect(() => {
+    if (selectedTab && TABS.includes(selectedTab as TabType)) {
+      const tab = selectedTab as TabType;
+      setActiveTab(tab);
+      if (swiper) {
+        const index = TABS.indexOf(tab);
+        swiper.slideTo(index);
+      }
+      setSelectedTab(null); // 한 번 처리 후 초기화
+    }
+  }, [selectedTab, swiper, setSelectedTab]);
   const rootRef = useRef<HTMLDivElement>(null);
   const [isPanelVisible, setIsPanelVisible] = useState(false);
 
@@ -195,7 +210,7 @@ const Slides = () => {
     }
   };
 
-  // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
+  // 명지도 탭 활성화 시 body 스크롤 방지 (푸터는 CSS로 처리)
   useEffect(() => {
     const footer = document.querySelector('footer');
     if (!isPanelVisible) {
@@ -204,15 +219,12 @@ const Slides = () => {
       return;
     }
     if (activeTab === '명지도') {
-      if (footer) footer.style.display = 'none';
       document.body.style.overflow = 'hidden';
     } else {
-      if (footer) footer.style.display = 'block';
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     }
     return () => {
-      if (footer) footer.style.display = 'block';
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     };
   }, [activeTab, isPanelVisible]);
 
@@ -230,19 +242,41 @@ const Slides = () => {
           onSwiper={setSwiper}
           onSlideChange={(s) => setActiveTab(TABS[s.activeIndex])}
           className='h-full w-full'
-          nested={true}
-          resistance={true}
-          resistanceRatio={0}
+          onTouchStart={(_swiper, e) => {
+            isDraggingPastLeft.current = false;
+            if ('touches' in e) touchStartX.current = e.touches[0].clientX;
+          }}
+          onSetTranslate={(s) => {
+            // ALL 탭에서 translate가 양수(좌측 경계 초과)일 때 감지
+            if (activeTab === 'ALL' && s.translate > 0) {
+              isDraggingPastLeft.current = true;
+            }
+          }}
+          onTouchEnd={(_swiper, e) => {
+            // ALL 탭에서 좌측 경계를 충분히 넘갼 드래그했으면 메인으로
+            if (activeTab === 'ALL' && 'changedTouches' in e) {
+              const diff = e.changedTouches[0].clientX - touchStartX.current;
+              if (isDraggingPastLeft.current || diff < -60) {
+                setActiveMainSlide(1);
+              }
+            }
+            isDraggingPastLeft.current = false;
+          }}
         >
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
             return (
-              <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
+              <SwiperSlide
+                key={tab}
+                className={cn('h-full w-full', tab !== '명지도' && 'overflow-y-auto')}
+              >
                 {tab === '게시판' ? (
-                  <BoardSection showWriteButton={activeTab === '게시판'} />
+                  <BoardSection showWriteButton={activeTab === '게시판'} hideSort={true} />
                 ) : (
-                  <Content />
+                  <Content isActive={activeTab === tab} />
                 )}
+                {/* 명지도 제외 탭에서 스크롤 맨 아래 푸터 표시 */}
+                {tab !== '명지도' && <Footer />}
               </SwiperSlide>
             );
           })}
