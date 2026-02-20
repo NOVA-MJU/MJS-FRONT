@@ -5,6 +5,7 @@ import {
   type BoardDirection,
   type Category,
 } from '@/api/board';
+import { CardHeader } from '@/components/atoms/Card';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
 import { formatToElapsedTime } from '@/utils';
 import { handleError } from '@/utils/error';
@@ -13,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
 import Pagination from '@/components/molecules/common/Pagination';
+import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 
@@ -27,11 +29,13 @@ const ITEM_COUNT = 10;
 interface BoardSectionProps {
   showWriteButton?: boolean;
   hideSort?: boolean;
+  all?: boolean;
 }
 
 export default function BoardSection({
   showWriteButton = false,
   hideSort = false,
+  all = false,
 }: BoardSectionProps) {
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
@@ -64,6 +68,8 @@ export default function BoardSection({
         });
         setContents(res.content);
         setTotalPages(res.totalPages);
+        if (all) setContents(res.content.slice(0, 5));
+        else setContents(res.content);
       } catch (e) {
         handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
@@ -83,43 +89,47 @@ export default function BoardSection({
   ];
 
   return (
-    <section className='relative flex flex-col bg-white'>
+    <section className='relative flex min-h-[400px] flex-col bg-white'>
+      {all && (
+        <CardHeader className='px-3'>
+          <h2 className='text-title03 px-2 font-bold text-black'>게시판</h2>
+          <Link to='/board' className='text-grey-30 p-2'>
+            <MdChevronRight size={24} className='text-grey-60' />
+          </Link>
+        </CardHeader>
+      )}
       {/* 탭 네비게이션 */}
-      <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
-        <div className='flex flex-1 items-center overflow-hidden'>
-          <button
-            onClick={() => {
-              setCategory('NOTICE');
-              setPage(0);
-            }}
-            className={clsx(
-              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
-              category === 'NOTICE'
-                ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
-                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
-            )}
-          >
-            정보게시판
-          </button>
-          <button
-            onClick={() => {
-              setCategory('FREE');
-              setPage(0);
-            }}
-            className={clsx(
-              'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
-              category === 'FREE'
-                ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
-                : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
-            )}
-          >
-            자유게시판
-          </button>
+      {!all && (
+        <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+          <div className='flex flex-1 items-center overflow-hidden'>
+            <button
+              onClick={() => setCategory('NOTICE')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                category === 'NOTICE'
+                  ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              정보게시판
+            </button>
+            <button
+              onClick={() => setCategory('FREE')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                category === 'FREE'
+                  ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              자유게시판
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 정렬 필터 */}
-      {!hideSort && (
+      {!all && (
         <div className='flex items-center justify-between px-5 pt-3 pb-1'>
           <div className='flex items-center gap-3'>
             {SORT_OPTIONS.map((item, idx) => {
@@ -169,7 +179,7 @@ export default function BoardSection({
                 <Link
                   key={content.uuid}
                   to={`/board/${content.uuid}`}
-                  className='active:bg-blue-05 transition-colors'
+                  className='active:bg-blue-05 hover:bg-blue-05 transition-colors'
                 >
                   <div className='flex flex-col gap-2 px-5 py-2.5'>
                     {/* 제목 및 본문 */}
@@ -182,17 +192,28 @@ export default function BoardSection({
                             </span>
                           </div>
                         )}
-                        <h3 className='text-body02 line-clamp-1 font-semibold text-black'>
-                          {content.title}
-                        </h3>
+                        <div className='flex items-center gap-1 text-black'>
+                          <p className='text-body04 line-clamp-1'>
+                            {all && category === 'FREE' ? '자유게시판' : '정보게시판'}
+                          </p>
+                          <p className='text-body05 line-clamp-1'>{content.title}</p>
+                        </div>
                       </div>
-                      <p className='text-body05 line-clamp-2 text-black'>
-                        {content.previewContent}
-                      </p>
+                      {!all && (
+                        <p className='text-body05 line-clamp-2 text-black'>
+                          {content.previewContent}
+                        </p>
+                      )}
                     </div>
 
                     {/* 메타 정보 */}
                     <div className='flex items-center justify-between'>
+                      {/* 날짜 */}
+                      {all && (
+                        <span className='text-caption02 text-grey-40'>
+                          {formatToElapsedTime(content.publishedAt)}
+                        </span>
+                      )}
                       <div className='flex items-center gap-3'>
                         {/* 좋아요 */}
                         <div className='flex items-center gap-1'>
@@ -209,9 +230,11 @@ export default function BoardSection({
                       </div>
 
                       {/* 날짜 */}
-                      <span className='text-caption02 text-grey-40'>
-                        {formatToElapsedTime(content.publishedAt)}
-                      </span>
+                      {!all && (
+                        <span className='text-caption02 text-grey-40'>
+                          {formatToElapsedTime(content.publishedAt)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   {!isLast && <div className='bg-grey-10 h-px w-full' />}
@@ -235,7 +258,8 @@ export default function BoardSection({
       </div>
 
       {/* 글 작성 버튼 (Floating Action Button) */}
-      {isMounted &&
+      {!all &&
+        isMounted &&
         showWriteButton &&
         createPortal(
           <div className='fixed right-5 bottom-8 z-50'>

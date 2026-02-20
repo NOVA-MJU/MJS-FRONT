@@ -13,6 +13,7 @@ import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -74,6 +75,7 @@ export default function SearchDetail() {
   });
   const [initialContent, setInitialContent] = useState('');
   const [sort, setSort] = useState<Sort>('relevance');
+  const [isAiSummaryLoading, setIsAiSummaryLoading] = useState(false);
 
   const keyword = searchParams.get('keyword');
 
@@ -132,11 +134,22 @@ export default function SearchDetail() {
    * 검색어 초기값 반영 (search parameter 반영)
    */
   useEffect(() => {
-    handleGetAiSummary(keyword ?? '');
     setSort('relevance');
     (async () => {
-      if (!keyword) return;
+      if (!keyword) {
+        setInitialContent('');
+        setIsAiSummaryLoading(false);
+        return;
+      }
       setInitialContent(keyword);
+      setIsAiSummaryLoading(true);
+      try {
+        await handleGetAiSummary(keyword);
+      } catch {
+        setAiSummary((prev) => ({ ...prev, summary: '', document_count: 0, sources: [] }));
+      } finally {
+        setIsAiSummaryLoading(false);
+      }
       try {
         await handleSearch(keyword);
       } catch {
@@ -202,50 +215,71 @@ export default function SearchDetail() {
                   <p>요약 검색 결과</p>
                 </div>
               </div>
-              <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
-                <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
-              </div>
 
-              {/* ai 출처 링크 */}
-              {aiSummary.document_count > 0 && (
-                <div>
+              {isAiSummaryLoading ? (
+                <>
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                  </div>
                   <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
-                    <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
-                    <div className='flex items-center gap-1'>
-                      {aiSummary.document_count > 1 && (
-                        <div
-                          onClick={() => setIsLinkOpen(!isLinkOpen)}
-                          className='text-caption01 bg-grey-02 text-grey-20 flex cursor-pointer items-center gap-1 rounded-full px-2'
-                        >
-                          +{aiSummary.document_count}
-                          {isLinkOpen ? (
-                            <IoIosArrowUp size={10} className='text-grey-30' />
-                          ) : (
-                            <IoIosArrowDown size={10} className='text-grey-30' />
-                          )}
-                        </div>
-                      )}
-                      <a
-                        href={aiSummary.sources?.[0]?.url}
-                        className='bg-blue-05 rounded-full p-0.5'
-                      >
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <div className='flex shrink-0 items-center gap-1'>
+                      <Skeleton className='bg-grey-10 h-5 w-11 rounded-full' />
+                      <span className='bg-blue-05 rounded-full p-0.5'>
                         <IoMdLink size={15} className='text-mju-primary rotate-135' />
-                      </a>
+                      </span>
                     </div>
                   </div>
-                  {isLinkOpen &&
-                    aiSummary.sources?.slice(1).map((source, idx) => (
-                      <div
-                        key={idx}
-                        className='text-body05 text-grey-30 flex items-center justify-between py-1'
-                      >
-                        <p className='w-3/4 break-words'>{source.title}</p>
-                        <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
-                          <IoMdLink size={15} className='text-mju-primary rotate-135' />
-                        </a>
+                </>
+              ) : (
+                <>
+                  <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
+                    <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
+                  </div>
+
+                  {aiSummary.document_count > 0 && (
+                    <div>
+                      <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
+                        <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
+                        <div className='flex items-center gap-1'>
+                          {aiSummary.document_count > 1 && (
+                            <div
+                              onClick={() => setIsLinkOpen(!isLinkOpen)}
+                              className='text-caption01 bg-grey-02 text-grey-20 flex cursor-pointer items-center gap-1 rounded-full px-2'
+                            >
+                              +{aiSummary.document_count}
+                              {isLinkOpen ? (
+                                <IoIosArrowUp size={10} className='text-grey-30' />
+                              ) : (
+                                <IoIosArrowDown size={10} className='text-grey-30' />
+                              )}
+                            </div>
+                          )}
+                          <a
+                            href={aiSummary.sources?.[0]?.url}
+                            className='bg-blue-05 rounded-full p-0.5'
+                          >
+                            <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                          </a>
+                        </div>
                       </div>
-                    ))}
-                </div>
+                      {isLinkOpen &&
+                        aiSummary.sources?.slice(1).map((source, idx) => (
+                          <div
+                            key={idx}
+                            className='text-body05 text-grey-30 flex items-center justify-between py-1'
+                          >
+                            <p className='w-3/4 break-words'>{source.title}</p>
+                            <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
+                              <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </>
               )}
             </section>
           )}

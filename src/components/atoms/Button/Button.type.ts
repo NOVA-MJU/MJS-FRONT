@@ -11,7 +11,9 @@ export type ButtonVariant =
   | 'greyLight'
   | 'greyBlack'
   | 'borderRed'
-  | 'borderGrey';
+  | 'borderGrey'
+  | 'chip'
+  | 'chipActive';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonShape = 'pill' | 'rounded';
 

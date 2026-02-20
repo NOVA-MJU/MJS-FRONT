@@ -38,9 +38,9 @@ const CONTENT_LENGTH = 7;
  */
 const NoticeSlideHeader = () => (
   <CardHeader className='px-1'>
-    <h2 className='text-title03 px-2 font-bold text-black'>공지사항</h2>
+    <h2 className='text-title03 px-3 font-bold text-black'>공지사항</h2>
     <Link to='/notice' className='text-grey-30 p-2'>
-      <MdChevronRight size={24} />
+      <MdChevronRight size={24} className='text-grey-60' />
     </Link>
   </CardHeader>
 );
@@ -69,7 +69,7 @@ const NoticeSlideCard = ({ info }: { info: NoticeItem }) => {
   );
 };
 
-export function NoticeSlideSection() {
+export function NoticeSlideSection({ all = false }: { all?: boolean }) {
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const [allDataCache, setAllDataCache] = useState<Record<string, NoticeItem[]>>({});
@@ -90,10 +90,11 @@ export function NoticeSlideSection() {
             0,
             CONTENT_LENGTH,
           );
-          setSelectedInfo(fetchedNoticeData.content);
+          if (all) setSelectedInfo(fetchedNoticeData.content.slice(0, 5));
+          else setSelectedInfo(fetchedNoticeData.content);
           setAllDataCache((prevCache) => ({
             ...prevCache,
-            [selectedTab]: fetchedNoticeData.content,
+            [selectedTab]: all ? fetchedNoticeData.content.slice(0, 5) : fetchedNoticeData.content,
           }));
         } catch (e) {
           handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });

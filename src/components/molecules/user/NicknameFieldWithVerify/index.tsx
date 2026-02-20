@@ -9,6 +9,8 @@ interface Props {
   isNicknameChecked: boolean;
   handleVerifyNickname: () => void;
   setIsNicknameChecked: (val: boolean) => void;
+  /** 제공 시, 이 값과 다를 때만 중복 확인 버튼이 활성화 */
+  initialNickname?: string;
 }
 
 const NicknameFieldWithVerify = ({
@@ -18,7 +20,10 @@ const NicknameFieldWithVerify = ({
   isNicknameChecked,
   handleVerifyNickname,
   setIsNicknameChecked,
+  initialNickname,
 }: Props) => {
+  const isChanged = initialNickname === undefined || nickname.trim() !== initialNickname.trim();
+
   const isValidName = useMemo(() => {
     if (!nickname) return true;
 
@@ -37,6 +42,7 @@ const NicknameFieldWithVerify = ({
         type='text'
         placeholder='닉네임'
         value={nickname}
+        showHr={false}
         error={showError}
         helperText={showError ? '정확한 단어로 입력해 주세요.' : ''}
         onChange={(e) => {
@@ -44,26 +50,32 @@ const NicknameFieldWithVerify = ({
           setIsNicknameChecked(false);
         }}
         rightElement={
-          <Button
-            type='button'
-            shape='rounded'
-            size='sm'
-            disabled={isSending || nickname === '' || isNicknameChecked || showError}
-            onClick={handleVerifyNickname}
-            fullWidth={false}
-            variant={
-              isNicknameChecked
-                ? 'greyLight'
-                : isSending
-                  ? 'greyLight'
-                  : nickname
-                    ? 'main'
-                    : 'greyLight'
-            }
-            className='ml-4 h-10 w-20 p-2 md:h-12 md:w-34'
-          >
-            {isNicknameChecked ? '확인 완료' : isSending ? '확인 중...' : '중복 확인'}
-          </Button>
+          <div className='flex flex-row'>
+            <Button
+              type='button'
+              shape='rounded'
+              size='sm'
+              disabled={
+                !isChanged || isSending || nickname === '' || isNicknameChecked || showError
+              }
+              onClick={handleVerifyNickname}
+              fullWidth={false}
+              variant={
+                !isChanged
+                  ? 'grey20'
+                  : isNicknameChecked
+                    ? 'grey20'
+                    : isSending
+                      ? 'grey20'
+                      : nickname
+                        ? 'main'
+                        : 'grey20'
+              }
+              className='ml-4 h-12 w-20 md:h-12 md:w-34'
+            >
+              {isNicknameChecked ? '확인 완료' : isSending ? '확인 중...' : '중복 확인'}
+            </Button>
+          </div>
         }
       />
     </div>

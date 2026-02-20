@@ -1,4 +1,5 @@
 import { fetchNewsInfo } from '@/api/news';
+import { CardHeader } from '@/components/atoms/Card';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { ICON_SIZE_LG } from '@/constants/common';
 import { useResponsive } from '@/hooks/useResponse';
@@ -7,8 +8,8 @@ import { formatToLocalDate } from '@/utils';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import Pagination from '@/components/molecules/common/Pagination';
-import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
@@ -19,17 +20,12 @@ const tabNameMap: Record<string, string> = {
 
 type SortType = 'LATEST' | 'HOT' | 'PAST';
 
-interface NewsSectionProps {
-  hideSort?: boolean;
-}
-
-export default function NewsSection({ hideSort = false }: NewsSectionProps) {
+export default function NewsSection({ all = false }: { all?: boolean }) {
   const [categoryTab, setCategoryTab] = useState<string>('ALL');
   const [fetchedNews, setFetchedNews] = useState<NewsInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>('LATEST');
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const { isDesktop } = useResponsive();
 
   /**
@@ -56,8 +52,8 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
         }
         // HOT (추천순)의 경우 NewsInfo에 likeCount 등의 필드가 없으므로 현재는 최신순과 동일하게 처리하거나 임의 가공
 
-        setFetchedNews(sorted);
-        setTotalPages(response.data.totalPages || 0);
+        if (all) setFetchedNews(sorted.slice(0, 5));
+        else setFetchedNews(sorted);
       } catch (e) {
         handleError(e, '뉴스를 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
@@ -70,6 +66,14 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
 
   return (
     <section className='flex flex-col bg-white'>
+      {all && (
+        <CardHeader className='px-3'>
+          <h2 className='text-title03 px-2 font-bold text-black'>명대신문</h2>
+          <Link to='/news' className='text-grey-30 p-2'>
+            <MdChevronRight size={24} className='text-grey-60' />
+          </Link>
+        </CardHeader>
+      )}
       {/* 데스크탑 헤더 */}
       {isDesktop && (
         <div className='mb-3 flex items-center justify-between px-3'>
@@ -106,7 +110,7 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
 
       <div className='flex flex-col'>
         {/* 정렬 필터 */}
-        {!hideSort && (
+        {!all && (
           <div className='flex items-center justify-between px-5 pb-1'>
             <div className='flex items-center gap-3'>
               {[
@@ -144,7 +148,7 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
         )}
 
         {/* 뉴스 리스트 컨텐츠 */}
-        <div className={clsx('flex flex-col', hideSort && 'pt-3')}>
+        <div className={clsx('flex flex-col', !all && 'pt-3')}>
           {isLoading &&
             [...Array(5)].map((_, index) => (
               <div key={index} className='px-5 py-4'>
@@ -202,10 +206,38 @@ export default function NewsSection({ hideSort = false }: NewsSectionProps) {
           )}
         </div>
 
-        {/* 페이지네이션 */}
-        {!isLoading && totalPages > 1 && (
-          <div className='pb-4'>
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        {/* 페이지네이션 (간이 구현) */}
+        {!isLoading && fetchedNews.length > 0 && !all && (
+          <div className='flex items-center justify-center gap-4 py-8'>
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              className='text-caption02 text-grey-20 flex items-center gap-1 disabled:opacity-30'
+            >
+              <IoIosArrowBack size={14} />
+              이전
+            </button>
+            <div className='flex items-center gap-3'>
+              {[1, 2, 3, 4, 5].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setPage(num - 1)}
+                  className={clsx(
+                    'flex h-6 w-6 items-center justify-center text-[12px] transition-colors',
+                    page === num - 1 ? 'text-blue-10 font-semibold' : 'text-grey-20',
+                  )}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              className='text-caption02 text-grey-20 flex items-center gap-1'
+            >
+              다음
+              <IoIosArrowForward size={14} />
+            </button>
           </div>
         )}
       </div>

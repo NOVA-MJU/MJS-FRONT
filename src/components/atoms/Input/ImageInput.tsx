@@ -31,7 +31,7 @@ const ImageInput = ({ imageUrl, onImageChange }: ProfileImageInputProps) => {
     <div className='flex flex-col'>
       <label htmlFor='profile-image' className='cursor-pointer'>
         <div
-          className='mt-3 h-24 w-24 overflow-hidden rounded-xl border-2 md:h-32 md:w-32'
+          className='mt-3 h-24 w-24 overflow-hidden rounded-xl border-1 md:h-32 md:w-32'
           style={{ borderColor: colors.grey10 }}
         >
           {imageUrl && imageUrl !== '' ? (

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../../store/useAuthStore';
 import { getDepartmentLabel } from '../../../../utils/department';
 import Avatar from '../../../atoms/Avatar';
-import { Typography } from '../../../atoms/Typography';
 
 const ProfileCard = () => {
   const user = useAuthStore((state) => state.user);
@@ -15,40 +14,41 @@ const ProfileCard = () => {
   if (!user) return null;
 
   return (
-    <div className='bg-white p-4 md:p-6 gap-4 md:gap-6 flex items-center rounded-lg'>
-      <Avatar src={user.profileImageUrl} className='w-20 h-20 md:w-40 md:h-40' />
-      <div id='contentbox' className='flex-1 flex flex-col gap-4'>
-        <div className='gap-0.5 md:gap-1 p-2 md:p-4 flex flex-col border-2 border-grey-05 rounded-lg'>
-          <Typography variant='heading02'>{user.nickname}</Typography>
-          <Typography variant='body02'>{departmentLabel}</Typography>
-          <Typography variant='body02'>{user.studentNumber}</Typography>
-          <Typography variant='body03' className='text-grey-40'>
-            {user.email}
-          </Typography>
+    <div className='flex flex-col items-center gap-5 rounded-lg bg-white p-6 md:gap-6 md:p-6'>
+      <div className='flex w-full items-center gap-4'>
+        <Avatar src={user.profileImageUrl} className='h-20 w-20 md:h-40 md:w-40' />
+        <div className='flex flex-1 flex-col gap-4'>
+          <div className='flex flex-col gap-0.5 p-2 md:gap-1 md:p-4'>
+            <p className='text-caption01 break-all text-black md:text-4xl'>{user.nickname}</p>
+            <p className='text-caption01 break-all text-black md:text-2xl'>{departmentLabel}</p>
+            <p className='text-caption02 break-all text-black md:text-2xl'>{user.studentNumber}</p>
+            <p className='text-caption02 text-grey-60 break-all md:text-2xl'>{user.email}</p>
+          </div>
         </div>
-        <div className='hidden md:block'>
-          <Button
-            variant='blue35'
-            size='lg'
-            fullWidth
-            shape='rounded'
-            onClick={() => navigate(`/mypage/${user.uuid}/edit`)}
-          >
-            프로필 수정
-          </Button>
-        </div>
-        <div className='block md:hidden'>
-          <Button
-            variant='blue35'
-            size='md'
-            disabled={false}
-            fullWidth={true}
-            shape='rounded'
-            onClick={() => navigate(`/mypage/${user.uuid}/edit`)}
-          >
-            프로필 수정
-          </Button>
-        </div>
+      </div>
+      <div className='hidden w-full md:block'>
+        <Button
+          variant='blue35'
+          size='lg'
+          fullWidth
+          shape='rounded'
+          onClick={() => navigate(`/mypage/${user.uuid}/edit`)}
+        >
+          프로필 수정
+        </Button>
+      </div>
+      <div className='block w-full md:hidden'>
+        <Button
+          variant='blue35'
+          size='md'
+          fontWeight={300}
+          disabled={false}
+          fullWidth={true}
+          shape='rounded'
+          onClick={() => navigate(`/mypage/${user.uuid}/edit`)}
+        >
+          프로필 수정
+        </Button>
       </div>
     </div>
   );

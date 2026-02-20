@@ -2,7 +2,7 @@ import { colors } from '../../../styles/color';
 
 const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
   main: {
-    backgroundColor: colors.mju_primary,
+    backgroundColor: colors.blue35,
     color: colors.white,
   },
   sub: {
@@ -29,8 +29,16 @@ const buttonActiveStyleMap: Record<string, React.CSSProperties> = {
     backgroundColor: colors.grey02,
     color: colors.black,
   },
+  chipActive: {
+    backgroundColor: colors.grey02,
+    color: colors.grey40,
+  },
   grey: {
     backgroundColor: colors.grey40,
+    color: colors.white,
+  },
+  grey20: {
+    backgroundColor: colors.grey20,
     color: colors.white,
   },
   greyLight: {

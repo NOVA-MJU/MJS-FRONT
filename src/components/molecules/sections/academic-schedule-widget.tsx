@@ -12,6 +12,9 @@ import clsx from 'clsx';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import Pagination from '@/components/molecules/common/Pagination';
 import { ScheduleList } from './academic-schedule-list';
+import { CardHeader } from '@/components/atoms/Card';
+import { Link } from 'react-router-dom';
+import { MdChevronRight } from 'react-icons/md';
 
 /**
  * 학사 일정 카테고리 정의
@@ -25,10 +28,14 @@ const categoryMap: Record<CategoryKey, string> = {
 };
 
 interface AcademicScheduleWidgetProps {
+  all?: boolean;
   className?: string;
 }
 
-export default function AcademicScheduleWidget({ className }: AcademicScheduleWidgetProps) {
+export default function AcademicScheduleWidget({
+  all = false,
+  className,
+}: AcademicScheduleWidgetProps) {
   const [activeTab, setActiveTab] = useState<'calendar' | 'notice'>('calendar');
   const [viewDate, setViewDate] = useState(new Date()); // 현재 달력 뷰 기준일
   const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 사용자가 명시적으로 선택한 날짜
@@ -132,6 +139,14 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
 
   return (
     <section className='flex flex-col bg-white'>
+      {all && (
+        <CardHeader className='px-3'>
+          <h2 className='text-title03 px-2 font-bold text-black'>학사일정</h2>
+          <Link to='/academic-schedule' className='text-grey-30 p-2'>
+            <MdChevronRight size={24} className='text-grey-60' />
+          </Link>
+        </CardHeader>
+      )}
       {/* 탭 네비게이션 */}
       <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
         <div className='flex flex-1 items-center overflow-hidden'>
@@ -162,19 +177,49 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
           </button>
         </div>
       </div>
+      {!all && (
+        <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+          <div className='flex flex-1 items-center overflow-hidden'>
+            <button
+              onClick={() => setActiveTab('calendar')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                activeTab === 'calendar'
+                  ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              캘린더
+            </button>
+            <button
+              onClick={() => setActiveTab('notice')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                activeTab === 'notice'
+                  ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              학사공지
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className={clsx('flex flex-col', className)}>
         {activeTab === 'calendar' ? (
-          <div className='flex flex-col gap-4 pb-10'>
+          <div className={clsx('flex flex-col gap-4 pb-0', !all && 'pb-10')}>
             {/* 달력 컴포넌트 */}
-            <div className='p-4'>
-              <Calendar
-                events={scheduleData}
-                onDateSelect={setSelectedDate}
-                onYearChange={handleYearChange}
-                onMonthChange={handleMonthChange}
-              />
-            </div>
+            {!all && (
+              <div className='p-4'>
+                <Calendar
+                  events={scheduleData}
+                  onDateSelect={setSelectedDate}
+                  onYearChange={handleYearChange}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            )}
 
             {/* 일정 리스트 컴포넌트 */}
             <ScheduleList
@@ -188,6 +233,7 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
               }}
               isLoading={isLoading}
               dailyScheduleList={dailyScheduleList}
+              all={all}
             />
           </div>
         ) : (
