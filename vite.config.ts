@@ -18,7 +18,7 @@ export default defineConfig({
         '/login',
         '/broadcast',
         '/register',
-        '/find-pw',
+        '/find-password',
         '/menu',
         '/academic-calendar',
         '/department',

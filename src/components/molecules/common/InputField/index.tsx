@@ -15,6 +15,7 @@ interface InputFieldProps {
   rightElement?: React.ReactNode;
   showHr?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
@@ -33,11 +34,12 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       showHr = true,
       rightElement,
       disabled = false,
+      className,
     },
     ref,
   ) => {
     return (
-      <div className='mx-auto flex w-full flex-col gap-2'>
+      <div className={`mx-auto flex w-full flex-col gap-2 ${className || ''}`}>
         <div className='flex items-center gap-4 md:gap-6'>
           <label className='text-md text-grey-80 text-body04 whitespace-nowrap md:text-xl'>
             {label}
