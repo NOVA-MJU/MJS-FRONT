@@ -5,6 +5,7 @@ export interface UserInfo {
   profileImageUrl: string;
   gender: string;
   nickname: string;
+  college: string;
   departmentName: string;
   departmentUuid: string;
   studentNumber: string;
