@@ -18,7 +18,7 @@ const StudentCodeFieldWithVerify = ({
   isStuCodeChecked,
   handleVerifyStudentCode,
 }: Props) => (
-  <div className='h-[110px]'>
+  <div>
     <InputField
       label='학번'
       type='text'
@@ -26,6 +26,7 @@ const StudentCodeFieldWithVerify = ({
       value={studentCode}
       onChange={(e) => setStudentCode(e.target.value)}
       error={studentCode !== '' && !isStudentCodeValid}
+      showHr={false}
       helperText={studentCode && !isStudentCodeValid ? '학번 형식이 올바르지 않습니다.' : ''}
       rightElement={
         <Button
@@ -36,15 +37,9 @@ const StudentCodeFieldWithVerify = ({
           onClick={handleVerifyStudentCode}
           fullWidth={false}
           variant={
-            !studentCode
-              ? 'greyLight'
-              : isSending
-                ? 'greyLight'
-                : isStuCodeChecked
-                  ? 'greyLight'
-                  : 'main'
+            !studentCode ? 'grey20' : isSending ? 'grey20' : isStuCodeChecked ? 'grey20' : 'main'
           }
-          className='ml-4 w-20 h-10 md:w-[120px] md:h-[48px]'
+          className='ml-4 h-12 w-20 md:h-12 md:w-34'
         >
           {!studentCode
             ? '중복 확인'

@@ -11,6 +11,7 @@ import { NoticeSlideSection } from '@/components/molecules/sections/notice';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
+import NoticeSection from '@/components/molecules/sections/notice';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -35,24 +36,23 @@ const TABS = [
 
 type TabType = (typeof TABS)[number];
 
-/**
- * 상단 탭 바 컴포넌트
- */
-const TabBar = ({
-  activeTab,
-  onTabChange,
-}: {
+interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
-}) => {
+  /** 패널이 보일 때만 scrollIntoView 실행 (메인/학과 슬라이드에선 미실행) */
+  isPanelVisible?: boolean;
+}
+
+const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) => {
   const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
-    const selectedEl = tabRefs.current[activeTab];
-    if (selectedEl) {
-      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    if (!isPanelVisible) return;
+    const el = tabRefs.current[activeTab];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     }
-  }, [activeTab]);
+  }, [activeTab, isPanelVisible]);
 
   return (
     <div className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto scroll-smooth border-b bg-white'>
@@ -90,13 +90,33 @@ const TabBar = ({
 const AllTab = () => (
   <div className='bg-grey-02 flex flex-col gap-2'>
     {/* 식단 섹션 */}
-    <div className='flex flex-col gap-4 bg-white p-4'>
-      <MealSection />
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <MealSection all={true} />
     </div>
 
     {/* 공지사항 섹션 */}
-    <div className='flex flex-col gap-4 bg-white p-4'>
-      <NoticeSlideSection />
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <NoticeSlideSection all={true} />
+    </div>
+
+    {/* 학사일정 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <AcademicScheduleWidget all={true} />
+    </div>
+
+    {/* 게시판 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <BoardSection all={true} />
+    </div>
+
+    {/* 명대신문 섹션 */}
+    <div className='flex flex-col gap-4 bg-white pt-4'>
+      <NewsSection all={true} />
+    </div>
+
+    {/* 명대뉴스 섹션 */}
+    <div className='flex flex-col gap-4 bg-white py-4'>
+      <BroadcastSection all={true} />
     </div>
   </div>
 );
@@ -117,7 +137,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
   명지도: () => <CampusMap />,
   공지사항: () => (
     <TabWrapper>
-      <NoticeSlideSection />
+      <NoticeSection />
     </TabWrapper>
   ),
   학사일정: () => (
@@ -145,11 +165,26 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
 
 /**
  * 슬라이드 메인 페이지 컴포넌트
+ * 탭 상태는 Slides 내부에서만 관리. 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
   // 현재 활성화된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [isPanelVisible, setIsPanelVisible] = useState(false);
+
+  // 이 패널이 뷰포트에 보일 때만 true → 메인/학과 슬라이드에선 side effect 미적용
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsPanelVisible(entry.isIntersecting),
+      { threshold: 0.5 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // 탭 변경 시 스위퍼 슬라이드 이동
   const handleTabChange = (tab: TabType) => {
@@ -163,6 +198,11 @@ const Slides = () => {
   // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
   useEffect(() => {
     const footer = document.querySelector('footer');
+    if (!isPanelVisible) {
+      if (footer) footer.style.display = 'block';
+      document.body.style.overflow = 'auto';
+      return;
+    }
     if (activeTab === '명지도') {
       if (footer) footer.style.display = 'none';
       document.body.style.overflow = 'hidden';
@@ -174,12 +214,14 @@ const Slides = () => {
       if (footer) footer.style.display = 'block';
       document.body.style.overflow = 'auto';
     };
-  }, [activeTab]);
+  }, [activeTab, isPanelVisible]);
 
   return (
-    <div className={cn('flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}>
-      {/* 상단 통합 탭 바 */}
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+    <div
+      ref={rootRef}
+      className={cn('flex h-[calc(100dvh-39px)] flex-col overflow-hidden bg-white')}
+    >
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} isPanelVisible={isPanelVisible} />
 
       {/* 탭 메인 컨텐츠 영역 */}
       <main className='flex-1 overflow-hidden'>

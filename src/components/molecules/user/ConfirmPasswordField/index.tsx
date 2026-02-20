@@ -13,6 +13,7 @@ const ConfirmPasswordField = ({ confirmPw, setConfirmPw, confirmError }: Props) 
     autoComplete='new-password'
     placeholder='비밀번호를 다시 입력하세요'
     value={confirmPw}
+    showHr={false}
     onChange={(e) => setConfirmPw(e.target.value)}
     error={confirmError}
     helperText={confirmError ? '입력한 비밀번호와 일치하지 않습니다.' : ''}

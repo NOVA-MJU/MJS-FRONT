@@ -113,13 +113,13 @@ const RegisterForm = () => {
       <ProfileInfoSection setProfileImageFile={setProfileImageFile} />
       <Button
         type='submit'
-        variant={formValid ? 'main' : 'greyLight'}
+        variant={formValid ? 'main' : 'grey40'}
         disabled={!formValid}
         fullWidth
         size='lg'
         shape='rounded'
       >
-        MJS 시작하기
+        Thingo 시작하기
       </Button>
     </form>
   );

@@ -102,7 +102,7 @@ const ViewComments = () => {
 
   return (
     <div className='flex w-full flex-1 flex-col bg-white p-4 md:gap-2 md:p-8'>
-      <p className='text-title02 text-blue-35 mt-2 ml-2'>내가 쓴 댓글</p>
+      <p className='text-title03 text-grey-80 md:text-4xl'>내가 쓴 댓글</p>
       {hasContents ? (
         <div className='bg-white'>
           {contents.map((content, index) => (

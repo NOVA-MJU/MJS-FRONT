@@ -1,4 +1,5 @@
 import { fetchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
+import { CardHeader } from '@/components/atoms/Card';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { BROADCAST_PAGE_SIZE } from '@/constants/common';
 import { formatToLocalDate } from '@/utils';
@@ -6,6 +7,8 @@ import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward, IoMdPlay } from 'react-icons/io';
+import { MdChevronRight } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 
 const tabNameMap: Record<string, string> = {
   ALL: '전체',
@@ -15,7 +18,7 @@ const tabNameMap: Record<string, string> = {
 
 type SortType = 'LATEST' | 'HOT' | 'PAST';
 
-export default function BroadcastSection() {
+export default function BroadcastSection({ all = false }: { all?: boolean }) {
   const [categoryTab, setCategoryTab] = useState<string>('ALL');
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +50,8 @@ export default function BroadcastSection() {
           sorted.sort((a, b) => toTS(a.publishedAt) - toTS(b.publishedAt));
         }
 
-        setBroadcasts(sorted);
+        if (all) setBroadcasts(sorted.slice(0, 5));
+        else setBroadcasts(sorted);
       } catch (err) {
         handleError(err, '방송 정보를 불러오는 중 오류가 발생했습니다.', { showToast: false });
       } finally {
@@ -60,69 +64,86 @@ export default function BroadcastSection() {
 
   return (
     <section className='flex flex-col bg-white'>
+      {all && (
+        <CardHeader className='px-3'>
+          <h2 className='text-title03 px-2 font-bold text-black'>명대뉴스</h2>
+          <Link to='/broadcast' className='text-grey-30 p-2'>
+            <MdChevronRight size={24} className='text-grey-60' />
+          </Link>
+        </CardHeader>
+      )}
       {/* 가로 스크롤 칩 메뉴 */}
-      <div className='no-scrollbar swiper-no-swiping flex items-center gap-2 overflow-x-auto px-5 py-4'>
-        {CATEGORIES.map(([key, label]) => {
-          const isSelected = categoryTab === key;
-          return (
-            <button
-              key={key}
-              onClick={() => {
-                setCategoryTab(key);
-                setPage(0);
-              }}
-              className={clsx(
-                'flex shrink-0 items-center justify-center rounded-full px-3 py-1.5 transition-colors',
-                isSelected
-                  ? 'bg-mju-primary font-semibold text-white'
-                  : 'border-grey-10 text-grey-40 border bg-white font-normal',
-              )}
-            >
-              <span className='text-[14px] leading-tight'>{label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {!all && (
+        <div className='no-scrollbar swiper-no-swiping flex items-center gap-2 overflow-x-auto px-5 py-4'>
+          {CATEGORIES.map(([key, label]) => {
+            const isSelected = categoryTab === key;
+            return (
+              <button
+                key={key}
+                onClick={() => {
+                  setCategoryTab(key);
+                  setPage(0);
+                }}
+                className={clsx(
+                  'flex shrink-0 items-center justify-center rounded-full px-3 py-1.5 transition-colors',
+                  isSelected
+                    ? 'bg-mju-primary font-semibold text-white'
+                    : 'border-grey-10 text-grey-40 border bg-white font-normal',
+                )}
+              >
+                <span className='text-[14px] leading-tight'>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <div className='flex flex-col'>
         {/* 정렬 필터 */}
-        <div className='flex items-center justify-between px-5 pb-1'>
-          <div className='flex items-center gap-3'>
-            {[
-              { label: '추천순', type: 'HOT' as SortType },
-              { label: '최신순', type: 'LATEST' as SortType },
-              { label: '과거순', type: 'PAST' as SortType },
-            ].map((item, idx) => {
-              const isActive = sortType === item.type;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setSortType(item.type)}
-                  className='flex items-center gap-1 transition-opacity active:opacity-60'
-                >
-                  <div
-                    className={clsx(
-                      'h-[3px] w-[3px] rounded-full',
-                      isActive ? 'bg-grey-80' : 'bg-grey-20',
-                    )}
-                  />
-                  <span
-                    className={clsx(
-                      'text-[12px] leading-[1.5]',
-                      isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                    )}
+        {!all && (
+          <div className='flex items-center justify-between px-5 pb-1'>
+            <div className='flex items-center gap-3'>
+              {[
+                { label: '추천순', type: 'HOT' as SortType },
+                { label: '최신순', type: 'LATEST' as SortType },
+                { label: '과거순', type: 'PAST' as SortType },
+              ].map((item, idx) => {
+                const isActive = sortType === item.type;
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setSortType(item.type)}
+                    className='flex items-center gap-1 transition-opacity active:opacity-60'
                   >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
+                    <div
+                      className={clsx(
+                        'h-[3px] w-[3px] rounded-full',
+                        isActive ? 'bg-grey-80' : 'bg-grey-20',
+                      )}
+                    />
+                    <span
+                      className={clsx(
+                        'text-[12px] leading-[1.5]',
+                        isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
+                      )}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <IoIosArrowForward className='text-grey-20' size={16} />
           </div>
-          <IoIosArrowForward className='text-grey-20' size={16} />
-        </div>
+        )}
 
         {/* 방송 리스트 컨텐츠 */}
-        <div className='flex flex-col gap-4 px-5 py-4'>
+        <div
+          className={clsx(
+            'no-scrollbar flex flex-row flex-nowrap gap-4 overflow-x-auto px-5 py-4',
+            !all && 'flex-col',
+          )}
+        >
           {isLoading &&
             [...Array(3)].map((_, index) => (
               <div key={index} className='flex flex-col gap-2'>
@@ -138,7 +159,10 @@ export default function BroadcastSection() {
                 href={item.url}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='border-grey-10 flex flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-transform active:scale-[0.98]'
+                className={clsx(
+                  'border-grey-10 flex shrink-0 flex-col overflow-hidden rounded-xl border bg-white shadow-sm transition-transform active:scale-[0.98]',
+                  all && 'w-[320px]',
+                )}
               >
                 {/* 썸네일 영역 */}
                 <div className='relative h-[198px] w-full overflow-hidden bg-black'>
@@ -179,7 +203,7 @@ export default function BroadcastSection() {
         </div>
 
         {/* 페이지네이션 */}
-        {!isLoading && broadcasts.length > 0 && (
+        {!isLoading && broadcasts.length > 0 && !all && (
           <div className='flex items-center justify-center gap-4 py-8'>
             <button
               disabled={page === 0}

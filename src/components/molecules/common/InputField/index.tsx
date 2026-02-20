@@ -39,11 +39,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     return (
       <div className='mx-auto flex w-full flex-col gap-2'>
         <div className='flex items-center gap-4 md:gap-6'>
-          <label
-            className={`text-md whitespace-nowrap md:text-xl ${
-              disabled ? 'text-grey-40 font-med' : 'text-grey-80 text-body04'
-            }`}
-          >
+          <label className='text-md text-grey-80 text-body04 whitespace-nowrap md:text-xl'>
             {label}
           </label>
           {showHr && (
@@ -54,7 +50,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             />
           )}
         </div>
-        <div className='flex'>
+        <div className='flex items-start'>
           <Input
             ref={ref}
             type={type}
@@ -69,7 +65,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             autoComplete={autoComplete}
             disabled={disabled}
           />
-          {rightElement && <div className='mt-2 md:mt-0 md:ml-4'>{rightElement}</div>}
+          {rightElement && <div className='md:mt-0 md:ml-4'>{rightElement}</div>}
         </div>
       </div>
     );

@@ -1,3 +1,5 @@
+import { IoIosArrowForward } from 'react-icons/io';
+
 interface LabelButtonProps {
   label: string;
   onClick?: () => void;
@@ -9,9 +11,9 @@ const LabelButton = ({ label, onClick, emphasized = false }: LabelButtonProps) =
     : 'text-black font-normal font-medium';
   const widthClass = emphasized ? 'w-20 md:w-36' : 'w-full';
   return (
-    <button onClick={onClick} className={`${widthClass} flex justify-between items-center`}>
-      <span className={`text-xs md:text-base ${textClass}`}>{label}</span>
-      <img src='/assets/angle-bracket.svg' alt='to_go_button' className='w-3 h-3 md:w-5 md:h-5' />
+    <button onClick={onClick} className={`${widthClass} flex items-center justify-between`}>
+      <span className={`text-body06 md:text-base ${textClass}`}>{label}</span>
+      <IoIosArrowForward className='text-grey-30 h-5 w-5 md:h-5 md:w-5' />
     </button>
   );
 };

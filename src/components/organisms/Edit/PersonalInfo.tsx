@@ -8,14 +8,20 @@ import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
 const ALL_DEPARTMENT_OPTIONS = DEPARTMENT_OPTIONS.flatMap((option) => option.departments);
 import { uploadProfileImage } from '../../../api/user';
 import { genderOptions } from '../../../constants/gender.ts';
+import NicknameFieldWithVerify from '@/components/molecules/user/NicknameFieldWithVerify/index.tsx';
 
+//단과대 정보도 추가돼야함
 type PersonalInfoProps = {
   nickname: string;
   setNickname: (val: string) => void;
+  initialNickname: string;
+  isSending: boolean;
+  isNicknameChecked: boolean;
+  handleVerifyNickname: () => void;
+  setIsNicknameChecked: (val: boolean) => void;
   department: string;
   setDepartment: (val: string) => void;
   studentCode: string;
-  setStudentCode: (val: string) => void;
   gender: string;
   setGender: (val: string) => void;
   setUploadedImageUrl: (url: string | null) => void;
@@ -25,10 +31,14 @@ type PersonalInfoProps = {
 const PersonalInfo = ({
   nickname,
   setNickname,
+  initialNickname,
+  isSending,
+  isNicknameChecked,
+  handleVerifyNickname,
+  setIsNicknameChecked,
   department,
   setDepartment,
   studentCode,
-  setStudentCode,
   gender,
   setGender,
   setUploadedImageUrl,
@@ -36,8 +46,8 @@ const PersonalInfo = ({
   const user = useAuthStore((state) => state.user);
 
   return (
-    <div className='flex min-h-[770px] w-full flex-col items-center justify-center rounded-2xl bg-white md:w-[648px]'>
-      <div className='flex w-[80%] flex-col gap-12 md:w-[440px]'>
+    <div className='flex w-full flex-col items-center justify-center rounded-2xl bg-white p-6 md:w-[648px]'>
+      <div className='flex w-full flex-col gap-6'>
         <ProfileImageUploader
           defaultImg={user?.profileImageUrl}
           onChange={(file) => {
@@ -50,12 +60,14 @@ const PersonalInfo = ({
           }}
         />
 
-        <InputField
-          label='닉네임'
-          type='text'
-          placeholder={`${user?.nickname}`}
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+        <NicknameFieldWithVerify
+          nickname={nickname}
+          setNickname={setNickname}
+          initialNickname={initialNickname}
+          isSending={isSending}
+          isNicknameChecked={isNicknameChecked}
+          handleVerifyNickname={handleVerifyNickname}
+          setIsNicknameChecked={setIsNicknameChecked}
         />
         <DropdownField
           label='학과'
@@ -68,9 +80,10 @@ const PersonalInfo = ({
           type='text'
           placeholder={`${user?.studentNumber}`}
           value={studentCode}
-          onChange={(e) => setStudentCode(e.target.value)}
+          disabled={true}
+          helperText={'*학번은 수정할 수 없습니다.'}
+          showHr={false}
         />
-
         <GenderSelector
           label='성별'
           options={genderOptions}
