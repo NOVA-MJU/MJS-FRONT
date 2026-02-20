@@ -148,7 +148,7 @@ export default function AcademicScheduleWidget({
         </CardHeader>
       )}
       {/* 탭 네비게이션 */}
-      <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+      {/* <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
         <div className='flex flex-1 items-center overflow-hidden'>
           <button
             onClick={() => setActiveTab('calendar')}
@@ -176,7 +176,7 @@ export default function AcademicScheduleWidget({
             학사공지
           </button>
         </div>
-      </div>
+      </div> */}
       {!all && (
         <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
           <div className='flex flex-1 items-center overflow-hidden'>
