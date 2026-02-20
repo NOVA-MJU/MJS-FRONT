@@ -11,40 +11,43 @@ import {
   loadRecentKeywords,
   removeRecentKeyword,
 } from '@/utils/recentSearch';
+import { useAuthStore } from '@/store/useAuthStore';
 
-function goToSearch(navigate: ReturnType<typeof useNavigate>, keyword: string) {
-  addRecentKeyword(keyword);
+function goToSearch(navigate: ReturnType<typeof useNavigate>, keyword: string, scope?: string) {
+  addRecentKeyword(keyword, undefined, scope);
   navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
 }
 
 export default function SearchOverlay() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const recentSearchScope = user?.uuid ?? undefined;
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const recommendedKeywords = ['장학1', '장학2', '장학3', '장학4', '장학5'];
   const [hotKeywords, setHotKeywords] = useState<string[]>([]);
 
   useEffect(() => {
-    setSearchHistory(loadRecentKeywords());
+    setSearchHistory(loadRecentKeywords(recentSearchScope));
     getRealTimeSearch(6).then((res) => {
       setHotKeywords(res.data);
     });
-  }, []);
+  }, [recentSearchScope]);
 
   return (
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색 헤더 */}
-        <header className='flex items-center gap-4 px-4 pt-4'>
+        <header className='flex min-w-0 items-center gap-4 px-4 pt-4'>
           <button
             type='button'
             onClick={() => navigate(-1)}
             aria-label='검색 닫기'
-            className='hover:bg-grey-05 flex cursor-pointer items-center justify-center rounded-full'
+            className='hover:bg-grey-05 flex shrink-0 cursor-pointer items-center justify-center rounded-full'
           >
             <IoIosArrowBack size={22} className='h-6 w-6' />
           </button>
 
-          <div className='flex-1'>
+          <div className='min-w-0 flex-1'>
             <SearchBar
               className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
               iconClassName='text-grey-30'
@@ -60,7 +63,7 @@ export default function SearchOverlay() {
               <button
                 type='button'
                 onClick={() => {
-                  clearRecentKeywords();
+                  clearRecentKeywords(recentSearchScope);
                   setSearchHistory([]);
                 }}
                 className='text-caption02 text-grey-60 cursor-pointer pr-5 hover:underline'
@@ -73,7 +76,7 @@ export default function SearchOverlay() {
                 <button
                   key={`${label}-${index}`}
                   type='button'
-                  onClick={() => goToSearch(navigate, label)}
+                  onClick={() => goToSearch(navigate, label, recentSearchScope)}
                   className='border-grey-10 text-body05 text-grey-40 flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border bg-white px-3 py-1.5'
                 >
                   <span>{label}</span>
@@ -82,8 +85,8 @@ export default function SearchOverlay() {
                     className='text-grey-20 shrink-0 cursor-pointer'
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeRecentKeyword(label);
-                      setSearchHistory(loadRecentKeywords());
+                      removeRecentKeyword(label, recentSearchScope);
+                      setSearchHistory(loadRecentKeywords(recentSearchScope));
                     }}
                     aria-label='삭제'
                   />

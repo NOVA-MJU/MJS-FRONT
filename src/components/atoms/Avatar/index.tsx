@@ -12,13 +12,13 @@ export default function Avatar({ src, className, ...props }: AvatarProps) {
   /**
    * 이미지 로딩 실패 시 기본 아바타 이미지로 대체합니다.
    */
-  const [imgSrc, setImgSrc] = React.useState(src ?? defaultAvatar);
+  const [imgSrc, setImgSrc] = React.useState(src && src !== '' ? src : defaultAvatar);
 
   return (
     <img
       src={imgSrc}
       alt='프로필 이미지'
-      className={twMerge(clsx('w-12 h-12 aspect-square rounded-full object-cover', className))}
+      className={twMerge(clsx('aspect-square h-12 w-12 rounded-full object-cover', className))}
       onError={() => setImgSrc(defaultAvatar)}
       {...props}
     />

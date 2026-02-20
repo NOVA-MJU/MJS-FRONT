@@ -4,13 +4,17 @@ import {
   type CalendarScheduleItem,
 } from '@/api/main/calendar';
 import { fetchNotionInfo } from '@/api/main/notice-api';
+import Calendar from '@/components/molecules/Calendar';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToLocalDate } from '@/utils';
 import clsx from 'clsx';
-import { useEffect, useMemo, useState } from 'react';
-import { Calendar } from './academic-calendar';
+import { useCallback, useState, useEffect, useMemo } from 'react';
+import Pagination from '@/components/molecules/common/Pagination';
 import { ScheduleList } from './academic-schedule-list';
+import { CardHeader } from '@/components/atoms/Card';
+import { Link } from 'react-router-dom';
+import { MdChevronRight } from 'react-icons/md';
 
 /**
  * 학사 일정 카테고리 정의
@@ -24,10 +28,14 @@ const categoryMap: Record<CategoryKey, string> = {
 };
 
 interface AcademicScheduleWidgetProps {
+  all?: boolean;
   className?: string;
 }
 
-export default function AcademicScheduleWidget({ className }: AcademicScheduleWidgetProps) {
+export default function AcademicScheduleWidget({
+  all = false,
+  className,
+}: AcademicScheduleWidgetProps) {
   const [activeTab, setActiveTab] = useState<'calendar' | 'notice'>('calendar');
   const [viewDate, setViewDate] = useState(new Date()); // 현재 달력 뷰 기준일
   const [selectedDate, setSelectedDate] = useState<Date | null>(null); // 사용자가 명시적으로 선택한 날짜
@@ -39,26 +47,10 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
 
   const [notices, setNotices] = useState<NoticeItem[]>([]);
   const [isNoticeLoading, setIsNoticeLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
-  /**
-   * 캘린더 데이터 조회 (viewDate의 연/월 기준)
-   */
-  useEffect(() => {
-    if (activeTab === 'calendar') {
-      getCalendarData(viewDate.getFullYear(), viewDate.getMonth() + 1);
-    }
-  }, [activeTab, viewDate]);
-
-  /**
-   * 학사공지 탭 데이터 조회
-   */
-  useEffect(() => {
-    if (activeTab === 'notice' && notices.length === 0) {
-      getNoticeData();
-    }
-  }, [activeTab, notices.length]);
-
-  const getCalendarData = async (year: number, month: number) => {
+  const getCalendarData = useCallback(async (year: number, month: number) => {
     try {
       setIsLoading(true);
       const res = await getAcademicCalendar(year, month);
@@ -68,72 +60,47 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   /**
    * 학사공지 탭 데이터 조회
    */
-  const getNoticeData = async () => {
+  const getNoticeData = useCallback(async () => {
     try {
       setIsNoticeLoading(true);
-      const res = await fetchNotionInfo('academic', undefined, 0, 7);
+      const res = await fetchNotionInfo('academic', undefined, page, 10);
       setNotices(res.content);
+      setTotalPages(res.totalPages);
     } catch (e) {
       console.error('notice-fetch-error', e);
     } finally {
       setIsNoticeLoading(false);
     }
-  };
+  }, [page]);
 
   /**
-   * 달력 날짜 생성 (일요일 시작 기준)
+   * 캘린더 데이터 조회 (viewDate의 연/월 기준)
    */
-  const calendarDays = useMemo(() => {
-    const year = viewDate.getFullYear();
-    const month = viewDate.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const days = [];
-    const prevLastDay = new Date(year, month, 0);
-
-    // 일요일(0) 시작 기준
-    const startDayOfWeek = firstDay.getDay();
-
-    // 이전 달 패딩
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      days.push({
-        date: new Date(year, month - 1, prevLastDay.getDate() - i),
-        isCurrentMonth: false,
-      });
+  useEffect(() => {
+    if (activeTab === 'calendar') {
+      getCalendarData(viewDate.getFullYear(), viewDate.getMonth() + 1);
     }
+  }, [activeTab, viewDate, getCalendarData]);
 
-    // 현재 달
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      days.push({
-        date: new Date(year, month, i),
-        isCurrentMonth: true,
-      });
+  /**
+   * 학사공지 탭 데이터 조회
+   */
+  useEffect(() => {
+    if (activeTab === 'notice') {
+      getNoticeData();
     }
+  }, [activeTab, page, getNoticeData]);
 
-    // 다음 달 패딩
-    const remainingCells = 42 - days.length;
-    for (let i = 1; i <= remainingCells; i++) {
-      days.push({
-        date: new Date(year, month + 1, i),
-        isCurrentMonth: false,
-      });
-    }
-
-    return days;
-  }, [viewDate]);
-
-  const handlePrevMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-  const handleNextMonth = () =>
-    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-
-  const todayDay = new Date().getDay(); // 오늘 요일 인덱스 (0:일 ~ 6:토)
+  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회 */
+  const handleYearChange = (year: number) =>
+    setViewDate((prev) => new Date(year, prev.getMonth(), 1));
+  const handleMonthChange = (month: number) =>
+    setViewDate((prev) => new Date(prev.getFullYear(), month - 1, 1));
 
   /**
    * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜 기준, 없을 시 오늘 기준)
@@ -172,8 +139,16 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
 
   return (
     <section className='flex flex-col bg-white'>
+      {all && (
+        <CardHeader className='px-3'>
+          <h2 className='text-title03 px-2 font-bold text-black'>학사일정</h2>
+          <Link to='/academic-schedule' className='text-grey-30 p-2'>
+            <MdChevronRight size={24} className='text-grey-60' />
+          </Link>
+        </CardHeader>
+      )}
       {/* 탭 네비게이션 */}
-      <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+      {/* <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
         <div className='flex flex-1 items-center overflow-hidden'>
           <button
             onClick={() => setActiveTab('calendar')}
@@ -187,7 +162,10 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
             캘린더
           </button>
           <button
-            onClick={() => setActiveTab('notice')}
+            onClick={() => {
+              setActiveTab('notice');
+              setPage(0);
+            }}
             className={clsx(
               'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
               activeTab === 'notice'
@@ -198,23 +176,50 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
             학사공지
           </button>
         </div>
-      </div>
+      </div> */}
+      {!all && (
+        <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
+          <div className='flex flex-1 items-center overflow-hidden'>
+            <button
+              onClick={() => setActiveTab('calendar')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                activeTab === 'calendar'
+                  ? 'border-grey-10 gap-[4px] rounded-tr-[4px] border-r bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              캘린더
+            </button>
+            <button
+              onClick={() => setActiveTab('notice')}
+              className={clsx(
+                'flex flex-1 items-center justify-center text-[14px] leading-[1.5] transition-colors',
+                activeTab === 'notice'
+                  ? 'border-grey-10 gap-[4px] rounded-tl-[4px] border-l bg-white pt-[10px] pr-[10px] pb-[8px] pl-[12px] font-semibold text-black'
+                  : 'bg-grey-02 border-grey-10 text-grey-40 border-b px-[12px] pt-[10px] pb-[8px] font-normal',
+              )}
+            >
+              학사공지
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className={clsx('flex flex-col', className)}>
         {activeTab === 'calendar' ? (
-          <div className='flex flex-col gap-4 pb-10'>
+          <div className={clsx('flex flex-col gap-4 pb-0', !all && 'pb-10')}>
             {/* 달력 컴포넌트 */}
-            <div className='p-4'>
-              <Calendar
-                viewDate={viewDate}
-                onDateSelect={setSelectedDate}
-                onPrevMonth={handlePrevMonth}
-                onNextMonth={handleNextMonth}
-                calendarDays={calendarDays}
-                todayDay={todayDay}
-                scheduleData={scheduleData}
-              />
-            </div>
+            {!all && (
+              <div className='p-4'>
+                <Calendar
+                  events={scheduleData}
+                  onDateSelect={setSelectedDate}
+                  onYearChange={handleYearChange}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            )}
 
             {/* 일정 리스트 컴포넌트 */}
             <ScheduleList
@@ -228,11 +233,12 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
               }}
               isLoading={isLoading}
               dailyScheduleList={dailyScheduleList}
+              all={all}
             />
           </div>
         ) : (
           /* 학사공지 탭 - 일반 공지 탭과 동일한 디자인 */
-          <div className='flex flex-1 flex-col'>
+          <div className='flex flex-col'>
             {isNoticeLoading ? (
               [...Array(5)].map((_, i) => (
                 <div key={i} className='border-blue-05 h-fit w-full border-b'>
@@ -270,8 +276,15 @@ export default function AcademicScheduleWidget({ className }: AcademicScheduleWi
                 );
               })
             ) : (
-              <div className='flex flex-1 items-center justify-center'>
+              <div className='flex flex-1 items-center justify-center py-20'>
                 <span className='text-body05 text-grey-20'>등록된 학사 공지사항이 없습니다.</span>
+              </div>
+            )}
+
+            {/* 페이지네이션 */}
+            {!isNoticeLoading && totalPages > 1 && (
+              <div className='pb-4'>
+                <Pagination page={page} totalPages={totalPages} onChange={setPage} />
               </div>
             )}
           </div>

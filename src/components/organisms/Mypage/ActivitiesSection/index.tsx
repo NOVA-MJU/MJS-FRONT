@@ -1,5 +1,4 @@
 import { useAuthStore } from '../../../../store/useAuthStore';
-import { Typography } from '../../../atoms/Typography';
 import ActivityBox from '../../../molecules/user/ActivityBox';
 
 interface ActivitiesSectionProps {
@@ -11,10 +10,8 @@ const ActivitiesSection = ({ postCount, commentCount, likedCount }: ActivitiesSe
   const user = useAuthStore();
   return (
     <div className='flex flex-col gap-2'>
-      <Typography variant='title02' className='text-mju-primary'>
-        나의 활동
-      </Typography>
-      <div className='flex gap-2 md:gap-4 flex-col md:flex-row'>
+      <p className='text-title03 text-grey-80 md:text-4xl'>나의 활동</p>
+      <div className='flex flex-col gap-2 md:gap-4'>
         <ActivityBox
           label={'내가 쓴 게시물'}
           count={postCount}

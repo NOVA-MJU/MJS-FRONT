@@ -25,12 +25,13 @@ const NameInputField = ({ name, setName }: Props) => {
         type='text'
         placeholder='홍길동(실명)'
         value={name}
+        showHr={false}
         onChange={(e) => setName(e.target.value)}
         error={showError}
         helperText={showError ? '정확한 이름을 입력해 주세요.' : ''}
       />
-      <div className='text-grey-40 mt-2 ml-1 flex flex-col text-[10px]'>
-        <p>실명을 입력하지 않을 경우 추후 불이익이 발생할 수 있습니다.</p>
+      <div className='text-grey-30 text-caption02 mt-2 ml-1 flex flex-col text-[10px]'>
+        <p>*실명을 입력하지 않을 경우 추후 불이익이 발생할 수 있습니다.</p>
       </div>
     </div>
   );

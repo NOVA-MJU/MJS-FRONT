@@ -68,11 +68,12 @@ const PersonalInfoSection = ({
 
   return (
     <section>
-      <p className='my-6 flex w-fit px-1 text-xl font-bold text-[#000000] md:text-3xl'>
-        기본 정보*
-      </p>
-      <div className='flex min-h-[540px] flex-col gap-12 rounded-xl bg-white p-6'>
-        <div className='my-6 flex w-full flex-col gap-6 md:mx-auto md:w-[80%] md:gap-12'>
+      <div className='text-title01 mb-3 flex w-fit items-center px-1 font-bold'>
+        <p className='text-black'>기본 정보</p>
+        <p className='text-error'>*</p>
+      </div>
+      <div className='flex flex-col gap-12 rounded-xl bg-white p-6'>
+        <div className='flex w-full flex-col gap-6 md:gap-12'>
           <NameInputField name={name} setName={setName} />
           <NicknameFieldWithVerify
             nickname={nickname}

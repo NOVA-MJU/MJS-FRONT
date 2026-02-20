@@ -6,10 +6,14 @@ export type ButtonVariant =
   | 'blue35'
   | 'danger'
   | 'grey'
+  | 'grey20'
+  | 'grey40'
   | 'greyLight'
   | 'greyBlack'
   | 'borderRed'
-  | 'borderGrey';
+  | 'borderGrey'
+  | 'chip'
+  | 'chipActive';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type ButtonShape = 'pill' | 'rounded';
 

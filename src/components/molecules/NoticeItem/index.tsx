@@ -11,6 +11,7 @@ interface NoticeItemProps {
 
 const categoryLabel: Record<string, string> = {
   general: '일반',
+  law: '일반',
   academic: '학사',
   scholarship: '장학',
   career: '진로',

@@ -59,7 +59,7 @@ export interface GetSearchAISummaryRes {
 
 export const getSearchOverview = async (
   keyword: string,
-  order: Sort,
+  order?: Sort,
 ): Promise<SearchOverviewRes> => {
   const res = await apiClient.get<ApiResponse<SearchOverviewRes>>('/search/overview', {
     params: { keyword, order },

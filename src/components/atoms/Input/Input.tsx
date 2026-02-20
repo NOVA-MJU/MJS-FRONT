@@ -85,12 +85,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               ? { backgroundColor: colors.errorBackground, borderColor: colors.error }
               : {}),
             cursor: disabled ? 'not-allowed' : 'text',
+            backgroundColor: disabled ? colors.grey02 : colors.white,
           }}
         >
           {icon && <span className='mr-2'>{icon}</span>}
           <input
             ref={ref}
-            className='placeholder:text-grey-20 w-full bg-transparent outline-none'
+            className='placeholder:text-grey-20 text-body06 w-full bg-transparent outline-none'
             maxLength={maxLength}
             value={value}
             defaultValue={defaultValue}

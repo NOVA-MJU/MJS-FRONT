@@ -72,14 +72,14 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect, selectedBuildingId }: M
       {/* 배경 오버레이 */}
       {isOpen && (
         <div
-          className='fixed top-[90px] right-0 bottom-0 left-0 z-40 bg-black/50'
+          className='fixed top-[99px] right-0 bottom-0 left-0 z-[1001] bg-black/50'
           onClick={onClose}
         />
       )}
 
       {/* 사이드바 */}
       <div
-        className={`fixed top-[100px] right-0 bottom-0 z-50 flex w-[280px] transform flex-col bg-white shadow-xl transition-transform duration-200 ${
+        className={`fixed top-[99px] right-0 bottom-0 z-[1002] flex w-[280px] transform flex-col bg-white shadow-xl transition-transform duration-200 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

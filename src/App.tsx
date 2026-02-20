@@ -1,25 +1,17 @@
 import Layout from '@/components/templates/Layout';
 import AcademicCalendar from '@/pages/academic-calendar';
-import Admin from '@/pages/admin/calendar';
-import AdminNotice from '@/pages/admin/notice';
-import AdminNoticeDetail from '@/pages/admin/notice/detail';
-import AdminNoticeEdit from '@/pages/admin/notice/edit';
-import AdminNoticeWrite from '@/pages/admin/notice/write';
 import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
 import BoardEdit from '@/pages/board/edit';
 import BoardWrite from '@/pages/board/write';
 import Broadcast from '@/pages/broadcast';
-import Department from '@/pages/department';
-import DepartmentDetail from '@/pages/department/detail';
 import GlobalErrorPage from '@/pages/error';
-import FindPw from '@/pages/findPw';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
 import DepartmentEventsNewPage from './pages/main/department-events-new';
 import DepartmentEventsEditPage from './pages/main/department-events-edit';
 import DepartmentPostsEditPage from './pages/main/department-posts-edit';
-import Login from '@/pages/login';
+import LoginPage from '@/pages/login';
 import Menu from '@/pages/menu';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
@@ -36,6 +28,7 @@ import HomeSlider from './pages/HomeSlider';
 import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from './pages/search/SearchOverlay';
 import Slides from './pages/slides';
+import FindPasswordPage from './pages/find-password';
 
 const App = () => {
   const location = useLocation();
@@ -56,6 +49,7 @@ const App = () => {
           <Route path='/notice' element={<Notice />} />
           <Route path='/news' element={<News />} />
           <Route path='/broadcast' element={<Broadcast />} />
+          <Route path='/mypage' element={<MyPage />} />
           <Route path='/mypage/:uuid' element={<MyPage />} />
           <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
 
@@ -66,20 +60,9 @@ const App = () => {
           <Route path='/menu' element={<Menu />} />
           <Route path='/academic-calendar' element={<AcademicCalendar />} />
 
-          <Route path='/department' element={<Department />} />
-          <Route path='/department/:uuid' element={<DepartmentDetail />} />
-
           <Route path='/search' element={<SearchEntry />} />
 
-          <Route path='/admin/:departmentUuid' element={<Admin />} />
-          <Route path='/admin/:departmentUuid/notice' element={<AdminNotice />} />
-          <Route path='/admin/:departmentUuid/notice/:noticeUuid' element={<AdminNoticeDetail />} />
-          <Route path='/admin/:departmentUuid/notice/write' element={<AdminNoticeWrite />} />
-          <Route
-            path='/admin/:departmentUuid/notice/edit/:noticeUuid'
-            element={<AdminNoticeEdit />}
-          />
-
+          {/* 에러 페이지 */}
           <Route path='*' element={<GlobalErrorPage />} />
 
           {/* 학과별 정보 */}
@@ -94,9 +77,9 @@ const App = () => {
         </Route>
 
         <Route element={<Layout className='bg-grey-05' />}>
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
-          <Route path='/find-pw' element={<FindPw />} />
+          <Route path='/find-password' element={<FindPasswordPage />} />
         </Route>
       </Routes>
 

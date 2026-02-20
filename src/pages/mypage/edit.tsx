@@ -4,9 +4,12 @@ import PersonalInfo from '../../components/organisms/Edit/PersonalInfo';
 import Button from '../../components/atoms/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import { updateMemberInfo } from '../../api/mypage';
-import { saveUserInfo } from '../../api/user';
+import { saveUserInfo, checkNicknameValidation } from '../../api/user';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { isDuplicateNicknameError } from '../../types/error';
+import { handleError } from '../../utils/error';
+import LoginErrorPage from '../LoginError';
 
 /**
  * 프로필 수정 페이지
@@ -30,6 +33,8 @@ const Edit: React.FC = () => {
   const [studentCode, setStudentCode] = useState(user?.studentNumber ?? '');
   const [gender, setGender] = useState(user?.gender ?? '');
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [isNicknameSending, setIsNicknameSending] = useState(false);
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
 
   const handleSave = async () => {
     try {
@@ -54,6 +59,25 @@ const Edit: React.FC = () => {
     }
   };
 
+  //닉네임 중복 체크
+  const handleVerifyNickname = async () => {
+    try {
+      setIsNicknameSending(true);
+      await checkNicknameValidation(nickname.trim());
+      toast.success('사용 가능한 닉네임입니다!');
+      setIsNicknameChecked(true);
+    } catch (err: unknown) {
+      if (isDuplicateNicknameError(err)) {
+        toast.error('이미 존재하는 닉네임입니다.');
+        setIsNicknameChecked(false);
+        return;
+      }
+      handleError(err, '닉네임 중복 검증에 실패했습니다.');
+    } finally {
+      setIsNicknameSending(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       setNickname(user.nickname ?? '');
@@ -64,53 +88,63 @@ const Edit: React.FC = () => {
   }, [user]);
 
   return (
-    <div className='bg-grey-05 w-full md:w-[1280px] min-h-screen flex flex-col justify-center items-center mx-auto p-6 md:p-12'>
-      <p className='w-full self-start text-2xl md:text-4xl font-bold text-mju-primary'>
-        프로필 수정
-      </p>
-      <div className='w-full md:w-[648px] flex flex-col mt-10 gap-6 md:gap-12'>
-        <div>
-          <p className='w-full text-xl md:text-3xl font-semibold text-mju-primary mb-6'>
-            필수 정보
-          </p>
-          <RequiredInfo
-            currentPw={currentPw}
-            setCurrentPw={setCurrentPw}
-            pw={pw}
-            setPw={setPw}
-            confirmPw={confirmPw}
-            setConfirmPw={setConfirmPw}
-            openForm={openForm}
-            setOpenForm={setOpenForm}
-          />
-        </div>
-        <div>
-          <p className='w-full text-xl md:text-3xl font-semibold text-mju-primary mb-6'>
-            개인 정보
-          </p>
-          <PersonalInfo
-            nickname={nickname}
-            setNickname={setNickname}
-            department={department}
-            setDepartment={setDepartment}
-            studentCode={studentCode}
-            setStudentCode={setStudentCode}
-            gender={gender}
-            setGender={setGender}
-            setUploadedImageUrl={setUploadedImageUrl}
-            defaultImg={user?.profileImageUrl ?? ''}
-          />
-        </div>
-        <Button
-          variant='blue35'
-          shape='rounded'
-          size='lg'
-          disabled={false}
-          fullWidth={true}
-          onClick={handleSave}
-        >
-          저장하기
-        </Button>
+    <div className='bg-grey-02 mx-auto flex min-h-screen w-full flex-col items-center justify-center p-6 md:w-[1280px] md:p-12'>
+      <p className='text-title01 w-full self-start text-black md:text-4xl'>프로필 수정</p>
+      <div className='mt-10 flex w-full flex-col gap-6 md:w-[648px] md:gap-12'>
+        {user ? (
+          <>
+            <div>
+              <div className='text-title01 mb-3 flex flex-row'>
+                <p className='text-black md:text-4xl'>계정 정보</p>
+                <p className='text-error'>*</p>
+              </div>
+              <RequiredInfo
+                currentPw={currentPw}
+                setCurrentPw={setCurrentPw}
+                pw={pw}
+                setPw={setPw}
+                confirmPw={confirmPw}
+                setConfirmPw={setConfirmPw}
+                openForm={openForm}
+                setOpenForm={setOpenForm}
+              />
+            </div>
+            <div>
+              <div className='text-title01 mb-3 flex flex-row'>
+                <p className='text-black md:text-4xl'>기본 정보</p>
+                <p className='text-error'>*</p>
+              </div>
+              <PersonalInfo
+                nickname={nickname}
+                setNickname={setNickname}
+                initialNickname={user?.nickname ?? ''}
+                isSending={isNicknameSending}
+                isNicknameChecked={isNicknameChecked}
+                handleVerifyNickname={handleVerifyNickname}
+                setIsNicknameChecked={setIsNicknameChecked}
+                department={department}
+                setDepartment={setDepartment}
+                studentCode={studentCode}
+                gender={gender}
+                setGender={setGender}
+                setUploadedImageUrl={setUploadedImageUrl}
+                defaultImg={user?.profileImageUrl ?? ''}
+              />
+            </div>
+            <Button
+              variant='blue35'
+              shape='rounded'
+              size='lg'
+              disabled={false}
+              fullWidth={true}
+              onClick={handleSave}
+            >
+              저장하기
+            </Button>
+          </>
+        ) : (
+          <LoginErrorPage />
+        )}
       </div>
     </div>
   );

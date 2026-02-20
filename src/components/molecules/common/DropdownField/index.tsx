@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ArrowDown from '../../../../assets/btn_arrow_pub.svg';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import clsx from 'clsx';
 
 interface Option {
@@ -31,34 +31,32 @@ const DropdownField = ({
   const selectedLabel = options.find((item) => item.value === selected)?.label;
 
   return (
-    <div className='relative w-full h-[90px] flex flex-col gap-2'>
+    <div className='relative flex h-[90px] w-full flex-col gap-2'>
       <div className='flex items-center gap-6'>
-        <label className='text-blue-10 text-md md:text-xl font-semibold whitespace-nowrap'>
-          {label}
-        </label>
-        <hr className='flex-1 border-t-2 border-blue-10 rounded-xl' />
+        <label className='text-grey-80 text-body04 whitespace-nowrap md:text-xl'>{label}</label>
       </div>
 
       <button
         type='button'
-        className={clsx(
-          'w-full p-3 rounded-xl outline-2 outline-offset-[-2px] flex justify-between items-center',
-          open ? 'outline-blue-20 bg-grey-02' : 'outline-grey-05 bg-white',
-        )}
+        className='outline-grey-10 flex w-full items-center justify-between rounded-xl bg-white p-3 outline-1 outline-offset-[-2px]'
         onClick={() => setOpen(!open)}
       >
         <span className={clsx('text-sm md:text-base', selected ? 'text-grey-40' : 'text-grey-20')}>
           {selectedLabel || placeholder}
         </span>
-        <img src={ArrowDown} alt='dropdownBtn' className='w-4 h-4' />
+        {open ? (
+          <IoIosArrowUp className='text-grey-30 text-title01' />
+        ) : (
+          <IoIosArrowDown className='text-grey-30 text-title01' />
+        )}
       </button>
 
       {open && (
-        <ul className='absolute text-sm md:text-base top-22 left-0 z-10 mt-1 w-full bg-white rounded-xl shadow max-h-48 overflow-auto text-grey-40'>
+        <ul className='text-grey-40 border-grey-10 absolute top-22 left-0 z-10 mt-1 max-h-48 w-full overflow-auto rounded-xl border-1 bg-white text-sm shadow md:text-base'>
           {options.map((item) => (
             <li
               key={item.value}
-              className='px-4 py-2 hover:bg-blue-10/10 cursor-pointer'
+              className='hover:bg-grey-10/10 cursor-pointer px-4 py-2'
               onClick={() => {
                 onSelect(item.value);
                 setOpen(false);
@@ -70,7 +68,7 @@ const DropdownField = ({
         </ul>
       )}
 
-      <p className='text-xs mt-2 min-h-[20px] text-red-500'>{error ? errorMessage : '\u00A0'}</p>
+      <p className='mt-2 min-h-[20px] text-xs text-red-500'>{error ? errorMessage : '\u00A0'}</p>
     </div>
   );
 };

@@ -29,6 +29,14 @@ const buttonDisabledStyleMap: Record<string, React.CSSProperties> = {
     backgroundColor: colors.grey20,
     color: colors.white,
   },
+  grey40: {
+    backgroundColor: colors.grey40,
+    color: colors.white,
+  },
+  grey20: {
+    backgroundColor: colors.grey20,
+    color: colors.white,
+  },
   greyLight: {
     backgroundColor: colors.grey20,
     color: colors.grey40,

@@ -13,7 +13,7 @@ import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
-import ThingoLogoSmall from '../../../public/logo/ThingoSmallLogo.svg';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -27,19 +27,16 @@ const tapLabel: Record<string, SearchResultType | 'ALL'> = {
   명대뉴스: 'BROADCAST',
 };
 
-/** 탭별 공지/방송 섹션 "더보기" 경로 */
-const NOTICE_SECTION_MORE_PATH: Record<SearchTabKey, string> = {
-  ALL: '/notice',
-  공지사항: '/notice',
-  학사일정: '/academic-calendar',
-  학사공지: '/department',
-  게시판: '/board',
-  명대신문: '/broadcast',
-  명대뉴스: '/news',
-};
+function getNoticeSectionMorePath() {
+  return '/search';
+}
 
-function getNoticeSectionMorePath(tab: SearchTabKey) {
-  return NOTICE_SECTION_MORE_PATH[tab] ?? '/notice';
+/** 더보기 링크의 search 문자열 (? 포함) */
+function getNoticeSectionMoreSearch(tab: SearchTabKey, keyword: string) {
+  const params = new URLSearchParams();
+  params.set('keyword', keyword);
+  if (tab !== 'ALL') params.set('tab', tab);
+  return `?${params.toString()}`;
 }
 
 /**
@@ -66,6 +63,9 @@ export default function SearchDetail() {
   const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
   const [broadcastItems, setBroadcastItems] = useState<SearchResultItemRes[]>([]);
   const [items, setItems] = useState<SearchResultItemRes[]>([]);
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
+  const [totalPages, setTotalPages] = useState(1);
 
   const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
     query: '',
@@ -75,6 +75,7 @@ export default function SearchDetail() {
   });
   const [initialContent, setInitialContent] = useState('');
   const [sort, setSort] = useState<Sort>('relevance');
+  const [isAiSummaryLoading, setIsAiSummaryLoading] = useState(false);
 
   const keyword = searchParams.get('keyword');
 
@@ -108,9 +109,10 @@ export default function SearchDetail() {
       if (categoryTab === 'department') {
         type = 'DEPARTMENT_NOTICE';
       }
-      const res = await getSearchResult(text, type, sort, 0, 5);
+      const res = await getSearchResult(text, type, sort, page, 10);
       const items = res.content as unknown as SearchResultItemRes[];
       setItems(items);
+      setTotalPages(res.totalPages);
     }
   }
 
@@ -120,21 +122,41 @@ export default function SearchDetail() {
   }
 
   /**
+   * 페이지 변경 시 url과 함께 반영
+   */
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(newPage + 1));
+    setSearchParams(newParams);
+  };
+
+  /**
    * 검색어 초기값 반영 (search parameter 반영)
    */
   useEffect(() => {
-    handleGetAiSummary(keyword ?? '');
     setSort('relevance');
     (async () => {
-      if (!keyword) return;
+      if (!keyword) {
+        setInitialContent('');
+        setIsAiSummaryLoading(false);
+        return;
+      }
       setInitialContent(keyword);
+      setIsAiSummaryLoading(true);
+      try {
+        await handleGetAiSummary(keyword);
+      } catch {
+        setAiSummary((prev) => ({ ...prev, summary: '', document_count: 0, sources: [] }));
+      } finally {
+        setIsAiSummaryLoading(false);
+      }
       try {
         await handleSearch(keyword);
       } catch {
         // 에러는 상위에서 처리
       }
     })();
-  }, [keyword]);
+  }, [keyword, page]);
 
   useEffect(() => {
     handleSearch(keyword ?? '');
@@ -155,12 +177,12 @@ export default function SearchDetail() {
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
-        <header className='flex items-center gap-4 px-4 py-2'>
-          <div className='h-12 w-12' onClick={() => navigate('/')}>
-            <img src={ThingoLogoSmall} />
+        <header className='flex min-w-0 items-center gap-4 px-4 py-2'>
+          <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
+            <img src='/logo/ThingoSmallLogo.svg' className='h-full w-full object-contain' />
           </div>
 
-          <div className='flex-1 py-2'>
+          <div className='min-w-0 flex-1 py-2'>
             <SearchBar
               initialContent={keyword ?? undefined}
               className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
@@ -193,50 +215,71 @@ export default function SearchDetail() {
                   <p>요약 검색 결과</p>
                 </div>
               </div>
-              <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
-                <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
-              </div>
 
-              {/* ai 출처 링크 */}
-              {aiSummary.document_count > 0 && (
-                <div>
+              {isAiSummaryLoading ? (
+                <>
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                  </div>
                   <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
-                    <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
-                    <div className='flex items-center gap-1'>
-                      {aiSummary.document_count > 1 && (
-                        <div
-                          onClick={() => setIsLinkOpen(!isLinkOpen)}
-                          className='text-caption01 bg-grey-02 text-grey-20 flex cursor-pointer items-center gap-1 rounded-full px-2'
-                        >
-                          +{aiSummary.document_count}
-                          {isLinkOpen ? (
-                            <IoIosArrowUp size={10} className='text-grey-30' />
-                          ) : (
-                            <IoIosArrowDown size={10} className='text-grey-30' />
-                          )}
-                        </div>
-                      )}
-                      <a
-                        href={aiSummary.sources?.[0]?.url}
-                        className='bg-blue-05 rounded-full p-0.5'
-                      >
+                    <Skeleton className='bg-grey-10 h-5 w-3/5 rounded-full' />
+                    <div className='flex shrink-0 items-center gap-1'>
+                      <Skeleton className='bg-grey-10 h-5 w-11 rounded-full' />
+                      <span className='bg-blue-05 rounded-full p-0.5'>
                         <IoMdLink size={15} className='text-mju-primary rotate-135' />
-                      </a>
+                      </span>
                     </div>
                   </div>
-                  {isLinkOpen &&
-                    aiSummary.sources?.slice(1).map((source, idx) => (
-                      <div
-                        key={idx}
-                        className='text-body05 text-grey-30 flex items-center justify-between py-1'
-                      >
-                        <p className='w-3/4 break-words'>{source.title}</p>
-                        <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
-                          <IoMdLink size={15} className='text-mju-primary rotate-135' />
-                        </a>
+                </>
+              ) : (
+                <>
+                  <div className='text-body05 text-grey-80 break-words [&_ol]:list-decimal [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul,_ol]:pl-5'>
+                    <ReactMarkdown>{aiSummary?.summary ?? ''}</ReactMarkdown>
+                  </div>
+
+                  {aiSummary.document_count > 0 && (
+                    <div>
+                      <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
+                        <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
+                        <div className='flex items-center gap-1'>
+                          {aiSummary.document_count > 1 && (
+                            <div
+                              onClick={() => setIsLinkOpen(!isLinkOpen)}
+                              className='text-caption01 bg-grey-02 text-grey-20 flex cursor-pointer items-center gap-1 rounded-full px-2'
+                            >
+                              +{aiSummary.document_count}
+                              {isLinkOpen ? (
+                                <IoIosArrowUp size={10} className='text-grey-30' />
+                              ) : (
+                                <IoIosArrowDown size={10} className='text-grey-30' />
+                              )}
+                            </div>
+                          )}
+                          <a
+                            href={aiSummary.sources?.[0]?.url}
+                            className='bg-blue-05 rounded-full p-0.5'
+                          >
+                            <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                          </a>
+                        </div>
                       </div>
-                    ))}
-                </div>
+                      {isLinkOpen &&
+                        aiSummary.sources?.slice(1).map((source, idx) => (
+                          <div
+                            key={idx}
+                            className='text-body05 text-grey-30 flex items-center justify-between py-1'
+                          >
+                            <p className='w-3/4 break-words'>{source.title}</p>
+                            <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
+                              <IoMdLink size={15} className='text-mju-primary rotate-135' />
+                            </a>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </>
               )}
             </section>
           )}
@@ -251,10 +294,14 @@ export default function SearchDetail() {
             keyword={keyword}
             initialContent={initialContent}
             getMorePath={getNoticeSectionMorePath}
+            getMoreSearch={getNoticeSectionMoreSearch}
             sort={sort}
             onSortChange={setSort}
             categoryTab={categoryTab}
             setCategoryTab={setCategoryTab}
+            page={page}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
           />
         </div>
       </div>
