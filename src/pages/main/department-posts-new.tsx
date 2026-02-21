@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoIosAdd, IoIosArrowBack } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { CloseIcon } from '@/components/atoms/Icon';
@@ -23,7 +23,14 @@ export default function DepartmentPostsNewPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 사용자 정보에서 단과대, 학과 정보를 받아옴
-  const { user } = useAuthStore();
+  const { user, isLoggedIn } = useAuthStore();
+
+  // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login', { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
   const option = user?.departmentName
     ? DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user.departmentName))
     : undefined;
@@ -147,6 +154,10 @@ export default function DepartmentPostsNewPage() {
     }
   };
 
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
     <section>
       {/* 파일 입력 (숨김) */}
@@ -184,7 +195,7 @@ export default function DepartmentPostsNewPage() {
 
       <div className='px-5 py-4'>
         <p className='text-body06 text-grey-80'>이미지</p>
-        <p className='text-caption02 text-grey-60 mt-1'>*최대 50MB, JPG/PNG, 최대 20장</p>
+        <p className='text-caption02 text-grey-60 mt-1'>*최대 20장</p>
       </div>
 
       {/* 미디어 영역 */}
@@ -219,7 +230,7 @@ export default function DepartmentPostsNewPage() {
 
       {/* 미디어 갯수 인디케이터 */}
       <div className='flex items-center justify-center pt-1 pb-2'>
-        {medias.length > 1 && (
+        {medias.length > 0 && (
           <span className='text-body04 text-grey-80 px-2 py-1'>
             {activeIndex + 1} / {medias.length}
           </span>
