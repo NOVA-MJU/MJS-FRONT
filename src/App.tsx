@@ -1,4 +1,4 @@
-import Layout from '@/components/templates/Layout';
+import Layout from '@/pages/layout';
 import AcademicCalendar from '@/pages/academic-calendar';
 import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
