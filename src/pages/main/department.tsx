@@ -346,32 +346,36 @@ export default function DepartmentMainPage() {
         {/* 학생회 공지사항 탭 */}
         {currentTab === 'posts' && (
           <section>
-            {studentCouncilNotices.length > 0 ? (
-              <div className='grid grid-cols-3 gap-1 py-5'>
-                {hasAdminPermission(user?.role) && selectedDepartment && (
-                  <Link
-                    to={`/departments/posts/new?college=${selectedCollege}&department=${selectedDepartment}`}
-                    className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
-                  >
-                    <IoIosAdd className='text-grey-30 text-4xl' />
-                  </Link>
+            <div className='grid grid-cols-3 gap-1 py-5'>
+              {hasAdminPermission(user?.role) && selectedDepartment && (
+                <Link
+                  to='/departments/posts/new'
+                  className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
+                >
+                  <IoIosAdd className='text-grey-30 text-4xl' />
+                </Link>
+              )}
+              {studentCouncilNotices.map((notice) => (
+                <Link
+                  key={notice.noticeUuid}
+                  to={`/departments/posts/${notice.noticeUuid}`}
+                  className='bg-grey-10 aspect-[4/5] cursor-pointer'
+                >
+                  <img
+                    src={notice.thumbnailUrl}
+                    alt={notice.title || '학생회 공지사항'}
+                    className='h-full w-full object-cover'
+                  />
+                </Link>
+              ))}
+            </div>
+            {studentCouncilNotices.length === 0 && (
+              <div
+                className={clsx(
+                  'flex items-center justify-center',
+                  hasAdminPermission(user?.role) && selectedDepartment ? 'py-4' : 'py-10',
                 )}
-                {studentCouncilNotices.map((notice) => (
-                  <Link
-                    key={notice.noticeUuid}
-                    to={`/departments/posts/${notice.noticeUuid}`}
-                    className='bg-grey-10 aspect-[4/5] cursor-pointer'
-                  >
-                    <img
-                      src={notice.thumbnailUrl}
-                      alt={notice.title || '학생회 공지사항'}
-                      className='h-full w-full object-cover'
-                    />
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className='flex items-center justify-center py-10'>
+              >
                 <span className='text-body03'>게시물 없음</span>
               </div>
             )}

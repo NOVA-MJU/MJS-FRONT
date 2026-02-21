@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-const DEFAULT_AVATAR = '/img/avatar-default.jpeg';
+const DEFAULT_AVATAR = '/img/avatar-default.svg';
 
 interface AvatarProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src?: string;

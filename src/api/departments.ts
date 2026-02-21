@@ -114,7 +114,7 @@ export const getStudentCouncilNotices = async (
 /** 학생회 공지 상세 정보 타입 */
 export interface StudentCouncilNoticeDetail {
   noticeUuid: string;
-  title: string | null;
+  title: string;
   content: string;
   authorNickname: string;
   publishedAt: string;
