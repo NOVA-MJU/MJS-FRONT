@@ -11,6 +11,7 @@ import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import Drawer from '@/components/molecules/Drawer';
 import Footer from '@/components/organisms/Footer';
 import {
@@ -44,7 +45,9 @@ const hasAdminPermission = (role: string | undefined): boolean => {
 
 export default function DepartmentMainPage() {
   const { user } = useAuthStore();
+  const { activeMainSlide } = useHeaderStore();
   const navigate = useNavigate();
+  const isDepartmentSlideActive = activeMainSlide === 0;
 
   // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null)
   const [selectedCollege, setSelectedCollege] = useState<College>('BUSINESS');
@@ -301,7 +304,8 @@ export default function DepartmentMainPage() {
               </div>
             </div>
 
-            {hasAdminPermission(user?.role) && (
+            {/* 일정 추가 버튼: 학과 슬라이드가 활성일 때만 표시 (다른 슬라이드에서 fixed 버튼이 겹치는 것 방지) */}
+            {hasAdminPermission(user?.role) && isDepartmentSlideActive && (
               <button
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
