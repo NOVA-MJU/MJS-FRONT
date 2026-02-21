@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { IoIosAdd, IoIosArrowBack } from 'react-icons/io';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CloseIcon } from '@/components/atoms/Icon';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -11,20 +11,29 @@ import { compressImage } from '@/utils/imageCompression';
 import { uploadS3, DOMAIN_VALUES } from '@/api/s3upload';
 import toast from 'react-hot-toast';
 import { createStudentCouncilNotice, type College, type Department } from '@/api/departments-admin';
+import { useAuthStore } from '@/store/useAuthStore';
+import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 
+const MAX_TITLE_LENGTH = 20;
 const MAX_CONTENT_LENGTH = 2200;
 const MAX_MEDIA_COUNT = 20;
 
 export default function DepartmentPostsNewPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const college = searchParams.get('college') as College | null;
-  const department = searchParams.get('department') as Department | null;
+  // 사용자 정보에서 단과대, 학과 정보를 받아옴
+  const { user } = useAuthStore();
+  const option = user?.departmentName
+    ? DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user.departmentName))
+    : undefined;
+  const college: College | null = option?.college.value ?? null;
+  const department: Department | null = (user?.departmentName as Department) ?? null;
 
+  // 게시글 작성 상태
   const [medias, setMedias] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,7 +116,7 @@ export default function DepartmentPostsNewPage() {
    */
   const handleSubmit = async () => {
     if (!college || !department) {
-      toast.error('college, department 정보가 없습니다. 학과 목록에서 다시 접근해 주세요.');
+      toast.error('소속 학과 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
       return;
     }
 
@@ -119,14 +128,14 @@ export default function DepartmentPostsNewPage() {
     setIsSubmitting(true);
     try {
       const response = await createStudentCouncilNotice(college, department, {
-        title: null,
+        title: title.trim(),
         content,
         imageUrls: medias,
       });
       const noticeUuid = response.data?.uuid;
       if (noticeUuid) {
         toast.success('게시물이 등록되었습니다.');
-        navigate(`/departments/posts/${noticeUuid}`);
+        navigate(`/departments/posts/${noticeUuid}`, { replace: true });
       } else {
         toast.error('게시물 등록에 실패했습니다.');
       }
@@ -217,6 +226,28 @@ export default function DepartmentPostsNewPage() {
         )}
       </div>
 
+      {/* 제목 입력 영역 */}
+      <div className='p-5'>
+        <p className='text-body02 text-black'>제목</p>
+        <div className='relative'>
+          <TextareaAutosize
+            placeholder='제목을 입력해주세요.'
+            minRows={2}
+            maxLength={MAX_TITLE_LENGTH}
+            className={clsx(
+              'border-grey-05 mt-2.5 w-full resize-none rounded-lg border-2 p-3',
+              'text-body06 placeholder:text-grey-20 text-black',
+            )}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length <= MAX_TITLE_LENGTH) setTitle(value);
+            }}
+            value={title}
+          />
+          <span className='text-body06 text-grey-20 absolute right-3 bottom-3'>{`${title.length}/${MAX_TITLE_LENGTH}`}</span>
+        </div>
+      </div>
+
       {/* 게시글 입력 영역 */}
       <div className='p-5'>
         <p className='text-body02 text-black'>내용</p>
@@ -247,10 +278,10 @@ export default function DepartmentPostsNewPage() {
         <button
           type='button'
           onClick={handleSubmit}
-          disabled={isSubmitting || medias.length === 0}
+          disabled={isSubmitting || medias.length === 0 || title.trim() === ''}
           className={clsx(
             'text-body05 w-full cursor-pointer rounded-xl p-2.5 disabled:cursor-not-allowed disabled:opacity-50',
-            isSubmitting || medias.length === 0
+            isSubmitting || medias.length === 0 || title.trim() === ''
               ? 'bg-grey-02 text-grey-40'
               : 'bg-blue-35 text-white',
           )}
