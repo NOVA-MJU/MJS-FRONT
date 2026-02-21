@@ -71,12 +71,8 @@ export default function DepartmentMainPage() {
     }
   }, [user?.departmentName]);
 
-  // 선택된 college, department로 학과 정보 조회
+  // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
-    if (!selectedDepartment) {
-      setDepartmentInfo(null);
-      return;
-    }
     (async () => {
       try {
         const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
@@ -135,12 +131,8 @@ export default function DepartmentMainPage() {
     }
   };
 
-  // 선택된 college, department로 학생회 공지사항 조회
+  // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
-    if (!selectedDepartment) {
-      setStudentCouncilNotices([]);
-      return;
-    }
     (async () => {
       try {
         const response = await getStudentCouncilNotices(selectedCollege, selectedDepartment);
