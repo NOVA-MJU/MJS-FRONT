@@ -19,7 +19,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
           onChange(page - 1);
           window.scrollTo(0, 0);
         }}
-        className='flex items-center gap-0.5 text-[#cdd0d4] transition-opacity active:opacity-60 disabled:opacity-30'
+        className='text-grey-30 flex items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
       >
         <IoIosArrowBack size={18} />
         <span className='text-[12px] leading-[1.5] font-normal'>이전</span>
@@ -43,11 +43,11 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
               disabled={isCurrentPage}
             >
               {isCurrentPage ? (
-                <span className='text-[12px] leading-[1.5] font-semibold text-[#3b96ff]'>
+                <span className='text-blue-20 text-[12px] leading-[1.5] font-semibold'>
                   {pageIndex + 1}
                 </span>
               ) : (
-                <div className='h-[6px] w-[6px] rounded-full bg-[#cdd0d4]' />
+                <div className='bg-grey-30 h-[6px] w-[6px] rounded-full' />
               )}
             </button>
           );
@@ -61,7 +61,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
           onChange(page + 1);
           window.scrollTo(0, 0);
         }}
-        className='flex items-center gap-0.5 text-[#cdd0d4] transition-opacity active:opacity-60 disabled:opacity-30'
+        className='text-grey-30 flex items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
       >
         <span className='text-[12px] leading-[1.5] font-normal'>다음</span>
         <IoIosArrowForward size={18} />
