@@ -23,7 +23,7 @@ export const DEPARTMENT_OPTIONS = [
   {
     college: { value: 'SOCIAL_SCIENCES', label: '사회과학대학' },
     departments: [
-      { label: '공공인재학부', value: 'PUBLIC_ADMINISTRATION' },
+      { label: '공공인재학부', value: 'SCHOOL_OF_PUBLIC_SERVICE' },
       { label: '행정학전공', value: 'PUBLIC_ADMINISTRATION' },
       { label: '정치외교학전공', value: 'POLITICAL_DIPLOMACY' },
       { label: '경상·통계학부', value: 'ECONOMICS_STATISTICS' },
