@@ -9,7 +9,7 @@ import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
 import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import Drawer from '@/components/molecules/Drawer';
 import Footer from '@/components/organisms/Footer';
@@ -44,7 +44,6 @@ const hasAdminPermission = (role: string | undefined): boolean => {
 
 export default function DepartmentMainPage() {
   const { user } = useAuthStore();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   // 단과대 필터
@@ -99,16 +98,15 @@ export default function DepartmentMainPage() {
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
     [];
 
-  // 탭 선택
-  const tabFromUrl = searchParams.get('tab');
-  const currentTab: string =
-    tabFromUrl && TAB_KEYS.includes(tabFromUrl as keyof typeof TABS) ? tabFromUrl : TAB_KEYS[0];
-
-  function handleTabChange(tab: string) {
-    const next = new URLSearchParams(searchParams);
-    next.set('tab', tab);
-    setSearchParams(next, { replace: true });
-  }
+  // 탭 선택 (세션 스토리지에 저장·복원)
+  const TAB_STORAGE_KEY = 'department-tab';
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    const saved = sessionStorage.getItem(TAB_STORAGE_KEY);
+    return saved && TAB_KEYS.includes(saved as keyof typeof TABS) ? saved : TAB_KEYS[0];
+  });
+  useEffect(() => {
+    sessionStorage.setItem(TAB_STORAGE_KEY, currentTab);
+  }, [currentTab]);
 
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
@@ -259,7 +257,7 @@ export default function DepartmentMainPage() {
           <Tabs
             tabs={TABS}
             currentTab={currentTab}
-            setCurrentTab={handleTabChange}
+            setCurrentTab={setCurrentTab}
             className='text-body04 border-b-0'
           />
         </div>
