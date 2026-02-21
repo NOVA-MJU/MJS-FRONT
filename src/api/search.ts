@@ -7,15 +7,15 @@ import type { Sort } from '@/components/molecules/SortButtons';
  * 카테고리별로 상위 검색 결과 5개를 표시합니다
  * @param keyword 검색 키워드를 입력하세요
  */
-interface SearchOverviewRes {
-  broadcast: SearchResultItemRes[];
-  community: SearchResultItemRes[];
-  departmentNotice: SearchResultItemRes[];
-  departmentSchedule: SearchResultItemRes[];
-  mjuCalendar: SearchResultItemRes[];
-  news: SearchResultItemRes[];
-  notice: SearchResultItemRes[];
-}
+// interface SearchOverviewRes {
+//   broadcast: SearchResultItemRes[];
+//   community: SearchResultItemRes[];
+//   departmentNotice: SearchResultItemRes[];
+//   departmentSchedule: SearchResultItemRes[];
+//   mjuCalendar: SearchResultItemRes[];
+//   news: SearchResultItemRes[];
+//   notice: SearchResultItemRes[];
+// }
 
 export interface SearchResultItemRes {
   id: number;
@@ -57,15 +57,29 @@ export interface GetSearchAISummaryRes {
   }[];
 }
 
-export const getSearchOverview = async (
-  keyword: string,
-  order?: Sort,
-): Promise<SearchOverviewRes> => {
-  const res = await apiClient.get<ApiResponse<SearchOverviewRes>>('/search/overview', {
-    params: { keyword, order },
-  });
-  return res.data.data;
-};
+export type Category =
+  | 'all'
+  | 'general'
+  | 'academic'
+  | 'scholarship'
+  | 'career'
+  | 'activity'
+  | 'rule'
+  | 'law'
+  | 'REPORT'
+  | 'SOCIETY'
+  | 'FREE'
+  | 'NOTICE';
+
+// export const getSearchOverview = async (
+//   keyword: string,
+//   order?: Sort,
+// ): Promise<SearchOverviewRes> => {
+//   const res = await apiClient.get<ApiResponse<SearchOverviewRes>>('/search/overview', {
+//     params: { keyword, order },
+//   });
+//   return res.data.data;
+// };
 
 /**
  * 검색어 자동완성 요청.
@@ -83,6 +97,7 @@ export const getSearchWordcompletion = async (keyword: string) => {
  * 키워드와 카테고리를 이용해서 검색을 수행합니다.
  * @param keyword 검색할 키워드를 입력하세요.
  * @param type 검색할 게시판을 선택하세요.
+ * @param category 검색할 카테고리를 선택하세요.
  * @param order 정렬 기준을 입력하세요.
  * @param page 페이지네이션 페이지를 입력하세요.
  * @param size 페이지네이션 크기를 입력하세요.
@@ -91,19 +106,29 @@ export const getSearchWordcompletion = async (keyword: string) => {
 export const getSearchResult = async (
   keyword: string,
   type:
+    | 'all'
     | 'NOTICE'
+    | 'MJU_CALENDAR'
+    | 'DEPARTMENT_NOTICE'
+    | 'STUDENT_SOUNCIL_NOTICE'
+    | 'DEPARTMENT_SCHEDULE'
     | 'NEWS'
     | 'COMMUNITY'
-    | 'DEPARTMENT_NOTICE'
-    | 'DEPARTMENT_SCHEDULE'
-    | 'BROADCAST'
-    | 'MJU_CALENDAR',
+    | 'BROADCAST',
+  category: Category | string,
   order: Sort,
   page = 0,
   size = SEARCH_API_DEFAULT_SIZE,
 ) => {
   const res = await apiClient.get<ApiResponse<Paginated<GetSearchResultRes>>>('/search/detail', {
-    params: { keyword, type, order, page, size },
+    params: {
+      keyword,
+      type: type === 'all' ? undefined : type,
+      category: category === 'all' ? undefined : category,
+      order,
+      page,
+      size,
+    },
   });
   return res.data.data;
 };
