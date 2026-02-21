@@ -3,7 +3,7 @@ import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
 import SearchResultItem from '../../components/molecules/SearchResultItem';
 import { useEffect, useState } from 'react';
-import { getSearchOverview, type SearchResultItemRes } from '../../api/search';
+import { getSearchResult, type SearchResultItemRes } from '../../api/search';
 import { Link, useSearchParams } from 'react-router-dom';
 
 /**
@@ -39,11 +39,15 @@ export default function Search() {
   /**
    * 검색 요청 function
    */
+  const filterByType = (content: SearchResultItemRes[], type: string) =>
+    content.filter((item) => item.type?.toLowerCase() === type.toLowerCase()).slice(0, 5);
+
   async function handleSearch(text: string) {
-    const res = await getSearchOverview(text);
-    setNoticeItems(res.notice);
-    setBoardItems(res.community);
-    setNewsItems(res.news);
+    const res = await getSearchResult(text, 'all', 'all', 'relevance');
+    const content = res.content as unknown as SearchResultItemRes[];
+    setNoticeItems(filterByType(content, 'notice'));
+    setBoardItems(filterByType(content, 'community'));
+    setNewsItems(filterByType(content, 'news'));
   }
 
   return (

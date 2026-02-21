@@ -7,7 +7,6 @@ import { fetchNotionInfo } from '@/api/main/notice-api';
 import Calendar from '@/components/molecules/Calendar';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
-import { formatToLocalDate } from '@/utils';
 import clsx from 'clsx';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import Pagination from '@/components/molecules/common/Pagination';
@@ -15,6 +14,7 @@ import { ScheduleList } from './academic-schedule-list';
 import { CardHeader } from '@/components/atoms/Card';
 import { Link } from 'react-router-dom';
 import { MdChevronRight } from 'react-icons/md';
+import { format } from 'date-fns';
 
 /**
  * 학사 일정 카테고리 정의
@@ -30,11 +30,14 @@ const categoryMap: Record<CategoryKey, string> = {
 interface AcademicScheduleWidgetProps {
   all?: boolean;
   className?: string;
+  /** 제공 시 더보기 클릭으로 호출(예: 슬라이드 학사일정 탭으로 이동), 미제공 시 /academic-schedule로 이동 */
+  onSeeMoreClick?: () => void;
 }
 
 export default function AcademicScheduleWidget({
   all = false,
   className,
+  onSeeMoreClick,
 }: AcademicScheduleWidgetProps) {
   const [activeTab, setActiveTab] = useState<'calendar' | 'notice'>('calendar');
   const [viewDate, setViewDate] = useState(new Date()); // 현재 달력 뷰 기준일
@@ -142,9 +145,20 @@ export default function AcademicScheduleWidget({
       {all && (
         <CardHeader className='px-3'>
           <h2 className='text-title03 px-2 font-bold text-black'>학사일정</h2>
-          <Link to='/academic-schedule' className='text-grey-30 p-2'>
-            <MdChevronRight size={24} className='text-grey-60' />
-          </Link>
+          {onSeeMoreClick ? (
+            <button
+              type='button'
+              onClick={onSeeMoreClick}
+              className='text-grey-30 p-2'
+              aria-label='학사일정 탭으로 이동'
+            >
+              <MdChevronRight size={24} className='text-grey-60' />
+            </button>
+          ) : (
+            <Link to='/academic-schedule' className='text-grey-30 p-2'>
+              <MdChevronRight size={24} className='text-grey-60' />
+            </Link>
+          )}
         </CardHeader>
       )}
       {/* 탭 네비게이션 */}
@@ -206,7 +220,7 @@ export default function AcademicScheduleWidget({
         </div>
       )}
 
-      <div className={clsx('flex flex-col', className)}>
+      <div className={clsx('mt-4 flex flex-col', className)}>
         {activeTab === 'calendar' ? (
           <div className={clsx('flex flex-col gap-4 pb-0', !all && 'pb-10')}>
             {/* 달력 컴포넌트 */}
@@ -267,7 +281,7 @@ export default function AcademicScheduleWidget({
                         <span className='text-body05 line-clamp-2 text-black'>{notice.title}</span>
                         {notice.date && (
                           <span className='text-caption04 text-grey-20'>
-                            {formatToLocalDate(notice.date)}
+                            {format(new Date(notice.date), 'yyyy.MM.dd')}
                           </span>
                         )}
                       </div>

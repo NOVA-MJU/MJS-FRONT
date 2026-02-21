@@ -3,11 +3,12 @@ import { CardHeader } from '@/components/atoms/Card';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
-import { formatToElapsedTime, FormatToDotDate } from '@/utils';
+import { format } from 'date-fns';
 import { handleError } from '@/utils/error';
 import { useEffect, useState } from 'react';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import Pagination from '../common/Pagination';
 
 export const tabNameMap: Record<string, string> = {
   all: '전체',
@@ -35,13 +36,25 @@ const CONTENT_LENGTH = 7;
 
 /**
  * 전용 공지사항 헤더
+ * onSeeMoreClick이 있으면 더보기 클릭 시 해당 콜백 실행(예: 슬라이드 내 공지사항 탭으로 이동), 없으면 /notice 페이지로 이동
  */
-const NoticeSlideHeader = () => (
+const NoticeSlideHeader = ({ onSeeMoreClick }: { onSeeMoreClick?: () => void }) => (
   <CardHeader className='px-1'>
     <h2 className='text-title03 px-3 font-bold text-black'>공지사항</h2>
-    <Link to='/notice' className='text-grey-30 p-2'>
-      <MdChevronRight size={24} className='text-grey-60' />
-    </Link>
+    {onSeeMoreClick ? (
+      <button
+        type='button'
+        onClick={onSeeMoreClick}
+        className='text-grey-30 p-2'
+        aria-label='공지사항 탭으로 이동'
+      >
+        <MdChevronRight size={24} className='text-grey-60' />
+      </button>
+    ) : (
+      <Link to='/notice' className='text-grey-30 p-2'>
+        <MdChevronRight size={24} className='text-grey-60' />
+      </Link>
+    )}
   </CardHeader>
 );
 
@@ -49,10 +62,7 @@ const NoticeSlideHeader = () => (
  * 슬라이드용 공지사항 아이템 컴포넌트
  */
 const NoticeSlideCard = ({ info }: { info: NoticeItem }) => {
-  // 제목과 날짜/시간을 한 줄에 배치
-  const displayDate = formatToElapsedTime(info.date).includes('전')
-    ? formatToElapsedTime(info.date)
-    : FormatToDotDate(info.date);
+  const displayDate = format(new Date(info.date), 'yyyy.MM.dd');
 
   return (
     <a
@@ -69,7 +79,14 @@ const NoticeSlideCard = ({ info }: { info: NoticeItem }) => {
   );
 };
 
-export function NoticeSlideSection({ all = false }: { all?: boolean }) {
+export function NoticeSlideSection({
+  all = false,
+  onSeeMoreClick,
+}: {
+  all?: boolean;
+  /** 제공 시 더보기(화살표) 클릭으로 호출되며, 미제공 시 /notice로 이동 */
+  onSeeMoreClick?: () => void;
+}) {
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const [allDataCache, setAllDataCache] = useState<Record<string, NoticeItem[]>>({});
@@ -108,7 +125,7 @@ export function NoticeSlideSection({ all = false }: { all?: boolean }) {
 
   return (
     <section className='flex flex-col gap-3'>
-      <NoticeSlideHeader />
+      <NoticeSlideHeader onSeeMoreClick={onSeeMoreClick} />
 
       <div className='px-3'>
         <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
@@ -134,48 +151,30 @@ export function NoticeSlideSection({ all = false }: { all?: boolean }) {
 export default function NoticeSection() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
-  const [allDataCache, setAllDataCache] = useState<Record<string, NoticeItem[]>>({});
   const recentYear = new Date().getFullYear();
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   /**
    * 공지사항 데이터 조회
    */
   useEffect(() => {
     (async () => {
-      /**
-       * 캐시에 데이터가 있는지 확인합니다
-       */
-      if (allDataCache[selectedTab]) {
-        setSelectedInfo(allDataCache[selectedTab]);
+      try {
+        setIsLoading(true);
+        const fetchedNoticeData = await fetchNotionInfo(selectedTab, recentYear, page, 10);
+        setSelectedInfo(fetchedNoticeData.content);
+        setTotalPages(fetchedNoticeData.totalPages);
+      } catch (e) {
+        handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
+        setSelectedInfo([]);
+      } finally {
         setIsLoading(false);
-        /**
-         * 캐시에 데이터가 없으면 api를 호출합니다
-         */
-      } else {
-        try {
-          setIsLoading(true);
-          const fetchedNoticeData = await fetchNotionInfo(
-            selectedTab,
-            recentYear,
-            0,
-            CONTENT_LENGTH,
-          );
-          setSelectedInfo(fetchedNoticeData.content);
-          setAllDataCache((prevCache) => ({
-            ...prevCache,
-            [selectedTab]: fetchedNoticeData.content,
-          }));
-        } catch (e) {
-          handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
-          setSelectedInfo([]);
-        } finally {
-          setIsLoading(false);
-        }
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTab, recentYear]);
+     
+  }, [selectedTab, recentYear, page]);
 
   /**
    * 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
@@ -191,13 +190,15 @@ export default function NoticeSection() {
         {categoryNameMap[info.category] || info.category}
       </span>
       <p className='line-clamp-2 text-[14px] leading-[1.5] text-[#17171b]'>{info.title}</p>
-      <span className='text-[11px] text-[#aeb2b6]'>{formatToElapsedTime(info.date)}</span>
+      <span className='text-[11px] text-[#aeb2b6]'>
+        {format(new Date(info.date), 'yyyy.MM.dd')}
+      </span>
     </a>
   );
 
   return (
-    <section className='flex flex-col gap-4'>
-      <div className='px-3'>
+    <section className='mt-4 flex flex-col'>
+      <div className='mb-4 px-3'>
         <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
       </div>
 
@@ -213,6 +214,12 @@ export default function NoticeSection() {
         {!isLoading &&
           selectedInfo.map((info, i) => <NoticeCard key={`${info.link}-${i}`} info={info} />)}
       </div>
+      {/* 페이지네이션 */}
+      {!isLoading && selectedInfo.length > 0 && (
+        <div className='mb-4'>
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        </div>
+      )}
     </section>
   );
 }

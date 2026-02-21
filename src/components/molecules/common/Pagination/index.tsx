@@ -11,7 +11,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
   const startPage = Math.floor(page / 5) * 5;
 
   return (
-    <nav className='flex items-center justify-center gap-3 py-8' data-name='pagination'>
+    <nav className='flex items-center justify-center gap-3 py-10' data-name='pagination'>
       {/* 이전 버튼 */}
       <button
         disabled={page === 0}
