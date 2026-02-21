@@ -46,8 +46,8 @@ export default function DepartmentMainPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  // 단과대 필터
-  const [selectedCollege, setSelectedCollege] = useState<College>('AI_SOFTWARE');
+  // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null)
+  const [selectedCollege, setSelectedCollege] = useState<College>('BUSINESS');
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
   // 학과 필터
@@ -187,38 +187,41 @@ export default function DepartmentMainPage() {
       <div className='bg-grey-02 h-2' />
 
       <div className='flex flex-1 flex-col'>
-        <div className='flex flex-col gap-3.5 pt-5 pb-6.5'>
-          {/* 학과 정보 카드 */}
-          <div className='flex flex-col gap-2 px-5'>
-            <span className='text-title03 text-black'>
-              {selectedDepartment
-                ? departmentMap.get(selectedDepartment) || selectedDepartment
-                : collegeMap.get(selectedCollege) || selectedCollege}
-            </span>
-            {selectedDepartment && (
-              <div className='flex items-center gap-1'>
-                <span className='text-body05 text-grey-80'>교학팀</span>
-                <span className='text-body05 text-grey-30'>
-                  {departmentInfo?.academicOfficePhone ?? '-'}
-                </span>
-                <button
-                  type='button'
-                  onClick={handleCopyPhone}
-                  className='text-blue-15 cursor-pointer p-0.75'
-                  aria-label='전화번호 복사'
-                >
-                  {phoneCopied ? (
-                    <IoIosCheckmark className='text-green-50' />
-                  ) : (
-                    <MdOutlineContentCopy />
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
+        <div className='flex flex-col px-5 pt-5 pb-6.5'>
+          {/* 단과대 이름 */}
+          <p className='text-title03 text-black'>{collegeMap.get(selectedCollege)}</p>
 
-          {/* 바로가기 버튼 */}
-          <div className='flex gap-3 px-5'>
+          {/* 학과 이름 */}
+          {selectedDepartment && (
+            <p className='text-body04 text-grey-80 mt-0.5'>
+              {departmentMap.get(selectedDepartment)}
+            </p>
+          )}
+
+          {/* 교학팀 전화번호 */}
+          {selectedDepartment && (
+            <div className='mt-2.5 flex items-center gap-1'>
+              <span className='text-body05 text-grey-80'>교학팀</span>
+              <span className='text-body05 text-grey-30'>
+                {departmentInfo?.academicOfficePhone ?? '-'}
+              </span>
+              <button
+                type='button'
+                onClick={handleCopyPhone}
+                className='text-blue-15 cursor-pointer p-0.75'
+                aria-label='전화번호 복사'
+              >
+                {phoneCopied ? (
+                  <IoIosCheckmark className='text-green-50' />
+                ) : (
+                  <MdOutlineContentCopy />
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* 홈페이지 / 인스타 버튼 */}
+          <div className='flex gap-3 pt-3.5'>
             {departmentInfo?.homepageUrl ? (
               <a
                 href={departmentInfo.homepageUrl}
