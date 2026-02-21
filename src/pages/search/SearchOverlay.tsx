@@ -127,10 +127,12 @@ export default function SearchOverlay() {
                   key={keyword + index}
                   type='button'
                   onClick={() => goToSearch(navigate, keyword)}
-                  className='flex items-center gap-2'
+                  className='flex w-full items-start justify-start gap-2 text-left'
                 >
                   <span className='text-blue-35 text-body04 w-4 shrink-0'>{index + 1}</span>
-                  <span className='text-grey-40 text-body05 cursor-pointer'>{keyword}</span>
+                  <span className='text-grey-40 text-body05 cursor-pointer text-left'>
+                    {keyword}
+                  </span>
                 </button>
               ))}
             </div>

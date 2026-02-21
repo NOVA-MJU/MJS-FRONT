@@ -1,18 +1,12 @@
-import {
-  getBoards,
-  type BoardItem,
-  type BoardSortBy,
-  type BoardDirection,
-  type Category,
-} from '@/api/board';
+import { getBoards, type BoardItem, type Category } from '@/api/board';
 import { CardHeader } from '@/components/atoms/Card';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
-import { formatToElapsedTime } from '@/utils';
+import { format } from 'date-fns';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
-import { IoIosHeartEmpty, IoIosArrowForward } from 'react-icons/io';
+import { IoIosHeartEmpty } from 'react-icons/io';
 import Pagination from '@/components/molecules/common/Pagination';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
@@ -28,30 +22,21 @@ const ITEM_COUNT = 10;
  */
 interface BoardSectionProps {
   showWriteButton?: boolean;
-  hideSort?: boolean;
   all?: boolean;
+  /** 제공 시 더보기 클릭으로 호출(예: 슬라이드 게시판 탭으로 이동), 미제공 시 /board로 이동 */
+  onSeeMoreClick?: () => void;
 }
 
 export default function BoardSection({
   showWriteButton = false,
-  hideSort = false,
   all = false,
+  onSeeMoreClick,
 }: BoardSectionProps) {
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  // 정렬 상태 추가
-  const [sortConfig, setSortConfig] = useState<{
-    label: string;
-    sortBy: BoardSortBy;
-    direction: BoardDirection;
-  }>({
-    label: '추천순',
-    sortBy: 'likeCount',
-    direction: 'DESC',
-  });
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -63,8 +48,6 @@ export default function BoardSection({
           page,
           size: ITEM_COUNT,
           communityCategory: category as Category,
-          sortBy: sortConfig.sortBy,
-          direction: sortConfig.direction,
         });
         setContents(res.content);
         setTotalPages(res.totalPages);
@@ -76,26 +59,31 @@ export default function BoardSection({
         setIsLoading(false);
       }
     })();
-  }, [category, sortConfig, page]);
+  }, [category, page]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const SORT_OPTIONS: { label: string; sortBy: BoardSortBy; direction: BoardDirection }[] = [
-    { label: '추천순', sortBy: 'likeCount', direction: 'DESC' },
-    { label: '최신순', sortBy: 'createdAt', direction: 'DESC' },
-    { label: '과거순', sortBy: 'createdAt', direction: 'ASC' },
-  ];
-
   return (
-    <section className='relative flex min-h-[400px] flex-col bg-white'>
+    <section className='relative mb-4 flex min-h-[400px] flex-col bg-white'>
       {all && (
         <CardHeader className='px-3'>
           <h2 className='text-title03 px-2 font-bold text-black'>게시판</h2>
-          <Link to='/board' className='text-grey-30 p-2'>
-            <MdChevronRight size={24} className='text-grey-60' />
-          </Link>
+          {onSeeMoreClick ? (
+            <button
+              type='button'
+              onClick={onSeeMoreClick}
+              className='text-grey-30 p-2'
+              aria-label='게시판 탭으로 이동'
+            >
+              <MdChevronRight size={24} className='text-grey-60' />
+            </button>
+          ) : (
+            <Link to='/board' className='text-grey-30 p-2'>
+              <MdChevronRight size={24} className='text-grey-60' />
+            </Link>
+          )}
         </CardHeader>
       )}
       {/* 탭 네비게이션 */}
@@ -128,42 +116,8 @@ export default function BoardSection({
         </div>
       )}
 
-      {/* 정렬 필터 */}
-      {!all && (
-        <div className='flex items-center justify-between px-5 pt-3 pb-1'>
-          <div className='flex items-center gap-3'>
-            {SORT_OPTIONS.map((item, idx) => {
-              const isActive = sortConfig.label === item.label;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setSortConfig(item)}
-                  className='flex items-center gap-1 transition-opacity active:opacity-60'
-                >
-                  <div
-                    className={clsx(
-                      'h-[3px] w-[3px] rounded-full',
-                      isActive ? 'bg-grey-80' : 'bg-grey-20',
-                    )}
-                  />
-                  <span
-                    className={clsx(
-                      'text-[12px] leading-[1.5]',
-                      isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <IoIosArrowForward className='text-grey-20' size={16} />
-        </div>
-      )}
-
       {/* 게시글 리스트 */}
-      <div className={clsx('flex flex-col', hideSort && 'pt-2')}>
+      <div className='flex flex-col pt-4'>
         {isLoading && [...Array(ITEM_COUNT)].map((_, index) => <SkeletonProfile key={index} />)}
 
         {!isLoading &&
@@ -192,12 +146,18 @@ export default function BoardSection({
                             </span>
                           </div>
                         )}
-                        <div className='flex items-center gap-1 text-black'>
-                          <p className='text-body04 line-clamp-1'>
-                            {all && category === 'FREE' ? '자유게시판' : '정보게시판'}
+                        {!all && (
+                          <p className='text-body04 line-clamp-1 text-black'>{content.title}</p>
+                        )}
+                        {all && (
+                          <p className='text-body05 line-clamp-1 text-black'>
+                            {/* <p className='text-body04 line-clamp-1'> */}
+                            <b className='mr-1'>
+                              {category === 'FREE' ? '자유게시판' : '정보게시판'}
+                            </b>
+                            {content.title}
                           </p>
-                          <p className='text-body05 line-clamp-1'>{content.title}</p>
-                        </div>
+                        )}
                       </div>
                       {!all && (
                         <p className='text-body05 line-clamp-2 text-black'>
@@ -211,18 +171,18 @@ export default function BoardSection({
                       {/* 날짜 */}
                       {all && (
                         <span className='text-caption02 text-grey-40'>
-                          {formatToElapsedTime(content.publishedAt)}
+                          {format(new Date(content.publishedAt), 'yyyy.MM.dd')}
                         </span>
                       )}
                       <div className='flex items-center gap-3'>
                         {/* 좋아요 */}
                         <div className='flex items-center gap-1'>
-                          <IoIosHeartEmpty size={24} className='text-blue-10' />
+                          <IoIosHeartEmpty size={20} className='text-blue-10' />
                           <span className='text-caption02 text-grey-40'>{content.likeCount}</span>
                         </div>
                         {/* 댓글 */}
                         <div className='flex items-center gap-1'>
-                          <HiOutlineChatBubbleOvalLeftEllipsis size={24} className='text-blue-10' />
+                          <HiOutlineChatBubbleOvalLeftEllipsis size={20} className='text-blue-10' />
                           <span className='text-caption02 text-grey-40'>
                             {content.commentCount}
                           </span>
@@ -232,7 +192,7 @@ export default function BoardSection({
                       {/* 날짜 */}
                       {!all && (
                         <span className='text-caption02 text-grey-40'>
-                          {formatToElapsedTime(content.publishedAt)}
+                          {format(new Date(content.publishedAt), 'yyyy.MM.dd')}
                         </span>
                       )}
                     </div>
@@ -250,7 +210,7 @@ export default function BoardSection({
         )}
 
         {/* 페이지네이션 */}
-        {!isLoading && totalPages > 1 && (
+        {!isLoading && contents.length > 0 && !all && (
           <div className='pb-4'>
             <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
@@ -262,7 +222,7 @@ export default function BoardSection({
         isMounted &&
         showWriteButton &&
         createPortal(
-          <div className='fixed right-5 bottom-8 z-50'>
+          <div className='fixed right-5 bottom-18 z-50'>
             <Link to='/board/write'>
               <div className='bg-blue-35 flex h-[56px] w-[56px] flex-col items-center justify-center rounded-full shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] transition-transform active:scale-95'>
                 <img

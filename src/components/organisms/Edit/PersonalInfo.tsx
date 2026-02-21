@@ -3,16 +3,22 @@ import InputField from '../../molecules/common/InputField';
 import DropdownField from '../../molecules/common/DropdownField/index.tsx';
 import GenderSelector from '../../molecules/user/GenderSelector';
 import ProfileImageUploader from '../../molecules/user/ProfileUploader.tsx';
-import { DEPARTMENT_OPTIONS } from '../../../constants/departments';
+import { COLLEGE_OPTIONS, DEPARTMENT_OPTIONS } from '../../../constants/departments';
 
-const ALL_DEPARTMENT_OPTIONS = DEPARTMENT_OPTIONS.flatMap((option) => option.departments);
 import { uploadProfileImage } from '../../../api/user';
 import { genderOptions } from '../../../constants/gender.ts';
 import NicknameFieldWithVerify from '@/components/molecules/user/NicknameFieldWithVerify/index.tsx';
+import { useEffect, useState } from 'react';
 
-//단과대 정보도 추가돼야함
+interface Options {
+  label: string;
+  value: string;
+}
+
 type PersonalInfoProps = {
   nickname: string;
+  college: string;
+  setCollege: (val: string) => void;
   setNickname: (val: string) => void;
   initialNickname: string;
   isSending: boolean;
@@ -30,6 +36,8 @@ type PersonalInfoProps = {
 
 const PersonalInfo = ({
   nickname,
+  college,
+  setCollege,
   setNickname,
   initialNickname,
   isSending,
@@ -44,6 +52,15 @@ const PersonalInfo = ({
   setUploadedImageUrl,
 }: PersonalInfoProps) => {
   const user = useAuthStore((state) => state.user);
+  const [departmentOptions, setDepartmentOptions] = useState<Options[]>([]);
+
+  useEffect(() => {
+    console.log(college);
+    const departmentData = DEPARTMENT_OPTIONS.find((dept) => dept.college.value === college);
+    if (departmentData) {
+      setDepartmentOptions(departmentData.departments);
+    }
+  }, [college]);
 
   return (
     <div className='flex w-full flex-col items-center justify-center rounded-2xl bg-white p-6 md:w-[648px]'>
@@ -70,10 +87,16 @@ const PersonalInfo = ({
           setIsNicknameChecked={setIsNicknameChecked}
         />
         <DropdownField
+          label='단과대'
+          selected={college}
+          onSelect={setCollege}
+          options={COLLEGE_OPTIONS}
+        />
+        <DropdownField
           label='학과'
           selected={department}
           onSelect={setDepartment}
-          options={ALL_DEPARTMENT_OPTIONS}
+          options={departmentOptions}
         />
         <InputField
           label='학번'

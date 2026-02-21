@@ -39,6 +39,7 @@ export const updateMemberInfo = async (body: {
   name: string;
   nickname: string;
   gender: string;
+  college: string;
   departmentName: string;
   studentNumber: string;
   profileImageUrl: string;

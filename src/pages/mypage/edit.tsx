@@ -29,6 +29,7 @@ const Edit: React.FC = () => {
 
   // 개인 정보
   const [nickname, setNickname] = useState(user?.nickname ?? '');
+  const [college, setCollege] = useState(user?.college ?? '');
   const [department, setDepartment] = useState(user?.departmentName ?? '');
   const [studentCode, setStudentCode] = useState(user?.studentNumber ?? '');
   const [gender, setGender] = useState(user?.gender ?? '');
@@ -45,6 +46,7 @@ const Edit: React.FC = () => {
         name: user.name,
         nickname,
         gender,
+        college,
         departmentName: department,
         studentNumber: studentCode,
         profileImageUrl,
@@ -122,6 +124,8 @@ const Edit: React.FC = () => {
                 isNicknameChecked={isNicknameChecked}
                 handleVerifyNickname={handleVerifyNickname}
                 setIsNicknameChecked={setIsNicknameChecked}
+                college={college}
+                setCollege={setCollege}
                 department={department}
                 setDepartment={setDepartment}
                 studentCode={studentCode}

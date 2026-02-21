@@ -7,7 +7,7 @@ import NewsCard from '@/pages/news/NewsCard';
 import BroadcastCard from '@/pages/broadcast/BroadcastCard';
 import BoardCard from '@/pages/board/BoardCard';
 import SortButtons, { type Sort } from '@/components/molecules/SortButtons';
-import type { SearchResultItemRes } from '@/api/search';
+import type { Category, SearchResultItemRes } from '@/api/search';
 import { ChipTabs, SegmentedControlTabs } from '@/components/atoms/Tabs';
 import { filterByCategoryTab, type FilterCategory } from '@/utils/filterList';
 import AcademicScheduleInSearch from './AcademicScheduleInSearch';
@@ -35,8 +35,8 @@ interface ListEntryProps {
   getMoreSearch: (tab: SearchTabKey, keyword: string) => string;
   sort: Sort;
   onSortChange: (sort: Sort) => void;
-  categoryTab: string;
-  setCategoryTab: (tab: string) => void;
+  categoryTab: Category | string;
+  setCategoryTab: (tab: Category | string) => void;
   page: number;
   totalPages: number;
   handlePageChange: (newPage: number) => void;
@@ -44,8 +44,8 @@ interface ListEntryProps {
 
 const NewsLabel: Record<string, string> = {
   all: '전체',
-  report: '보도',
-  society: '사회',
+  REPORT: '보도',
+  SOCIETY: '사회',
 };
 
 const NoticeLabel: Record<string, string> = {
@@ -55,22 +55,22 @@ const NoticeLabel: Record<string, string> = {
   scholarship: '장학',
   career: '진로',
   activity: '학생활동',
-  rule: '학칙개정',
+  law: '학칙개정',
 };
 
 const DepartmentLabel: Record<string, string> = {
-  all: '캘린더',
-  department: '학사공지',
+  MJU_CALENDAR: '캘린더',
+  academic: '학사공지',
 };
 
 const CommunityLabel: Record<string, string> = {
-  all: '정보 게시판',
-  free: '자유 게시판',
+  NOTICE: '정보 게시판',
+  FREE: '자유 게시판',
 };
 
 const EMPTY_MESSAGE_CLASS = ({ isLong }: { isLong: boolean }) => {
   if (!isLong) {
-    return 'flex h-26 items-center justify-center mx-5 border-1 border-grey-10 rounded-[4px]';
+    return 'flex h-26 items-center justify-center mx-5 border-1 border-grey-10 rounded-[4px] p-5';
   }
   return 'flex h-full items-center justify-center mx-5';
 };
@@ -122,7 +122,7 @@ function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
     <NoticeItem
       key={item.id}
       id={item.id}
-      category={item.category ?? '학사'}
+      category={item.category}
       title={item.highlightedTitle}
       date={item.date}
       link={item.link}
@@ -164,7 +164,7 @@ function SectionHeader({
 function EmptyState({ keyword, isLong }: { keyword: string | null; isLong: boolean }) {
   return (
     <div className={EMPTY_MESSAGE_CLASS({ isLong })}>
-      <p className='text-body05 text-grey-30'>'{keyword ?? ''}'을 찾을 수 없습니다.</p>
+      <p className='text-body05 text-grey-30 line-clamp-4'>'{keyword ?? ''}'을 찾을 수 없습니다.</p>
     </div>
   );
 }
@@ -342,14 +342,17 @@ export default function ListEntry({
 
         {/* 학사일정 카테고리일 경우 학사일정 캘린더 출력, 나머지는 필터링 한 결과 출력 */}
         <div className='mb-5 flex flex-col'>
-          {categoryTab === 'all' && currentTab === '학사일정' && <AcademicScheduleInSearch />}
-          {filteredItems.map((item) => renderItem(item, currentTab))}
-          {filteredItems.length === 0 && !(categoryTab === 'all' && currentTab === '학사일정') && (
-            <div className='flex flex-col items-center justify-center py-50'>
-              <IoIosInformationCircleOutline size={35} className='text-grey-10' />
-              <EmptyState keyword={keyword} isLong={true} />
-            </div>
+          {categoryTab === 'MJU_CALENDAR' && currentTab === '학사일정' && (
+            <AcademicScheduleInSearch />
           )}
+          {filteredItems.map((item) => renderItem(item, currentTab))}
+          {filteredItems.length === 0 &&
+            !(categoryTab === 'MJU_CALENDAR' && currentTab === '학사일정') && (
+              <div className='flex flex-col items-center justify-center py-50'>
+                <IoIosInformationCircleOutline size={35} className='text-grey-10' />
+                <EmptyState keyword={keyword} isLong={true} />
+              </div>
+            )}
           {filteredItems.length > 0 && (
             <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
           )}

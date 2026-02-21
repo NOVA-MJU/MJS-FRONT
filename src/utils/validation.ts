@@ -14,13 +14,13 @@ export const validatePassword = (password: string): boolean => {
 
 /**
  * 학번 유효성 검사
- * - 60으로 시작하는 8자리 숫자
+ * - 8자리 숫자
  *
  * @param code - 검증할 학번
  * @returns 유효한 학번인지 여부
  */
 export const validateStudentCode = (code: string): boolean => {
-  return /^60\d{6}$/.test(code.trim());
+  return /^\d{8}$/.test(code.trim());
 };
 
 /**

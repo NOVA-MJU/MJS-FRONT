@@ -10,7 +10,7 @@ export const fetchNotionInfo = async (
   sort: 'asc' | 'desc' = 'desc',
 ): Promise<NoticeResponse> => {
   const response = await apiClient.get('/notices', {
-    params: { category, page, size, sort, ...(year ? { year } : {}) },
+    params: { category, ...(year ? { year } : {}), page, size, sort },
   });
   return response.data;
 };

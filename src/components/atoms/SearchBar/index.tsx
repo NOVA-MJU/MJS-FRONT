@@ -204,7 +204,7 @@ export default function SearchBar({
         <div className='flex min-w-0 flex-1 flex-row'>
           <input
             type='text'
-            className='text-body06 md:text-body01 placeholder-grey-20 min-w-0 flex-1 shrink bg-transparent text-black outline-none'
+            className='text-body03 md:text-body01 placeholder-grey-20 min-w-0 flex-1 shrink bg-transparent text-black outline-none'
             placeholder={'검색어를 입력하세요'}
             value={value}
             onChange={(e) => {

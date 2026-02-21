@@ -6,11 +6,12 @@ import { useResponsive } from '@/hooks/useResponse';
 import type { NewsInfo } from '@/types/news/newsInfo';
 import { formatToLocalDate } from '@/utils';
 import { handleError } from '@/utils/error';
-import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowForward } from 'react-icons/io';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import Pagination from '../common/Pagination';
+import { ChipTabs } from '@/components/atoms/Tabs';
 
 const tabNameMap: Record<string, string> = {
   ALL: '전체',
@@ -18,14 +19,19 @@ const tabNameMap: Record<string, string> = {
   SOCIETY: '사회',
 };
 
-type SortType = 'LATEST' | 'HOT' | 'PAST';
-
-export default function NewsSection({ all = false }: { all?: boolean }) {
+export default function NewsSection({
+  all = false,
+  onSeeMoreClick,
+}: {
+  all?: boolean;
+  /** 제공 시 더보기 클릭으로 호출(예: 슬라이드 명대신문 탭으로 이동), 미제공 시 /news로 이동 */
+  onSeeMoreClick?: () => void;
+}) {
   const [categoryTab, setCategoryTab] = useState<string>('ALL');
   const [fetchedNews, setFetchedNews] = useState<NewsInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortType, setSortType] = useState<SortType>('LATEST');
   const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const { isDesktop } = useResponsive();
 
   /**
@@ -37,6 +43,7 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
         setIsLoading(true);
         const response = await fetchNewsInfo(categoryTab, page, isDesktop ? 5 : 10);
         const items = response.data.content ?? [];
+        setTotalPages(response.data.totalPages);
 
         // 정렬 로직 (클라이언트 측 혹은 API 연동 확인 필요 - 현재 API 파라미터에 sortBy가 없으므로 클라이언트 정렬)
         const toTS = (d?: string) => {
@@ -45,12 +52,7 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
         };
 
         const sorted = [...items];
-        if (sortType === 'LATEST') {
-          sorted.sort((a, b) => toTS(b.date) - toTS(a.date));
-        } else if (sortType === 'PAST') {
-          sorted.sort((a, b) => toTS(a.date) - toTS(b.date));
-        }
-        // HOT (추천순)의 경우 NewsInfo에 likeCount 등의 필드가 없으므로 현재는 최신순과 동일하게 처리하거나 임의 가공
+        sorted.sort((a, b) => toTS(b.date) - toTS(a.date));
 
         if (all) setFetchedNews(sorted.slice(0, 5));
         else setFetchedNews(sorted);
@@ -60,95 +62,58 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
         setIsLoading(false);
       }
     })();
-  }, [categoryTab, page, sortType, isDesktop]);
-
-  const CATEGORIES = Object.entries(tabNameMap);
+  }, [categoryTab, page, isDesktop]);
 
   return (
-    <section className='flex flex-col bg-white'>
+    <section className='mb-4 flex flex-col bg-white'>
       {all && (
         <CardHeader className='px-3'>
           <h2 className='text-title03 px-2 font-bold text-black'>명대신문</h2>
-          <Link to='/news' className='text-grey-30 p-2'>
-            <MdChevronRight size={24} className='text-grey-60' />
-          </Link>
+          {onSeeMoreClick ? (
+            <button
+              type='button'
+              onClick={onSeeMoreClick}
+              className='text-grey-30 p-2'
+              aria-label='명대신문 탭으로 이동'
+            >
+              <MdChevronRight size={24} className='text-grey-60' />
+            </button>
+          ) : (
+            <Link to='/news' className='text-grey-30 p-2'>
+              <MdChevronRight size={24} className='text-grey-60' />
+            </Link>
+          )}
         </CardHeader>
       )}
       {/* 데스크탑 헤더 */}
       {isDesktop && (
         <div className='mb-3 flex items-center justify-between px-3'>
           <h2 className='text-heading02 text-mju-primary'>명대신문</h2>
-          <Link to='/news'>
-            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
-          </Link>
+          {onSeeMoreClick ? (
+            <button
+              type='button'
+              onClick={onSeeMoreClick}
+              className='text-grey-30 p-0'
+              aria-label='명대신문 탭으로 이동'
+            >
+              <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
+            </button>
+          ) : (
+            <Link to='/news'>
+              <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
+            </Link>
+          )}
         </div>
       )}
 
       {/* 가로 스크롤 칩 메뉴 */}
       <div className='no-scrollbar swiper-no-swiping flex items-center gap-2 overflow-x-auto px-5 py-4'>
-        {CATEGORIES.map(([key, label]) => {
-          const isSelected = categoryTab === key;
-          return (
-            <button
-              key={key}
-              onClick={() => {
-                setCategoryTab(key);
-                setPage(0);
-              }}
-              className={clsx(
-                'flex shrink-0 items-center justify-center rounded-full px-3 py-1.5 transition-colors',
-                isSelected
-                  ? 'bg-mju-primary font-semibold text-white'
-                  : 'border-grey-10 text-grey-40 border bg-white font-normal',
-              )}
-            >
-              <span className='text-[14px] leading-tight'>{label}</span>
-            </button>
-          );
-        })}
+        <ChipTabs tabs={tabNameMap} currentTab={categoryTab} setCurrentTab={setCategoryTab} />
       </div>
 
       <div className='flex flex-col'>
-        {/* 정렬 필터 */}
-        {!all && (
-          <div className='flex items-center justify-between px-5 pb-1'>
-            <div className='flex items-center gap-3'>
-              {[
-                { label: '추천순', type: 'HOT' as SortType },
-                { label: '최신순', type: 'LATEST' as SortType },
-                { label: '과거순', type: 'PAST' as SortType },
-              ].map((item, idx) => {
-                const isActive = sortType === item.type;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setSortType(item.type)}
-                    className='flex items-center gap-1 transition-opacity active:opacity-60'
-                  >
-                    <div
-                      className={clsx(
-                        'h-[3px] w-[3px] rounded-full',
-                        isActive ? 'bg-grey-80' : 'bg-grey-20',
-                      )}
-                    />
-                    <span
-                      className={clsx(
-                        'text-[12px] leading-[1.5]',
-                        isActive ? 'text-grey-80 font-medium' : 'text-grey-20',
-                      )}
-                    >
-                      {item.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <IoIosArrowForward className='text-grey-20' size={16} />
-          </div>
-        )}
-
         {/* 뉴스 리스트 컨텐츠 */}
-        <div className={clsx('flex flex-col', !all && 'pt-3')}>
+        <div className='flex flex-col'>
           {isLoading &&
             [...Array(5)].map((_, index) => (
               <div key={index} className='px-5 py-4'>
@@ -188,10 +153,10 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
                     </p>
                   </div>
                   <div className='flex flex-col'>
-                    <span className='text-caption01 text-grey-20 line-clamp-1 font-semibold'>
+                    <span className='text-caption01 text-grey-30 line-clamp-1 font-semibold'>
                       {news.reporter}
                     </span>
-                    <span className='text-caption02 text-grey-10 font-normal'>
+                    <span className='text-caption04 text-grey-30 font-normal'>
                       {formatToLocalDate(news.date)}
                     </span>
                   </div>
@@ -206,38 +171,10 @@ export default function NewsSection({ all = false }: { all?: boolean }) {
           )}
         </div>
 
-        {/* 페이지네이션 (간이 구현) */}
+        {/* 페이지네이션 */}
         {!isLoading && fetchedNews.length > 0 && !all && (
-          <div className='flex items-center justify-center gap-4 py-8'>
-            <button
-              disabled={page === 0}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              className='text-caption02 text-grey-20 flex items-center gap-1 disabled:opacity-30'
-            >
-              <IoIosArrowBack size={14} />
-              이전
-            </button>
-            <div className='flex items-center gap-3'>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setPage(num - 1)}
-                  className={clsx(
-                    'flex h-6 w-6 items-center justify-center text-[12px] transition-colors',
-                    page === num - 1 ? 'text-blue-10 font-semibold' : 'text-grey-20',
-                  )}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              className='text-caption02 text-grey-20 flex items-center gap-1'
-            >
-              다음
-              <IoIosArrowForward size={14} />
-            </button>
+          <div className='pb-4'>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>
         )}
       </div>
