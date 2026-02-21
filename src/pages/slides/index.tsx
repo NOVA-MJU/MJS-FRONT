@@ -12,6 +12,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
 import NoticeSection from '@/components/molecules/sections/notice';
+import FilteringMealSection from '@/components/molecules/sections/filtering-meal';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -83,39 +84,54 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
   );
 };
 
+type TabContentProps = {
+  activeTab: TabType;
+  onNavigateToNoticeTab?: () => void;
+  onNavigateToBroadcastTab?: () => void;
+  onNavigateToNewsTab?: () => void;
+  onNavigateToBoardTab?: () => void;
+  onNavigateToAcademicTab?: () => void;
+};
+
 /**
  * 'ALL' 탭 컨텐츠 컴포넌트
  */
-const AllTab = () => (
+const AllTab = ({
+  onNavigateToNoticeTab,
+  onNavigateToBroadcastTab,
+  onNavigateToNewsTab,
+  onNavigateToBoardTab,
+  onNavigateToAcademicTab,
+}: TabContentProps) => (
   <div className='bg-grey-02 flex flex-col gap-2'>
     {/* 식단 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <MealSection all={true} />
+      <FilteringMealSection />
     </div>
 
     {/* 공지사항 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <NoticeSlideSection all={true} />
+      <NoticeSlideSection all={true} onSeeMoreClick={onNavigateToNoticeTab} />
     </div>
 
     {/* 학사일정 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <AcademicScheduleWidget all={true} />
+      <AcademicScheduleWidget all={true} onSeeMoreClick={onNavigateToAcademicTab} />
     </div>
 
     {/* 게시판 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <BoardSection all={true} />
+      <BoardSection all={true} onSeeMoreClick={onNavigateToBoardTab} />
     </div>
 
     {/* 명대신문 섹션 */}
     <div className='flex flex-col gap-4 bg-white pt-4'>
-      <NewsSection all={true} />
+      <NewsSection all={true} onSeeMoreClick={onNavigateToNewsTab} />
     </div>
 
     {/* 명대뉴스 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <BroadcastSection all={true} />
+      <BroadcastSection all={true} onSeeMoreClick={onNavigateToBroadcastTab} />
     </div>
   </div>
 );
@@ -131,7 +147,7 @@ const TabWrapper = ({ children }: { children: React.ReactNode }) => (
  * 탭 타입별 렌더링 컴포넌트 매핑 객체
  * 컴포넌트들을 미리 정의 (Lazy Loading으로 성능 최적화)
  */
-const TAB_CONTENT: Record<TabType, React.ComponentType> = {
+const TAB_CONTENT: Record<TabType, React.ComponentType<TabContentProps>> = {
   ALL: AllTab,
   명지도: () => <CampusMap />,
   공지사항: () => (
@@ -149,7 +165,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType> = {
       <MealSection />
     </TabWrapper>
   ),
-  게시판: () => <BoardSection />,
+  게시판: () => <BoardSection all={false} />,
   명대신문: () => (
     <TabWrapper>
       <NewsSection />
@@ -240,7 +256,29 @@ const Slides = () => {
                 {tab === '게시판' ? (
                   <BoardSection showWriteButton={activeTab === '게시판'} />
                 ) : (
-                  <Content />
+                  <Content
+                    activeTab={activeTab}
+                    onNavigateToNoticeTab={() => {
+                      setActiveTab('공지사항');
+                      swiper?.slideTo(TABS.indexOf('공지사항'));
+                    }}
+                    onNavigateToBroadcastTab={() => {
+                      setActiveTab('명대뉴스');
+                      swiper?.slideTo(TABS.indexOf('명대뉴스'));
+                    }}
+                    onNavigateToNewsTab={() => {
+                      setActiveTab('명대신문');
+                      swiper?.slideTo(TABS.indexOf('명대신문'));
+                    }}
+                    onNavigateToBoardTab={() => {
+                      setActiveTab('게시판');
+                      swiper?.slideTo(TABS.indexOf('게시판'));
+                    }}
+                    onNavigateToAcademicTab={() => {
+                      setActiveTab('학사일정');
+                      swiper?.slideTo(TABS.indexOf('학사일정'));
+                    }}
+                  />
                 )}
               </SwiperSlide>
             );
