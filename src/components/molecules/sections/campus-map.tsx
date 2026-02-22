@@ -31,6 +31,12 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pinchZoomRef = useRef<any>(null);
+  // 스크롤바 관련 참조
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+  // 현재 변환 상태 저장 (스크롤바 동기화용)
+  const currentTransform = useRef({ x: 0, y: 0, scale: 1 });
 
   // 초기 줌 설정 함수
   const setInitialZoom = useCallback(() => {
@@ -59,9 +65,67 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
   }, [setInitialZoom]);
 
   const onUpdate = useCallback(({ x, y, scale }: { x: number; y: number; scale: number }) => {
+    currentTransform.current = { x, y, scale };
     if (mapRef.current) {
       const value = make3dTransformValue({ x, y, scale });
       mapRef.current.style.setProperty('transform', value);
+    }
+
+    // 스크롤바 동기화 로직
+    if (thumbRef.current && trackRef.current && imgRef.current && containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const contentWidth = imgRef.current.offsetWidth * scale;
+      const trackWidth = trackRef.current.offsetWidth;
+
+      if (contentWidth > containerWidth) {
+        const maxScrollX = contentWidth - containerWidth;
+        // x는 음수이므로 반전 처리, 0~1 사이로 제한
+        const progress = Math.min(Math.max(-x / maxScrollX, 0), 1);
+
+        // 썸네일 너비 계산 (컨테이너 대비 비율 적용, 최소 40px)
+        const thumbWidth = Math.max((containerWidth / contentWidth) * trackWidth, 40);
+        thumbRef.current.style.width = `${thumbWidth}px`;
+
+        // 이동 거리 계산 (thumbWidth를 제외한 가용 공간 내에서 progress 적용)
+        const maxMove = trackWidth - thumbWidth;
+        thumbRef.current.style.transform = `translateX(${progress * maxMove}px)`;
+        trackRef.current.style.opacity = '1';
+        trackRef.current.style.pointerEvents = 'auto';
+      } else {
+        trackRef.current.style.opacity = '0';
+        trackRef.current.style.pointerEvents = 'none';
+      }
+    }
+  }, []);
+
+  // 스크롤바 클릭 및 드래그 핸들러
+  const handleTrackInteraction = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!trackRef.current || !imgRef.current || !pinchZoomRef.current || !containerRef.current)
+      return;
+
+    const rect = trackRef.current.getBoundingClientRect();
+    const clientX =
+      'touches' in e ? (e as React.TouchEvent).touches[0].clientX : (e as React.MouseEvent).clientX;
+
+    const thumbWidth = thumbRef.current?.offsetWidth || 0;
+    // 클릭한 지점이 썸네일의 중앙이 되도록 progress 계산
+    const progress = Math.min(
+      Math.max((clientX - rect.left - thumbWidth / 2) / (rect.width - thumbWidth), 0),
+      1,
+    );
+
+    const { scale, y } = currentTransform.current;
+    const containerSize = containerRef.current.offsetWidth;
+    const contentSize = imgRef.current.offsetWidth * scale;
+    const maxScroll = contentSize - containerSize;
+
+    if (maxScroll > 0) {
+      pinchZoomRef.current.scaleTo({
+        x: -progress * maxScroll,
+        y: y,
+        scale: scale,
+        animated: true,
+      });
     }
   }, []);
 
@@ -100,8 +164,11 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
 
   return (
     <div className='relative h-full overflow-hidden bg-white'>
-      {/* 지도 이미지 영역 (줌/팬 지원) - 부모 컨테이너를 가득 채우도록 수정 */}
-      <div className='absolute inset-x-0 top-0 bottom-[210px] z-0 overflow-hidden'>
+      {/* 지도 이미지 영역 (줌/팬 지원) */}
+      <div
+        ref={containerRef}
+        className='absolute inset-x-0 top-0 bottom-[210px] z-0 overflow-hidden'
+      >
         <QuickPinchZoom
           ref={pinchZoomRef}
           onUpdate={onUpdate}
@@ -129,6 +196,22 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             {/* 하단 정보창(바텀 시트) 여백 제거 (스크롤 방지) */}
           </div>
         </QuickPinchZoom>
+      </div>
+
+      {/* 지도 연동형 수평 스크롤바 */}
+      <div
+        ref={trackRef}
+        onClick={handleTrackInteraction}
+        onTouchMove={handleTrackInteraction}
+        className={cn(
+          'absolute bottom-[225px] left-1/2 z-20 h-1.5 w-[80%] -translate-x-1/2 overflow-hidden rounded-[15px] bg-white shadow-[0_0_4px_0_rgba(0,0,0,0.20)] transition-opacity duration-300',
+          isExpanded ? 'pointer-events-none opacity-0' : 'opacity-0', // 초기에는 숨김, contentWidth > containerWidth일 때 onUpdate에서 보이게 함
+        )}
+      >
+        <div
+          ref={thumbRef}
+          className='bg-grey-40 h-full rounded-full transition-transform duration-75 ease-out'
+        />
       </div>
 
       {/* 커스텀 바텀시트 */}
