@@ -261,56 +261,64 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             </div>
           </div>
 
-          {/* 구분선 */}
-          <div className='bg-grey-02 mb-4 h-px w-full shrink-0' />
-
-          {/* 건물 카테고리일 때만 표시되는 S1~S4 정보 블록 (Peek에서도 보임) */}
-          {displayInfo.category === '건물' && (
-            <div className='mb-6 flex gap-2'>
-              {[
-                { label: '캠퍼스', value: 'S' },
-                { label: '건물', value: '1~10' },
-                { label: '층', value: '3' },
-                { label: '강의실', value: '01~' },
-              ].map((item, idx) => (
-                <div key={idx} className='flex flex-col items-center gap-1.5'>
-                  <div className='bg-blue-05 text-title02 flex h-[38px] min-w-[50px] items-center justify-center px-2'>
-                    {item.value}
+          {/* 건물 카테고리일 때만 표시되는 구분선 및 S1~S4 정보 블록 (Peek에서도 보임) */}
+          {selectedBuilding?.category === '건물' && (
+            <>
+              {/* 구분선 */}
+              <div className='bg-grey-02 mb-4 h-px w-full shrink-0' />
+              <div className='mb-6 flex gap-2'>
+                {[
+                  { label: '캠퍼스', value: 'S' },
+                  { label: '건물', value: '1~10' },
+                  { label: '층', value: '3' },
+                  { label: '강의실', value: '01~' },
+                ].map((item, idx) => (
+                  <div key={idx} className='flex flex-col items-center gap-1.5'>
+                    <div className='bg-blue-05 text-title02 flex h-[38px] min-w-[50px] items-center justify-center px-2'>
+                      {item.value}
+                    </div>
+                    <span className='text-body05 text-grey-40'>{item.label}</span>
                   </div>
-                  <span className='text-body05 text-grey-40'>{item.label}</span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* 편의시설 등 다른 카테고리일 때의 구분선 */}
+          {selectedBuilding && selectedBuilding.category !== '건물' && (
+            <div className='bg-grey-02 mb-4 h-px w-full shrink-0' />
+          )}
+        </div>
+
+        {/* 상세 정보 리스트 - 건물/시설 선택 시 & 확장 시에만 표시 */}
+        {selectedBuilding && (
+          <div
+            className={cn(
+              'no-scrollbar flex-1 resize-none overflow-y-auto px-5 transition-opacity duration-300',
+              !isExpanded ? 'pointer-events-none opacity-0' : 'opacity-100',
+            )}
+          >
+            {/* 상세 정보 리스트  */}
+            <div className='grid grid-cols-[max-content_1fr] gap-x-4 gap-y-5 pb-2'>
+              {displayInfo.subItems?.map((info, idx) => (
+                <div key={idx} className='contents'>
+                  <div className='flex items-start gap-1 pt-0.5'>
+                    <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
+                      {info.location}
+                    </span>
+                    <div className='bg-blue-15 mt-4 h-[10px] w-[1px] rotate-45' />
+                  </div>
+                  <div className='flex flex-col'>
+                    <span className='text-body03 text-black'>{info.name}</span>
+                    {info.description && (
+                      <span className='text-grey-40 text-[10px]'>{info.description}</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* 상세 정보 리스트 - 확장 시에만 투명도 100% */}
-        <div
-          className={cn(
-            'no-scrollbar flex-1 resize-none overflow-y-auto px-5 transition-opacity duration-300',
-            !isExpanded ? 'pointer-events-none opacity-0' : 'opacity-100',
-          )}
-        >
-          {/* 상세 정보 리스트  */}
-          <div className='grid grid-cols-[max-content_1fr] gap-x-4 gap-y-5 pb-2'>
-            {displayInfo.subItems?.map((info, idx) => (
-              <div key={idx} className='contents'>
-                <div className='flex items-start gap-1 pt-0.5'>
-                  <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
-                    {info.location}
-                  </span>
-                  <div className='bg-blue-15 mt-4 h-[10px] w-[1px] rotate-45' />
-                </div>
-                <div className='flex flex-col'>
-                  <span className='text-body03 text-black'>{info.name}</span>
-                  {info.description && (
-                    <span className='text-grey-40 text-[10px]'>{info.description}</span>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
+        )}
       </div>
 
       {/* 지도 목록 버튼 */}
