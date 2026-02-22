@@ -8,12 +8,11 @@ import CampusMap from '@/components/molecules/sections/campus-map';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import { NoticeSlideSection } from '@/components/molecules/sections/notice';
-import NoticeTabSection from '@/components/molecules/sections/NoticeTabSection';
-import Footer from '@/components/organisms/Footer';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
-import { useHeaderStore } from '@/store/useHeaderStore';
+import NoticeSection from '@/components/molecules/sections/notice';
+import FilteringMealSection from '@/components/molecules/sections/filtering-meal';
 
 /**
  * 전역 클래스 통합 유틸리티
@@ -37,7 +36,6 @@ const TABS = [
 ] as const;
 
 type TabType = (typeof TABS)[number];
-
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
@@ -49,9 +47,10 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
   const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
-    const selectedEl = tabRefs.current[activeTab];
-    if (selectedEl) {
-      selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (!isPanelVisible) return;
+    const el = tabRefs.current[activeTab];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     }
   }, [activeTab, isPanelVisible]);
 
@@ -85,39 +84,54 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
   );
 };
 
+type TabContentProps = {
+  activeTab: TabType;
+  onNavigateToNoticeTab?: () => void;
+  onNavigateToBroadcastTab?: () => void;
+  onNavigateToNewsTab?: () => void;
+  onNavigateToBoardTab?: () => void;
+  onNavigateToAcademicTab?: () => void;
+};
+
 /**
  * 'ALL' 탭 컨텐츠 컴포넌트
  */
-const AllTab = () => (
+const AllTab = ({
+  onNavigateToNoticeTab,
+  onNavigateToBroadcastTab,
+  onNavigateToNewsTab,
+  onNavigateToBoardTab,
+  onNavigateToAcademicTab,
+}: TabContentProps) => (
   <div className='bg-grey-02 flex flex-col gap-2'>
     {/* 식단 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <MealSection all={true} />
+      <FilteringMealSection />
     </div>
 
     {/* 공지사항 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <NoticeSlideSection all={true} />
+      <NoticeSlideSection all={true} onSeeMoreClick={onNavigateToNoticeTab} />
     </div>
 
     {/* 학사일정 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <AcademicScheduleWidget all={true} />
+      <AcademicScheduleWidget all={true} onSeeMoreClick={onNavigateToAcademicTab} />
     </div>
 
     {/* 게시판 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <BoardSection all={true} />
+      <BoardSection all={true} onSeeMoreClick={onNavigateToBoardTab} />
     </div>
 
     {/* 명대신문 섹션 */}
     <div className='flex flex-col gap-4 bg-white pt-4'>
-      <NewsSection all={true} />
+      <NewsSection all={true} onSeeMoreClick={onNavigateToNewsTab} />
     </div>
 
     {/* 명대뉴스 섹션 */}
     <div className='flex flex-col gap-4 bg-white py-4'>
-      <BroadcastSection all={true} />
+      <BroadcastSection all={true} onSeeMoreClick={onNavigateToBroadcastTab} />
     </div>
   </div>
 );
@@ -126,19 +140,21 @@ const AllTab = () => (
  * 개별 탭 컨텐츠를 위한 공통 래퍼 컴포넌트
  */
 const TabWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className='flex flex-col gap-2 p-2'>{children}</div>
+  <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
 );
-
-type TabPropType = { isActive?: boolean; showWriteButton?: boolean };
 
 /**
  * 탭 타입별 렌더링 컴포넌트 매핑 객체
  * 컴포넌트들을 미리 정의 (Lazy Loading으로 성능 최적화)
  */
-const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
+const TAB_CONTENT: Record<TabType, React.ComponentType<TabContentProps>> = {
   ALL: AllTab,
-  명지도: (props: { isActive?: boolean }) => <CampusMap {...props} />,
-  공지사항: () => <NoticeTabSection />,
+  명지도: () => <CampusMap />,
+  공지사항: () => (
+    <TabWrapper>
+      <NoticeSection />
+    </TabWrapper>
+  ),
   학사일정: () => (
     <div>
       <AcademicScheduleWidget />
@@ -149,15 +165,15 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
       <MealSection />
     </TabWrapper>
   ),
-  게시판: () => <BoardSection all={true} />,
+  게시판: () => <BoardSection all={false} />,
   명대신문: () => (
     <TabWrapper>
-      <NewsSection all={true} />
+      <NewsSection />
     </TabWrapper>
   ),
   명대뉴스: () => (
     <TabWrapper>
-      <BroadcastSection all={false} />
+      <BroadcastSection />
     </TabWrapper>
   ),
 };
@@ -167,25 +183,9 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabPropType>> = {
  * 탭 상태는 Slides 내부에서만 관리. 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
-  const { setActiveMainSlide, selectedTab, setSelectedTab } = useHeaderStore();
+  // 현재 활성화된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
-  // ALL 탭에서 좌측 경계 드래그 감지용
-  const touchStartX = useRef(0);
-  const isDraggingPastLeft = useRef(false);
-
-  // 외부(메인 홈)에서 탭 선택 시 처리
-  useEffect(() => {
-    if (selectedTab && TABS.includes(selectedTab as TabType)) {
-      const tab = selectedTab as TabType;
-      setActiveTab(tab);
-      if (swiper) {
-        const index = TABS.indexOf(tab);
-        swiper.slideTo(index);
-      }
-      setSelectedTab(null); // 한 번 처리 후 초기화
-    }
-  }, [selectedTab, swiper, setSelectedTab]);
   const rootRef = useRef<HTMLDivElement>(null);
   const [isPanelVisible, setIsPanelVisible] = useState(false);
 
@@ -210,7 +210,7 @@ const Slides = () => {
     }
   };
 
-  // 명지도 탭 활성화 시 body 스크롤 방지 (푸터는 CSS로 처리)
+  // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
   useEffect(() => {
     const footer = document.querySelector('footer');
     if (!isPanelVisible) {
@@ -219,12 +219,15 @@ const Slides = () => {
       return;
     }
     if (activeTab === '명지도') {
+      if (footer) footer.style.display = 'none';
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      if (footer) footer.style.display = 'block';
+      document.body.style.overflow = 'auto';
     }
     return () => {
-      document.body.style.overflow = '';
+      if (footer) footer.style.display = 'block';
+      document.body.style.overflow = 'auto';
     };
   }, [activeTab, isPanelVisible]);
 
@@ -242,41 +245,41 @@ const Slides = () => {
           onSwiper={setSwiper}
           onSlideChange={(s) => setActiveTab(TABS[s.activeIndex])}
           className='h-full w-full'
-          onTouchStart={(_swiper, e) => {
-            isDraggingPastLeft.current = false;
-            if ('touches' in e) touchStartX.current = e.touches[0].clientX;
-          }}
-          onSetTranslate={(s) => {
-            // ALL 탭에서 translate가 양수(좌측 경계 초과)일 때 감지
-            if (activeTab === 'ALL' && s.translate > 0) {
-              isDraggingPastLeft.current = true;
-            }
-          }}
-          onTouchEnd={(_swiper, e) => {
-            // ALL 탭에서 좌측 경계를 충분히 넘갼 드래그했으면 메인으로
-            if (activeTab === 'ALL' && 'changedTouches' in e) {
-              const diff = e.changedTouches[0].clientX - touchStartX.current;
-              if (isDraggingPastLeft.current || diff < -60) {
-                setActiveMainSlide(1);
-              }
-            }
-            isDraggingPastLeft.current = false;
-          }}
+          nested={true}
+          resistance={true}
+          resistanceRatio={0}
         >
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
             return (
-              <SwiperSlide
-                key={tab}
-                className={cn('h-full w-full', tab !== '명지도' && 'overflow-y-auto')}
-              >
+              <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
                 {tab === '게시판' ? (
-                  <BoardSection showWriteButton={activeTab === '게시판'} hideSort={true} />
+                  <BoardSection showWriteButton={activeTab === '게시판'} />
                 ) : (
-                  <Content isActive={activeTab === tab} />
+                  <Content
+                    activeTab={activeTab}
+                    onNavigateToNoticeTab={() => {
+                      setActiveTab('공지사항');
+                      swiper?.slideTo(TABS.indexOf('공지사항'));
+                    }}
+                    onNavigateToBroadcastTab={() => {
+                      setActiveTab('명대뉴스');
+                      swiper?.slideTo(TABS.indexOf('명대뉴스'));
+                    }}
+                    onNavigateToNewsTab={() => {
+                      setActiveTab('명대신문');
+                      swiper?.slideTo(TABS.indexOf('명대신문'));
+                    }}
+                    onNavigateToBoardTab={() => {
+                      setActiveTab('게시판');
+                      swiper?.slideTo(TABS.indexOf('게시판'));
+                    }}
+                    onNavigateToAcademicTab={() => {
+                      setActiveTab('학사일정');
+                      swiper?.slideTo(TABS.indexOf('학사일정'));
+                    }}
+                  />
                 )}
-                {/* 명지도 제외 탭에서 스크롤 맨 아래 푸터 표시 */}
-                {tab !== '명지도' && <Footer />}
               </SwiperSlide>
             );
           })}

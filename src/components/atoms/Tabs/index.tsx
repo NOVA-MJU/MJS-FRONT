@@ -1,3 +1,4 @@
+import type { Category } from '@/api/search';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -5,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 interface TabComponentProps {
   tabs: Record<string, string>;
   currentTab: string;
-  setCurrentTab: (tab: string) => void;
+  setCurrentTab: (tab: Category | string) => void;
   className?: string;
 }
 
@@ -94,7 +95,7 @@ function ChipTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
               aria-selected={isSelected}
               aria-controls={`tab-panel-${key}`}
               onClick={() => setCurrentTab(key)}
-              className={clsx`text-caption03 shrink-0 cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap ${isSelected ? 'bg-blue-35 text-white' : 'border-grey-10 text-grey-20 border'} `}
+              className={clsx`text-caption03 shrink-0 cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap ${isSelected ? 'bg-blue-35 text-white' : 'border-grey-10 text-grey-40 border'} `}
             >
               {label}
             </button>

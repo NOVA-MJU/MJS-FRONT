@@ -7,6 +7,8 @@ import { getBlockTextEditorContentPreview } from '../../../components/organisms/
 import { postBoard } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
 import { FiChevronDown } from 'react-icons/fi';
+import { useAuthStore } from '@/store/useAuthStore';
+import LoginErrorPage from '@/pages/LoginError';
 
 type Category = 'FREE' | 'NOTICE';
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -22,6 +24,7 @@ const CATEGORY_LABEL: Record<Category, string> = {
  */
 export default function BoardWrite() {
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
   const titleRef = useRef<HTMLInputElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
@@ -125,16 +128,24 @@ export default function BoardWrite() {
     editor.focus();
   };
 
+  if (!user) {
+    return (
+      <div className='flex flex-1 flex-col items-center justify-center p-4 md:p-8'>
+        <LoginErrorPage />
+      </div>
+    );
+  }
+
   return (
-    <div className='flex-1 p-4 md:p-8 gap-6 flex flex-col'>
+    <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
       {/* 상단 네비게이션 */}
-      <div className='flex justify-between items-center'>
+      <div className='flex items-center justify-between'>
         <NavigationUp onClick={handleBack} />
       </div>
 
       {/* 제목 입력 */}
       <input
-        className='py-2 px-3 placeholder-grey-20 font-semibold text-base border-blue-05 border-1 md:border-2 rounded-lg focus:outline-none md:py-3 md:text-3xl'
+        className='placeholder-grey-20 border-blue-05 rounded-lg border-1 px-3 py-2 text-base font-semibold focus:outline-none md:border-2 md:py-3 md:text-3xl'
         placeholder='제목'
         ref={titleRef}
         onChange={() => setIsDirty(true)}
@@ -143,7 +154,7 @@ export default function BoardWrite() {
       {/* 카테고리 선택 드롭다운 */}
       <div className='flex flex-col'>
         <button
-          className='flex py-2 px-4 text-base border-1 md:border-2 justify-between border-blue-05 rounded-lg'
+          className='border-blue-05 flex justify-between rounded-lg border-1 px-4 py-2 text-base md:border-2'
           onClick={() => setIsOpened(!isOpened)}
         >
           <span className='text-blue-10'>{CATEGORY_LABEL[selectedCategory]}</span>
@@ -154,10 +165,10 @@ export default function BoardWrite() {
         </button>
 
         {isOpened && (
-          <div className='mx-1 border-x-1 border-b-1 md:border-x-2 md:border-b-2 border-blue-05 rounded-b-lg bg-white'>
+          <div className='border-blue-05 mx-1 rounded-b-lg border-x-1 border-b-1 bg-white md:border-x-2 md:border-b-2'>
             {options.map((option) => (
               <div
-                className='flex py-2 px-4 text-grey-40 cursor-pointer hover:bg-blue-01'
+                className='text-grey-40 hover:bg-blue-01 flex cursor-pointer px-4 py-2'
                 key={option}
                 onClick={() => {
                   setSelectedCategory(option);
@@ -174,10 +185,10 @@ export default function BoardWrite() {
 
       {/* 에디터 */}
       <div
-        className='flex-1 px-4 md:px-0 py-2 border-1 md:border-2 border-blue-05 rounded-lg cursor-text'
+        className='border-blue-05 flex-1 cursor-text rounded-lg border-1 px-4 py-2 md:border-2 md:px-0'
         onClick={handleFocusEditor}
       >
-        <div className='py-2 md:px-0 overflow-visible' ref={editorWrapperRef}>
+        <div className='overflow-visible py-2 md:px-0' ref={editorWrapperRef}>
           <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
       </div>
@@ -185,11 +196,11 @@ export default function BoardWrite() {
       {/* 완료 버튼 */}
       <div className='flex justify-end'>
         <button
-          className='w-24 md:w-46 bg-grey-10 cursor-pointer p-2 md:p-3 rounded-xl disabled:opacity-50'
+          className='bg-grey-10 w-24 cursor-pointer rounded-xl p-2 disabled:opacity-50 md:w-46 md:p-3'
           onClick={handleUploadPost}
           disabled={isLoading}
         >
-          <p className='text-black text-body02'>완료</p>
+          <p className='text-body02 text-black'>완료</p>
         </button>
       </div>
     </div>

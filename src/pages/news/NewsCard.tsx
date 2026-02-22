@@ -89,10 +89,10 @@ function NewsCard({ news, fallbackSrc = '/default-thumbnail.png' }: NewsCardProp
               className='text-body05 line-clamp-2 text-black md:line-clamp-3'
               dangerouslySetInnerHTML={{ __html: safeContent }}
             />
-            <p className='text-grey-20 text-caption01 line-clamp-2 md:line-clamp-3'>
+            <p className='text-grey-30 text-caption01 line-clamp-2 md:line-clamp-3'>
               {news.reporter}
             </p>
-            <time className='text-grey-10 text-caption02'>{formatToDotDate(news.date)}</time>
+            <time className='text-grey-30 text-caption04'>{formatToDotDate(news.date)}</time>
           </div>
         </a>
       </article>
