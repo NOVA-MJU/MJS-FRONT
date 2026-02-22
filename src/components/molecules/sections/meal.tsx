@@ -88,7 +88,7 @@ export default function MealSection({ all = false }: { all?: boolean }) {
             key={category}
             className={`border-grey-10 rounded-2xl border p-4 ${cardClassName ?? ''}`}
           >
-            <h4 className='text-title03 text-blue-20 text-center font-semibold'>{label}</h4>
+            <h4 className='text-body02 text-blue-20 text-center font-semibold'>{label}</h4>
             <div className='bg-grey-10 mt-2 mb-3 h-px w-full' />
             <div className={bodyClassName ?? ''}>
               {isLoading ? (
@@ -137,7 +137,7 @@ export default function MealSection({ all = false }: { all?: boolean }) {
               type='button'
               onClick={onPrev}
               disabled={atStart}
-              className='text-grey-20 disabled:text-grey-10'
+              className='text-grey-40 disabled:text-grey-10'
               aria-label='이전 날짜'
             >
               <IoChevronBack size={24} />
@@ -147,7 +147,7 @@ export default function MealSection({ all = false }: { all?: boolean }) {
               type='button'
               onClick={onNext}
               disabled={atEnd}
-              className='text-grey-20 disabled:text-grey-10'
+              className='text-grey-40 disabled:text-grey-10'
               aria-label='다음 날짜'
             >
               <IoChevronForward size={24} />
@@ -170,7 +170,7 @@ export default function MealSection({ all = false }: { all?: boolean }) {
               type='button'
               onClick={onPrev}
               disabled={atStart}
-              className='text-grey-20 disabled:text-grey-10'
+              className='text-grey-40 disabled:text-grey-10'
               aria-label='이전 날짜'
             >
               <IoChevronBack size={24} />
@@ -180,7 +180,7 @@ export default function MealSection({ all = false }: { all?: boolean }) {
               type='button'
               onClick={onNext}
               disabled={atEnd}
-              className='text-grey-20 disabled:text-grey-10'
+              className='text-grey-40 disabled:text-grey-10'
               aria-label='다음 날짜'
             >
               <IoChevronForward size={24} />

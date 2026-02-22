@@ -11,16 +11,15 @@ interface NoticeItemProps {
 
 const categoryLabel: Record<string, string> = {
   general: '일반',
-  law: '일반',
   academic: '학사',
   scholarship: '장학',
   career: '진로',
   activity: '학생활동',
-  rule: '학칙개정',
+  law: '학칙개정',
   REPORT: '보도',
+  SOCIETY: '사회',
   FREE: '자유',
   NOTICE: '정보',
-  SOCIETY: '사회',
 };
 
 export default function NoticeItem({ id, category, title, date, link }: NoticeItemProps) {

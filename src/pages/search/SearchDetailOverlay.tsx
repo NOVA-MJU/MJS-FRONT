@@ -2,7 +2,6 @@ import SearchBar from '../../components/atoms/SearchBar';
 import { useEffect, useState } from 'react';
 import {
   getSearchAISummary,
-  getSearchOverview,
   getSearchResult,
   type GetSearchAISummaryRes,
   type SearchResultItemRes,
@@ -14,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import type { Category } from '@/api/search';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -56,7 +56,7 @@ export default function SearchDetail() {
     const tab = searchParams.get('tab');
     return (isValidTab(tab) ? tab : 'ALL') as SearchTabKey;
   });
-  const [categoryTab, setCategoryTab] = useState<string>('all');
+  const [categoryTab, setCategoryTab] = useState<Category | string>('all');
   const [isLinkOpen, setIsLinkOpen] = useState(false);
   const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
   const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
@@ -97,19 +97,22 @@ export default function SearchDetail() {
   /**
    * 검색 요청 function
    */
+  const filterByType = (content: SearchResultItemRes[], type: string) =>
+    content.filter((item) => item.type?.toLowerCase() === type.toLowerCase()).slice(0, 5);
+
   async function handleSearch(text: string) {
     if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
-      const res = await getSearchOverview(text, sort);
-      setNoticeItems(res.notice);
-      setBoardItems(res.community);
-      setNewsItems(res.news);
-      setBroadcastItems(res.broadcast);
+      const res = await getSearchResult(text, 'all', 'all', sort);
+      const content = res.content as unknown as SearchResultItemRes[];
+      setNoticeItems(filterByType(content, 'notice'));
+      setBoardItems(filterByType(content, 'community'));
+      setNewsItems(filterByType(content, 'news'));
+      setBroadcastItems(filterByType(content, 'broadcast'));
     } else {
       let type = tapLabel[currentTab];
-      if (categoryTab === 'department') {
-        type = 'DEPARTMENT_NOTICE';
-      }
-      const res = await getSearchResult(text, type, sort, page, 10);
+      if (currentTab === '학사일정' && categoryTab === 'academic') type = 'NOTICE';
+      const category = currentTab === '명대뉴스' ? 'all' : categoryTab;
+      const res = await getSearchResult(text, type, category, sort, page, 10);
       const items = res.content as unknown as SearchResultItemRes[];
       setItems(items);
       setTotalPages(res.totalPages);
@@ -134,7 +137,6 @@ export default function SearchDetail() {
    * 검색어 초기값 반영 (search parameter 반영)
    */
   useEffect(() => {
-    setSort('relevance');
     (async () => {
       if (!keyword) {
         setInitialContent('');
@@ -159,12 +161,24 @@ export default function SearchDetail() {
   }, [keyword, page]);
 
   useEffect(() => {
+    setSort('relevance');
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', '1');
+    setSearchParams(newParams);
+  }, [keyword]);
+
+  useEffect(() => {
     handleSearch(keyword ?? '');
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', '1');
+    setSearchParams(newParams);
   }, [sort, categoryTab]);
 
   useEffect(() => {
     setSort('relevance');
-    setCategoryTab('all');
+    if (currentTab !== '게시판' && currentTab !== '학사일정') setCategoryTab('all');
+    else if (currentTab === '게시판') setCategoryTab('NOTICE');
+    else if (currentTab === '학사일정') setCategoryTab('MJU_CALENDAR');
     handleSearch(keyword ?? '');
   }, [currentTab]);
 
@@ -242,7 +256,9 @@ export default function SearchDetail() {
                   {aiSummary.document_count > 0 && (
                     <div>
                       <div className='text-body05 text-grey-30 flex items-center justify-between py-1'>
-                        <p className='w-3/4 break-words'>{aiSummary.sources?.[0]?.title}</p>
+                        <p className='line-clamp-1 w-3/4 break-words'>
+                          {aiSummary.sources?.[0]?.title}
+                        </p>
                         <div className='flex items-center gap-1'>
                           {aiSummary.document_count > 1 && (
                             <div
@@ -271,7 +287,7 @@ export default function SearchDetail() {
                             key={idx}
                             className='text-body05 text-grey-30 flex items-center justify-between py-1'
                           >
-                            <p className='w-3/4 break-words'>{source.title}</p>
+                            <p className='line-clamp-1 w-3/4 break-words'>{source.title}</p>
                             <a href={source.url} className='bg-blue-05 rounded-full p-0.5'>
                               <IoMdLink size={15} className='text-mju-primary rotate-135' />
                             </a>
