@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { MapPin } from '@/components/atoms/map-pin';
 import { MAP_DATA, type Building } from '@/constants/map';
-import { BUILDING_PINS, ENTRANCE_PINS } from '@/constants/map-pins';
+import { BUILDING_HIGHLIGHT_MAP, BUILDING_PINS, ENTRANCE_PINS } from '@/constants/map-pins';
 import MapSidebar from './map-sidebar';
 
 /**
@@ -151,6 +151,28 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     } else {
       setIsExpanded(false);
     }
+
+    // 활성화된 핀들의 중심 좌표로 지도 이동
+    if (building && pinchZoomRef.current && imgRef.current) {
+      const pinIds = BUILDING_HIGHLIGHT_MAP[building.id] ?? [];
+      if (pinIds.length === 0) return;
+
+      // 활성 핀들의 좌표를 가져와 첫 번째 핀으로 이동
+      const activePins = BUILDING_PINS.filter((p) => pinIds.includes(p.id));
+      if (activePins.length === 0) return;
+
+      const firstPin = activePins[0];
+      const img = imgRef.current;
+      const cx = img.offsetWidth * (firstPin.left / 100);
+      const cy = img.offsetHeight * (firstPin.top / 100);
+
+      pinchZoomRef.current.alignCenter({
+        x: cx,
+        y: cy,
+        scale: 3,
+        animated: true,
+      });
+    }
   }, []);
 
   // 핀 클릭 핸들러 (이동 + 정보 표시)
@@ -193,6 +215,11 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     const entranceBuilding = MAP_DATA.campuses[0].buildings.find((b) => b.id === 'f-2');
     handleBuildingSelect(entranceBuilding || null);
   }, [handleBuildingSelect]);
+
+  // 선택된 항목 기반으로 강조할 핀 ID 목록 계산
+  const activePinIds: string[] = selectedBuilding
+    ? (BUILDING_HIGHLIGHT_MAP[selectedBuilding.id] ?? [])
+    : [];
 
   // 표시할 건물 정보 (기본값 설정 - 인문캠퍼스)
   const displayInfo: Building =
@@ -246,20 +273,24 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             />
 
             {/* 건물 번호 핀 */}
-            {BUILDING_PINS.map((pin) => (
-              <div
-                key={pin.id}
-                className='absolute -translate-x-1/2 -translate-y-1/2'
-                style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
-              >
-                <MapPin
-                  size='small'
-                  variant='number'
-                  value={pin.value}
-                  onClick={() => handlePinClick(pin)}
-                />
-              </div>
-            ))}
+            {BUILDING_PINS.map((pin) => {
+              // activePinIds에 포함된 핀은 물방울형(large)으로, 나머지는 원형(small)으로 표시
+              const isActive = activePinIds.length === 0 || activePinIds.includes(pin.id);
+              return (
+                <div
+                  key={pin.id}
+                  className='absolute -translate-x-1/2 -translate-y-1/2'
+                  style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
+                >
+                  <MapPin
+                    size={isActive && activePinIds.length > 0 ? 'large' : 'small'}
+                    variant='number'
+                    value={pin.value}
+                    onClick={() => handlePinClick(pin)}
+                  />
+                </div>
+              );
+            })}
 
             {/* 출입구 핀 */}
             {ENTRANCE_PINS.map((pin) => (

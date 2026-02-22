@@ -37,29 +37,19 @@ export const MapPin = ({
           className,
         )}
       >
-        {/* 물방울 모양 배경 SVG */}
-        <svg
-          width='37'
-          height='50'
-          viewBox='0 0 37 50'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-          className='absolute inset-0'
-        >
-          <path
-            fillRule='evenodd'
-            clipRule='evenodd'
-            d='M18.5 50C18.5 50 37 34.0244 37 18.2927C37 8.18987 28.7173 0 18.5 0C8.28273 0 0 8.18987 0 18.2927C0 34.0244 18.5 50 18.5 50Z'
-            fill='#2587FF'
-          />
-          {variant === 'default' && <circle cx='18.5' cy='18' r='7.5' fill='white' />}
-        </svg>
+        {/* 핀 */}
+        <img src='/assets/location-num.svg' alt='' className='absolute inset-0 h-full w-full' />
 
         {/* 숫자 노출 영역 */}
         {variant === 'number' && (
-          <span className='z-10 mt-[8px] flex h-5 w-5 items-center justify-center text-[16px] leading-none font-semibold text-white'>
+          <span className='z-10 mt-[7px] flex h-5 w-full items-center justify-center text-[14px] leading-none font-semibold text-white'>
             {value}
           </span>
+        )}
+
+        {/* 기본(흰색 원) */}
+        {variant === 'default' && (
+          <span className='z-10 mt-[10px] block h-[13px] w-[13px] rounded-full bg-white' />
         )}
       </button>
     );
