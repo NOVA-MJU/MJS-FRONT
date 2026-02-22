@@ -133,26 +133,25 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
   const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
 
   // 건물 선택 핸들러
-  const handleBuildingSelect = useCallback((building: Building) => {
+  const handleBuildingSelect = useCallback((building: Building | null) => {
     setSelectedBuilding(building);
     setIsSidebarOpen(false);
-    // 선택 시 peek 상태로 유지
-    setIsExpanded(true);
+    // 건물 선택 시에는 확장(상세정보 보기), 캠퍼스 선택 시에는 peek 상태로 유지
+    if (building) {
+      setIsExpanded(true);
+    } else {
+      setIsExpanded(false);
+    }
   }, []);
 
-  // 표시할 건물 정보 (기본값 설정 - 타입 오류 방지를 위해 명시적 타입 지정)
+  // 표시할 건물 정보 (기본값 설정 - 인문캠퍼스)
   const displayInfo: Building =
     (selectedBuilding as Building) ||
     ({
+      id: 'campus-humane',
       name: '인문캠퍼스',
-      category: '건물',
-      subItems: [
-        { location: 'F10', name: '대강당(채플관)' },
-        { location: 'F5-6', name: '생활관 연결 통로' },
-        { location: 'F4', name: '편의점(emart24)' },
-        { location: 'F2', name: '학관 구름다리(학생회관 4층 연결)' },
-        { location: 'F1', name: '프린터, 증명서 발급기' },
-      ],
+      category: '캠퍼스',
+      subItems: [],
     } as unknown as Building);
 
   // 탭이 변경되어 비활성화될 때 사이드바 닫기
