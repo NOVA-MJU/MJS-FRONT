@@ -39,9 +39,9 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
       // 레이아웃이 안정화될 때까지 잠시 대기 후 설정
       setTimeout(() => {
         pinchZoomRef.current.scaleTo({
-          x: 0,
+          x: 200,
           y: 0,
-          scale: 1.8,
+          scale: 3,
           animated: false,
         });
         // 줌 설정이 완료되면 지도를 보이게 처리
