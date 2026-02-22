@@ -4,7 +4,9 @@ import { createPortal } from 'react-dom';
 import QuickPinchZoom, { make3dTransformValue } from 'react-quick-pinch-zoom';
 import { twMerge } from 'tailwind-merge';
 
+import { MapPin } from '@/components/atoms/map-pin';
 import { type Building } from '@/constants/map';
+import { BUILDING_PINS, ENTRANCE_PINS } from '@/constants/map-pins';
 import MapSidebar from './map-sidebar';
 
 /**
@@ -188,7 +190,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             ref={mapRef}
             style={{ transformOrigin: '0 0' }}
             className={cn(
-              'h-fit w-fit transition-opacity duration-300 will-change-transform',
+              'relative h-fit w-fit transition-opacity duration-300 will-change-transform',
               isMapReady ? 'opacity-100' : 'opacity-0',
             )}
           >
@@ -201,7 +203,28 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
                 setInitialZoom();
               }}
             />
-            {/* 하단 정보창(바텀 시트) 여백 제거 (스크롤 방지) */}
+
+            {/* 건물 번호 핀 */}
+            {BUILDING_PINS.map((pin) => (
+              <div
+                key={pin.id}
+                className='absolute -translate-x-1/2 -translate-y-1/2'
+                style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
+              >
+                <MapPin size='small' variant='number' value={pin.value} />
+              </div>
+            ))}
+
+            {/* 출입구 핀 */}
+            {ENTRANCE_PINS.map((pin) => (
+              <div
+                key={pin.id}
+                className='absolute -translate-x-1/2 -translate-y-1/2'
+                style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
+              >
+                <MapPin size='small' variant='icon' />
+              </div>
+            ))}
           </div>
         </QuickPinchZoom>
       </div>
