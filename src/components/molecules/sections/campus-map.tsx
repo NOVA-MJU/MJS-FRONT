@@ -73,20 +73,23 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
 
     // 스크롤바 동기화 로직
     if (thumbRef.current && trackRef.current && imgRef.current && containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const contentWidth = imgRef.current.offsetWidth * scale;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const imgRect = imgRef.current.getBoundingClientRect();
+
+      const containerWidth = containerRect.width;
+      const contentWidth = imgRect.width;
       const trackWidth = trackRef.current.offsetWidth;
 
-      if (contentWidth > containerWidth) {
-        const maxScrollX = contentWidth - containerWidth;
-        // x는 음수이므로 반전 처리, 0~1 사이로 제한
-        const progress = Math.min(Math.max(-x / maxScrollX, 0), 1);
+      if (contentWidth > containerWidth + 0.5) {
+        // 실제 화면에서의 물리적 거리 차이 계산
+        const currentPullX = containerRect.left - imgRect.left;
+        const maxPullX = contentWidth - containerWidth;
+        const progress = Math.min(Math.max(currentPullX / maxPullX, 0), 1);
 
         // 썸네일 너비 계산 (컨테이너 대비 비율 적용, 최소 40px)
         const thumbWidth = Math.max((containerWidth / contentWidth) * trackWidth, 40);
         thumbRef.current.style.width = `${thumbWidth}px`;
 
-        // 이동 거리 계산 (thumbWidth를 제외한 가용 공간 내에서 progress 적용)
         const maxMove = trackWidth - thumbWidth;
         thumbRef.current.style.transform = `translateX(${progress * maxMove}px)`;
         trackRef.current.style.opacity = '1';
@@ -115,8 +118,12 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     );
 
     const { scale, y } = currentTransform.current;
-    const containerSize = containerRef.current.offsetWidth;
-    const contentSize = imgRef.current.offsetWidth * scale;
+    if (!containerRef.current || !imgRef.current) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const imgRect = imgRef.current.getBoundingClientRect();
+    const contentSize = imgRect.width;
+    const containerSize = containerRect.width;
     const maxScroll = contentSize - containerSize;
 
     if (maxScroll > 0) {
@@ -179,9 +186,11 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
         >
           <div
             ref={mapRef}
-            className={`flex h-fit w-fit flex-col items-center transition-opacity duration-300 will-change-transform ${
-              isMapReady ? 'opacity-100' : 'opacity-0'
-            }`}
+            style={{ transformOrigin: '0 0' }}
+            className={cn(
+              'h-fit w-fit transition-opacity duration-300 will-change-transform',
+              isMapReady ? 'opacity-100' : 'opacity-0',
+            )}
           >
             <img
               ref={imgRef}
