@@ -5,7 +5,7 @@ import QuickPinchZoom, { make3dTransformValue } from 'react-quick-pinch-zoom';
 import { twMerge } from 'tailwind-merge';
 
 import { MapPin } from '@/components/atoms/map-pin';
-import { type Building } from '@/constants/map';
+import { MAP_DATA, type Building } from '@/constants/map';
 import { BUILDING_PINS, ENTRANCE_PINS } from '@/constants/map-pins';
 import MapSidebar from './map-sidebar';
 
@@ -153,6 +153,47 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     }
   }, []);
 
+  // 핀 클릭 핸들러 (이동 + 정보 표시)
+  const handlePinClick = useCallback(
+    (pin: (typeof BUILDING_PINS)[number]) => {
+      // 1. 해당 건물 데이터 찾기
+      const building =
+        'targetId' in pin
+          ? MAP_DATA.campuses[0].buildings.find((b) => b.id === pin.targetId)
+          : null;
+
+      // 2. 정보 표시 및 바텀시트 확장
+      handleBuildingSelect(building || null);
+
+      // 3. 지도 이동 로직
+      // alignCenter(x, y, scale): (x, y) 위치를 화면 정중앙으로 이동시키는 API
+      // x, y = 이미지 내 레이아웃 픽셀 좌표 (CSS 기준, scale 1일 때의 좌표)
+      if (pinchZoomRef.current && imgRef.current) {
+        const img = imgRef.current;
+        const iw = img.offsetWidth;
+        const ih = img.offsetHeight;
+
+        // 핀의 이미지 내 절대 픽셀 좌표 (leayout 기준, scale=1)
+        const cx = iw * (pin.left / 100);
+        const cy = ih * (pin.top / 100);
+
+        pinchZoomRef.current.alignCenter({
+          x: cx,
+          y: cy,
+          scale: 3,
+          animated: true,
+        });
+      }
+    },
+    [handleBuildingSelect],
+  );
+
+  // 출입구 핀 클릭 핸들러
+  const handleEntrancePinClick = useCallback(() => {
+    const entranceBuilding = MAP_DATA.campuses[0].buildings.find((b) => b.id === 'f-2');
+    handleBuildingSelect(entranceBuilding || null);
+  }, [handleBuildingSelect]);
+
   // 표시할 건물 정보 (기본값 설정 - 인문캠퍼스)
   const displayInfo: Building =
     (selectedBuilding as Building) ||
@@ -211,7 +252,12 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
                 className='absolute -translate-x-1/2 -translate-y-1/2'
                 style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
               >
-                <MapPin size='small' variant='number' value={pin.value} />
+                <MapPin
+                  size='small'
+                  variant='number'
+                  value={pin.value}
+                  onClick={() => handlePinClick(pin)}
+                />
               </div>
             ))}
 
@@ -222,7 +268,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
                 className='absolute -translate-x-1/2 -translate-y-1/2'
                 style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
               >
-                <MapPin size='small' variant='icon' />
+                <MapPin size='small' variant='icon' onClick={handleEntrancePinClick} />
               </div>
             ))}
           </div>

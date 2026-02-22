@@ -95,14 +95,14 @@ export const MAP_DATA = {
           ],
         },
         {
-          id: 'b-6',
+          id: 'b-8',
           name: '생활관',
           category: '건물',
           campus: '인문캠퍼스',
           subItems: [{ location: 'F1', name: '편의점(세븐일레븐)' }],
         },
         {
-          id: 'b-7',
+          id: 'b-9',
           name: '방목학술정보관(도서관)',
           category: '건물',
           campus: '인문캠퍼스',
@@ -117,7 +117,7 @@ export const MAP_DATA = {
           ],
         },
         {
-          id: 'b-8',
+          id: 'b-10',
           name: 'MCC',
           category: '건물',
           campus: '인문캠퍼스',
