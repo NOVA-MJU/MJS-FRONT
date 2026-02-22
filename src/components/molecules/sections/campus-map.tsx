@@ -377,7 +377,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             )}
           >
             {/* 상세 정보 리스트  */}
-            <div className='grid grid-cols-[max-content_1fr] gap-x-4 gap-y-5 pb-2'>
+            <div className='grid grid-cols-[max-content_1fr] gap-x-4 gap-y-5 pb-12'>
               {displayInfo.subItems?.map((info, idx) => (
                 <div key={idx} className='contents'>
                   <div className='flex items-start gap-1 pt-0.5'>
