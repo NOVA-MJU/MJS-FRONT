@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiHome } from 'react-icons/fi';
 import { format } from 'date-fns';
@@ -60,6 +60,12 @@ export default function DepartmentMainPage() {
   // 학과 정보 (API 응답)
   const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
 
+  // 응답 시점에 선택된 필터와 일치할 때만 반영
+  const filterRef = useRef({ college: selectedCollege, department: selectedDepartment });
+  useEffect(() => {
+    filterRef.current = { college: selectedCollege, department: selectedDepartment };
+  }, [selectedCollege, selectedDepartment]);
+
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
     if (user?.departmentName) {
@@ -76,16 +82,22 @@ export default function DepartmentMainPage() {
 
   // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
     (async () => {
       try {
-        const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
+        const response = await getDepartmentInfo(college, department);
         const info = response.data;
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         if (info) {
           setDepartmentInfo(info);
         } else {
           setDepartmentInfo(null);
         }
       } catch (e) {
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         console.error(e);
         setDepartmentInfo(null);
       }
@@ -136,12 +148,18 @@ export default function DepartmentMainPage() {
 
   // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
     (async () => {
       try {
-        const response = await getStudentCouncilNotices(selectedCollege, selectedDepartment);
+        const response = await getStudentCouncilNotices(college, department);
         const notices = response.data?.content || [];
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         setStudentCouncilNotices(notices);
       } catch (e) {
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         console.error(e);
         setStudentCouncilNotices([]);
       }
