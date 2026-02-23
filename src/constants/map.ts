@@ -47,7 +47,7 @@ export const MAP_DATA = {
             { location: 'F5-6', name: '생활관 연결 통로' },
             { location: 'F4', name: '편의점(emart24)' },
             { location: 'F2', name: '학관 구름다리(학생회관 4층 연결)' },
-            { location: 'F1', name: '프린터, 증명서 발급기' },
+            { location: 'F1', name: '프린터, 증명서 발급기, 흡연부스(종합관 뒤)' },
           ],
         },
         {
@@ -62,9 +62,9 @@ export const MAP_DATA = {
             },
             {
               location: 'F3',
-              name: '학생식당, 편의점(이마트24), 카페(리에토커피), 외부 출입구',
+              name: '학생식당, 편의점(이마트24), 카페(리에토커피), 외부 출입구, 흡연부스 (a.k.a. 담배나무)',
             },
-            { location: 'F1', name: '우편취급국, 새마을금고, 소강당' },
+            { location: 'F1', name: '우편취급국, 새마을금고, 소강당, 흡연부스 (a.k.a. 담배나무)' },
           ],
         },
         { id: 'b-3', name: '미래관', category: '건물', campus: '인문캠퍼스', subItems: [] },
@@ -90,19 +90,19 @@ export const MAP_DATA = {
           subItems: [
             {
               location: 'F1',
-              name: 'MJ대학일자리센터, 하나은행, ATM(하나은행/KB국민은행/SC제일은행/명지새마을금고)',
+              name: 'MJ대학일자리센터, 하나은행, ATM(하나은행/KB국민은행/SC제일은행/명지새마을금고), 흡연구역',
             },
           ],
         },
         {
-          id: 'b-6',
+          id: 'b-8',
           name: '생활관',
           category: '건물',
           campus: '인문캠퍼스',
           subItems: [{ location: 'F1', name: '편의점(세븐일레븐)' }],
         },
         {
-          id: 'b-7',
+          id: 'b-9',
           name: '방목학술정보관(도서관)',
           category: '건물',
           campus: '인문캠퍼스',
@@ -112,12 +112,13 @@ export const MAP_DATA = {
             { location: 'F2', name: '스터디룸, 명지-LG한국학자료관' },
             {
               location: 'F1',
-              name: '국제회의장, 프린트, 자유열람실, 일반열람실1, 일반열람실2, 노트북열람실, 대학원 열람실',
+              name: '국제회의장, 프린트, 자유열람실, 일반열람실1, 일반열람실2, 노트북열람실, 대학원 열람실, 흡연구역',
             },
+            { location: '방목학술정보관 B2-3', name: '도서관 지하주차장' },
           ],
         },
         {
-          id: 'b-8',
+          id: 'b-10',
           name: 'MCC',
           category: '건물',
           campus: '인문캠퍼스',
@@ -125,9 +126,9 @@ export const MAP_DATA = {
             { location: 'F2', name: '편의점(세븐일레븐), 애슐리, 건땀' },
             {
               location: 'F1',
-              name: '다목적 체육 시설(농구, 배드민턴, 탁구, 피크볼, 골프, 탈의실), 카페(스타벅스, 매머드커피), 올리브영, 베이커리랩, 이마트에브리데이(다이소)',
+              name: 'MCC관 출입구, MCC 지상 주차장(1-2층), 다목적 체육 시설(농구, 배드민턴, 탁구, 피크볼, 골프, 탈의실), 카페(스타벅스, 매머드커피), 올리브영, 베이커리랩, 이마트에브리데이(다이소), ',
             },
-            { location: '지상', name: '운동장, 농구장' },
+            { location: '지상', name: '운동장, 농구장, MCC 야외 주차장, 흡연구역(농구장 옆)' },
           ],
         },
 

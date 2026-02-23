@@ -6,6 +6,8 @@ import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import SidebarV2 from '@/components/organisms/SidebarV2';
 import SearchBar from '@/components/atoms/SearchBar';
 import { useHeaderStore } from '@/store/useHeaderStore';
+import { setHomeSliderToMain } from '@/pages/HomeSlider';
+import clsx from 'clsx';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +29,7 @@ export default function Navbar() {
 
   const { setActiveMainSlide } = useHeaderStore();
   const handleLogoClick = (e: React.MouseEvent) => {
+    setHomeSliderToMain();
     setActiveMainSlide(1);
     if (location.pathname === '/') {
       e.preventDefault();
@@ -38,13 +41,16 @@ export default function Navbar() {
     (location.pathname === '/' && activeMainSlide === 1) || location.pathname === '/login';
 
   return (
-    <nav className='border-grey-10 h-fit w-full border-b-1 bg-white'>
+    <nav
+      className={clsx('h-fit w-full bg-white', isMainOrLogin ? 'border-grey-10 border-b-1' : '')}
+    >
       {isMainOrLogin ? (
         <div className='flex h-[60px] items-center justify-between px-5'>
           <Link
             to='/'
             onClick={(e) => {
               trackNavClick('home');
+              setHomeSliderToMain();
               handleLogoClick(e);
             }}
           >
@@ -64,9 +70,10 @@ export default function Navbar() {
       ) : (
         <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
           <div
-            className='h-12 w-12 shrink-0'
-            onClick={(e) => {
-              handleLogoClick(e);
+            className='h-12 w-12 shrink-0 cursor-pointer'
+            onClick={() => {
+              setHomeSliderToMain();
+              setActiveMainSlide(1);
               if (location.pathname !== '/') navigate('/');
             }}
           >
