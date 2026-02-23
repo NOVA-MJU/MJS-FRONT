@@ -186,7 +186,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabContentProps>> = {
  * 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
-  const { selectedTab, setSelectedTab } = useHeaderStore();
+  const { selectedTab, setSelectedTab, activeMainSlide } = useHeaderStore();
   const TAB_STORAGE_KEY = 'slides-active-tab';
 
   // 초기 활성 탭: 1) 전역 store(selectedTab) 2) 세션 스토리지 3) 기본 'ALL'
@@ -293,7 +293,7 @@ const Slides = () => {
             return (
               <SwiperSlide key={tab} className='h-full w-full overflow-y-auto'>
                 {tab === '게시판' ? (
-                  <BoardSection showWriteButton={activeTab === '게시판'} />
+                  <BoardSection showWriteButton={activeMainSlide === 2 && activeTab === '게시판'} />
                 ) : (
                   <Content
                     activeTab={activeTab}
