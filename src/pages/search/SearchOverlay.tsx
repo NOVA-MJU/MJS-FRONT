@@ -37,7 +37,7 @@ export default function SearchOverlay() {
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색 헤더 */}
-        <header className='flex min-w-0 items-center gap-4 px-4 pt-4'>
+        <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
           <button
             type='button'
             onClick={() => navigate(-1)}

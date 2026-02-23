@@ -15,7 +15,7 @@ type SidebarSection = BuildingCategory | 'CAMPUS';
 type MapSidebarProps = {
   isOpen: boolean;
   onClose: () => void;
-  onBuildingSelect?: (building: Building) => void;
+  onBuildingSelect?: (building: Building | null) => void;
   selectedBuildingId?: string;
 };
 
@@ -64,6 +64,12 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect, selectedBuildingId }: M
   // 건물 선택 핸들러
   const handleBuildingClick = (building: Building) => {
     onBuildingSelect?.(building);
+    onClose();
+  };
+
+  // 캠퍼스 선택 핸들러 (선택 해제)
+  const handleCampusClick = () => {
+    onBuildingSelect?.(null);
     onClose();
   };
 
@@ -144,8 +150,18 @@ const MapSidebar = ({ isOpen, onClose, onBuildingSelect, selectedBuildingId }: M
                 </div>
               </div>
               {expandedCategories.has('CAMPUS') && (
-                <div className='mt-1 ml-3 space-y-1'>
-                  <div className='text-body05 px-3 py-2'>{selectedCampus}</div>
+                <div className='mt-1 space-y-1'>
+                  <button
+                    onClick={handleCampusClick}
+                    className={cn(
+                      'text-body05 flex w-full items-center px-8 py-4 text-left transition-all',
+                      !selectedBuildingId
+                        ? 'bg-blue-05 text-mju-primary font-bold'
+                        : 'hover:bg-blue-02',
+                    )}
+                  >
+                    {selectedCampus}
+                  </button>
                 </div>
               )}
             </div>

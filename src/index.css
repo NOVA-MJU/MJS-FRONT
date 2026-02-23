@@ -1,6 +1,15 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import 'tailwindcss';
 
+/* 항상 모바일 뷰(임시처리): breakpoint를 매우 크게 해서 sm/md/lg/xl 미디어가 적용되지 않도록 함 */
+@theme {
+  --breakpoint-sm: 9999rem;
+  --breakpoint-md: 9999rem;
+  --breakpoint-lg: 9999rem;
+  --breakpoint-xl: 9999rem;
+  --breakpoint-2xl: 9999rem;
+}
+
 /* font family */
 :root {
   font-family:
@@ -149,37 +158,6 @@
   --color-error: #f45353;
 }
 
-/* pc web color palette */
-@media (min-width: 769px) {
-  :root {
-    --color-*: initial;
-
-    --color-black: #17171b;
-    --color-white: #ffffff;
-    --color-bg: rgba(23, 23, 27, 0.6);
-
-    --color-grey-80: #4b4d4f;
-    --color-grey-60: #6d7073;
-    --color-grey-40: #999999;
-    --color-grey-30: #aeb2b6;
-    --color-grey-20: #cacccc;
-    --color-grey-10: #e3e6e6;
-    --color-grey-05: #f0f2f5;
-    --color-grey-02: #f0f2f5;
-
-    --color-mju-primary: #002968;
-    --color-mju-secondary: #0386d0;
-
-    --color-blue-35: #124ca5;
-    --color-blue-20: #2f65cb;
-    --color-blue-15: #4782da;
-    --color-blue-10: #689bde;
-    --color-blue-05: #e9f1fb;
-
-    --color-error: #da4747;
-  }
-}
-
 /* 스크롤바 제거 */
 .no-scrollbar {
   scrollbar-width: none;
@@ -198,18 +176,16 @@
   border-radius: 2px;
 }
 
-/* BlockNote.js 좌우 padding 제거 */
-@media (max-width: 768px) {
-  .bn-editor {
-    padding: 0 22px !important;
-  }
+/* BlockNote.js 좌우 padding (항상 모바일 스타일 적용) */
+.bn-editor {
+  padding: 0 22px !important;
+}
 
-  .bn-side-menu > *:nth-child(1) {
-    margin-left: 24px !important;
-  }
-  .bn-side-menu > *:nth-child(2) {
-    margin-left: -6px !important;
-  }
+.bn-side-menu > *:nth-child(1) {
+  margin-left: 24px !important;
+}
+.bn-side-menu > *:nth-child(2) {
+  margin-left: -6px !important;
 }
 
 .block-editor-handle {

@@ -37,6 +37,15 @@ const TABS = [
 ] as const;
 
 type TabType = (typeof TABS)[number];
+
+const SLIDES_TAB_STORAGE_KEY = 'slidesActiveTab';
+
+function getStoredSlidesTab(): TabType {
+  if (typeof window === 'undefined') return 'ALL';
+  const raw = sessionStorage.getItem(SLIDES_TAB_STORAGE_KEY);
+  const found = TABS.find((t) => t === raw);
+  return (found as TabType) ?? 'ALL';
+}
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
@@ -69,13 +78,13 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
               onClick={() => onTabChange(tab)}
               className={cn(
                 'relative flex h-full items-center justify-center px-3 transition-colors outline-none',
-                isActive ? 'text-mju-primary font-semibold' : 'text-grey-40 font-medium',
+                isActive ? 'text-mju-primary' : 'text-grey-40',
               )}
             >
-              <span className='text-body05 whitespace-nowrap'>{tab}</span>
+              <span className='text-body04 whitespace-nowrap'>{tab}</span>
               {/* 활성화된 탭 하단의 파란색 바 */}
               {isActive && (
-                <div className='bg-mju-primary absolute right-0 bottom-0 left-0 h-[2px]' />
+                <div className='bg-mju-primary absolute right-0 bottom-0 left-0 h-[1.5px]' />
               )}
             </button>
           );
@@ -189,7 +198,7 @@ const Slides = () => {
   const { selectedTab, setSelectedTab, activeMainSlide } = useHeaderStore();
   const TAB_STORAGE_KEY = 'slides-active-tab';
 
-  // 초기 활성 탭: 1) 전역 store(selectedTab) 2) 세션 스토리지 3) 기본 'ALL'
+
   const getInitialTab = (): TabType => {
     if (selectedTab && TABS.includes(selectedTab as TabType)) {
       return selectedTab as TabType;
@@ -203,13 +212,21 @@ const Slides = () => {
     return 'ALL';
   };
 
-  // 현재 활성화된 탭 상태 관리
+ 
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab);
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const [isPanelVisible, setIsPanelVisible] = useState(false);
 
-  // 이 패널이 뷰포트에 보일 때만 true → 메인/학과 슬라이드에선 side effect 미적용
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SLIDES_TAB_STORAGE_KEY, activeTab);
+    } catch {
+      // ignore
+    }
+  }, [activeTab]);
+
+
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -221,7 +238,6 @@ const Slides = () => {
     return () => observer.disconnect();
   }, []);
 
-  // 탭 변경 시 스위퍼 슬라이드 및 전역/세션 상태 동기화
   const syncTab = (tab: TabType, shouldSlide: boolean) => {
     setActiveTab(tab);
     setSelectedTab(tab);
@@ -241,7 +257,7 @@ const Slides = () => {
     syncTab(tab, true);
   };
 
-  // 명지도 탭 활성화 시 전역 푸터 숨기기 및 스크롤 방지
+  
   useEffect(() => {
     const footer = document.querySelector('footer');
     if (!isPanelVisible) {
