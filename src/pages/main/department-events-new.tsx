@@ -1,21 +1,73 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { IoIosArrowBack } from 'react-icons/io';
 import { FaRegCalendarAlt } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import DatePickerDrawer from '@/components/molecules/DatePickerDrawer';
+import {
+  createDepartmentSchedule,
+  type College,
+  type Department,
+} from '@/api/departments-admin-schedules';
+import { useAuthStore } from '@/store/useAuthStore';
+import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 
 const DATE_DISPLAY_FORMAT = 'yyyy. MM. dd';
+const DATE_API_FORMAT = 'yyyy-MM-dd';
 
 export default function DepartmentEventsNewPage() {
   const navigate = useNavigate();
+  const { user, isLoggedIn } = useAuthStore();
+
+  const option = user?.departmentName
+    ? DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user.departmentName))
+    : undefined;
+  const college: College | null = option?.college.value ?? null;
+  const department: Department | null = (user?.departmentName as Department) ?? null;
+
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login', { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
 
   const isComplete = title.trim() !== '' && startDate != null && endDate != null;
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  const handleComplete = async () => {
+    if (!college || !department) {
+      toast.error('소속 학과 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
+      return;
+    }
+    if (!isComplete) return;
+
+    setIsSubmitting(true);
+    try {
+      await createDepartmentSchedule(college, department, {
+        title: title.trim(),
+        startDate: format(startDate, DATE_API_FORMAT),
+        endDate: format(endDate, DATE_API_FORMAT),
+      });
+      toast.success('일정이 등록되었습니다.');
+      navigate(-1);
+    } catch (error) {
+      console.error('일정 등록 실패:', error);
+      toast.error('일정 등록에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section className='flex flex-1 flex-col'>
@@ -78,17 +130,12 @@ export default function DepartmentEventsNewPage() {
       <div className='mt-auto p-5'>
         <button
           type='button'
-          className={`text-body05 w-full cursor-pointer rounded-lg p-2.5 ${isComplete ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+          className={`text-body05 w-full rounded-lg p-2.5 ${isComplete && !isSubmitting ? 'bg-mju-primary cursor-pointer text-white' : 'bg-grey-02 text-grey-40 cursor-not-allowed'}`}
           aria-label='완료'
-          onClick={() => {
-            console.log('일정 등록 완료', {
-              title,
-              startDate: format(startDate, DATE_DISPLAY_FORMAT),
-              endDate: format(endDate, DATE_DISPLAY_FORMAT),
-            });
-          }}
+          disabled={!isComplete || isSubmitting}
+          onClick={handleComplete}
         >
-          완료
+          {isSubmitting ? '등록 중...' : '완료'}
         </button>
       </div>
 

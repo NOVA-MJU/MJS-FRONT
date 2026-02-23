@@ -1,21 +1,99 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { IoIosArrowBack } from 'react-icons/io';
 import { FaRegCalendarAlt } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import DatePickerDrawer from '@/components/molecules/DatePickerDrawer';
+import {
+  updateDepartmentSchedule,
+  deleteDepartmentSchedule,
+  type College,
+  type Department,
+} from '@/api/departments-admin-schedules';
+import { useAuthStore } from '@/store/useAuthStore';
+import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 
 const DATE_DISPLAY_FORMAT = 'yyyy. MM. dd';
+const DATE_API_FORMAT = 'yyyy-MM-dd';
 
 export default function DepartmentEventsEditPage() {
   const navigate = useNavigate();
+  const { uuid: scheduleUuid } = useParams<{ uuid: string }>();
+  const { user, isLoggedIn } = useAuthStore();
+
+  const option = user?.departmentName
+    ? DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user.departmentName))
+    : undefined;
+  const college: College | null = option?.college.value ?? null;
+  const department: Department | null = (user?.departmentName as Department) ?? null;
+
   const [title, setTitle] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const isComplete = title.trim() !== '' && startDate != null && endDate != null;
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login', { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
+  const isComplete =
+    scheduleUuid != null && title.trim() !== '' && startDate != null && endDate != null;
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  const handleSave = async () => {
+    if (!college || !department) {
+      toast.error('소속 학과 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
+      return;
+    }
+    if (!scheduleUuid || !isComplete) return;
+
+    setIsSaving(true);
+    try {
+      await updateDepartmentSchedule(college, department, scheduleUuid, {
+        title: title.trim(),
+        startDate: format(startDate, DATE_API_FORMAT),
+        endDate: format(endDate, DATE_API_FORMAT),
+      });
+      toast.success('일정이 수정되었습니다.');
+      navigate(-1);
+    } catch (error) {
+      console.error('일정 수정 실패:', error);
+      toast.error('일정 수정에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!college || !department || !scheduleUuid) {
+      toast.error('소속 학과 정보를 찾을 수 없습니다.');
+      return;
+    }
+    if (!window.confirm('일정을 삭제하시겠습니까?')) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteDepartmentSchedule(college, department, scheduleUuid);
+      toast.success('일정이 삭제되었습니다.');
+      navigate(-1);
+    } catch (error) {
+      console.error('일정 삭제 실패:', error);
+      toast.error('일정 삭제에 실패했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const isBusy = isSaving || isDeleting;
 
   return (
     <section className='flex flex-1 flex-col'>
@@ -78,28 +156,21 @@ export default function DepartmentEventsEditPage() {
       <div className='mt-auto p-5'>
         <button
           type='button'
-          className='bg-grey-02 text-grey-40 text-body05 w-full cursor-pointer rounded-lg p-2.5'
+          className='text-body05 bg-grey-02 text-grey-40 w-full cursor-pointer rounded-lg p-2.5 disabled:cursor-not-allowed disabled:opacity-50'
           aria-label='일정 삭제'
-          onClick={() => {
-            if (!window.confirm('일정을 삭제하시겠습니까?')) return;
-            // TODO: 삭제 API 연결
-          }}
+          disabled={isBusy}
+          onClick={handleDelete}
         >
-          일정 삭제
+          {isDeleting ? '삭제 중...' : '일정 삭제'}
         </button>
         <button
           type='button'
-          className={`text-body05 mt-3 w-full cursor-pointer rounded-lg p-2.5 ${isComplete ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+          className={`text-body05 mt-3 w-full rounded-lg p-2.5 ${isComplete && !isBusy ? 'bg-mju-primary cursor-pointer text-white' : 'bg-grey-02 text-grey-40 cursor-not-allowed'}`}
           aria-label='저장'
-          onClick={() => {
-            console.log('일정 편집 저장', {
-              title,
-              startDate: format(startDate, DATE_DISPLAY_FORMAT),
-              endDate: format(endDate, DATE_DISPLAY_FORMAT),
-            });
-          }}
+          disabled={!isComplete || isBusy}
+          onClick={handleSave}
         >
-          저장
+          {isSaving ? '저장 중...' : '저장'}
         </button>
       </div>
 
