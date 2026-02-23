@@ -41,6 +41,15 @@ export default function MainSearchSection() {
       return;
     }
 
+    if (label === '멘토관') {
+      window.open(
+        'https://v0-university-career-data-platform.vercel.app/',
+        '_blank',
+        'noopener,noreferrer',
+      );
+      return;
+    }
+
     navigate(path);
   };
 
