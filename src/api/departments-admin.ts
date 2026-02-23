@@ -10,7 +10,7 @@ export type Department = (typeof DEPARTMENT_OPTIONS)[number]['departments'][numb
 
 /** 학생회 공지 생성 요청 데이터 타입 */
 export interface CreateStudentCouncilNoticeRequest {
-  title: string | null;
+  title: string;
   content: string;
   imageUrls: string[];
 }
