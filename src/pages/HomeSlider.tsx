@@ -29,31 +29,43 @@ const HomeSlider = () => {
   // 클라이언트 마운트 후 렌더링
   useEffect(() => {
     setMounted(true);
-    setActiveMainSlide(1);
-  }, [setActiveMainSlide]);
+  }, []);
 
-  const forceJumpToMain = () => {
-    if (containerRef.current) {
-      const container = containerRef.current;
-      const width = container.clientWidth;
-      if (width > 0) {
-        // 즉시 스크롤 위치 고정 (smooth 주지 않음)
-        container.scrollLeft = width * 1;
-        isInitialJump.current = false;
-        // 위치를 잡은 후 스냅과 가시성을 활성화
-        setInitialized(true);
+  // 1. 초기 로드 시: 세션에서 읽어 해당 슬라이드로 점프 (store보다 세션을 우선 사용)
+  useEffect(() => {
+    if (!mounted || initialized || !containerRef.current) return;
+    const container = containerRef.current;
+    const width = container.clientWidth;
+    if (width <= 0) return;
+
+    let initialIndex = 1;
+    if (typeof window !== 'undefined') {
+      const saved = window.sessionStorage.getItem('main-active-slide');
+      const parsed = saved !== null ? Number(saved) : NaN;
+      if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 2) {
+        initialIndex = Math.round(parsed);
       }
     }
-  };
 
-  // 1. 초기 로드 시 메인 화면 점프
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
+      const c = containerRef.current;
+      const w = c.clientWidth;
+      if (w > 0) {
+        c.scrollLeft = w * initialIndex;
+        setActiveMainSlide(initialIndex);
+        isInitialJump.current = false;
+        setInitialized(true);
+      }
+    }, 30);
+    return () => clearTimeout(timer);
+  }, [mounted, initialized, setActiveMainSlide]);
+
+  // activeMainSlide 변경 시 세션 스토리지에 저장 (초기화 완료 후에만, 복원 시 덮어쓰지 않도록)
   useEffect(() => {
-    if (mounted && !initialized) {
-      // 렌더링 주기가 보장되도록 아주 짧은 지연 후 실행
-      const timer = setTimeout(forceJumpToMain, 30);
-      return () => clearTimeout(timer);
-    }
-  }, [mounted, initialized]);
+    if (!initialized || typeof window === 'undefined') return;
+    window.sessionStorage.setItem('main-active-slide', String(activeMainSlide));
+  }, [activeMainSlide, initialized]);
 
   // 2. 외부 상태 변경 (로고 클릭 등) 대응
   useEffect(() => {
