@@ -101,12 +101,7 @@ export function NoticeSlideSection({
       } else {
         try {
           setIsLoading(true);
-          const fetchedNoticeData = await fetchNotionInfo(
-            selectedTab,
-            recentYear,
-            0,
-            CONTENT_LENGTH,
-          );
+          const fetchedNoticeData = await fetchNotionInfo(selectedTab, 0, CONTENT_LENGTH);
           if (all) setSelectedInfo(fetchedNoticeData.content.slice(0, 5));
           else setSelectedInfo(fetchedNoticeData.content);
           setAllDataCache((prevCache) => ({
@@ -163,7 +158,7 @@ export default function NoticeSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const fetchedNoticeData = await fetchNotionInfo(selectedTab, recentYear, page, 10);
+        const fetchedNoticeData = await fetchNotionInfo(selectedTab, page, 10, 'desc');
         setSelectedInfo(fetchedNoticeData.content);
         setTotalPages(fetchedNoticeData.totalPages);
       } catch (e) {
@@ -173,7 +168,6 @@ export default function NoticeSection() {
         setIsLoading(false);
       }
     })();
-     
   }, [selectedTab, recentYear, page]);
 
   /**

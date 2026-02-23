@@ -54,7 +54,14 @@ export default function Notice() {
       (async () => {
         try {
           setIsLoading(true);
-          const res = await getSearchResult(keyword, 'NOTICE', 'relevance', page, ITEMS_PER_PAGE);
+          const res = await getSearchResult(
+            keyword,
+            'NOTICE',
+            'all',
+            'relevance',
+            page,
+            ITEMS_PER_PAGE,
+          );
           const parsed: ListItemProps[] = res.content.map(
             (item: GetSearchResultRes, idx: number) => ({
               id: idx,
@@ -90,13 +97,7 @@ export default function Notice() {
       (async () => {
         try {
           setIsLoading(true);
-          const data = await fetchNotionInfo(
-            selectedCategory,
-            undefined,
-            page,
-            ITEMS_PER_PAGE,
-            'desc',
-          );
+          const data = await fetchNotionInfo(selectedCategory, page, ITEMS_PER_PAGE, 'desc');
 
           const parsed: ListItemProps[] = (data?.content ?? []).map(
             (item: NoticeItem, idx: number) => ({

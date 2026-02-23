@@ -71,7 +71,7 @@ export default function AcademicScheduleWidget({
   const getNoticeData = useCallback(async () => {
     try {
       setIsNoticeLoading(true);
-      const res = await fetchNotionInfo('academic', undefined, page, 10);
+      const res = await fetchNotionInfo('academic', page, 10);
       setNotices(res.content);
       setTotalPages(res.totalPages);
     } catch (e) {
