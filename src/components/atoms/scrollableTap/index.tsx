@@ -32,8 +32,8 @@ function ScrollableTap({ tabs, currentTab, setCurrentTab, className }: TabCompon
   return (
     <div
       className={twMerge(
-        'border-grey-10 no-scrollbar flex gap-1.5 overflow-x-auto scroll-smooth border-b-1 px-5',
-        'md:text-title02 text-body02',
+        'border-grey-10 no-scrollbar flex overflow-x-auto scroll-smooth border-b-1 px-5',
+        'md:text-title02 text-body04',
         className,
       )}
     >
@@ -49,7 +49,7 @@ function ScrollableTap({ tabs, currentTab, setCurrentTab, className }: TabCompon
             aria-selected={isSelected}
             aria-controls={`tab-panel-${key}`}
             onClick={() => setCurrentTab(key)}
-            className={`flex-1 cursor-pointer p-1 px-4 py-2.5 whitespace-nowrap md:p-3 ${isSelected ? 'text-mju-primary border-blue-35 border-b-2' : 'text-grey-40'} `}
+            className={`cursor-pointer p-1 px-4 py-2 whitespace-nowrap md:p-3 ${isSelected ? 'text-mju-primary border-mju-primary border-b-[2px]' : 'text-grey-40'} `}
           >
             {label}
           </button>

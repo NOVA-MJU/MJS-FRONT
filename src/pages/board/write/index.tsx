@@ -6,7 +6,6 @@ import NavigationUp from '../../../components/molecules/NavigationUp';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
 import { postBoard } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
-import { FiChevronDown } from 'react-icons/fi';
 import { useAuthStore } from '@/store/useAuthStore';
 import LoginErrorPage from '@/pages/LoginError';
 
@@ -34,8 +33,11 @@ export default function BoardWrite() {
   // 수정사항 존재 여부
   const [isDirty, setIsDirty] = useState(false);
 
+  // 제목/본문 입력 여부 (완료 버튼 스타일용)
+  const [hasTitle, setHasTitle] = useState(false);
+  const [hasContent, setHasContent] = useState(false);
+
   // 카테고리
-  const [isOpened, setIsOpened] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>('FREE');
   const options: Category[] = ['FREE', 'NOTICE'];
 
@@ -47,6 +49,7 @@ export default function BoardWrite() {
 
     editor.onChange(() => {
       setIsDirty(true);
+      setHasContent(!editor.isEmpty);
     });
   }, []);
 
@@ -130,78 +133,67 @@ export default function BoardWrite() {
 
   if (!user) {
     return (
-      <div className='flex flex-1 flex-col items-center justify-center p-4 md:p-8'>
+      <div className='flex flex-1 flex-col items-center justify-center p-4'>
         <LoginErrorPage />
       </div>
     );
   }
 
   return (
-    <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>
+    <div>
       {/* 상단 네비게이션 */}
-      <div className='flex items-center justify-between'>
+      <header className='flex h-15 items-center px-5'>
         <NavigationUp onClick={handleBack} />
-      </div>
+      </header>
 
-      {/* 제목 입력 */}
-      <input
-        className='placeholder-grey-20 border-blue-05 rounded-lg border-1 px-3 py-2 text-base font-semibold focus:outline-none md:border-2 md:py-3 md:text-3xl'
-        placeholder='제목'
-        ref={titleRef}
-        onChange={() => setIsDirty(true)}
-      />
+      <div className='px-5'>
+        {/* 제목 입력 */}
+        <input
+          className='border-grey-10 text-body03 placeholder:text-grey-20 w-full rounded-lg border px-3 py-2'
+          placeholder='제목'
+          ref={titleRef}
+          onChange={(e) => {
+            setIsDirty(true);
+            setHasTitle(!!e.target.value.trim());
+          }}
+        />
 
-      {/* 카테고리 선택 드롭다운 */}
-      <div className='flex flex-col'>
-        <button
-          className='border-blue-05 flex justify-between rounded-lg border-1 px-4 py-2 text-base md:border-2'
-          onClick={() => setIsOpened(!isOpened)}
+        {/* 카테고리 선택 (브라우저 기본 select) */}
+        <select
+          className='border-grey-10 text-body03 text-blue-20 mt-2.5 w-full rounded-lg border px-3 py-2'
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value as Category);
+            setIsDirty(true);
+          }}
         >
-          <span className='text-blue-10'>{CATEGORY_LABEL[selectedCategory]}</span>
-          <FiChevronDown
-            size={22}
-            className={`text-grey-20 ${isOpened ? 'rotate-180' : 'rotate-0'} transition-transform duration-300`}
-          />
-        </button>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {CATEGORY_LABEL[option]}
+            </option>
+          ))}
+        </select>
 
-        {isOpened && (
-          <div className='border-blue-05 mx-1 rounded-b-lg border-x-1 border-b-1 bg-white md:border-x-2 md:border-b-2'>
-            {options.map((option) => (
-              <div
-                className='text-grey-40 hover:bg-blue-01 flex cursor-pointer px-4 py-2'
-                key={option}
-                onClick={() => {
-                  setSelectedCategory(option);
-                  setIsOpened(false);
-                  setIsDirty(true);
-                }}
-              >
-                {CATEGORY_LABEL[option]}
-              </div>
-            ))}
+        {/* 에디터 */}
+        <div
+          className='border-grey-10 mt-4 min-h-120 cursor-text rounded-lg border px-4 py-2'
+          onClick={handleFocusEditor}
+        >
+          <div className='overflow-visible py-2' ref={editorWrapperRef}>
+            <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
           </div>
-        )}
-      </div>
-
-      {/* 에디터 */}
-      <div
-        className='border-blue-05 flex-1 cursor-text rounded-lg border-1 px-4 py-2 md:border-2 md:px-0'
-        onClick={handleFocusEditor}
-      >
-        <div className='overflow-visible py-2 md:px-0' ref={editorWrapperRef}>
-          <BlockTextEditor onEditorReady={handleEditorReady} domain={DOMAIN_VALUES[0]} />
         </div>
-      </div>
 
-      {/* 완료 버튼 */}
-      <div className='flex justify-end'>
-        <button
-          className='bg-grey-10 w-24 cursor-pointer rounded-xl p-2 disabled:opacity-50 md:w-46 md:p-3'
-          onClick={handleUploadPost}
-          disabled={isLoading}
-        >
-          <p className='text-body02 text-black'>완료</p>
-        </button>
+        {/* 완료 버튼 */}
+        <div className='mt-4 mb-10'>
+          <button
+            className={`text-body05 h-10 w-full cursor-pointer rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+            onClick={handleUploadPost}
+            disabled={isLoading}
+          >
+            완료
+          </button>
+        </div>
       </div>
     </div>
   );

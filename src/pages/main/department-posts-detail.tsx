@@ -66,7 +66,7 @@ export default function DepartmentPostsDetailPage() {
     return <GlobalErrorPage />;
   }
 
-  const { authorNickname, publishedAt, imageUrls, content } = post;
+  const { authorNickname, publishedAt, imageUrls, content, title } = post;
   const mediaCount = imageUrls.length;
 
   return (
@@ -127,10 +127,14 @@ export default function DepartmentPostsDetailPage() {
           </span>
         )}
       </div>
-
-      {/* 게시물 본문 및 날짜 */}
       <div className='p-5'>
-        <p className='text-body05 text-grey-80 whitespace-pre-wrap'>{content}</p>
+        {/* 게시글 제목 */}
+        <p className='text-body02 whitespace-pre-wrap text-black'>{title}</p>
+
+        {/* 게시글 내용 */}
+        <p className='text-body05 text-grey-80 mt-2 whitespace-pre-wrap'>{content}</p>
+
+        {/* 게시글 날짜 */}
         <p className='text-caption02 text-grey-30 mt-2'>
           {format(new Date(publishedAt), 'yyyy.MM.dd', { locale: ko })}
         </p>

@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosClose } from 'react-icons/io';
-import { FiLogIn } from 'react-icons/fi';
-import { FiExternalLink } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavKey } from '@/types/nav/item';
+import { logout as apiLogout } from '@/api/user';
 
 type SidebarV2Props = {
   isOpen: boolean;
@@ -30,8 +31,9 @@ const findNavItem = (key: NavKey) => NAV_ITEMS.find((item) => item.key === key);
 
 export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
-  const { isLoggedIn, user } = useAuthStore();
+  const { isLoggedIn, user, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
+  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
 
   const items = useMemo<SidebarItem[]>(() => {
     const notice = findNavItem('notice');
@@ -40,8 +42,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     const meal = findNavItem('meal');
     const calendar = findNavItem('calendar');
     const mentor = findNavItem('mentor');
-    const msi = findNavItem('msi');
-    const myicap = findNavItem('myicap');
+    const sso = findNavItem('sso');
 
     return [
       // Information 섹션
@@ -112,21 +113,12 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         path: '/mypage',
         requiresAuth: true,
       },
-
-      // External 섹션
       {
-        id: 'msi',
-        label: 'MSI',
-        section: 'external',
-        href: msi?.href,
-        navKey: msi?.key,
-      },
-      {
-        id: 'myicap',
-        label: 'MYiCap',
-        section: 'external',
-        href: myicap?.href,
-        navKey: myicap?.key,
+        id: 'sso',
+        label: 'SSO',
+        section: 'setting',
+        href: sso?.href,
+        navKey: sso?.key,
       },
     ];
   }, []);
@@ -135,6 +127,31 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     if (item.requiresAuth && !isLoggedIn) {
       onClose();
       navigate('/login');
+      return;
+    }
+
+    // 메인 캐러셀/슬라이드로 이동 (경로 대신 슬라이드 인덱스 + 탭)
+    const slideTabMap: Record<string, string> = {
+      department: 'department', // 학과 → slide 0
+      'campus-map': '명지도',
+      notice: '공지사항',
+      calendar: '학사일정',
+      meal: '학식',
+      'info-board': '게시판',
+      'free-board': '게시판',
+    };
+    const tabOrSlide = slideTabMap[item.id];
+    if (tabOrSlide) {
+      if (item.navKey) {
+        trackNavClick(item.navKey);
+      }
+      if (tabOrSlide === 'department') {
+        setActiveMainSlide(0);
+      } else {
+        setSelectedTab(tabOrSlide);
+        setActiveMainSlide(2);
+      }
+      onClose();
       return;
     }
 
@@ -153,18 +170,29 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     onClose();
   };
 
+  const handleBottomLogout = async () => {
+    try {
+      await apiLogout();
+    } catch (e) {
+      console.error('logout error:', e);
+    } finally {
+      resetUser();
+      toast.success('로그아웃 되었습니다.');
+      onClose();
+      navigate('/');
+    }
+  };
+
   if (!isOpen) return null;
 
   const informationItems = items.filter((item) => item.section === 'information');
   const communityItems = items.filter((item) => item.section === 'community');
   const settingItems = items.filter((item) => item.section === 'setting');
-  const externalItems = items.filter((item) => item.section === 'external');
 
   return (
     <div className='fixed inset-0 z-40 flex justify-end bg-black/40'>
       {/* 패널 */}
       <aside className='flex h-full w-[320px] flex-col bg-white shadow-xl'>
-        {/* 헤더 */}
         <div className='flex items-center justify-between px-5 py-4'>
           {isLoggedIn && user ? (
             <div className='flex items-center gap-3'>
@@ -189,30 +217,29 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                 onClose();
                 navigate('/login');
               }}
-              className='border-grey-10 text-caption01 text-grey-40 inline-flex items-center gap-2 rounded-full border px-4 py-1.5'
+              className='inline-flex items-center'
             >
-              <FiLogIn size={16} />
-              로그인/회원가입
+              <img src='/main/LoginBtn.svg' alt='로그인/회원가입' className='h-8 w-auto' />
             </button>
           )}
 
-          <button
-            type='button'
-            onClick={onClose}
-            aria-label='사이드바 닫기'
-            className='text-grey-30 hover:bg-grey-05 rounded-full p-1'
-          >
-            <IoIosClose size={24} />
-          </button>
+          <div className='flex items-center gap-2'>
+            <button
+              type='button'
+              onClick={onClose}
+              aria-label='사이드바 닫기'
+              className='text-grey-30 hover:bg-grey-05 rounded-full p-1'
+            >
+              <IoIosClose size={24} />
+            </button>
+          </div>
         </div>
 
-        <div className='bg-grey-05 h-px w-full' />
-
         {/* 메뉴 영역 */}
-        <div className='flex-1 overflow-y-auto px-5 py-4'>
+        <div className='-mt-1 mt-2 flex-1 overflow-y-auto px-5'>
           {/* Information 섹션 */}
-          <section className='mb-6'>
-            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Information</h3>
+          <section className='border-grey-10 mb-4 border-t pt-4'>
+            <h3 className='text-caption text-mju-primary mb-2 font-semibold'>Information</h3>
             <nav className='flex flex-col'>
               {informationItems.map((item) => (
                 <button
@@ -228,8 +255,8 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
           </section>
 
           {/* Community 섹션 */}
-          <section className='mb-6'>
-            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Community</h3>
+          <section className='border-grey-10 mb-4 border-t pt-4'>
+            <h3 className='text-caption text-mju-primary mb-2 font-semibold'>Community</h3>
             <nav className='flex flex-col'>
               {communityItems.map((item) => (
                 <button
@@ -244,40 +271,47 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
             </nav>
           </section>
 
-          {/* Setting 섹션 */}
-          <section className='mb-6'>
-            <h3 className='text-caption02 text-mju-primary mb-2 font-semibold'>Setting</h3>
+          {/* My 섹션 */}
+          <section className='border-grey-10 mb-6 border-t pt-4'>
+            <h3 className='text-caption text-mju-primary mb-2 font-semibold'>My</h3>
             <nav className='flex flex-col'>
-              {settingItems.map((item) => (
-                <button
-                  key={item.id}
-                  type='button'
-                  onClick={() => handleItemClick(item)}
-                  className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
-                >
-                  {item.label}
-                </button>
-              ))}
+              {settingItems.map((item) =>
+                item.href ? (
+                  <button
+                    key={item.id}
+                    type='button'
+                    onClick={() => handleItemClick(item)}
+                    className='text-body03 hover:bg-blue-05 flex h-10 items-center gap-1.5 rounded-md px-3 text-black'
+                  >
+                    <span>{item.label}</span>
+                    <img src='/main/SSO.svg' alt='' aria-hidden className='h-6 w-6 shrink-0' />
+                  </button>
+                ) : (
+                  <button
+                    key={item.id}
+                    type='button'
+                    onClick={() => handleItemClick(item)}
+                    className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
+                  >
+                    {item.label}
+                  </button>
+                ),
+              )}
             </nav>
           </section>
-
-          {/* External 링크 */}
-          <section className='mt-4 flex flex-col gap-2'>
-            {externalItems.map((item) =>
-              item.href ? (
-                <button
-                  key={item.id}
-                  type='button'
-                  onClick={() => handleItemClick(item)}
-                  className='text-caption01 text-blue-35 flex h-6 items-center gap-1 px-0'
-                >
-                  <span>{item.label}</span>
-                  <FiExternalLink aria-hidden size={12} />
-                </button>
-              ) : null,
-            )}
-          </section>
         </div>
+
+        {isLoggedIn && (
+          <div className='border-grey-10 shrink-0 border-t px-5 py-4'>
+            <button
+              type='button'
+              onClick={handleBottomLogout}
+              className='flex w-full items-center justify-start'
+            >
+              <img src='/main/logoutBtn.svg' alt='로그아웃' className='h-8 w-auto' />
+            </button>
+          </div>
+        )}
       </aside>
     </div>
   );

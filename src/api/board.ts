@@ -91,6 +91,8 @@ export interface GetBoardDetailRes {
   uuid: string;
   title: string;
   content: string;
+  contentPreview: string;
+  communityCategory: Category;
   viewCount: number;
   published: boolean;
   publishedAt: string;
@@ -99,7 +101,7 @@ export interface GetBoardDetailRes {
   likeCount: number;
   commentCount: number;
   author: string;
-  liked: boolean;
+  isLiked: boolean;
   canEdit: boolean;
   canDelete: boolean;
 }
@@ -119,12 +121,14 @@ export const updatePost = async (
   content: string,
   contentPreview: string,
   published = true,
+  communityCategory?: Category,
 ) => {
   const res = await apiClient.patch<ApiResponse<{ uuid: string }>>(`/boards/${boardUuid}`, {
     title,
     content,
     contentPreview,
     published,
+    ...(communityCategory != null && { communityCategory }),
   });
   return res.data.data.uuid;
 };
