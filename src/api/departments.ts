@@ -135,9 +135,26 @@ export interface StudentCouncilNotice {
   publishedAt: string;
 }
 
-/** 학생회 공지 목록 조회 응답 데이터 타입 */
+/** 학생회 공지 목록 조회 응답 데이터 타입 (페이징) */
 export interface StudentCouncilNoticesData {
   content: StudentCouncilNotice[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
 }
 
 /**

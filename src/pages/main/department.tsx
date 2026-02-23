@@ -73,19 +73,29 @@ export default function DepartmentMainPage() {
   const [noticeTotalPages, setNoticeTotalPages] = useState(0);
   const NOTICE_PAGE_SIZE = 5;
 
+  // 학생회 공지사항 (페이지네이션 + 무한 스크롤)
+  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
+  const [postsPage, setPostsPage] = useState(0);
+  const [postsLast, setPostsLast] = useState(false);
+  const [isPostsLoading, setIsPostsLoading] = useState(false);
+  const POSTS_PAGE_SIZE = 12;
+  const postsLoadMoreRef = useRef<HTMLDivElement>(null);
+
   // 응답 시점에 선택된 필터와 일치할 때만 반영
   const filterRef = useRef({
     college: selectedCollege,
     department: selectedDepartment,
     noticePage,
+    postsPage: 0,
   });
   useEffect(() => {
     filterRef.current = {
       college: selectedCollege,
       department: selectedDepartment,
       noticePage,
+      postsPage,
     };
-  }, [selectedCollege, selectedDepartment, noticePage]);
+  }, [selectedCollege, selectedDepartment, noticePage, postsPage]);
 
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
@@ -191,9 +201,6 @@ export default function DepartmentMainPage() {
     });
   }, [departmentSchedules, selectedDate]);
 
-  // 학생회 공지사항
-  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
-
   // 교학팀 전화번호 복사 완료 상태
   const [phoneCopied, setPhoneCopied] = useState(false);
   const handleCopyPhone = async () => {
@@ -245,25 +252,79 @@ export default function DepartmentMainPage() {
     })();
   }, [selectedCollege, selectedDepartment, noticePage]);
 
-  // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
+  // 단과대/학과 변경 시 학생회 공지 페이지 초기화
+  useEffect(() => {
+    setPostsPage(0);
+    setPostsLast(false);
+  }, [selectedCollege, selectedDepartment]);
+
+  // 선택된 college, department로 학생회 공지사항 조회 (페이지네이션, 하단 도달 시 다음 페이지)
   useEffect(() => {
     const college = selectedCollege;
     const department = selectedDepartment;
+    const page = postsPage;
+    if (page === 0) setStudentCouncilNotices([]);
+    setIsPostsLoading(true);
     (async () => {
       try {
-        const response = await getStudentCouncilNotices(college, department);
-        const notices = response.data?.content || [];
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
+        const response = await getStudentCouncilNotices(
+          college,
+          department,
+          page,
+          POSTS_PAGE_SIZE,
+          'publishedAt',
+        );
+        const payload = response.data;
+        const notices = payload?.content ?? [];
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.postsPage !== page
+        )
           return;
-        setStudentCouncilNotices(notices);
+        if (page === 0) {
+          setStudentCouncilNotices(notices);
+        } else {
+          setStudentCouncilNotices((prev) => [...prev, ...notices]);
+        }
+        setPostsLast(payload?.last ?? true);
       } catch (e) {
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.postsPage !== page
+        )
           return;
         console.error(e);
-        setStudentCouncilNotices([]);
+        if (page === 0) setStudentCouncilNotices([]);
+      } finally {
+        if (
+          filterRef.current.college === college &&
+          filterRef.current.department === department &&
+          filterRef.current.postsPage === page
+        ) {
+          setIsPostsLoading(false);
+        }
       }
     })();
-  }, [selectedCollege, selectedDepartment]);
+  }, [selectedCollege, selectedDepartment, postsPage]);
+
+  // 학생회 공지사항: 하단 sentinel이 보이면 다음 페이지 로드
+  useEffect(() => {
+    const el = postsLoadMoreRef.current;
+    if (!el || postsLast || isPostsLoading) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting && !postsLast && !isPostsLoading) {
+          setPostsPage((prev) => prev + 1);
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [postsLast, isPostsLoading, currentTab]);
 
   return (
     <section className='flex min-h-screen flex-col'>
@@ -517,7 +578,19 @@ export default function DepartmentMainPage() {
                 </Link>
               ))}
             </div>
-            {studentCouncilNotices.length === 0 && (
+            {/* 무한 스크롤: 하단 도달 시 다음 페이지 로드 */}
+            {!postsLast && studentCouncilNotices.length > 0 && (
+              <div
+                ref={postsLoadMoreRef}
+                className='flex min-h-12 items-center justify-center py-2'
+                aria-hidden
+              >
+                {isPostsLoading && (
+                  <span className='text-caption02 text-grey-40'>불러오는 중...</span>
+                )}
+              </div>
+            )}
+            {studentCouncilNotices.length === 0 && !isPostsLoading && (
               <div
                 className={clsx(
                   'flex items-center justify-center',
