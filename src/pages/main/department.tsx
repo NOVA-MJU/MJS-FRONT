@@ -9,8 +9,9 @@ import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
 import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import Drawer from '@/components/molecules/Drawer';
 import Footer from '@/components/organisms/Footer';
 import {
@@ -44,11 +45,12 @@ const hasAdminPermission = (role: string | undefined): boolean => {
 
 export default function DepartmentMainPage() {
   const { user } = useAuthStore();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { activeMainSlide } = useHeaderStore();
   const navigate = useNavigate();
+  const isDepartmentSlideActive = activeMainSlide === 0;
 
-  // 단과대 필터
-  const [selectedCollege, setSelectedCollege] = useState<College>('AI_SOFTWARE');
+  // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null)
+  const [selectedCollege, setSelectedCollege] = useState<College>('BUSINESS');
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
   // 학과 필터
@@ -72,12 +74,8 @@ export default function DepartmentMainPage() {
     }
   }, [user?.departmentName]);
 
-  // 선택된 college, department로 학과 정보 조회
+  // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
-    if (!selectedDepartment) {
-      setDepartmentInfo(null);
-      return;
-    }
     (async () => {
       try {
         const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
@@ -99,16 +97,15 @@ export default function DepartmentMainPage() {
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
     [];
 
-  // 탭 선택
-  const tabFromUrl = searchParams.get('tab');
-  const currentTab: string =
-    tabFromUrl && TAB_KEYS.includes(tabFromUrl as keyof typeof TABS) ? tabFromUrl : TAB_KEYS[0];
-
-  function handleTabChange(tab: string) {
-    const next = new URLSearchParams(searchParams);
-    next.set('tab', tab);
-    setSearchParams(next, { replace: true });
-  }
+  // 탭 선택 (세션 스토리지에 저장·복원)
+  const TAB_STORAGE_KEY = 'department-tab';
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    const saved = sessionStorage.getItem(TAB_STORAGE_KEY);
+    return saved && TAB_KEYS.includes(saved as keyof typeof TABS) ? saved : TAB_KEYS[0];
+  });
+  useEffect(() => {
+    sessionStorage.setItem(TAB_STORAGE_KEY, currentTab);
+  }, [currentTab]);
 
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
@@ -137,12 +134,8 @@ export default function DepartmentMainPage() {
     }
   };
 
-  // 선택된 college, department로 학생회 공지사항 조회
+  // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
-    if (!selectedDepartment) {
-      setStudentCouncilNotices([]);
-      return;
-    }
     (async () => {
       try {
         const response = await getStudentCouncilNotices(selectedCollege, selectedDepartment);
@@ -197,38 +190,41 @@ export default function DepartmentMainPage() {
       <div className='bg-grey-02 h-2' />
 
       <div className='flex flex-1 flex-col'>
-        <div className='flex flex-col gap-3.5 pt-5 pb-6.5'>
-          {/* 학과 정보 카드 */}
-          <div className='flex flex-col gap-2 px-5'>
-            <span className='text-title03 text-black'>
-              {selectedDepartment
-                ? departmentMap.get(selectedDepartment) || selectedDepartment
-                : collegeMap.get(selectedCollege) || selectedCollege}
-            </span>
-            {selectedDepartment && (
-              <div className='flex items-center gap-1'>
-                <span className='text-body05 text-grey-80'>교학팀</span>
-                <span className='text-body05 text-grey-30'>
-                  {departmentInfo?.academicOfficePhone ?? '-'}
-                </span>
-                <button
-                  type='button'
-                  onClick={handleCopyPhone}
-                  className='text-blue-15 cursor-pointer p-0.75'
-                  aria-label='전화번호 복사'
-                >
-                  {phoneCopied ? (
-                    <IoIosCheckmark className='text-green-50' />
-                  ) : (
-                    <MdOutlineContentCopy />
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
+        <div className='flex flex-col px-5 pt-5 pb-6.5'>
+          {/* 단과대 이름 */}
+          <p className='text-title03 text-black'>{collegeMap.get(selectedCollege)}</p>
 
-          {/* 바로가기 버튼 */}
-          <div className='flex gap-3 px-5'>
+          {/* 학과 이름 */}
+          {selectedDepartment && (
+            <p className='text-body04 text-grey-80 mt-0.5'>
+              {departmentMap.get(selectedDepartment)}
+            </p>
+          )}
+
+          {/* 교학팀 전화번호 */}
+          {selectedDepartment && (
+            <div className='mt-2.5 flex items-center gap-1'>
+              <span className='text-body05 text-grey-80'>교학팀</span>
+              <span className='text-body05 text-grey-30'>
+                {departmentInfo?.academicOfficePhone ?? '-'}
+              </span>
+              <button
+                type='button'
+                onClick={handleCopyPhone}
+                className='text-blue-15 cursor-pointer p-0.75'
+                aria-label='전화번호 복사'
+              >
+                {phoneCopied ? (
+                  <IoIosCheckmark className='text-green-50' />
+                ) : (
+                  <MdOutlineContentCopy />
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* 홈페이지 / 인스타 버튼 */}
+          <div className='flex gap-3 pt-3.5'>
             {departmentInfo?.homepageUrl ? (
               <a
                 href={departmentInfo.homepageUrl}
@@ -259,7 +255,7 @@ export default function DepartmentMainPage() {
           <Tabs
             tabs={TABS}
             currentTab={currentTab}
-            setCurrentTab={handleTabChange}
+            setCurrentTab={setCurrentTab}
             className='text-body04 border-b-0'
           />
         </div>
@@ -308,7 +304,8 @@ export default function DepartmentMainPage() {
               </div>
             </div>
 
-            {hasAdminPermission(user?.role) && (
+            {/* 일정 추가 버튼: 학과 슬라이드가 활성일 때만 표시 (다른 슬라이드에서 fixed 버튼이 겹치는 것 방지) */}
+            {hasAdminPermission(user?.role) && isDepartmentSlideActive && (
               <button
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
