@@ -17,13 +17,8 @@ export const NAV_ITEMS: NavItem[] = [
     href: 'https://namu.wiki/w/%EB%AA%85%EC%A7%80%EB%8C%80%ED%95%99%EA%B5%90',
   },
   {
-    key: 'msi',
-    label: 'MSI',
-    href: 'https://sso1.mju.ac.kr/login.do?redirect_uri=https://msi.mju.ac.kr/index_Myiweb.jsp',
-  },
-  {
-    key: 'myicap',
-    label: 'MYiCap',
-    href: 'https://myicap.mju.ac.kr/site/main/index001?prevurl=https%3A%2F%2Fmyicap.mju.ac.kr%2F',
+    key: 'sso',
+    label: 'SSO',
+    href: 'https://sso.mju.ac.kr/sso/auth?response_type=code&client_id=lms&state=Random%20String&redirect_uri=https://lms.mju.ac.kr/ilos/sso/sso_response.jsp',
   },
 ];

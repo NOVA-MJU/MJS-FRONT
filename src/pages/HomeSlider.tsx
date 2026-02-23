@@ -63,55 +63,45 @@ const HomeSlider = () => {
   useEffect(() => {
     if (location.pathname !== '/') return;
     setMounted(true);
-    const stored = getStoredSlideIndex();
-    restoreIndexRef.current = stored;
-    setActiveMainSlide(stored);
-  }, [location.pathname, setActiveMainSlide]);
+  }, []);
 
-  const jumpToStored = useCallback(() => {
+
+  useEffect(() => {
+    if (!mounted || initialized || !containerRef.current) return;
     const container = containerRef.current;
-    if (!container) return;
     const width = container.clientWidth;
     if (width <= 0) return;
-    const index = restoreIndexRef.current ?? getStoredSlideIndex();
-    restoreIndexRef.current = null;
-    container.scrollLeft = width * index;
-    setActiveMainSlide(index);
-    isInitialJump.current = false;
-    setInitialized(true);
-  }, [setActiveMainSlide]);
 
-  // 1. 초기 로드 시 저장된 슬라이드로 점프
-  useEffect(() => {
-    if (!mounted || initialized) return;
-    const timer = setTimeout(jumpToStored, 50);
-    return () => clearTimeout(timer);
-  }, [mounted, initialized, jumpToStored]);
-
-  // 2. bfcache(뒤로가기로 페이지 복원) 시 스크롤 복원
-  useEffect(() => {
-    const onPageShow = (e: PageTransitionEvent) => {
-      if (!e.persisted || location.pathname !== '/') return;
-      const container = containerRef.current;
-      if (!container || !initialized) return;
-      const stored = getStoredSlideIndex();
-      const width = container.clientWidth;
-      if (width > 0) {
-        container.scrollLeft = width * stored;
-        setActiveMainSlide(stored);
+    let initialIndex = 1;
+    if (typeof window !== 'undefined') {
+      const saved = window.sessionStorage.getItem('main-active-slide');
+      const parsed = saved !== null ? Number(saved) : NaN;
+      if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 2) {
+        initialIndex = Math.round(parsed);
       }
-    };
-    window.addEventListener('pageshow', onPageShow);
-    return () => window.removeEventListener('pageshow', onPageShow);
-  }, [location.pathname, initialized, setActiveMainSlide]);
+    }
 
-  // 3. 슬라이드가 바뀔 때마다 sessionStorage에 저장 (스와이프·헤더 클릭 모두)
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
+      const c = containerRef.current;
+      const w = c.clientWidth;
+      if (w > 0) {
+        c.scrollLeft = w * initialIndex;
+        setActiveMainSlide(initialIndex);
+        isInitialJump.current = false;
+        setInitialized(true);
+      }
+    }, 30);
+    return () => clearTimeout(timer);
+  }, [mounted, initialized, setActiveMainSlide]);
+
+  
   useEffect(() => {
-    if (!initialized) return;
-    setStoredSlideIndex(activeMainSlide as SlideIndex);
+    if (!initialized || typeof window === 'undefined') return;
+    window.sessionStorage.setItem('main-active-slide', String(activeMainSlide));
   }, [activeMainSlide, initialized]);
 
-  // 4. 외부 상태 변경 (로고 클릭 등) 대응
+  
   useEffect(() => {
     if (!initialized || !containerRef.current || isInitialJump.current) return;
     const container = containerRef.current;

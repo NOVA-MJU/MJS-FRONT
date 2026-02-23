@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import SearchBar from '../../components/atoms/SearchBar';
 import { Typography } from '../../components/atoms/Typography';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Pagination from '../../components/molecules/common/Pagination';
 import { getBoards, type BoardItem, type Category, type GetBoardsParams } from '../../api/board';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
@@ -32,6 +32,7 @@ export default function Board() {
   const { isDesktop } = useResponsive();
   const navigate = useNavigate();
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const location = useLocation();
 
   useEffect(() => {
     setPage(0);
@@ -163,14 +164,16 @@ export default function Board() {
     <div className='bg-grey-00 relative flex h-full w-full flex-col pb-24 md:pb-12'>
       <div className='flex flex-1 flex-col gap-6 p-4 md:p-8'>{BoardContent}</div>
 
-      <button
-        type='button'
-        className='bg-blue-35 fixed right-5 bottom-40 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full text-white shadow-lg md:bottom-16'
-        onClick={handleWriteClick}
-      >
-        <HiOutlinePencilSquare size={22} />
-        <span className='text-caption01 font-semibold'>글남기기</span>
-      </button>
+      {location.pathname === '/board' && (
+        <button
+          type='button'
+          className='bg-blue-35 fixed right-5 bottom-40 flex h-[64px] w-[64px] flex-col items-center justify-center gap-1 rounded-full text-white shadow-lg md:bottom-16'
+          onClick={handleWriteClick}
+        >
+          <HiOutlinePencilSquare size={22} />
+          <span className='text-caption01 font-semibold'>글남기기</span>
+        </button>
+      )}
     </div>
   );
 }
