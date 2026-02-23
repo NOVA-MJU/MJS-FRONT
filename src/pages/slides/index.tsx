@@ -200,11 +200,7 @@ const Slides = () => {
 
   // 탭이 바뀔 때마다 sessionStorage에 저장
   useEffect(() => {
-    try {
-      sessionStorage.setItem(SLIDES_TAB_STORAGE_KEY, activeTab);
-    } catch {
-      // ignore
-    }
+    sessionStorage.setItem(SLIDES_TAB_STORAGE_KEY, activeTab);
   }, [activeTab]);
 
   // 이 패널이 뷰포트에 보일 때만 true → 메인/학과 슬라이드에선 side effect 미적용

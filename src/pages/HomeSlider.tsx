@@ -21,20 +21,12 @@ function getStoredSlideIndex(): SlideIndex {
 }
 
 function setStoredSlideIndex(index: SlideIndex) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, String(index));
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem(STORAGE_KEY, String(index));
 }
 
 /** 로고 클릭 시 호출 → 무조건 메인(1)으로 가도록 저장 */
 export function setHomeSliderToMain() {
-  try {
-    sessionStorage.setItem(HOME_SLIDER_STORAGE_KEY, '1');
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem(HOME_SLIDER_STORAGE_KEY, '1');
 }
 
 /**
