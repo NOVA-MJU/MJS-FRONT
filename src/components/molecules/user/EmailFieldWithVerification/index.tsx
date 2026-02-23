@@ -31,7 +31,7 @@ const EmailFieldWithVerification = ({
   handleSendCode,
   handleVerifyCode,
 }: Props) => (
-  <div className='flex flex-row items-end gap-5'>
+  <div className='flex flex-row flex-wrap items-end gap-5'>
     <InputField
       label='이메일'
       type='text'

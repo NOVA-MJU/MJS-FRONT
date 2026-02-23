@@ -1,11 +1,13 @@
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoIosClose, IoIosMenu } from 'react-icons/io';
+import MyIcon from '../../../../public/img/my-icon.png';
 
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import SidebarV2 from '@/components/organisms/SidebarV2';
 import SearchBar from '@/components/atoms/SearchBar';
 import { useHeaderStore } from '@/store/useHeaderStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { setHomeSliderToMain } from '@/pages/HomeSlider';
 import clsx from 'clsx';
 
@@ -13,6 +15,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { trackNavClick } = useNavTracking();
   const { activeMainSlide } = useHeaderStore();
+  const { isLoggedIn, user } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
@@ -38,7 +41,11 @@ export default function Navbar() {
 
   const location = useLocation();
   const isMainOrLogin =
-    (location.pathname === '/' && activeMainSlide === 1) || location.pathname === '/login';
+    (location.pathname === '/' && activeMainSlide === 1) ||
+    location.pathname === '/login' ||
+    location.pathname === '/register' ||
+    location.pathname === '/mypage' ||
+    location.pathname === '/find-password';
 
   return (
     <nav
@@ -87,6 +94,18 @@ export default function Navbar() {
               iconClassName='text-grey-30'
             />
           </div>
+          <button
+            type='button'
+            className='shrink-0 overflow-hidden rounded-full focus:outline-none'
+            onClick={() => navigate(isLoggedIn ? '/mypage' : '/login')}
+            aria-label={isLoggedIn ? '마이페이지' : '로그인'}
+          >
+            {isLoggedIn && user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt='프로필' className='h-7 w-7 object-cover' />
+            ) : (
+              <img src={MyIcon} alt='마이' className='h-7 w-7 object-contain' />
+            )}
+          </button>
         </header>
       )}
 

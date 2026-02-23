@@ -42,6 +42,7 @@ const RegisterForm = () => {
     nickname,
     studentCode,
     profileImageFile,
+    college,
     pw,
     name,
     gender,
