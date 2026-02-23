@@ -66,6 +66,66 @@ export const getDepartmentSchedules = async (college: College, department: Depar
   return data;
 };
 
+/** 학과 공지사항(DepartmentNotice) 항목 타입 */
+export interface DepartmentNotice {
+  departmentNoticeUuid: string;
+  title: string;
+  publishedAt: string;
+  link: string;
+}
+
+/** 학과 공지사항 목록 조회 응답 데이터 타입 (페이징) */
+export interface DepartmentNoticesData {
+  content: DepartmentNotice[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: { empty: boolean; sorted: boolean; unsorted: boolean };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+}
+
+/**
+ * 학과 공지사항 목록 조회 API
+ * College + (optional) DepartmentName 조합으로 학과 공지사항을 페이징 형태로 조회합니다.
+ * department를 생략하면 단과대(학부) 레벨 공지를 조회합니다.
+ * @param college - 단과대학 (필수)
+ * @param department - 학과명 (생략 시 단과대 레벨)
+ * @param page - 페이지 번호 (기본값: 0)
+ * @param size - 페이지 크기 (기본값: 5)
+ * @param sort - 정렬 기준 (기본값: "date,desc")
+ * @returns 학과 공지사항 목록 (페이징)
+ */
+export const getDepartmentNotices = async (
+  college: College,
+  department: Department | null,
+  page = 0,
+  size = 5,
+  sort = 'date,desc',
+) => {
+  const { data } = await apiClient.get<ApiResponse<DepartmentNoticesData>>('/departments/notices', {
+    params: {
+      college,
+      department: department ?? undefined,
+      page,
+      size,
+      sort,
+    },
+  });
+  return data;
+};
+
 /** 학생회 공지 항목 타입 */
 export interface StudentCouncilNotice {
   noticeUuid: string;

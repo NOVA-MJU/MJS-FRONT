@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiHome } from 'react-icons/fi';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import { Tabs } from '@/components/atoms/Tabs';
 import DepartmentCalendar from '@/components/molecules/DepartmentCalendar';
@@ -22,11 +22,13 @@ import {
 } from '@/constants/departments';
 import {
   getDepartmentInfo,
+  getDepartmentNotices,
   getDepartmentSchedules,
   getStudentCouncilNotices,
   type College,
   type Department,
   type DepartmentInfo,
+  type DepartmentNotice,
   type DepartmentSchedule,
   type StudentCouncilNotice,
 } from '@/api/departments';
@@ -65,11 +67,25 @@ export default function DepartmentMainPage() {
   // 학과 일정 (API 응답)
   const [departmentSchedules, setDepartmentSchedules] = useState<DepartmentSchedule[]>([]);
 
+  // 소속 공지사항 (학과 공지사항 API)
+  const [departmentNotices, setDepartmentNotices] = useState<DepartmentNotice[]>([]);
+  const [noticePage, setNoticePage] = useState(0);
+  const [noticeTotalPages, setNoticeTotalPages] = useState(0);
+  const NOTICE_PAGE_SIZE = 5;
+
   // 응답 시점에 선택된 필터와 일치할 때만 반영
-  const filterRef = useRef({ college: selectedCollege, department: selectedDepartment });
+  const filterRef = useRef({
+    college: selectedCollege,
+    department: selectedDepartment,
+    noticePage,
+  });
   useEffect(() => {
-    filterRef.current = { college: selectedCollege, department: selectedDepartment };
-  }, [selectedCollege, selectedDepartment]);
+    filterRef.current = {
+      college: selectedCollege,
+      department: selectedDepartment,
+      noticePage,
+    };
+  }, [selectedCollege, selectedDepartment, noticePage]);
 
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
@@ -175,11 +191,6 @@ export default function DepartmentMainPage() {
     });
   }, [departmentSchedules, selectedDate]);
 
-  // 소속 공지사항
-  const [noticeData] = useState(NOTICE_DATA);
-  const [noticePage, setNoticePage] = useState(0);
-  const noticeTotalPages = 1; // TODO: API 연동 시 totalPages 연결
-
   // 학생회 공지사항
   const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
 
@@ -196,6 +207,43 @@ export default function DepartmentMainPage() {
       console.error('클립보드 복사 실패:', e);
     }
   };
+
+  // 선택된 college, department로 학과 공지사항(소속 공지사항) 조회
+  useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
+    const page = noticePage;
+    (async () => {
+      try {
+        const response = await getDepartmentNotices(
+          college,
+          department,
+          page,
+          NOTICE_PAGE_SIZE,
+          'date,desc',
+        );
+        const payload = response.data;
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.noticePage !== page
+        )
+          return;
+        setDepartmentNotices(payload?.content ?? []);
+        setNoticeTotalPages(payload?.totalPages ?? 0);
+      } catch (e) {
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.noticePage !== page
+        )
+          return;
+        console.error(e);
+        setDepartmentNotices([]);
+        setNoticeTotalPages(0);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment, noticePage]);
 
   // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
@@ -404,26 +452,32 @@ export default function DepartmentMainPage() {
         {currentTab === 'notices' && (
           <section>
             <div className='flex flex-col py-5'>
-              {noticeData.length === 0 ? (
+              {departmentNotices.length === 0 ? (
                 <div className='flex items-center justify-center py-10'>
                   <span className='text-body03'>공지사항 없음</span>
                 </div>
               ) : (
-                noticeData.map((notice) => (
-                  <div
-                    key={notice.id}
+                departmentNotices.map((notice) => (
+                  <a
+                    key={notice.departmentNoticeUuid}
+                    href={notice.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
                     className={clsx(
-                      'cursor-pointer px-5 py-2.5',
+                      'block cursor-pointer px-5 py-2.5',
                       'hover:bg-blue-05 transition duration-50 hover:transition-none',
                     )}
                   >
                     <p className='text-caption04 text-grey-30'>
-                      {format(new Date(notice.createdAt), 'yyyy.MM.dd', { locale: ko })}
+                      {(() => {
+                        const d = notice.publishedAt ? new Date(notice.publishedAt) : null;
+                        return d && isValid(d) ? format(d, 'yyyy.MM.dd', { locale: ko }) : '-';
+                      })()}
                     </p>
                     <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
                       {notice.title}
                     </p>
-                  </div>
+                  </a>
                 ))
               )}
             </div>
@@ -494,6 +548,7 @@ export default function DepartmentMainPage() {
                   onClick={() => {
                     setSelectedCollege(college.value);
                     setSelectedDepartment(null); // 단과대 변경 시 학과 필터 초기화
+                    setNoticePage(0);
                     setIsCollegeDrawerOpen(false);
                   }}
                   className={clsx(
@@ -525,6 +580,7 @@ export default function DepartmentMainPage() {
               type='button'
               onClick={() => {
                 setSelectedDepartment(null);
+                setNoticePage(0);
                 setIsDepartmentDrawerOpen(false);
               }}
               className={clsx(
@@ -547,6 +603,7 @@ export default function DepartmentMainPage() {
                   type='button'
                   onClick={() => {
                     setSelectedDepartment(department.value);
+                    setNoticePage(0);
                     setIsDepartmentDrawerOpen(false);
                   }}
                   className={clsx(
@@ -572,32 +629,3 @@ export default function DepartmentMainPage() {
     </section>
   );
 }
-
-// 더미 데이터 (소속 공지사항 탭)
-const NOTICE_DATA = [
-  {
-    id: 1,
-    createdAt: '2025-12-09T09:00:00.000Z',
-    title: '[채용공고] Manyfast Tech-Lead 채용 및 사업설명회',
-  },
-  {
-    id: 2,
-    createdAt: '2025-04-24T10:30:00.000Z',
-    title: '[특강] 융합소프트웨어학부 취업 특강 안내 (메가스터디)',
-  },
-  {
-    id: 3,
-    createdAt: '2025-02-21T14:00:00.000Z',
-    title: '2025학년도 1학기 융합소프트웨어학부 수강신청(증원) 관련 안내 (추가)',
-  },
-  {
-    id: 4,
-    createdAt: '2025-02-06T11:00:00.000Z',
-    title: '2025학년도 인공지능·소프트웨어융합대학 교과과정 개편 안내',
-  },
-  {
-    id: 5,
-    createdAt: '2025-02-05T16:45:00.000Z',
-    title: '2025학년도 1학기 수강신청(데이터베이스 교과목) 관련 안내',
-  },
-];
