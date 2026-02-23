@@ -124,7 +124,7 @@ export default function Main() {
 
   return (
     <div className='w-full'>
-      {/* 첫 화면: White(MainCarousel) + Grey(Banner) = 한 뷰포트 */}
+      {/* 첫 화면: White(MainCarousel) + Grey(Banner) + Blue(Footer) = 한 뷰포트 */}
       <section className='h-[calc(100svh-3.5rem)] w-full overflow-hidden'>
         <div className='flex h-full min-h-0 flex-col'>
           {/* White: MainCarousel 영역 (인디케이터는 이 영역 맨 아래에 absolute 고정) */}
@@ -133,16 +133,16 @@ export default function Main() {
           </div>
 
           {/* Grey: Banner 영역 (첫 화면에 항상 보임, clamp 높이) */}
-          <div className='bg-grey-10 h-[clamp(160px,22vh,220px)] shrink-0'>
+          <div className='bg-grey-10 h-[clamp(140px,18vh,200px)] shrink-0'>
             <AdBannerSection />
+          </div>
+
+          {/* Blue: Footer 영역 (항상 첫 화면 내에서 보이도록 고정 높이) */}
+          <div className='shrink-0'>
+            <Footer />
           </div>
         </div>
       </section>
-
-      {/* Blue: Footer (스크롤해야 보임) */}
-      <footer className='bg-blue-05 min-h-[104px]'>
-        <Footer />
-      </footer>
     </div>
   );
 }

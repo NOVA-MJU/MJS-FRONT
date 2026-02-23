@@ -11,19 +11,15 @@ export default function Footer() {
 
   return (
     <footer className='bg-blue-05 w-full'>
-      <div className='mx-auto flex w-full flex-col gap-4 p-5 md:w-[1280px]'>
-        <img src='/logo/ThingoSmallLogo.svg' alt='mjs' className='h-auto w-14' />
-        <div className='flex gap-4'>
-          <a className='text-caption05 text-grey-40 cursor-pointer'>이용약관</a>
-          <a className='text-caption05 text-grey-40 cursor-pointer'>개인정보 처리방침</a>
-          <button
-            className='text-caption05 text-grey-40 cursor-pointer'
-            onClick={handleContactClick}
-          >
+      <div className='mx-auto flex w-full flex-col items-center gap-3 px-5 py-6 md:w-[1280px]'>
+        <div className='text-caption04 text-grey-40 flex w-full max-w-[480px] items-center justify-between'>
+          <a className='cursor-pointer'>이용약관</a>
+          <a className='cursor-pointer'>개인정보 처리방침</a>
+          <button className='cursor-pointer' onClick={handleContactClick}>
             문의하기
           </button>
         </div>
-        <p className='text-caption05 text-grey-20'>© 2026 Thingo. All rights reserved.</p>
+        <p className='text-caption05 text-grey-20'>@ 2025 MJS. All rights reserved</p>
       </div>
     </footer>
   );

@@ -96,23 +96,21 @@ export default function MainSearchSection() {
       </div>
 
       <div className='pointer-events-none absolute inset-x-0 bottom-3 flex flex-col gap-1 px-0'>
-        <div className='pointer-events-auto mr-5 -mb-10 flex justify-end pr-0'>
-          <div className='relative'>
-            <div className='bg-blue-35 text-caption01 flex h-9 w-24 items-center justify-center rounded-2xl text-white shadow-md'>
-              옆으로 슬라이드
-            </div>
-            <div className='bg-blue-35 absolute right-5 -bottom-1 h-3 w-3 rotate-45' />
-          </div>
-        </div>
-
-        {/* 화살표 좌우 */}
+        {/* 화살표 좌우 + 옆으로 슬라이드 말풍선 */}
         <div className='pointer-events-auto flex items-center justify-between'>
           <div>
-            <img src='/main/main_v2_leftArrow.png' alt='이전' className='h-35 w-35' />
+            <img src='/main/main_v2_leftArrow.png' alt='이전' className='-ml-1 h-35 w-35' />
           </div>
 
-          <div>
-            <img src='/main/main_v2_rightArrow.png' alt='다음' className='h-35 w-35' />
+          <div className='relative'>
+            <img src='/main/main_v2_rightArrow.png' alt='다음' className='-mr-1 h-35 w-35' />
+            {/* 옆으로 슬라이드 안내 말풍선: 오른쪽 화살표 아래·살짝 오른쪽, 꼬리는 화살표 쪽 */}
+            <img
+              src='/main/slideBallon.svg'
+              alt='옆으로 슬라이드'
+              className='slide-indicator-anim-left absolute top-full right-0 -mt-10 mr-7 h-[28px] w-auto max-w-[80px]'
+              aria-hidden
+            />
           </div>
         </div>
       </div>
