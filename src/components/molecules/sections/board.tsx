@@ -11,14 +11,19 @@ import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
 
-/**
- * 카테고리 및 페이지 길이 조절
- */
+// 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
 
-/**
- * 메인페이지에 표시할 자유게시판 위젯 컴포넌트
- */
+// 카테고리 탭 선택 값을 세션 스토리지에 보관
+const BOARD_TAB_STORAGE_KEY = 'board-section-category';
+
+function getStoredCategory(): 'NOTICE' | 'FREE' {
+  if (typeof sessionStorage === 'undefined') return 'NOTICE';
+  const stored = sessionStorage.getItem(BOARD_TAB_STORAGE_KEY);
+  return stored === 'FREE' ? 'FREE' : 'NOTICE';
+}
+
+// 메인페이지에 표시할 자유게시판 위젯 컴포넌트
 interface BoardSectionProps {
   showWriteButton?: boolean;
   all?: boolean;
@@ -31,7 +36,7 @@ export default function BoardSection({
   all = false,
   onSeeMoreClick,
 }: BoardSectionProps) {
-  const [category, setCategory] = useState<'NOTICE' | 'FREE'>('NOTICE');
+  const [category, setCategory] = useState<'NOTICE' | 'FREE'>(getStoredCategory);
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
@@ -57,6 +62,10 @@ export default function BoardSection({
       }
     })();
   }, [category, page, all]);
+
+  useEffect(() => {
+    sessionStorage.setItem(BOARD_TAB_STORAGE_KEY, category);
+  }, [category]);
 
   useEffect(() => {
     setIsMounted(true);
