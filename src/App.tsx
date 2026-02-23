@@ -41,7 +41,6 @@ export default function App() {
           <Route path='/' element={<HomeSlider />} />
 
           {/* 게시판 */}
-          <Route path='/board' element={<Board />} />
           <Route path='/board/:uuid' element={<BoardDetail />} />
           <Route path='/board/write' element={<BoardWrite />} />
           <Route path='/board/edit/:uuid' element={<BoardEdit />} />
@@ -73,6 +72,7 @@ export default function App() {
           <Route path='/find-password' element={<FindPasswordPage />} />
 
           {/* 삭제 예정 */}
+          <Route path='/board' element={<Board />} />
           <Route path='/notice' element={<Notice />} />
           <Route path='/news' element={<News />} />
           <Route path='/broadcast' element={<Broadcast />} />
