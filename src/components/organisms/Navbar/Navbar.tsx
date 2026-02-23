@@ -14,6 +14,7 @@ import type { NavItem } from '@/types/nav/item';
 import SidebarV2 from '@/components/organisms/SidebarV2';
 import SearchBar from '@/components/atoms/SearchBar';
 import { useHeaderStore } from '@/store/useHeaderStore';
+import clsx from 'clsx';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -158,7 +159,9 @@ export default function Navbar() {
     );
 
   return (
-    <nav className='border-grey-10 h-fit w-full border-b-1 bg-white'>
+    <nav
+      className={clsx('h-fit w-full bg-white', isMainOrLogin ? 'border-grey-10 border-b-1' : '')}
+    >
       {isMainOrLogin ? (
         <div className='flex h-[60px] items-center justify-between px-5'>
           <Link

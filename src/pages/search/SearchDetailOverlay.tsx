@@ -191,12 +191,12 @@ export default function SearchDetail() {
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
-        <header className='flex min-w-0 items-center gap-4 px-4 py-2'>
+        <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
           <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
             <img src='/logo/ThingoSmallLogo.svg' className='h-full w-full object-contain' />
           </div>
 
-          <div className='min-w-0 flex-1 py-2'>
+          <div className='min-w-0 flex-1'>
             <SearchBar
               initialContent={keyword ?? undefined}
               className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
