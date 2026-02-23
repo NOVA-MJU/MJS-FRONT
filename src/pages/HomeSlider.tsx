@@ -141,7 +141,7 @@ const HomeSlider = () => {
       ref={containerRef}
       onScroll={handleScroll}
       className={cn(
-        'no-scrollbar flex h-full w-full overflow-x-auto overflow-y-hidden transition-opacity duration-300',
+        'no-scrollbar flex h-full w-full overflow-x-auto overflow-y-hidden transition-opacity duration-300 select-none',
         initialized ? 'snap-x snap-mandatory opacity-100' : 'opacity-0',
       )}
     >
