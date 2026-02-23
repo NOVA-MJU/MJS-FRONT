@@ -28,7 +28,7 @@ function CommentForm({
     <div className='flex flex-col gap-0.5'>
       <div className='relative w-full'>
         <input
-          className='w-full text-body05 text-black placeholder-grey-40 bg-grey-05 px-3 py-2.5 rounded-lg '
+          className='text-body05 placeholder-grey-40 bg-grey-02 w-full rounded-lg px-3 py-2.5 text-black'
           placeholder={isLoggedin ? '댓글을 작성해주세요.' : '로그인이 필요한 서비스 입니다'}
           type='text'
           value={newComment}
@@ -44,7 +44,7 @@ function CommentForm({
           type='button'
           onClick={handleCommentUpload}
           className={clsx(
-            'absolute right-2.5 top-1/2 -translate-y-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-grey-20 text-white',
+            'bg-grey-20 absolute top-1/2 right-2.5 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-white',
             isLoggedin && 'cursor-pointer',
           )}
           disabled={!isLoggedin}

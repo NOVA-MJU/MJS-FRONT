@@ -1,5 +1,4 @@
 import {
-  deletePost,
   getBoardComments,
   getBoardDetail,
   likePost,
@@ -7,26 +6,19 @@ import {
   type CommentRes,
   type GetBoardDetailRes,
 } from '@/api/board';
-import Button from '@/components/atoms/Button';
-import Divider from '@/components/atoms/Divider';
 import NavigationUp from '@/components/molecules/NavigationUp';
 import BlockTextEditor from '@/components/organisms/BlockTextEditor';
 import GlobalErrorPage from '@/pages/error';
-import { formatToElapsedTime, formatToLocalDate } from '@/utils/date';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { IoIosHeart, IoIosHeartEmpty } from 'react-icons/io';
-import { IoChatbubbles } from 'react-icons/io5';
-import { RxDividerVertical } from 'react-icons/rx';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Comment from '@/components/organisms/Comment';
-import { useResponsive } from '@/hooks/useResponse';
-import { HiOutlineChatBubbleOvalLeftEllipsis } from 'react-icons/hi2';
 import { Skeleton, SkeletonCard, SkeletonProfile } from '@/components/atoms/Skeleton';
 import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
-import { ICON_SIZE_MD } from '@/constants/common';
 import { handleError } from '@/utils/error';
+import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
+import { format, parseISO } from 'date-fns';
 
 const MAX_REPLY_LEN = 100;
 
@@ -49,9 +41,6 @@ interface BoardDetail {
  * 화면 크기에 따라 레이아웃이 조정됩니다.
  */
 export default function BoardDetail() {
-  // 반응형 처리: useResponsive 훅으로 화면 크기 분기점 관리
-  const { isDesktop } = useResponsive();
-
   const navigate = useNavigate();
   const { uuid } = useParams<{ uuid: string }>();
   const [content, setContent] = useState<GetBoardDetailRes | null>(null);
@@ -61,31 +50,26 @@ export default function BoardDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isError, setIsError] = useState(false);
-  const [canEdit, setCanEdit] = useState(false);
-  const [canDelete, setCanDelete] = useState(false);
   const { isLoggedIn } = useAuthStore();
 
-  /**
-   * 페이지 로드 함수
-   */
+  // 페이지 로드 함수 (로그인된 경우에만 댓글 API 조회)
   useEffect(() => {
     if (!uuid) return;
-    else {
-      getContent(uuid);
+    getContent(uuid);
+    if (isLoggedIn) {
       getComments(uuid);
+    } else {
+      setComments(null);
+      setIsCommentsLoading(false);
     }
-  }, [uuid]);
+  }, [uuid, isLoggedIn]);
 
-  /**
-   * 게시글 데이터 로드 함수
-   */
+  // 게시글 데이터 로드
   const getContent = async (uuid: string) => {
     setIsContentLoading(true);
     try {
       const res = await getBoardDetail(uuid);
       setContent(res);
-      setCanEdit(res.canEdit);
-      setCanDelete(res.canDelete);
     } catch (e) {
       handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
       setIsError(true);
@@ -94,9 +78,7 @@ export default function BoardDetail() {
     }
   };
 
-  /**
-   * 댓글 데이터 로드 함수
-   */
+  // 댓글 데이터 로드
   const getComments = async (uuid: string) => {
     setIsCommentsLoading(true);
     try {
@@ -110,9 +92,7 @@ export default function BoardDetail() {
     }
   };
 
-  /**
-   * 댓글 작성 요청
-   */
+  // 댓글 작성 요청
   const handleCommentUpload = async () => {
     if (!uuid || isContentLoading || isLoading) return;
 
@@ -136,28 +116,14 @@ export default function BoardDetail() {
     }
   };
 
-  /**
-   * 게시글 삭제 요청
-   */
-  const handleDeletePost = async () => {
-    if (!uuid || isContentLoading || isLoading) return;
-    if (!window.confirm('삭제하시겠습니까?')) return;
-    setIsLoading(true);
-    try {
-      await deletePost(uuid);
-      navigate(-1);
-    } catch (err) {
-      handleError(err, '게시글 삭제에 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * 게시글 좋아요 표시 요청
-   */
+  // 게시글 좋아요 표시 요청
   const handleLikePost = async () => {
     if (!uuid || !content || isContentLoading) return;
+    if (!isLoggedIn) {
+      toast.error('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+      return;
+    }
     setIsLoading(true);
     try {
       await likePost(uuid);
@@ -179,264 +145,130 @@ export default function BoardDetail() {
 
   if (isError) return <GlobalErrorPage />;
 
-  /**
-   * 데스크톱 뷰
-   */
-  if (isDesktop)
-    return (
-      <div className='w-full flex-1 flex flex-col p-4 md:p-12 gap-6'>
-        <div className='w-full flex justify-between'>
-          <NavigationUp onClick={() => navigate(-1)} />
-          {content && (
-            <div className='flex items-center gap-2 md:gap-4'>
-              {canEdit && (
-                <Link to={`/board/edit/${uuid}`} state={{ from: 'detail' }}>
-                  <Button className='p-3 md:w-46' variant='greyBlack' shape='rounded'>
-                    수정
-                  </Button>
-                </Link>
-              )}
-              {canDelete && (
-                <Button
-                  className='p-3 md:w-46'
-                  variant='danger'
-                  shape='rounded'
-                  onClick={handleDeletePost}
-                >
-                  삭제
-                </Button>
-              )}
-            </div>
-          )}
+  return (
+    <div>
+      <header className='border-grey-02 flex h-15 items-center border-b px-5'>
+        <NavigationUp onClick={() => navigate(-1)} />
+      </header>
+
+      {/* 로딩 화면 */}
+      {isContentLoading ? (
+        <div className='flex flex-1 flex-col gap-4 px-5'>
+          <SkeletonProfile /> <Skeleton /> <SkeletonCard /> <Skeleton /> <SkeletonCard />
         </div>
-        {content && (
-          <>
-            <div className='flex flex-col w-full p-3, gap-3'>
-              <h2 className='text-heading02'>{content.title}</h2>
-              <div className='flex justify-between'>
-                <span className='text-body03 text-grey-40 flex gap-1 items-center'>
-                  {formatToElapsedTime(content.publishedAt)}
-                  <RxDividerVertical />
-                  {content.author}
-                </span>
-                <span className='text-body03 text-grey-40 flex gap-1 items-center'>
-                  <IoIosHeart />
-                  {content.likeCount}
-                  <RxDividerVertical />
-                  <IoChatbubbles />
-                  {content.commentCount}
-                </span>
+      ) : (
+        // 콘텐츠 표시
+        content && (
+          <div>
+            {/* 제목 */}
+            <p className='text-body02 mt-5 px-5 text-black'>{content.title}</p>
+
+            <div className='mt-1 flex items-center justify-between px-5'>
+              <div className='text-body05 text-grey-40 flex gap-3'>
+                <span>{format(parseISO(content.publishedAt), 'yyyy.MM.dd')}</span>
+                <span>|</span>
+                <span>{content.author}</span>
+              </div>
+              <div className='text-body05 text-grey-40 flex items-center'>
+                <HeartIcon className='text-blue-10' filled={content.liked} />
+                <span>{content.likeCount}</span>
+                <span className='ms-2'>|</span>
+                <ChatBubbleIcon className='text-blue-10 ms-1' />
+                <span>{content.commentCount}</span>
               </div>
             </div>
-            <Divider variant='thin' />
 
-            {/**
-             * 컨텐츠 본문을 표시합니다
-             */}
-            <div className='w-full flex-1 min-h-64 py-3 break-all'>
+            {/* 본문 */}
+            <div className='my-15 px-5'>
               <BlockTextEditor readOnly initialContent={content.content} />
             </div>
 
-            {/**
-             * 좋아요 버튼을 표시합니다
-             */}
-            <div className='flex md:px-3'>
-              <button
-                className='cursor-pointer hover:bg-grey-05 rounded-xl px-3 py-2 transition'
-                onClick={handleLikePost}
-              >
-                <span className='text-body02 text-mju-primary flex gap-1 items-center'>
-                  좋아요
-                  {content.liked ? <IoIosHeart /> : <IoIosHeartEmpty />}
-                </span>
+            <div className='border-grey-02 flex items-center justify-between border-b px-5 pb-5'>
+              {/* 좋아요 버튼 */}
+              <button className='flex cursor-pointer items-center' onClick={handleLikePost}>
+                <span className='text-body04 text-grey-40'>좋아요</span>
+                {content.liked ? (
+                  <HeartIcon className='text-grey-20' filled />
+                ) : (
+                  <HeartIcon className='text-blue-10' />
+                )}
               </button>
-            </div>
-            <Divider variant='thin' />
 
-            {/**
-             * 댓글 입력창을 표시합니다
-             */}
-            <div className='flex justify-start px-3'>
-              <span className='text-title02 text-mju-primary'>댓글</span>
-            </div>
-            <div className='flex gap-6'>
-              <div className='flex-1 flex flex-col items-end gap-1'>
-                <input
-                  className='w-full p-3 border-2 border-grey-05 rounded-xl placeholder-grey-20'
-                  placeholder='댓글을 입력해주세요'
-                  type='text'
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCommentUpload();
-                    }
-                  }}
-                />
-                <div className='flex gap-0.5'>
-                  <span className='text-caption02 text-grey-40'>
-                    {`${newComment.trim().length}/${MAX_REPLY_LEN}`}
-                  </span>
+              {/* 수정 및 삭제 버튼 (본인 게시글일 때만 표시) */}
+              {(content.canEdit || content.canDelete) && (
+                <div className='flex items-center'>
+                  {content.canEdit && (
+                    <button className='text-body05 text-grey-40 cursor-pointer'>수정</button>
+                  )}
+                  {content.canDelete && (
+                    <button className='text-body05 text-grey-40 ms-5 cursor-pointer'>삭제</button>
+                  )}
                 </div>
-              </div>
-              <button
-                className='w-16 md:w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
-                onClick={handleCommentUpload}
-              >
-                <span className='text-body02 text-white'>전송</span>
-              </button>
+              )}
             </div>
 
-            {/**
-             * 댓글 상자를 표시합니다
-             */}
-            {comments && comments.length !== 0 && (
-              <div className='bg-grey-05 p-6 gap-6 rounded-xl flex flex-col'>
-                {comments.map((comment) => (
-                  <Comment
-                    key={comment.commentUUID}
-                    commentUuid={comment.commentUUID}
-                    boardUuid={uuid!}
-                    authorName={comment.nickname}
-                    content={comment.content}
-                    createdAt={comment.createdAt}
-                    profileImageUrl={comment.profileImageUrl}
-                    likeCount={comment.likeCount}
-                    liked={comment.liked}
-                    replies={comment.replies}
-                    isAuthor={comment.commentIsAuthor}
+            <p className='text-body02 ms-5 mt-5 text-black'>댓글</p>
+
+            {isLoggedIn ? (
+              <>
+                {/* 댓글 입력기 */}
+                <div className='mt-1.5 px-5'>
+                  <CommentForm
+                    newComment={newComment}
+                    setNewComment={setNewComment}
+                    handleCommentUpload={handleCommentUpload}
+                    MAX_REPLY_LEN={MAX_REPLY_LEN}
                     isLoggedin={isLoggedIn}
                   />
-                ))}
-              </div>
-            )}
-            {comments && comments.length === 0 && (
-              <div className='py-16 flex justify-center'>
-                <span className='text-title01'>작성된 댓글이 없습니다</span>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    );
-
-  /**
-   * 모바일 뷰
-   */
-  if (!isDesktop)
-    return (
-      <div className='flex-1 flex flex-col'>
-        <div className='px-2 py-3'>
-          <NavigationUp onClick={() => navigate(-1)} />
-        </div>
-
-        {/**
-         * 로딩 화면
-         */}
-        {isContentLoading ? (
-          <div className='px-5 flex-1 flex flex-col gap-4'>
-            <SkeletonProfile /> <Skeleton /> <SkeletonCard /> <Skeleton /> <SkeletonCard />
-          </div>
-        ) : (
-          /**
-           * 콘텐츠 표시
-           */
-          content && (
-            <div className='flex-1 flex flex-col gap-4'>
-              {/**
-               * 제목이 표시됩니다
-               */}
-              <div className='px-5 flex flex-col gap-1'>
-                <h2 className='text-body02 text-black'>{content.title}</h2>
-                <div className='flex items-center justify-between'>
-                  <div className='flex gap-3 text-body05 text-grey-40'>
-                    <span>{formatToLocalDate(content.publishedAt)}</span>
-                    <span>|</span>
-                    <span>{content.author}</span>
-                  </div>
-                  <div className='flex gap-1.5 items-center text-body05 text-grey-40'>
-                    <IoIosHeartEmpty size={ICON_SIZE_MD} className='text-blue-10' />
-                    <span>{content.likeCount}</span>
-                    <span>|</span>
-                    <HiOutlineChatBubbleOvalLeftEllipsis
-                      size={ICON_SIZE_MD}
-                      className='text-blue-10'
-                    />
-                    <span>{content.commentCount}</span>
-                  </div>
                 </div>
-              </div>
-              <Divider variant='thin' />
 
-              {/**
-               * 본문이 표시됩니다
-               */}
-              <div className='px-5'>
-                <BlockTextEditor readOnly initialContent={content.content} />
-              </div>
+                {/* 댓글 조회 */}
+                <div className='mt-5 mb-10 flex flex-col gap-8 px-5'>
+                  {isCommentsLoading ? (
+                    <div className='flex flex-col gap-4'>
+                      {[...Array(8)].map((_, index) => (
+                        <SkeletonProfile key={index} />
+                      ))}
+                    </div>
+                  ) : (
+                    comments &&
+                    comments.map((comment) => (
+                      <Comment
+                        key={comment.commentUUID}
+                        commentUuid={comment.commentUUID}
+                        boardUuid={uuid!}
+                        authorName={comment.nickname}
+                        content={comment.content}
+                        createdAt={comment.createdAt}
+                        profileImageUrl={comment.profileImageUrl}
+                        likeCount={comment.likeCount}
+                        liked={comment.liked}
+                        replies={comment.replies}
+                        isAuthor={comment.commentIsAuthor}
+                        isLoggedin={isLoggedIn}
+                      />
+                    ))
+                  )}
 
-              {/**
-               * 좋아요 버튼 표시
-               */}
-              <div className='px-5'>
-                <button className='cursor-pointer' onClick={handleLikePost}>
-                  <span className='text-body02 text-mju-primary flex gap-1 items-center'>
-                    좋아요
-                    {content.liked ? <IoIosHeart /> : <IoIosHeartEmpty />}
-                  </span>
-                </button>
+                  {comments?.length === 0 && <p className='text-center'>작성된 댓글이 없습니다</p>}
+                </div>
+              </>
+            ) : (
+              <div className='p-5'>
+                <div className='border-grey-10 flex h-25 items-center justify-center rounded-sm border'>
+                  <p className='text-body05 text-grey-30'>로그인 후 이용 가능합니다.</p>
+                </div>
+                <Link
+                  to='/login'
+                  className='bg-blue-35 text-body05 mt-5 flex h-10 w-full items-center justify-center rounded-md text-white'
+                >
+                  Thingo 로그인하기
+                </Link>
               </div>
-              <Divider variant='thin' />
-
-              {/**
-               * 댓글 폼
-               */}
-              <div className='px-5 flex flex-col gap-1.5'>
-                <span className='text-body02 text-mju-primary'>댓글</span>
-                <CommentForm
-                  newComment={newComment}
-                  setNewComment={setNewComment}
-                  handleCommentUpload={handleCommentUpload}
-                  MAX_REPLY_LEN={MAX_REPLY_LEN}
-                  isLoggedin={isLoggedIn}
-                />
-              </div>
-
-              {/**
-               * 댓글 표시창
-               */}
-              <div className='px-5 py-10 flex flex-col gap-8'>
-                {isCommentsLoading ? (
-                  <div className='flex flex-col gap-4'>
-                    {[...Array(8)].map((_, index) => (
-                      <SkeletonProfile key={index} />
-                    ))}
-                  </div>
-                ) : (
-                  comments &&
-                  comments.map((comment) => (
-                    <Comment
-                      key={comment.commentUUID}
-                      commentUuid={comment.commentUUID}
-                      boardUuid={uuid!}
-                      authorName={comment.nickname}
-                      content={comment.content}
-                      createdAt={comment.createdAt}
-                      profileImageUrl={comment.profileImageUrl}
-                      likeCount={comment.likeCount}
-                      liked={comment.liked}
-                      replies={comment.replies}
-                      isAuthor={comment.commentIsAuthor}
-                      isLoggedin={isLoggedIn}
-                    />
-                  ))
-                )}
-
-                {comments?.length === 0 && <p className='text-center'>작성된 댓글이 없습니다</p>}
-              </div>
-            </div>
-          )
-        )}
-      </div>
-    );
+            )}
+          </div>
+        )
+      )}
+    </div>
+  );
 }
