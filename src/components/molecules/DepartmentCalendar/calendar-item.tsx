@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 export interface CalendarEvent {
-  id: number;
+  id: string | number;
   startDate: string;
   endDate: string;
   description: string;

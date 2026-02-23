@@ -1,14 +1,32 @@
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
+import type { DepartmentSchedule } from '@/api/departments';
 import { useMemo, useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { twMerge } from 'tailwind-merge';
 import { CalendarItem } from './calendar-item';
 
+/** 학과 일정을 캘린더용 이벤트 형식으로 변환 (startDate/endDate는 YYYY-MM-DD) */
+function departmentSchedulesToEvents(schedules: DepartmentSchedule[]) {
+  return schedules.map((s) => {
+    const startDate = s.startDateTime.slice(0, 10);
+    const endDate = s.endDateTime ? s.endDateTime.slice(0, 10) : startDate;
+    return {
+      id: s.uuid as string,
+      startDate,
+      endDate,
+      description: s.title,
+    };
+  });
+}
+
 interface DepartmentCalendarProps {
   className?: string;
   onYearChange: (year: number) => void;
   onMonthChange: (month: number) => void;
-  events: CalendarMonthlyRes | null;
+  /** 메인 학사일정 형식 (all/undergrad/graduate/holiday). schedules와 동시에 주면 schedules 우선 */
+  events?: CalendarMonthlyRes | null;
+  /** 학과 일정 목록 (이 값이 있으면 events 대신 사용) */
+  schedules?: DepartmentSchedule[] | null;
   onDateSelect: (date: Date) => void;
 }
 
@@ -16,7 +34,8 @@ export default function DepartmentCalendar({
   className,
   onYearChange,
   onMonthChange,
-  events,
+  events = null,
+  schedules = null,
   onDateSelect,
 }: DepartmentCalendarProps) {
   const date = new Date();
@@ -92,11 +111,8 @@ export default function DepartmentCalendar({
   };
 
   const allEvents = useMemo(() => {
-    if (!events) {
-      return [];
-    }
     const withColor = (
-      list: Array<{ id: number; startDate: string; endDate: string; description: string }>,
+      list: Array<{ id: string | number; startDate: string; endDate: string; description: string }>,
       category: string,
     ) =>
       list.map((e) => ({
@@ -104,13 +120,21 @@ export default function DepartmentCalendar({
         category,
         color: getColorByDuration(e.startDate, e.endDate),
       }));
+
+    if (schedules != null) {
+      const converted = departmentSchedulesToEvents(schedules);
+      return withColor(converted, 'department');
+    }
+    if (!events) {
+      return [];
+    }
     return [
       ...withColor(events.all, 'all'),
       ...withColor(events.undergrad, 'undergrad'),
       ...withColor(events.graduate, 'graduate'),
       ...withColor(events.holiday, 'holiday'),
     ];
-  }, [events]);
+  }, [events, schedules]);
 
   // 캘린더 표시 로직
   const calendarDays = useMemo(() => {

@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiHome } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import { Tabs } from '@/components/atoms/Tabs';
 import DepartmentCalendar from '@/components/molecules/DepartmentCalendar';
-import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
 import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
@@ -23,10 +22,12 @@ import {
 } from '@/constants/departments';
 import {
   getDepartmentInfo,
+  getDepartmentSchedules,
   getStudentCouncilNotices,
   type College,
   type Department,
   type DepartmentInfo,
+  type DepartmentSchedule,
   type StudentCouncilNotice,
 } from '@/api/departments';
 
@@ -60,6 +61,9 @@ export default function DepartmentMainPage() {
 
   // 학과 정보 (API 응답)
   const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
+
+  // 학과 일정 (API 응답)
+  const [departmentSchedules, setDepartmentSchedules] = useState<DepartmentSchedule[]>([]);
 
   // 응답 시점에 선택된 필터와 일치할 때만 반영
   const filterRef = useRef({ college: selectedCollege, department: selectedDepartment });
@@ -105,6 +109,26 @@ export default function DepartmentMainPage() {
     })();
   }, [selectedCollege, selectedDepartment]);
 
+  // 선택된 college, department로 학과 일정 조회
+  useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
+    (async () => {
+      try {
+        const response = await getDepartmentSchedules(college, department);
+        const list = response.data?.schedules ?? [];
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
+        setDepartmentSchedules(list);
+      } catch (e) {
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
+        console.error(e);
+        setDepartmentSchedules([]);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment]);
+
   // 선택된 단과대에 해당하는 학과 목록 가져오기
   const availableDepartments =
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
@@ -137,9 +161,19 @@ export default function DepartmentMainPage() {
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
-  const [monthEvents] = useState<CalendarMonthlyRes | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [dayEvents] = useState(CALENDAR_DATA);
+  // 선택한 날짜에 해당하는 학과 일정 (selectedDate 기준으로 필터)
+  const dayEvents = useMemo(() => {
+    const y = selectedDate.getFullYear();
+    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const d = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
+    return departmentSchedules.filter((s) => {
+      const start = s.startDateTime.slice(0, 10);
+      const end = s.endDateTime ? s.endDateTime.slice(0, 10) : start;
+      return dateStr >= start && dateStr <= end;
+    });
+  }, [departmentSchedules, selectedDate]);
 
   // 소속 공지사항
   const [noticeData] = useState(NOTICE_DATA);
@@ -301,7 +335,7 @@ export default function DepartmentMainPage() {
             <div className='flex flex-col'>
               <DepartmentCalendar
                 className='m-5'
-                events={monthEvents}
+                schedules={departmentSchedules}
                 onYearChange={setCurrentYear}
                 onMonthChange={setCurrentMonth}
                 onDateSelect={setSelectedDate}
@@ -313,28 +347,41 @@ export default function DepartmentMainPage() {
                   {format(selectedDate, 'MM.dd (EEE)', { locale: ko })}
                 </span>
               </div>
-              <div>
-                {dayEvents.map((event) => (
-                  <button
-                    key={event.id}
-                    className={clsx(
-                      'flex w-full items-start gap-2 px-5 py-2 text-start',
-                      canEditDepartment && 'cursor-pointer',
-                    )}
-                    onClick={() => {
-                      if (canEditDepartment) {
-                        navigate(`/departments/events/edit/${event.id}`);
-                      }
-                    }}
-                  >
-                    <span className='text-caption02 text-grey-40 min-w-19'>
-                      {format(new Date(event.startDate), 'MM.dd', { locale: ko })}
-                      {event.endDate &&
-                        ` - ${format(new Date(event.endDate), 'MM.dd', { locale: ko })}`}
-                    </span>
-                    <span className='text-caption02 flex-1 text-black'>{event.title}</span>
-                  </button>
-                ))}
+              <div className='mb-10'>
+                {dayEvents.length === 0 ? (
+                  <div className='px-5 py-4'>
+                    <p className='text-body05 text-grey-60 text-center'>일정 없음</p>
+                  </div>
+                ) : (
+                  dayEvents.map((event) => {
+                    const startStr = event.startDateTime.slice(0, 10);
+                    const endStr = event.endDateTime ? event.endDateTime.slice(0, 10) : startStr;
+                    const isOneDay = startStr === endStr;
+                    return (
+                      <button
+                        key={event.uuid}
+                        type='button'
+                        className={clsx(
+                          'flex w-full items-start gap-2 px-5 py-2 text-start',
+                          canEditDepartment && 'cursor-pointer',
+                        )}
+                        onClick={() => {
+                          if (canEditDepartment) {
+                            navigate(`/departments/events/edit/${event.uuid}`);
+                          }
+                        }}
+                      >
+                        <span className='text-caption02 text-grey-40 min-w-19'>
+                          {format(new Date(event.startDateTime), 'MM.dd', { locale: ko })}
+                          {!isOneDay &&
+                            event.endDateTime &&
+                            ` - ${format(new Date(event.endDateTime), 'MM.dd', { locale: ko })}`}
+                        </span>
+                        <span className='text-caption02 flex-1 text-black'>{event.title}</span>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -526,28 +573,7 @@ export default function DepartmentMainPage() {
   );
 }
 
-// 더미 데이터
-const CALENDAR_DATA = [
-  {
-    id: 1,
-    startDate: '2025-01-05T00:00:00.000Z',
-    endDate: null,
-    title: '학기 개시일, 2학기 개강 학기 개시일, 2학기 개강',
-  },
-  {
-    id: 2,
-    startDate: '2025-01-05T00:00:00.000Z',
-    endDate: null,
-    title: '학기 개시일, 2학기 개강 학기 개시일',
-  },
-  {
-    id: 3,
-    startDate: '2025-01-05T09:00:00.000Z',
-    endDate: '2025-01-09T18:00:00.000Z',
-    title: '수강신청 변경 기간 수강신청 변경 기간수강신청 변경 기간 수강신청 변경 기간',
-  },
-];
-
+// 더미 데이터 (소속 공지사항 탭)
 const NOTICE_DATA = [
   {
     id: 1,
