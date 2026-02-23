@@ -4,7 +4,7 @@ import { FiHome } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import { Tabs } from '@/components/atoms/Tabs';
-import Calendar from '@/components/molecules/Calendar';
+import DepartmentCalendar from '@/components/molecules/DepartmentCalendar';
 import type { CalendarMonthlyRes } from '@/api/main/calendar';
 import clsx from 'clsx';
 import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
@@ -299,7 +299,7 @@ export default function DepartmentMainPage() {
         {currentTab === 'events' && (
           <section className='relative'>
             <div className='flex flex-col'>
-              <Calendar
+              <DepartmentCalendar
                 className='m-5'
                 events={monthEvents}
                 onYearChange={setCurrentYear}
