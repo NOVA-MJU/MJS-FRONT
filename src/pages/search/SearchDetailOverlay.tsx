@@ -7,6 +7,8 @@ import {
   type SearchResultItemRes,
 } from '../../api/search';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { setHomeSliderToMain } from '@/pages/HomeSlider';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
 import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
@@ -51,6 +53,7 @@ function isValidTab(tab: string | null): tab is SearchTabKey {
 
 export default function SearchDetail() {
   const navigate = useNavigate();
+  const { setActiveMainSlide } = useHeaderStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentTab, setCurrentTab] = useState<SearchTabKey>(() => {
     const tab = searchParams.get('tab');
@@ -192,8 +195,19 @@ export default function SearchDetail() {
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
         <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
-          <div className='h-12 w-12 shrink-0' onClick={() => navigate('/')}>
-            <img src='/logo/ThingoSmallLogo.svg' className='h-full w-full object-contain' />
+          <div
+            className='h-12 w-12 shrink-0 cursor-pointer'
+            onClick={() => {
+              setHomeSliderToMain();
+              setActiveMainSlide(1);
+              navigate('/');
+            }}
+          >
+            <img
+              src='/logo/ThingoSmallLogo.svg'
+              className='h-full w-full object-contain'
+              alt='로고'
+            />
           </div>
 
           <div className='min-w-0 flex-1'>
