@@ -4,6 +4,7 @@ import { IoIosClose } from 'react-icons/io';
 import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
+import { useHeaderStore } from '@/store/useHeaderStore';
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavKey } from '@/types/nav/item';
@@ -32,6 +33,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
   const { isLoggedIn, user, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
+  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
 
   const items = useMemo<SidebarItem[]>(() => {
     const notice = findNavItem('notice');
@@ -125,6 +127,31 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     if (item.requiresAuth && !isLoggedIn) {
       onClose();
       navigate('/login');
+      return;
+    }
+
+    // 메인 캐러셀/슬라이드로 이동 (경로 대신 슬라이드 인덱스 + 탭)
+    const slideTabMap: Record<string, string> = {
+      department: 'department', // 학과 → slide 0
+      'campus-map': '명지도',
+      notice: '공지사항',
+      calendar: '학사일정',
+      meal: '학식',
+      'info-board': '게시판',
+      'free-board': '게시판',
+    };
+    const tabOrSlide = slideTabMap[item.id];
+    if (tabOrSlide) {
+      if (item.navKey) {
+        trackNavClick(item.navKey);
+      }
+      if (tabOrSlide === 'department') {
+        setActiveMainSlide(0);
+      } else {
+        setSelectedTab(tabOrSlide);
+        setActiveMainSlide(2);
+      }
+      onClose();
       return;
     }
 
