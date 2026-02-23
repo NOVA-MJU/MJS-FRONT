@@ -132,8 +132,7 @@ export default function Main() {
             <MainCarousel slides={mobileSlides} />
           </div>
 
-          {/* Grey: Banner 영역 (첫 화면에 항상 보임, clamp 높이) */}
-          <div className='bg-grey-10 h-[clamp(140px,18vh,200px)] shrink-0'>
+          <div className='w-full shrink'>
             <AdBannerSection />
           </div>
 

@@ -14,15 +14,15 @@ export default function MainSearchSection() {
   };
 
   const recommendedCategories: CategoryItem[] = [
-    { id: 1, label: '학식', imageUrl: '/main/main_v2_food.png', path: '/meal' },
-    { id: 2, label: '명지도', imageUrl: '/main/main_v2_map.png', path: '/map' },
+    { id: 1, label: '학식', imageUrl: '/main/logos/main_meal.svg', path: '/meal' },
+    { id: 2, label: '명지도', imageUrl: '/main/logos/main_map.svg', path: '/map' },
     {
       id: 3,
       label: '학사일정',
-      imageUrl: '/main/main_v2_calender.png',
+      imageUrl: '/main/logos/main_calender.svg',
       path: '/academic-calendar',
     },
-    { id: 4, label: '멘토관', imageUrl: '/main/main_v2_mentor.png', path: '/mentoring' },
+    { id: 4, label: '멘토관', imageUrl: '/main/logos/main_mentor.svg', path: '/mentoring' },
   ];
 
   const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
