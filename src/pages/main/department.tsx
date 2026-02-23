@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHeaderStore } from '@/store/useHeaderStore';
 import Drawer from '@/components/molecules/Drawer';
+import Pagination from '@/components/molecules/common/Pagination';
 import Footer from '@/components/organisms/Footer';
 import {
   COLLEGE_OPTIONS,
@@ -109,6 +110,20 @@ export default function DepartmentMainPage() {
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
     [];
 
+  // 현재 사용자의 college, department (auth 기준)
+  const userCollege = DEPARTMENT_OPTIONS.find((opt) =>
+    opt.departments.some((d) => d.value === user?.departmentName),
+  )?.college?.value;
+  const userDepartment = user?.departmentName ?? null;
+
+  // 필터가 사용자의 college, department와 일치할 때만 편집 UI 표시
+  const canEditDepartment =
+    hasAdminPermission(user?.role) &&
+    userCollege !== undefined &&
+    userDepartment != null &&
+    selectedCollege === userCollege &&
+    selectedDepartment === userDepartment;
+
   // 탭 선택 (세션 스토리지에 저장·복원)
   const TAB_STORAGE_KEY = 'department-tab';
   const [currentTab, setCurrentTab] = useState<string>(() => {
@@ -128,6 +143,8 @@ export default function DepartmentMainPage() {
 
   // 소속 공지사항
   const [noticeData] = useState(NOTICE_DATA);
+  const [noticePage, setNoticePage] = useState(0);
+  const noticeTotalPages = 1; // TODO: API 연동 시 totalPages 연결
 
   // 학생회 공지사항
   const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
@@ -302,11 +319,10 @@ export default function DepartmentMainPage() {
                     key={event.id}
                     className={clsx(
                       'flex w-full items-start gap-2 px-5 py-2 text-start',
-                      hasAdminPermission(user?.role) && 'cursor-pointer',
+                      canEditDepartment && 'cursor-pointer',
                     )}
                     onClick={() => {
-                      // 권한이 OPERATOR 또는 ADMIN인 경우 일정 수정 페이지로 이동
-                      if (hasAdminPermission(user?.role)) {
+                      if (canEditDepartment) {
                         navigate(`/departments/events/edit/${event.id}`);
                       }
                     }}
@@ -323,7 +339,7 @@ export default function DepartmentMainPage() {
             </div>
 
             {/* 일정 추가 버튼: 학과 슬라이드가 활성일 때만 표시 (다른 슬라이드에서 fixed 버튼이 겹치는 것 방지) */}
-            {hasAdminPermission(user?.role) && isDepartmentSlideActive && (
+            {canEditDepartment && isDepartmentSlideActive && (
               <button
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
@@ -341,23 +357,36 @@ export default function DepartmentMainPage() {
         {currentTab === 'notices' && (
           <section>
             <div className='flex flex-col py-5'>
-              {noticeData.map((notice) => (
-                <div
-                  key={notice.id}
-                  className={clsx(
-                    'cursor-pointer px-5 py-2.5',
-                    'hover:bg-blue-05 transition duration-50 hover:transition-none',
-                  )}
-                >
-                  <p className='text-caption04 text-grey-30'>
-                    {format(new Date(notice.createdAt), 'yyyy.MM.dd', { locale: ko })}
-                  </p>
-                  <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
-                    {notice.title}
-                  </p>
+              {noticeData.length === 0 ? (
+                <div className='flex items-center justify-center py-10'>
+                  <span className='text-body03'>공지사항 없음</span>
                 </div>
-              ))}
+              ) : (
+                noticeData.map((notice) => (
+                  <div
+                    key={notice.id}
+                    className={clsx(
+                      'cursor-pointer px-5 py-2.5',
+                      'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                    )}
+                  >
+                    <p className='text-caption04 text-grey-30'>
+                      {format(new Date(notice.createdAt), 'yyyy.MM.dd', { locale: ko })}
+                    </p>
+                    <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
+                      {notice.title}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
+            {noticeTotalPages > 1 && (
+              <Pagination
+                page={noticePage}
+                totalPages={noticeTotalPages}
+                onChange={setNoticePage}
+              />
+            )}
           </section>
         )}
 
@@ -365,7 +394,7 @@ export default function DepartmentMainPage() {
         {currentTab === 'posts' && (
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
-              {hasAdminPermission(user?.role) && selectedDepartment && (
+              {canEditDepartment && (
                 <Link
                   to='/departments/posts/new'
                   className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
@@ -391,7 +420,7 @@ export default function DepartmentMainPage() {
               <div
                 className={clsx(
                   'flex items-center justify-center',
-                  hasAdminPermission(user?.role) && selectedDepartment ? 'py-4' : 'py-10',
+                  canEditDepartment ? 'py-4' : 'py-10',
                 )}
               >
                 <span className='text-body03'>게시물 없음</span>
