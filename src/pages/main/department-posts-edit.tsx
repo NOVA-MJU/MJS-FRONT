@@ -11,7 +11,11 @@ import { compressImage } from '@/utils/imageCompression';
 import { uploadS3, DOMAIN_VALUES } from '@/api/s3upload';
 import toast from 'react-hot-toast';
 import { getStudentCouncilNoticeDetail } from '@/api/departments';
-import { updateStudentCouncilNotice, type College, type Department } from '@/api/departments-admin';
+import {
+  updateStudentCouncilNotice,
+  type College,
+  type Department,
+} from '@/api/departments-admin-posts';
 import { useAuthStore } from '@/store/useAuthStore';
 import { DEPARTMENT_OPTIONS } from '@/constants/departments';
 
