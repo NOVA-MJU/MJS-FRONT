@@ -1,13 +1,17 @@
-import { Typography } from '../../../components/atoms/Typography';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
-import Divider from '../../../components/atoms/Divider';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
 import { getBoardDetail, updatePost } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
+
+type Category = 'FREE' | 'NOTICE';
+const CATEGORY_LABEL: Record<Category, string> = {
+  FREE: '자유게시판',
+  NOTICE: '정보게시판',
+};
 
 /**
  * 게시글 수정 페이지
@@ -18,12 +22,22 @@ import { DOMAIN_VALUES } from '../../../api/s3upload';
 export default function BoardEdit() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [initialContent, setInitialContent] = useState('');
+
+  // 수정사항 존재 여부
+  const [isDirty, setIsDirty] = useState(false);
+
+  // 제목/본문 입력 여부 (완료 버튼 스타일용)
+  const [hasTitle, setHasTitle] = useState(false);
+  const [hasContent, setHasContent] = useState(false);
+
+  // 카테고리
+  const [selectedCategory, setSelectedCategory] = useState<Category>('FREE');
+  const options: Category[] = ['FREE', 'NOTICE'];
 
   /**
    * 게시글이 수정 모드여야하고, 현재 uuid와 content를 editor에 반영합니다
@@ -35,6 +49,10 @@ export default function BoardEdit() {
         const res = await getBoardDetail(uuid);
         setInitialContent(res.content);
         setTitle(res.title);
+        setSelectedCategory((res.communityCategory as Category) ?? 'FREE');
+        setHasTitle(!!res.title?.trim());
+        const hasInitialContent = !!res.content?.trim() && res.content !== '[]';
+        setHasContent(hasInitialContent);
       } catch (e) {
         console.error(e);
       }
@@ -46,7 +64,39 @@ export default function BoardEdit() {
    */
   const handleEditorReady = useCallback((editor: BlockNoteEditor) => {
     editorRef.current = editor;
+
+    editor.onChange(() => {
+      setIsDirty(true);
+      setHasContent(!editor.isEmpty);
+    });
   }, []);
+
+  /**
+   * 브라우저 새로고침 / 탭 닫기 / 외부 이동 시 경고
+   */
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
+
+  /**
+   * 상단 뒤로가기 눌렀을 때 확인
+   */
+  const handleBack = () => {
+    if (isDirty) {
+      const ok = window.confirm('작성 중인 내용이 사라집니다. 나가시겠습니까?');
+      if (!ok) return;
+    }
+    navigate(-1);
+  };
 
   /**
    * 게시글 수정 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
@@ -63,66 +113,94 @@ export default function BoardEdit() {
 
     setIsLoading(true);
     try {
-      const newPostUuid = await updatePost(uuid, parsedTitle, content, contentPreview);
-      if (location.state?.from === 'detail') navigate(-1);
-      else navigate(`/board/${newPostUuid}`, { replace: true });
+      await updatePost(uuid, parsedTitle, content, contentPreview, true, selectedCategory);
+      setIsDirty(false);
+      navigate(-1);
     } catch (e) {
-      console.error('BoardWrite.tsx', e);
+      console.error('BoardEdit.tsx', e);
     } finally {
       setIsLoading(false);
     }
   };
 
+  /**
+   * editor의 블록 외부를 클릭했을 때 마지막 줄로 커서 이동
+   */
+  const handleFocusEditor = (e: React.MouseEvent<HTMLDivElement>) => {
+    const editor = editorRef.current;
+
+    if (!editor) return;
+    if (editorWrapperRef.current?.contains(e.target as Node)) return;
+
+    const blocks = editor.document;
+
+    if (blocks.length > 0) {
+      const lastBlock = blocks[blocks.length - 1];
+      editor.setTextCursorPosition(lastBlock.id, 'end');
+    }
+
+    editor.focus();
+  };
+
   return (
-    <div className='w-full flex-1 p-4 md:p-8 gap-4 md:gap-6 flex flex-col'>
-      <Typography variant='heading01' className='text-mju-primary'>
-        게시글 작성
-      </Typography>
-      <Divider />
-      <div className='w-full flex justify-between items-center'>
-        <NavigationUp onClick={() => navigate(-1)} />
-        <button
-          className='w-46 bg-grey-10 cursor-pointer p-3 rounded-xl'
-          onClick={handleUploadPost}
+    <div>
+      {/* 상단 네비게이션 */}
+      <header className='flex h-15 items-center px-5'>
+        <NavigationUp onClick={handleBack} />
+      </header>
+
+      <div className='px-5'>
+        {/* 제목 입력 */}
+        <input
+          className='border-grey-10 text-body03 placeholder:text-grey-20 w-full rounded-lg border px-3 py-2'
+          placeholder='제목'
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setIsDirty(true);
+            setHasTitle(!!e.target.value.trim());
+          }}
+        />
+
+        {/* 카테고리 선택 (브라우저 기본 select) */}
+        <select
+          className='border-grey-10 text-body03 text-blue-20 mt-2.5 w-full rounded-lg border px-3 py-2'
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value as Category);
+            setIsDirty(true);
+          }}
         >
-          <Typography variant='body02' className='text-black'>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {CATEGORY_LABEL[option]}
+            </option>
+          ))}
+        </select>
+
+        {/* 에디터 */}
+        <div
+          className='border-grey-10 mt-4 min-h-120 cursor-text rounded-lg border px-4 py-2'
+          onClick={handleFocusEditor}
+        >
+          <div className='overflow-visible py-2' ref={editorWrapperRef}>
+            <BlockTextEditor
+              onEditorReady={handleEditorReady}
+              domain={DOMAIN_VALUES[0]}
+              initialContent={initialContent}
+            />
+          </div>
+        </div>
+
+        {/* 완료 버튼 */}
+        <div className='mt-4 mb-10'>
+          <button
+            className={`text-body05 h-10 w-full cursor-pointer rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+            onClick={handleUploadPost}
+            disabled={isLoading}
+          >
             완료
-          </Typography>
-        </button>
-      </div>
-      <input
-        className='p-3 placeholder-grey-20 font-bold text-[28px] focus:outline-none'
-        placeholder='제목을 입력하세요'
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <div
-        className='flex-1 cursor-text'
-        onClick={(e) => {
-          /**
-           * editor의 블록 외부를 클릭 했을 때 editor의 마지막 줄 마지막 부분으로 커서를 이동시킵니다. 이 함수는 editor의 블록 내부를 클릭 했을 때는 동작하지 않습니다.
-           */
-          const editor = editorRef.current;
-
-          if (!editor) return;
-          if (editorWrapperRef.current?.contains(e.target as Node)) return;
-
-          const blocks = editor.document;
-
-          if (blocks.length > 0) {
-            const lastBlock = blocks[blocks.length - 1];
-            editor.setTextCursorPosition(lastBlock.id, 'end');
-          }
-
-          editor.focus();
-        }}
-      >
-        <div ref={editorWrapperRef}>
-          <BlockTextEditor
-            onEditorReady={handleEditorReady}
-            domain={DOMAIN_VALUES[0]}
-            initialContent={initialContent}
-          />
+          </button>
         </div>
       </div>
     </div>

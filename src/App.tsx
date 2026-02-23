@@ -8,9 +8,9 @@ import Broadcast from '@/pages/broadcast';
 import GlobalErrorPage from '@/pages/error';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
-import DepartmentEventsNewPage from './pages/main/department-events-new';
-import DepartmentEventsEditPage from './pages/main/department-events-edit';
-import DepartmentPostsEditPage from './pages/main/department-posts-edit';
+import DepartmentEventsNewPage from '@/pages/main/department-events-new';
+import DepartmentEventsEditPage from '@/pages/main/department-events-edit';
+import DepartmentPostsEditPage from '@/pages/main/department-posts-edit';
 import LoginPage from '@/pages/login';
 import Menu from '@/pages/menu';
 import MyPage from '@/pages/mypage';
@@ -24,10 +24,10 @@ import Register from '@/pages/register';
 import { AgentationTool } from '@/utils/agentation';
 import type { Location } from 'react-router-dom';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import HomeSlider from './pages/HomeSlider';
+import HomeSlider from '@/pages/HomeSlider';
 import SearchEntry from '@/pages/search/SearchEntry';
-import SearchOverlay from './pages/search/SearchOverlay';
-import FindPasswordPage from './pages/find-password';
+import SearchOverlay from '@/pages/search/SearchOverlay';
+import FindPasswordPage from '@/pages/find-password';
 
 export default function App() {
   const location = useLocation();
@@ -40,25 +40,20 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path='/' element={<HomeSlider />} />
 
-          <Route path='/board' element={<Board />} />
+          {/* 게시판 */}
           <Route path='/board/:uuid' element={<BoardDetail />} />
           <Route path='/board/write' element={<BoardWrite />} />
           <Route path='/board/edit/:uuid' element={<BoardEdit />} />
 
-          <Route path='/notice' element={<Notice />} />
-          <Route path='/news' element={<News />} />
-          <Route path='/broadcast' element={<Broadcast />} />
+          {/* 마이페이지 */}
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/mypage/:uuid' element={<MyPage />} />
           <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
-
           <Route path='/mypage/my-post/:uuid' element={<ViewPosts />} />
           <Route path='/mypage/my-comment/:uuid' element={<ViewComments />} />
           <Route path='/mypage/my-likes/:uuid' element={<ViewLikes />} />
 
-          <Route path='/menu' element={<Menu />} />
-          <Route path='/academic-calendar' element={<AcademicCalendar />} />
-
+          {/* 검색 */}
           <Route path='/search' element={<SearchEntry />} />
 
           {/* 에러 페이지 */}
@@ -75,6 +70,14 @@ export default function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
           <Route path='/find-password' element={<FindPasswordPage />} />
+
+          {/* 삭제 예정 */}
+          <Route path='/board' element={<Board />} />
+          <Route path='/notice' element={<Notice />} />
+          <Route path='/news' element={<News />} />
+          <Route path='/broadcast' element={<Broadcast />} />
+          <Route path='/academic-calendar' element={<AcademicCalendar />} />
+          <Route path='/menu' element={<Menu />} />
         </Route>
       </Routes>
 

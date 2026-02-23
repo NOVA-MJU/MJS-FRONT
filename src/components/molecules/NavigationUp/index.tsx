@@ -1,4 +1,4 @@
-import { IoIosArrowBack } from 'react-icons/io';
+import { ArrowBackIcon } from '@/components/atoms/Icon';
 
 interface NavigationUpProps {
   onClick: () => void;
@@ -10,12 +10,9 @@ interface NavigationUpProps {
  */
 export default function NavigationUp({ onClick }: NavigationUpProps) {
   return (
-    <button
-      className='w-fit h-fit ps-1.5 pe-3 py-2.5 rounded-xl flex gap-2 items-center cursor-pointer duration-200 hover:bg-grey-05'
-      onClick={onClick}
-    >
-      <IoIosArrowBack className='text-lg text-blue-10' />
-      <span className='text-body03 text-blue-10'>이전</span>
+    <button className='flex cursor-pointer items-center py-1' onClick={onClick}>
+      <ArrowBackIcon />
+      <span className='text-body03 ms-1 text-black'>이전</span>
     </button>
   );
 }
