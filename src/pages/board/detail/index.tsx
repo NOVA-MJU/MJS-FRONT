@@ -1,4 +1,5 @@
 import {
+  deletePost,
   getBoardComments,
   getBoardDetail,
   likePost,
@@ -132,12 +133,28 @@ export default function BoardDetail() {
         if (!prev) return null;
         return {
           ...prev,
-          likeCount: prev.liked ? prev.likeCount - 1 : prev.likeCount + 1,
-          liked: !prev.liked,
+          likeCount: prev.isLiked ? prev.likeCount - 1 : prev.likeCount + 1,
+          isLiked: !prev.isLiked,
         };
       });
     } catch (err) {
       handleError(err, '좋아요 처리에 실패했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 게시글 삭제
+  const handleDeletePost = async () => {
+    if (!uuid || isLoading) return;
+    if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
+    try {
+      setIsLoading(true);
+      await deletePost(uuid);
+      toast.success('게시글이 삭제되었습니다.');
+      navigate(-1);
+    } catch (err) {
+      handleError(err, '게시글 삭제에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +187,7 @@ export default function BoardDetail() {
                 <span>{content.author}</span>
               </div>
               <div className='text-body05 text-grey-40 flex items-center'>
-                <HeartIcon className='text-blue-10' filled={content.liked} />
+                <HeartIcon className='text-blue-10' filled={content.isLiked} />
                 <span>{content.likeCount}</span>
                 <span className='ms-2'>|</span>
                 <ChatBubbleIcon className='text-blue-10 ms-1' />
@@ -187,7 +204,7 @@ export default function BoardDetail() {
               {/* 좋아요 버튼 */}
               <button className='flex cursor-pointer items-center' onClick={handleLikePost}>
                 <span className='text-body04 text-grey-40'>좋아요</span>
-                {content.liked ? (
+                {content.isLiked ? (
                   <HeartIcon className='text-grey-20' filled />
                 ) : (
                   <HeartIcon className='text-blue-10' />
@@ -198,10 +215,23 @@ export default function BoardDetail() {
               {(content.canEdit || content.canDelete) && (
                 <div className='flex items-center'>
                   {content.canEdit && (
-                    <button className='text-body05 text-grey-40 cursor-pointer'>수정</button>
+                    <button
+                      type='button'
+                      className='text-body05 text-grey-40 cursor-pointer'
+                      onClick={() => uuid && navigate(`/board/edit/${uuid}`)}
+                    >
+                      수정
+                    </button>
                   )}
                   {content.canDelete && (
-                    <button className='text-body05 text-grey-40 ms-5 cursor-pointer'>삭제</button>
+                    <button
+                      type='button'
+                      className='text-body05 text-grey-40 ms-5 cursor-pointer disabled:opacity-50'
+                      onClick={handleDeletePost}
+                      disabled={isLoading}
+                    >
+                      삭제
+                    </button>
                   )}
                 </div>
               )}
