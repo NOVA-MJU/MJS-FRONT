@@ -128,7 +128,7 @@ export default function BoardDetail() {
     setIsLoading(true);
     try {
       await likePost(uuid);
-
+      const wasLiked = content.isLiked;
       setContent((prev) => {
         if (!prev) return null;
         return {
@@ -137,6 +137,9 @@ export default function BoardDetail() {
           isLiked: !prev.isLiked,
         };
       });
+      if (!wasLiked) {
+        toast.success('좋아요를 표시했습니다.');
+      }
     } catch (err) {
       handleError(err, '좋아요 처리에 실패했습니다.');
     } finally {
