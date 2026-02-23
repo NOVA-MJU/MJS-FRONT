@@ -1,12 +1,32 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 import { IoIosArrowBack } from 'react-icons/io';
 import { FaRegCalendarAlt } from 'react-icons/fa';
+import DatePickerDrawer from '@/components/molecules/DatePickerDrawer';
+
+const DATE_DISPLAY_FORMAT = 'yyyy. MM. dd';
 
 export default function DepartmentEventsEditPage() {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
+  const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+
+  const isComplete = title.trim() !== '' && startDate != null && endDate != null;
+
   return (
     <section className='flex flex-1 flex-col'>
       {/* 헤더 */}
       <header className='border-grey-10 relative flex h-15 items-center justify-center border-b'>
-        <button type='button' className='absolute left-2 cursor-pointer p-2' aria-label='뒤로 가기'>
+        <button
+          type='button'
+          className='absolute left-2 cursor-pointer p-2'
+          aria-label='뒤로 가기'
+          onClick={() => navigate(-1)}
+        >
           <IoIosArrowBack className='text-2xl text-black' />
         </button>
         <p className='text-body02 text-black'>일정 편집</p>
@@ -17,6 +37,8 @@ export default function DepartmentEventsEditPage() {
         <input
           type='text'
           placeholder='제목'
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           className='border-grey-10 text-body03 placeholder:text-grey-30 w-full rounded-lg border px-4 py-3 text-black'
           aria-label='제목'
         />
@@ -26,13 +48,13 @@ export default function DepartmentEventsEditPage() {
       <div className='flex items-center gap-3 px-5'>
         <span className='text-body05 text-grey-40 shrink-0'>시작</span>
         <div className='border-grey-10 flex flex-1 items-center justify-between rounded-lg border'>
-          <span className='text-body06 p-3 text-black'>2025. 08. 07</span>
+          <span className='text-body06 p-3 text-black'>
+            {format(startDate, DATE_DISPLAY_FORMAT)}
+          </span>
           <button
             className='cursor-pointer p-3'
             aria-label='시작 날짜 선택'
-            onClick={() => {
-              // TODO: 시작 날짜 선택
-            }}
+            onClick={() => setIsStartDatePickerOpen(true)}
           >
             <FaRegCalendarAlt className='text-grey-40 shrink-0 text-lg' aria-hidden />
           </button>
@@ -41,36 +63,61 @@ export default function DepartmentEventsEditPage() {
       <div className='mt-2 flex items-center gap-3 px-5'>
         <span className='text-body05 text-grey-40 shrink-0'>종료</span>
         <div className='border-grey-10 flex flex-1 items-center justify-between rounded-lg border'>
-          <span className='text-body06 p-3 text-black'>2025. 08. 07</span>
+          <span className='text-body06 p-3 text-black'>{format(endDate, DATE_DISPLAY_FORMAT)}</span>
           <button
             className='cursor-pointer p-3'
             aria-label='종료 날짜 선택'
-            onClick={() => {
-              // TODO: 종료 날짜 선택
-            }}
+            onClick={() => setIsEndDatePickerOpen(true)}
           >
             <FaRegCalendarAlt className='text-grey-40 shrink-0 text-lg' aria-hidden />
           </button>
         </div>
       </div>
 
-      {/* 하단 완료 버튼 */}
+      {/* 하단 버튼 */}
       <div className='mt-auto p-5'>
         <button
           type='button'
           className='bg-grey-02 text-grey-40 text-body05 w-full cursor-pointer rounded-lg p-2.5'
           aria-label='일정 삭제'
+          onClick={() => {
+            if (!window.confirm('일정을 삭제하시겠습니까?')) return;
+            // TODO: 삭제 API 연결
+          }}
         >
           일정 삭제
         </button>
         <button
           type='button'
-          className='bg-grey-02 text-grey-40 text-body05 mt-3 w-full cursor-pointer rounded-lg p-2.5'
+          className={`text-body05 mt-3 w-full cursor-pointer rounded-lg p-2.5 ${isComplete ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
           aria-label='저장'
+          onClick={() => {
+            console.log('일정 편집 저장', {
+              title,
+              startDate: format(startDate, DATE_DISPLAY_FORMAT),
+              endDate: format(endDate, DATE_DISPLAY_FORMAT),
+            });
+          }}
         >
           저장
         </button>
       </div>
+
+      {/* 시작 날짜 선택 Drawer */}
+      <DatePickerDrawer
+        open={isStartDatePickerOpen}
+        onOpenChange={setIsStartDatePickerOpen}
+        value={startDate}
+        onChange={setStartDate}
+      />
+
+      {/* 종료 날짜 선택 Drawer */}
+      <DatePickerDrawer
+        open={isEndDatePickerOpen}
+        onOpenChange={setIsEndDatePickerOpen}
+        value={endDate}
+        onChange={setEndDate}
+      />
     </section>
   );
 }
