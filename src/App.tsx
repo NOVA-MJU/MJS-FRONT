@@ -1,4 +1,4 @@
-import Layout from '@/components/templates/Layout';
+import Layout from '@/pages/layout';
 import AcademicCalendar from '@/pages/academic-calendar';
 import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
@@ -27,10 +27,9 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import HomeSlider from './pages/HomeSlider';
 import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from './pages/search/SearchOverlay';
-import Slides from './pages/slides';
 import FindPasswordPage from './pages/find-password';
 
-const App = () => {
+export default function App() {
   const location = useLocation();
   const state = location.state as { backgroundLocation?: Location } | undefined;
   const backgroundLocation = state?.backgroundLocation;
@@ -72,11 +71,7 @@ const App = () => {
           <Route path='/departments/events/new' element={<DepartmentEventsNewPage />} />
           <Route path='/departments/events/edit/:uuid' element={<DepartmentEventsEditPage />} />
 
-          {/* 임시 우측 슬라이드 라우팅 */}
-          <Route path='/slides' element={<Slides />} />
-        </Route>
-
-        <Route element={<Layout className='bg-grey-05' />}>
+          {/* 로그인 */}
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
           <Route path='/find-password' element={<FindPasswordPage />} />
@@ -92,6 +87,4 @@ const App = () => {
       <AgentationTool />
     </>
   );
-};
-
-export default App;
+}
