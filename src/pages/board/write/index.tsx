@@ -133,8 +133,13 @@ export default function BoardWrite() {
 
   if (!user) {
     return (
-      <div className='flex flex-1 flex-col items-center justify-center p-4'>
-        <LoginErrorPage />
+      <div>
+        <header className='flex h-15 items-center px-5'>
+          <NavigationUp onClick={handleBack} />
+        </header>
+        <div className='px-5'>
+          <LoginErrorPage />
+        </div>
       </div>
     );
   }
