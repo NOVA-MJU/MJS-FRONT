@@ -95,7 +95,7 @@ function ChipTabs({ tabs, currentTab, setCurrentTab }: TabComponentProps) {
               aria-selected={isSelected}
               aria-controls={`tab-panel-${key}`}
               onClick={() => setCurrentTab(key)}
-              className={clsx`text-caption03 shrink-0 cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap ${isSelected ? 'bg-blue-35 text-white' : 'border-grey-10 text-grey-40 border'} `}
+              className={clsx`text-body05 shrink-0 cursor-pointer rounded-full px-3 py-1.5 whitespace-nowrap ${isSelected ? 'bg-blue-35 text-white' : 'border-grey-10 text-grey-40 border'} `}
             >
               {label}
             </button>

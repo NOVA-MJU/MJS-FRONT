@@ -56,7 +56,7 @@ const EmailFieldWithVerification = ({
             onClick={handleSendCode}
             fullWidth={false}
             variant={emailVerified ? 'grey' : isSending ? 'grey' : 'main'}
-            className='h-12 w-20 md:order-2 md:mt-0 md:h-12 md:w-34'
+            className='h-11 w-20 md:order-2 md:mt-0 md:h-12 md:w-34'
           >
             {emailVerified
               ? '완료'
@@ -70,7 +70,7 @@ const EmailFieldWithVerification = ({
       }
     />
     {showCodeInput && (
-      <div className='mt-4 flex items-end gap-4'>
+      <div className='flex w-full items-end gap-4'>
         <InputField
           label=''
           type='text'
@@ -87,7 +87,7 @@ const EmailFieldWithVerification = ({
           fullWidth={false}
           size='sm'
           shape='rounded'
-          className='h-12 w-28 md:mt-0 md:h-12 md:w-34'
+          className='h-11 w-23 md:mt-0 md:h-12 md:w-34'
         >
           {emailVerified ? '완료' : isVerifying ? '확인 중...' : '인증'}
         </Button>

@@ -149,7 +149,7 @@ const AllTab = ({
  * 개별 탭 컨텐츠를 위한 공통 래퍼 컴포넌트
  */
 const TabWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
+  <div className='flex h-full flex-col gap-2 py-2'>{children}</div>
 );
 
 /**
