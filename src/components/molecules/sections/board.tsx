@@ -152,7 +152,14 @@ export default function BoardSection({
                 >
                   <div className='px-5 py-2'>
                     {/* 제목 */}
-                    <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
+                    <div className='flex items-center'>
+                      {content.popular && (
+                        <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
+                          HOT
+                        </div>
+                      )}
+                      <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
+                    </div>
 
                     {/* 본문 미리보기 */}
                     <p className='text-body05 mt-1 line-clamp-2 text-black'>
@@ -162,7 +169,7 @@ export default function BoardSection({
                     <div className='mt-2 flex items-center justify-between'>
                       {/* 좋아요 갯수 */}
                       <div className='flex items-center'>
-                        <HeartIcon className='text-blue-10' />
+                        <HeartIcon className='text-blue-10' filled={content.liked} />
                         <span className='text-caption02 text-grey-40 ms-1'>
                           {content.likeCount}
                         </span>

@@ -49,7 +49,7 @@ export interface BoardItem {
   commentCount: number;
   author: string;
   liked: boolean;
-  popular: true;
+  popular: boolean;
 }
 
 /**
