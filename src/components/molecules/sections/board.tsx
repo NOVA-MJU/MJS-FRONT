@@ -14,13 +14,21 @@ import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
 // 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
 
-// 카테고리 탭 선택 값을 세션 스토리지에 보관
+// 카테고리·페이지 값을 세션 스토리지에 보관
 const BOARD_TAB_STORAGE_KEY = 'board-section-category';
+const BOARD_PAGE_STORAGE_KEY = 'board-section-page';
 
 function getStoredCategory(): 'NOTICE' | 'FREE' {
   if (typeof sessionStorage === 'undefined') return 'NOTICE';
   const stored = sessionStorage.getItem(BOARD_TAB_STORAGE_KEY);
   return stored === 'FREE' ? 'FREE' : 'NOTICE';
+}
+
+function getStoredPage(): number {
+  if (typeof sessionStorage === 'undefined') return 0;
+  const stored = sessionStorage.getItem(BOARD_PAGE_STORAGE_KEY);
+  const num = Number(stored);
+  return Number.isInteger(num) && num >= 0 ? num : 0;
 }
 
 // 메인페이지에 표시할 자유게시판 위젯 컴포넌트
@@ -41,7 +49,7 @@ export default function BoardSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(getStoredPage);
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
@@ -66,6 +74,10 @@ export default function BoardSection({
   useEffect(() => {
     sessionStorage.setItem(BOARD_TAB_STORAGE_KEY, category);
   }, [category]);
+
+  useEffect(() => {
+    sessionStorage.setItem(BOARD_PAGE_STORAGE_KEY, String(page));
+  }, [page]);
 
   useEffect(() => {
     setIsMounted(true);
