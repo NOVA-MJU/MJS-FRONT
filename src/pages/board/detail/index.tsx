@@ -19,7 +19,7 @@ import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
 import { handleError } from '@/utils/error';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
-import { format, parseISO } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 
 const MAX_REPLY_LEN = 100;
 
@@ -185,7 +185,7 @@ export default function BoardDetail() {
 
             <div className='mt-1 flex items-center justify-between px-5'>
               <div className='text-body05 text-grey-40 flex gap-3'>
-                <span>{format(parseISO(content.publishedAt), 'yyyy.MM.dd')}</span>
+                <span>{formatToDotDate(content.publishedAt)}</span>
                 <span>|</span>
                 <span>{content.author}</span>
               </div>

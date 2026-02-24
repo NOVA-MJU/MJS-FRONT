@@ -1,7 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { IoIosArrowBack } from 'react-icons/io';
-import { format } from 'date-fns';
-import ko from 'date-fns/locale/ko';
+import { formatToDotDate } from '@/utils/date';
 import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
@@ -135,9 +134,7 @@ export default function DepartmentPostsDetailPage() {
         <p className='text-body05 text-grey-80 mt-2 whitespace-pre-wrap'>{content}</p>
 
         {/* 게시글 날짜 */}
-        <p className='text-caption02 text-grey-30 mt-2'>
-          {format(new Date(publishedAt), 'yyyy.MM.dd', { locale: ko })}
-        </p>
+        <p className='text-caption02 text-grey-30 mt-2'>{formatToDotDate(publishedAt)}</p>
       </div>
     </section>
   );

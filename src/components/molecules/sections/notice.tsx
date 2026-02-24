@@ -3,7 +3,7 @@ import { CardHeader } from '@/components/atoms/Card';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import { useEffect, useState } from 'react';
 import { MdChevronRight } from 'react-icons/md';
@@ -62,7 +62,7 @@ const NoticeSlideHeader = ({ onSeeMoreClick }: { onSeeMoreClick?: () => void }) 
  * 슬라이드용 공지사항 아이템 컴포넌트
  */
 const NoticeSlideCard = ({ info }: { info: NoticeItem }) => {
-  const displayDate = format(new Date(info.date), 'yyyy.MM.dd');
+  const displayDate = formatToDotDate(info.date);
 
   return (
     <a
@@ -173,7 +173,6 @@ export default function NoticeSection() {
         setIsLoading(false);
       }
     })();
-     
   }, [selectedTab, recentYear, page]);
 
   /**
@@ -190,9 +189,7 @@ export default function NoticeSection() {
         {categoryNameMap[info.category] || info.category}
       </span>
       <p className='line-clamp-2 text-[14px] leading-[1.5] text-[#17171b]'>{info.title}</p>
-      <span className='text-[11px] text-[#aeb2b6]'>
-        {format(new Date(info.date), 'yyyy.MM.dd')}
-      </span>
+      <span className='text-[11px] text-[#aeb2b6]'>{formatToDotDate(info.date)}</span>
     </a>
   );
 

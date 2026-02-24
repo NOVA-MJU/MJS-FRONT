@@ -14,7 +14,7 @@ import { ScheduleList } from './academic-schedule-list';
 import { CardHeader } from '@/components/atoms/Card';
 import { Link } from 'react-router-dom';
 import { MdChevronRight } from 'react-icons/md';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 
 /**
  * 학사 일정 카테고리 정의
@@ -281,7 +281,7 @@ export default function AcademicScheduleWidget({
                         <span className='text-body05 line-clamp-2 text-black'>{notice.title}</span>
                         {notice.date && (
                           <span className='text-caption04 text-grey-20'>
-                            {format(new Date(notice.date), 'yyyy.MM.dd')}
+                            {formatToDotDate(notice.date)}
                           </span>
                         )}
                       </div>

@@ -1,7 +1,7 @@
 import { getBoards, type BoardItem, type Category } from '@/api/board';
 import { CardHeader } from '@/components/atoms/Card';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
@@ -164,7 +164,7 @@ export default function BoardSection({
 
                       {/* 작성 날짜 */}
                       <span className='text-caption02 text-grey-40'>
-                        {format(new Date(content.publishedAt), 'yyyy.MM.dd')}
+                        {formatToDotDate(content.publishedAt)}
                       </span>
                     </div>
                   </div>
