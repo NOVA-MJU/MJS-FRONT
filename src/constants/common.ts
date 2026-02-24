@@ -13,7 +13,6 @@ export const CALENDAR_API_DEFAULT_SIZE = 100;
 export const SEARCH_API_DEFAULT_SIZE = 10;
 
 export const MENU_STALE_TIME_MS = 5 * 60 * 1000;
-export const REALTIME_RANK_INTERVAL_MS = 10000;
 export const AD_CAROUSEL_INTERVAL_MS = 4000;
 
 export const ICON_SIZE_SM = 12;
@@ -23,5 +22,3 @@ export const ICON_SIZE_XL = 22;
 
 export const IMAGE_MAX_WIDTH_OR_HEIGHT = 1920;
 export const IMAGE_COMPRESSION_QUALITY = 0.9;
-
-export const REALTIME_RANK_DEFAULT_LIMIT = 10;
