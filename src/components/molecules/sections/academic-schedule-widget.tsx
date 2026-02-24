@@ -232,6 +232,18 @@ export default function AcademicScheduleWidget({
                   onYearChange={handleYearChange}
                   onMonthChange={handleMonthChange}
                 />
+
+                {/* 캘린더 범례 */}
+                <div className='mt-3 flex items-center justify-end'>
+                  <p className='bg-blue-35 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>전체 (학부·대학원)</p>
+                  <p className='bg-blue-15 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>학부</p>
+                  <p className='bg-blue-05 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>대학원</p>
+                  <p className='bg-grey-02 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>휴일</p>
+                </div>
               </div>
             )}
 
