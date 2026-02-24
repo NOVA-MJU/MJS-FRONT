@@ -222,7 +222,7 @@ export default function BoardDetail() {
                   {content.canEdit && (
                     <button
                       type='button'
-                      className='text-body05 text-grey-40 cursor-pointer'
+                      className='text-body05 text-grey-40 cursor-pointer px-2 py-1'
                       onClick={() => uuid && navigate(`/board/edit/${uuid}`)}
                     >
                       수정
@@ -231,7 +231,7 @@ export default function BoardDetail() {
                   {content.canDelete && (
                     <button
                       type='button'
-                      className='text-body05 text-grey-40 ms-5 cursor-pointer disabled:opacity-50'
+                      className='text-body05 text-grey-40 ms-1 cursor-pointer px-2 py-1 disabled:opacity-50'
                       onClick={handleDeletePost}
                       disabled={isLoading}
                     >
