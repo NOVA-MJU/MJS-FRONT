@@ -207,8 +207,10 @@ export default function BoardDetail() {
               {/* 좋아요 버튼 */}
               <button className='flex cursor-pointer items-center' onClick={handleLikePost}>
                 <span className='text-body04 text-grey-40'>좋아요</span>
-                {content.isLiked ? (
+                {!isLoggedIn ? (
                   <HeartIcon className='text-grey-20' filled />
+                ) : content.isLiked ? (
+                  <HeartIcon className='text-blue-10' filled />
                 ) : (
                   <HeartIcon className='text-blue-10' />
                 )}
