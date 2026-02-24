@@ -1,13 +1,11 @@
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { IoIosClose, IoIosMenu } from 'react-icons/io';
-import MyIcon from '../../../../public/img/my-icon.png';
 
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import SidebarV2 from '@/components/organisms/SidebarV2';
 import SearchBar from '@/components/atoms/SearchBar';
 import { useHeaderStore } from '@/store/useHeaderStore';
-import { useAuthStore } from '@/store/useAuthStore';
 import { setHomeSliderToMain } from '@/pages/HomeSlider';
 import clsx from 'clsx';
 
@@ -15,7 +13,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { trackNavClick } = useNavTracking();
   const { activeMainSlide } = useHeaderStore();
-  const { isLoggedIn, user } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get('keyword');
@@ -96,15 +93,11 @@ export default function Navbar() {
           </div>
           <button
             type='button'
-            className='shrink-0 overflow-hidden rounded-full focus:outline-none'
-            onClick={() => navigate(isLoggedIn ? '/mypage' : '/login')}
-            aria-label={isLoggedIn ? '마이페이지' : '로그인'}
+            className='hover:bg-grey-10/50 cursor-pointer rounded-md text-xl text-black transition'
+            onClick={toggleMenu}
+            aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
           >
-            {isLoggedIn && user?.profileImageUrl ? (
-              <img src={user.profileImageUrl} alt='프로필' className='h-7 w-7 object-cover' />
-            ) : (
-              <img src={MyIcon} alt='마이' className='h-7 w-7 object-contain' />
-            )}
+            {isOpen ? <IoIosClose /> : <IoIosMenu />}
           </button>
         </header>
       )}
