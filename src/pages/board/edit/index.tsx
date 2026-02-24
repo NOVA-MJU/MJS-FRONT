@@ -4,8 +4,11 @@ import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { getBoardDetail, updatePost } from '../../../api/board';
+import { deletePost, getBoardDetail, updatePost } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
+import { ChevronDownIcon } from '@/components/atoms/Icon';
+import toast from 'react-hot-toast';
+import { handleError } from '@/utils/error';
 
 type Category = 'FREE' | 'NOTICE';
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -24,7 +27,8 @@ export default function BoardEdit() {
   const navigate = useNavigate();
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [title, setTitle] = useState('');
   const [initialContent, setInitialContent] = useState('');
 
@@ -102,7 +106,7 @@ export default function BoardEdit() {
    * 게시글 수정 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
    */
   const handleUploadPost = async () => {
-    if (isLoading || !uuid) return;
+    if (isSaving || isDeleting || !uuid) return;
 
     const parsedTitle = title.trim() ?? '';
     const content = JSON.stringify(editorRef.current?.document);
@@ -111,7 +115,7 @@ export default function BoardEdit() {
     if (!parsedTitle) return alert('제목을 입력하세요');
     if (editorRef.current?.isEmpty) return alert('본문을 입력하세요');
 
-    setIsLoading(true);
+    setIsSaving(true);
     try {
       await updatePost(uuid, parsedTitle, content, contentPreview, true, selectedCategory);
       setIsDirty(false);
@@ -119,7 +123,25 @@ export default function BoardEdit() {
     } catch (e) {
       console.error('BoardEdit.tsx', e);
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
+    }
+  };
+
+  /**
+   * 게시글 삭제 요청
+   */
+  const handleDeletePost = async () => {
+    if (!uuid || isSaving || isDeleting) return;
+    if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
+    setIsDeleting(true);
+    try {
+      await deletePost(uuid);
+      toast.success('게시글이 삭제되었습니다.');
+      navigate(-2);
+    } catch (e) {
+      handleError(e, '게시글 삭제에 실패했습니다.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -163,20 +185,25 @@ export default function BoardEdit() {
         />
 
         {/* 카테고리 선택 (브라우저 기본 select) */}
-        <select
-          className='border-grey-10 text-body03 text-blue-20 mt-2.5 w-full rounded-lg border px-3 py-2'
-          value={selectedCategory}
-          onChange={(e) => {
-            setSelectedCategory(e.target.value as Category);
-            setIsDirty(true);
-          }}
-        >
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {CATEGORY_LABEL[option]}
-            </option>
-          ))}
-        </select>
+        <div className='relative mt-2.5'>
+          <select
+            className='border-grey-10 text-body03 text-blue-20 w-full appearance-none rounded-lg border px-3 py-2 pr-10'
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value as Category);
+              setIsDirty(true);
+            }}
+          >
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {CATEGORY_LABEL[option]}
+              </option>
+            ))}
+          </select>
+          <span className='text-grey-40 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2'>
+            <ChevronDownIcon width={20} height={20} />
+          </span>
+        </div>
 
         {/* 에디터 */}
         <div
@@ -192,14 +219,40 @@ export default function BoardEdit() {
           </div>
         </div>
 
+        {/* 게시글 삭제 버튼 */}
+        <div className='mt-4'>
+          <button
+            type='button'
+            className='text-body05 bg-grey-40 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg text-white disabled:cursor-not-allowed disabled:opacity-70'
+            disabled={isSaving || isDeleting}
+            onClick={handleDeletePost}
+          >
+            {isDeleting ? (
+              <>
+                <span className='border-grey-20 h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-t-white' />
+                <span>삭제 중...</span>
+              </>
+            ) : (
+              '게시물 삭제'
+            )}
+          </button>
+        </div>
+
         {/* 완료 버튼 */}
         <div className='mt-4 mb-10'>
           <button
-            className={`text-body05 h-10 w-full cursor-pointer rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+            className={`text-body05 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'} disabled:cursor-not-allowed disabled:opacity-70`}
             onClick={handleUploadPost}
-            disabled={isLoading}
+            disabled={isSaving || isDeleting}
           >
-            완료
+            {isSaving ? (
+              <>
+                <span className='border-grey-20 border-t-mju-primary h-4 w-4 shrink-0 animate-spin rounded-full border-2' />
+                <span>저장 중...</span>
+              </>
+            ) : (
+              '완료'
+            )}
           </button>
         </div>
       </div>

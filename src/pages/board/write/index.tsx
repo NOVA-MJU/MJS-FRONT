@@ -8,6 +8,7 @@ import { postBoard } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
 import { useAuthStore } from '@/store/useAuthStore';
 import LoginErrorPage from '@/pages/LoginError';
+import { ChevronDownIcon } from '@/components/atoms/Icon';
 
 type Category = 'FREE' | 'NOTICE';
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -164,20 +165,25 @@ export default function BoardWrite() {
         />
 
         {/* 카테고리 선택 (브라우저 기본 select) */}
-        <select
-          className='border-grey-10 text-body03 text-blue-20 mt-2.5 w-full rounded-lg border px-3 py-2'
-          value={selectedCategory}
-          onChange={(e) => {
-            setSelectedCategory(e.target.value as Category);
-            setIsDirty(true);
-          }}
-        >
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {CATEGORY_LABEL[option]}
-            </option>
-          ))}
-        </select>
+        <div className='relative mt-2.5'>
+          <select
+            className='border-grey-10 text-body03 text-blue-20 w-full appearance-none rounded-lg border px-3 py-2 pr-10'
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value as Category);
+              setIsDirty(true);
+            }}
+          >
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {CATEGORY_LABEL[option]}
+              </option>
+            ))}
+          </select>
+          <span className='text-grey-40 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2'>
+            <ChevronDownIcon className='text-grey-30' />
+          </span>
+        </div>
 
         {/* 에디터 */}
         <div
@@ -192,11 +198,18 @@ export default function BoardWrite() {
         {/* 완료 버튼 */}
         <div className='mt-4 mb-10'>
           <button
-            className={`text-body05 h-10 w-full cursor-pointer rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'}`}
+            className={`text-body05 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'} disabled:cursor-not-allowed disabled:opacity-70`}
             onClick={handleUploadPost}
             disabled={isLoading}
           >
-            완료
+            {isLoading ? (
+              <>
+                <span className='border-grey-20 border-t-mju-primary h-4 w-4 shrink-0 animate-spin rounded-full border-2' />
+                <span>저장 중...</span>
+              </>
+            ) : (
+              '완료'
+            )}
           </button>
         </div>
       </div>
