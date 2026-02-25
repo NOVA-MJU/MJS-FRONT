@@ -8,7 +8,7 @@ import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
 import Main from '@/pages';
 import Slides from './slides';
-import DepartmentMainPage from './main/department';
+import DepartmentMainPage from './departments';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
 export const HOME_SLIDER_STORAGE_KEY = 'homeSliderSlide';
