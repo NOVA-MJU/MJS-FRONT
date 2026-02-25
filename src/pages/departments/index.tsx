@@ -42,6 +42,28 @@ const TABS = {
 
 const TAB_KEYS = Object.keys(TABS) as (keyof typeof TABS)[];
 
+const DEPARTMENT_STORAGE_KEY = 'department_page_selection';
+
+type StoredSelection = { college: College; department: Department | null };
+
+function readStoredDepartmentSelection(): StoredSelection | null {
+  try {
+    const raw = sessionStorage.getItem(DEPARTMENT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { college?: string; department?: string | null };
+    const college = parsed.college;
+    const department = parsed.department ?? null;
+    const validColleges = COLLEGE_OPTIONS.map((o) => o.value);
+    if (!college || !validColleges.includes(college as College)) return null;
+    const option = DEPARTMENT_OPTIONS.find((opt) => opt.college.value === college);
+    const validDepartments = option?.departments.map((d) => d.value) ?? [];
+    if (department !== null && !validDepartments.includes(department as Department)) return null;
+    return { college: college as College, department: department as Department | null };
+  } catch {
+    return null;
+  }
+}
+
 // 관리자 권한 체크
 const hasAdminPermission = (role: string | undefined): boolean => {
   return role === 'OPERATOR' || role === 'ADMIN';
@@ -53,13 +75,27 @@ export default function DepartmentMainPage() {
   const navigate = useNavigate();
   const isDepartmentSlideActive = activeMainSlide === 0;
 
-  // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null)
-  const [selectedCollege, setSelectedCollege] = useState<College>('BUSINESS');
+  // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null) — 세션 스토리지에서 복원
+  const [selectedCollege, setSelectedCollege] = useState<College>(() => {
+    const stored = readStoredDepartmentSelection();
+    return stored?.college ?? 'BUSINESS';
+  });
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
-  // 학과 필터
-  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  // 학과 필터 — 세션 스토리지에서 복원
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(() => {
+    const stored = readStoredDepartmentSelection();
+    return stored?.department ?? null;
+  });
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
+
+  // 선택한 단과대/학과를 세션 스토리지에 저장
+  useEffect(() => {
+    sessionStorage.setItem(
+      DEPARTMENT_STORAGE_KEY,
+      JSON.stringify({ college: selectedCollege, department: selectedDepartment }),
+    );
+  }, [selectedCollege, selectedDepartment]);
 
   // 학과 정보 (API 응답)
   const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
@@ -97,19 +133,19 @@ export default function DepartmentMainPage() {
     };
   }, [selectedCollege, selectedDepartment, noticePage, postsPage]);
 
-  // 사용자의 departmentName에 해당하는 단과대로 자동 설정
+  // 선택이 기본값(경영대 전체)일 때만 사용자 소속 학과로 자동 설정 (저장된 선택은 유지)
   useEffect(() => {
-    if (user?.departmentName) {
-      for (const option of DEPARTMENT_OPTIONS) {
-        const department = option.departments.find((dept) => dept.value === user.departmentName);
-        if (department) {
-          setSelectedCollege(option.college.value);
-          setSelectedDepartment(department.value);
-          break;
-        }
+    if (!user?.departmentName) return;
+    if (selectedCollege !== 'BUSINESS' || selectedDepartment !== null) return;
+    for (const option of DEPARTMENT_OPTIONS) {
+      const department = option.departments.find((dept) => dept.value === user.departmentName);
+      if (department) {
+        setSelectedCollege(option.college.value);
+        setSelectedDepartment(department.value);
+        break;
       }
     }
-  }, [user?.departmentName]);
+  }, [user?.departmentName, selectedCollege, selectedDepartment]);
 
   // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
@@ -406,26 +442,24 @@ export default function DepartmentMainPage() {
           )}
 
           {/* 교학팀 전화번호 */}
-          {selectedDepartment && (
-            <div className='mt-2.5 flex items-center gap-1'>
-              <span className='text-body05 text-grey-80'>교학팀</span>
-              <span className='text-body05 text-grey-30'>
-                {departmentInfo?.academicOfficePhone ?? '-'}
-              </span>
-              <button
-                type='button'
-                onClick={handleCopyPhone}
-                className='text-blue-15 cursor-pointer p-0.75'
-                aria-label='전화번호 복사'
-              >
-                {phoneCopied ? (
-                  <IoIosCheckmark className='text-green-50' />
-                ) : (
-                  <MdOutlineContentCopy />
-                )}
-              </button>
-            </div>
-          )}
+          <div className='mt-2.5 flex items-center gap-1'>
+            <span className='text-body05 text-grey-80'>교학팀</span>
+            <span className='text-body05 text-grey-30'>
+              {departmentInfo?.academicOfficePhone ?? '-'}
+            </span>
+            <button
+              type='button'
+              onClick={handleCopyPhone}
+              className='text-blue-15 cursor-pointer p-0.75'
+              aria-label='전화번호 복사'
+            >
+              {phoneCopied ? (
+                <IoIosCheckmark className='text-green-50' />
+              ) : (
+                <MdOutlineContentCopy />
+              )}
+            </button>
+          </div>
 
           {/* 홈페이지 / 인스타 버튼 */}
           <div className='flex gap-3 pt-3.5'>
@@ -585,13 +619,14 @@ export default function DepartmentMainPage() {
                   </div>
                 ))
               )}
-            </div>
-            <div className='mt-auto'>
-              <Pagination
-                page={noticePage}
-                totalPages={noticeTotalPages}
-                onChange={setNoticePage}
-              />
+
+              {departmentNotices.length > 0 && (
+                <Pagination
+                  page={noticePage}
+                  totalPages={noticeTotalPages}
+                  onChange={setNoticePage}
+                />
+              )}
             </div>
           </section>
         )}
