@@ -630,7 +630,7 @@ export default function DepartmentMainPage() {
                   canEditDepartment ? 'py-4' : 'py-10',
                 )}
               >
-                <span className='text-body03'>게시물 없음</span>
+                <span className='text-body03 text-grey-30'>서비스 준비 중입니다.</span>
               </div>
             )}
           </section>
