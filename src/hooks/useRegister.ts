@@ -49,6 +49,7 @@ export const useRegisterHandlers = ({
   nickname,
   studentCode,
   profileImageFile,
+  college,
   pw,
   name,
   gender,
@@ -58,6 +59,7 @@ export const useRegisterHandlers = ({
   nickname: string;
   studentCode: string;
   profileImageFile: File | null;
+  college: string;
   pw: string;
   name: string;
   gender: string;
@@ -216,6 +218,7 @@ export const useRegisterHandlers = ({
         name,
         email: fullEmail,
         password: pw,
+        college,
         gender,
         nickname,
         departmentName: department,

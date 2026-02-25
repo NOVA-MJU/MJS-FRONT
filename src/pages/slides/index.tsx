@@ -40,12 +40,12 @@ type TabType = (typeof TABS)[number];
 
 const SLIDES_TAB_STORAGE_KEY = 'slidesActiveTab';
 
-function getStoredSlidesTab(): TabType {
-  if (typeof window === 'undefined') return 'ALL';
-  const raw = sessionStorage.getItem(SLIDES_TAB_STORAGE_KEY);
-  const found = TABS.find((t) => t === raw);
-  return (found as TabType) ?? 'ALL';
-}
+// function getStoredSlidesTab(): TabType {
+//   if (typeof window === 'undefined') return 'ALL';
+//   const raw = sessionStorage.getItem(SLIDES_TAB_STORAGE_KEY);
+//   const found = TABS.find((t) => t === raw);
+//   return (found as TabType) ?? 'ALL';
+// }
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
@@ -55,17 +55,24 @@ interface TabBarProps {
 
 const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) => {
   const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
+  // 탭바 스크롤 컨테이너 ref
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isPanelVisible) return;
     const el = tabRefs.current[activeTab];
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-    }
+    const container = scrollRef.current;
+    if (!el || !container) return;
+    // 탭 중앙이 컨테이너 중앙에 오도록 scrollLeft 직접 계산
+    const targetScrollLeft = el.offsetLeft - container.offsetWidth / 2 + el.offsetWidth / 2;
+    container.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
   }, [activeTab, isPanelVisible]);
 
   return (
-    <div className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto scroll-smooth border-b bg-white'>
+    <div
+      ref={scrollRef}
+      className='border-grey-10 no-scrollbar swiper-no-swiping sticky top-0 z-10 w-full overflow-x-auto scroll-smooth border-b bg-white'
+    >
       <div className='flex h-[39px] min-w-max items-center px-5'>
         {TABS.map((tab) => {
           const isActive = activeTab === tab;
@@ -150,7 +157,7 @@ const AllTab = ({
  * 개별 탭 컨텐츠를 위한 공통 래퍼 컴포넌트
  */
 const TabWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className='flex h-full flex-col gap-2 p-2'>{children}</div>
+  <div className='flex h-full flex-col gap-2 py-2'>{children}</div>
 );
 
 /**
@@ -195,9 +202,8 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabContentProps>> = {
  * 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
-  const { selectedTab, setSelectedTab, activeMainSlide } = useHeaderStore();
+  const { selectedTab, setSelectedTab, activeMainSlide, setActiveMainSlide } = useHeaderStore();
   const TAB_STORAGE_KEY = 'slides-active-tab';
-
 
   const getInitialTab = (): TabType => {
     if (selectedTab && TABS.includes(selectedTab as TabType)) {
@@ -212,13 +218,17 @@ const Slides = () => {
     return 'ALL';
   };
 
- 
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab);
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const [isPanelVisible, setIsPanelVisible] = useState(false);
+  // stale closure 방지용 activeTab ref
+  const activeTabRef = useRef<TabType>(activeTab);
+  // HomeSlider 부모 스크롤 이동용 터치 시작 X 좌표
+  const edgeTouchStartX = useRef<number | null>(null);
 
   useEffect(() => {
+    activeTabRef.current = activeTab;
     try {
       sessionStorage.setItem(SLIDES_TAB_STORAGE_KEY, activeTab);
     } catch {
@@ -226,6 +236,42 @@ const Slides = () => {
     }
   }, [activeTab]);
 
+  // ALL 탭 경계에서 오른쪽 스와이프 → HomeSlider 부모 스크롤 이동
+  // Swiper가 React 합성이벤트를 막으므로 네이티브 리스너(capture) 사용
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (activeTabRef.current === 'ALL') {
+        edgeTouchStartX.current = e.touches[0].clientX;
+      }
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (edgeTouchStartX.current === null) return;
+      const deltaX = e.changedTouches[0].clientX - edgeTouchStartX.current;
+      edgeTouchStartX.current = null;
+      // 오른쪽으로 60px 이상 스와이프 → HomeSlider(부모 Swiper) 메인으로 이동
+      if (deltaX > 60 && activeTabRef.current === 'ALL') {
+        // const homeSlider = el.parentElement?.parentElement;
+        // if (homeSlider) {
+        //   homeSlider.scrollTo({
+        //     left: homeSlider.scrollLeft - homeSlider.clientWidth,
+        //     behavior: 'smooth',
+        //   });
+        // }
+        setActiveMainSlide(1);
+      }
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+    el.addEventListener('touchend', onTouchEnd, { passive: true, capture: true });
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart, { capture: true });
+      el.removeEventListener('touchend', onTouchEnd, { capture: true });
+    };
+  }, [setActiveMainSlide]);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -257,7 +303,6 @@ const Slides = () => {
     syncTab(tab, true);
   };
 
-  
   useEffect(() => {
     const footer = document.querySelector('footer');
     if (!isPanelVisible) {
@@ -300,9 +345,11 @@ const Slides = () => {
           onSwiper={setSwiper}
           onSlideChange={(s) => syncTab(TABS[s.activeIndex], false)}
           className='h-full w-full'
-          nested={true}
           resistance={true}
           resistanceRatio={0}
+          nested={true}
+          touchReleaseOnEdges={true}
+          simulateTouch={true}
         >
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
@@ -313,26 +360,11 @@ const Slides = () => {
                 ) : (
                   <Content
                     activeTab={activeTab}
-                    onNavigateToNoticeTab={() => {
-                      setActiveTab('공지사항');
-                      swiper?.slideTo(TABS.indexOf('공지사항'));
-                    }}
-                    onNavigateToBroadcastTab={() => {
-                      setActiveTab('명대뉴스');
-                      swiper?.slideTo(TABS.indexOf('명대뉴스'));
-                    }}
-                    onNavigateToNewsTab={() => {
-                      setActiveTab('명대신문');
-                      swiper?.slideTo(TABS.indexOf('명대신문'));
-                    }}
-                    onNavigateToBoardTab={() => {
-                      setActiveTab('게시판');
-                      swiper?.slideTo(TABS.indexOf('게시판'));
-                    }}
-                    onNavigateToAcademicTab={() => {
-                      setActiveTab('학사일정');
-                      swiper?.slideTo(TABS.indexOf('학사일정'));
-                    }}
+                    onNavigateToNoticeTab={() => syncTab('공지사항', true)}
+                    onNavigateToBroadcastTab={() => syncTab('명대뉴스', true)}
+                    onNavigateToNewsTab={() => syncTab('명대신문', true)}
+                    onNavigateToBoardTab={() => syncTab('게시판', true)}
+                    onNavigateToAcademicTab={() => syncTab('학사일정', true)}
                   />
                 )}
               </SwiperSlide>

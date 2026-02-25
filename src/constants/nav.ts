@@ -19,6 +19,6 @@ export const NAV_ITEMS: NavItem[] = [
   {
     key: 'sso',
     label: 'SSO',
-    href: 'https://sso.mju.ac.kr/sso/auth?response_type=code&client_id=lms&state=Random%20String&redirect_uri=https://lms.mju.ac.kr/ilos/sso/sso_response.jsp',
+    href: 'https://sso.mju.ac.kr/sso/auth?client_id=portal&response_type=code&state=1772023996586&rd_c_p=loginparam&tkn_type=normal&redirect_uri=https%3A%2F%2Fportal.mju.ac.kr%2Fsso%2Fresponse.jsp',
   },
 ];
