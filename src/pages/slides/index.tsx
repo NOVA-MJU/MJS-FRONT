@@ -202,7 +202,7 @@ const TAB_CONTENT: Record<TabType, React.ComponentType<TabContentProps>> = {
  * 패널이 보일 때만 푸터/탭 스크롤 적용(IntersectionObserver).
  */
 const Slides = () => {
-  const { selectedTab, setSelectedTab, activeMainSlide } = useHeaderStore();
+  const { selectedTab, setSelectedTab, activeMainSlide, setActiveMainSlide } = useHeaderStore();
   const TAB_STORAGE_KEY = 'slides-active-tab';
 
   const getInitialTab = (): TabType => {
@@ -252,15 +252,16 @@ const Slides = () => {
       if (edgeTouchStartX.current === null) return;
       const deltaX = e.changedTouches[0].clientX - edgeTouchStartX.current;
       edgeTouchStartX.current = null;
-      // 오른쪽으로 60px 이상 스와이프 → HomeSlider 컨테이너(2단계 위) 이동
+      // 오른쪽으로 60px 이상 스와이프 → HomeSlider(부모 Swiper) 메인으로 이동
       if (deltaX > 60 && activeTabRef.current === 'ALL') {
-        const homeSlider = el.parentElement?.parentElement;
-        if (homeSlider) {
-          homeSlider.scrollTo({
-            left: homeSlider.scrollLeft - homeSlider.clientWidth,
-            behavior: 'smooth',
-          });
-        }
+        // const homeSlider = el.parentElement?.parentElement;
+        // if (homeSlider) {
+        //   homeSlider.scrollTo({
+        //     left: homeSlider.scrollLeft - homeSlider.clientWidth,
+        //     behavior: 'smooth',
+        //   });
+        // }
+        setActiveMainSlide(1);
       }
     };
 
@@ -270,7 +271,7 @@ const Slides = () => {
       el.removeEventListener('touchstart', onTouchStart, { capture: true });
       el.removeEventListener('touchend', onTouchEnd, { capture: true });
     };
-  }, []);
+  }, [setActiveMainSlide]);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -346,6 +347,9 @@ const Slides = () => {
           className='h-full w-full'
           resistance={true}
           resistanceRatio={0}
+          nested={true}
+          touchReleaseOnEdges={true}
+          simulateTouch={true}
         >
           {TABS.map((tab) => {
             const Content = TAB_CONTENT[tab];
@@ -356,26 +360,11 @@ const Slides = () => {
                 ) : (
                   <Content
                     activeTab={activeTab}
-                    onNavigateToNoticeTab={() => {
-                      setActiveTab('공지사항');
-                      swiper?.slideTo(TABS.indexOf('공지사항'));
-                    }}
-                    onNavigateToBroadcastTab={() => {
-                      setActiveTab('명대뉴스');
-                      swiper?.slideTo(TABS.indexOf('명대뉴스'));
-                    }}
-                    onNavigateToNewsTab={() => {
-                      setActiveTab('명대신문');
-                      swiper?.slideTo(TABS.indexOf('명대신문'));
-                    }}
-                    onNavigateToBoardTab={() => {
-                      setActiveTab('게시판');
-                      swiper?.slideTo(TABS.indexOf('게시판'));
-                    }}
-                    onNavigateToAcademicTab={() => {
-                      setActiveTab('학사일정');
-                      swiper?.slideTo(TABS.indexOf('학사일정'));
-                    }}
+                    onNavigateToNoticeTab={() => syncTab('공지사항', true)}
+                    onNavigateToBroadcastTab={() => syncTab('명대뉴스', true)}
+                    onNavigateToNewsTab={() => syncTab('명대신문', true)}
+                    onNavigateToBoardTab={() => syncTab('게시판', true)}
+                    onNavigateToAcademicTab={() => syncTab('학사일정', true)}
                   />
                 )}
               </SwiperSlide>
