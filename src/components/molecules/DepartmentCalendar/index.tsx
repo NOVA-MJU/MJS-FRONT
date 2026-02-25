@@ -68,8 +68,15 @@ export default function DepartmentCalendar({
     onDateSelect?.(next);
   };
 
+  // 월 이동 시 선택 해제
+  const clearSelection = () => {
+    setSelectedDate(null);
+    onDateSelect?.(null);
+  };
+
   // 이전 달 버튼 핸들러
   const handlePrevMonth = () => {
+    clearSelection();
     if (currentMonth === 1) {
       const newYear = currentYear - 1;
       const newMonth = 12;
@@ -86,6 +93,7 @@ export default function DepartmentCalendar({
 
   // 다음 달 버튼 핸들러
   const handleNextMonth = () => {
+    clearSelection();
     if (currentMonth === 12) {
       const newYear = currentYear + 1;
       const newMonth = 1;

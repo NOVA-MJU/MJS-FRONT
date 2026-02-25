@@ -188,6 +188,17 @@ export default function DepartmentMainPage() {
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // 캘린더 연·월 이동 시 선택된 날짜 초기화
+  const handleYearChange = (year: number) => {
+    setCurrentYear(year);
+    setSelectedDate(null);
+  };
+  const handleMonthChange = (month: number) => {
+    setCurrentMonth(month);
+    setSelectedDate(null);
+  };
+
   // 선택한 날짜에 해당하는 학과 일정 (선택 없으면 현재 달의 전체 일정)
   const dayEvents = useMemo(() => {
     let list: DepartmentSchedule[];
@@ -460,8 +471,8 @@ export default function DepartmentMainPage() {
               <DepartmentCalendar
                 className='m-5'
                 schedules={departmentSchedules}
-                onYearChange={setCurrentYear}
-                onMonthChange={setCurrentMonth}
+                onYearChange={handleYearChange}
+                onMonthChange={handleMonthChange}
                 onDateSelect={setSelectedDate}
               />
 
