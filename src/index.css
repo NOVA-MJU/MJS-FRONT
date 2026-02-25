@@ -238,3 +238,25 @@
   backdrop-filter: blur(3px);
   border-radius: 9999px;
 }
+
+/* 메인 광고 배너: 모바일에서는 가로 꽉 차게, 데스크톱에서는 너무 커지지 않게 제한 */
+.main-ad-banner {
+  width: 100%;
+}
+
+.main-ad-banner__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 1024px) {
+  .main-ad-banner {
+    display: flex;
+    justify-content: center;
+  }
+
+  .main-ad-banner__image {
+    max-width: 720px;
+  }
+}

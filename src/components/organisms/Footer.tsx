@@ -12,10 +12,12 @@ export default function Footer() {
   return (
     <footer className='bg-blue-05 w-full'>
       <div className='mx-auto flex w-full flex-col items-center gap-3 px-5 py-6 md:w-[1280px]'>
-        <div className='text-caption04 text-grey-40 flex w-full max-w-[480px] items-center justify-between'>
+        <div className='text-caption04 text-grey-40 flex w-full max-w-[480px] items-center justify-center gap-6'>
           <a className='cursor-pointer'>이용약관</a>
-          <a className='cursor-pointer'>개인정보 처리방침</a>
-          <button className='cursor-pointer' onClick={handleContactClick}>
+          <span className='text-grey-30'>|</span>
+          <a className='cursor-pointer whitespace-nowrap'>개인정보 처리방침</a>
+          <span className='text-grey-30'>|</span>
+          <button className='cursor-pointer whitespace-nowrap' onClick={handleContactClick}>
             문의하기
           </button>
         </div>

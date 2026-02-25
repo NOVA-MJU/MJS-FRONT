@@ -83,24 +83,23 @@ export default function Main() {
 
   return (
     <div className='w-full'>
-      {/* 첫 화면: White(MainCarousel) + Grey(Banner) + Blue(Footer) = 한 뷰포트 */}
+      {/* 첫 화면: White(MainCarousel) + Grey(Banner) = 한 뷰포트, Footer는 스크롤 이후 노출 */}
       <section className='h-[calc(100svh-3.5rem)] w-full overflow-hidden'>
         <div className='flex h-full min-h-0 flex-col'>
           {/* White: MainCarousel 영역 (인디케이터는 이 영역 맨 아래에 absolute 고정) */}
-          <div className='min-h-0 flex-1 overflow-hidden bg-white'>
+          <div className='min-h-[420px] flex-1 overflow-y-auto bg-white'>
             <MainCarousel slides={mobileSlides} />
           </div>
 
-          <div className='w-full shrink'>
+          {/* Grey: AdBanner 영역 (항상 첫 화면 하단에 고정, 양옆 여백 없이 전체 폭 사용) */}
+          <div className='w-full shrink-0'>
             <AdBannerSection />
-          </div>
-
-          {/* Blue: Footer 영역 (항상 첫 화면 내에서 보이도록 고정 높이) */}
-          <div className='shrink-0'>
-            <Footer />
           </div>
         </div>
       </section>
+
+      {/* Blue: Footer 영역 (첫 화면 아래에서 스크롤 시 노출) */}
+      <Footer />
     </div>
   );
 }
