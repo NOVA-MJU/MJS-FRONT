@@ -549,27 +549,29 @@ export default function DepartmentMainPage() {
                   <span className='text-body03'>공지사항 없음</span>
                 </div>
               ) : (
-                departmentNotices.map((notice) => (
-                  <a
-                    key={notice.departmentNoticeUuid}
-                    href={notice.link}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className={clsx(
-                      'block cursor-pointer px-5 py-2.5',
-                      'hover:bg-blue-05 transition duration-50 hover:transition-none',
-                    )}
-                  >
-                    <p className='text-caption04 text-grey-30'>
-                      {(() => {
-                        const d = notice.publishedAt ? new Date(notice.publishedAt) : null;
-                        return d && isValid(d) ? format(d, 'yyyy.MM.dd', { locale: ko }) : '-';
-                      })()}
-                    </p>
-                    <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
-                      {notice.title}
-                    </p>
-                  </a>
+                departmentNotices.map((notice, index) => (
+                  <div key={notice.departmentNoticeUuid}>
+                    {index > 0 && <div className='bg-grey-02 h-px' />}
+                    <a
+                      href={notice.link}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className={clsx(
+                        'block cursor-pointer px-5 py-2.5',
+                        'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                      )}
+                    >
+                      <p className='text-caption04 text-grey-30'>
+                        {(() => {
+                          const d = notice.publishedAt ? new Date(notice.publishedAt) : null;
+                          return d && isValid(d) ? format(d, 'yyyy.MM.dd', { locale: ko }) : '-';
+                        })()}
+                      </p>
+                      <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
+                        {notice.title}
+                      </p>
+                    </a>
+                  </div>
                 ))
               )}
             </div>
