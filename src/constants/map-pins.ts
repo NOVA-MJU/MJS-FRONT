@@ -14,10 +14,10 @@ export const BUILDING_PINS = [
 
 export const ENTRANCE_PINS = [
   { id: 'entrance-1', left: 52.95, top: 10.67 }, // 기숙사 후문
-  { id: 'entrance-2', left: 95.39, top: 16.17 }, // 우측 상단
-  { id: 'entrance-3', left: 6.82, top: 30.33 }, // 좌측 중앙
-  { id: 'entrance-4', left: 8.18, top: 86.83 }, // 좌측 하단
-  { id: 'entrance-5', left: 55.91, top: 91.33 }, // 하단 중앙
+  { id: 'entrance-2', left: 95.39, top: 16.17 }, // 도서관 후문
+  { id: 'entrance-3', left: 6.82, top: 30.33 }, // mcc 후문
+  { id: 'entrance-4', left: 8.18, top: 86.83 }, // 명지대 정문
+  { id: 'entrance-5', left: 55.91, top: 91.33 }, // 명지대 구 정문
 ] as const;
 
 /**
@@ -35,9 +35,9 @@ export const BUILDING_HIGHLIGHT_MAP: Record<string, string[]> = {
   'b-8': ['S8'],
   'b-9': ['S9'],
   'b-10': ['S10'],
-  // 쮨퍼스 시설
+  // 캠퍼스 시설
   'f-1': ['S2'], // 학식당 → 학생회관
-  'f-2': [], // 쮨퍼스 출입구 → 출입구 핀(원형)
+  'f-2': ['entrance-1', 'entrance-2', 'entrance-3', 'entrance-4', 'entrance-5'], // 캠퍼스 출입구 → 모든 출입구 핀
   'f-3': ['S1', 'S2', 'S4', 'S9'], // 건물 출입구/통로/지름길
   'f-4': ['S10'], // 운동 시설 → MCC
   'f-5': ['S9', 'S10'], // 주차장 → 도서관, MCC
@@ -47,7 +47,7 @@ export const BUILDING_HIGHLIGHT_MAP: Record<string, string[]> = {
   'p-2': ['S10'], // 음식점 → MCC
   'p-3': ['S2', 'S10'], // 카페 → 학생회관, MCC
   'p-4': ['S10'], // 운동 → MCC
-  'p-5': ['S9'], // 야식트럭 → 도서관 후문
+  'p-5': ['entrance-2', 'entrance-5'], // 야식트럭 → 도서관 후문
   'p-6': ['S2', 'S5'], // 은행/우편 → 학생회관, 행정동
   'p-7': ['S1', 'S2', 'S5', 'S9', 'S10'], // 기타
 };

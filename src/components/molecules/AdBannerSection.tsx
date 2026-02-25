@@ -1,19 +1,29 @@
-export default function AdBannerSection() {
-  return (
-    <div className='relative flex h-full w-full flex-col bg-gray-200'>
-      <div className='flex w-full justify-center pt-3'>
-        <div className='flex gap-1.5'>
-          <div className='bg-grey-40 h-1.5 w-1.5 rounded-full' />
-          <div className='bg-grey-30 h-1.5 w-1.5 rounded-full' />
-          <div className='bg-grey-30 h-1.5 w-1.5 rounded-full' />
-        </div>
-      </div>
+import { useEffect, useState } from 'react';
 
-      <div className='flex flex-1 items-center justify-center'>
-        <div className='flex flex-col items-center gap-3'>
-          <p className='text-caption01 text-grey-40'>광고 배너 영역</p>
-        </div>
-      </div>
+export default function AdBannerSection() {
+  const banners = ['/main/adBanner.svg', '/main/adBanner2.svg'];
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % banners.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  return (
+    <div className='relative h-[clamp(140px,18vh,200px)] w-full overflow-hidden'>
+      {banners.map((src, index) => (
+        <img
+          key={src}
+          src={src}
+          alt='광고 배너'
+          className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
+            index === activeIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useResponsive } from '@/hooks/useResponse';
 import Main from '@/pages';
@@ -9,20 +9,24 @@ import DepartmentMainPage from './main/department';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
 export const HOME_SLIDER_STORAGE_KEY = 'homeSliderSlide';
-const STORAGE_KEY = HOME_SLIDER_STORAGE_KEY;
+// const STORAGE_KEY = HOME_SLIDER_STORAGE_KEY;
 type SlideIndex = 0 | 1 | 2;
 
-function getStoredSlideIndex(): SlideIndex {
-  if (typeof window === 'undefined') return 1;
-  const raw = sessionStorage.getItem(STORAGE_KEY);
-  if (raw === '0') return 0;
-  if (raw === '2') return 2;
-  return 1;
-}
+// function getStoredSlideIndex(): SlideIndex {
+//   if (typeof window === 'undefined') return 1;
+//   const raw = sessionStorage.getItem(STORAGE_KEY);
+//   if (raw === '0') return 0;
+//   if (raw === '2') return 2;
+//   return 1;
+// }
 
-function setStoredSlideIndex(index: SlideIndex) {
-  sessionStorage.setItem(STORAGE_KEY, String(index));
-}
+// function setStoredSlideIndex(index: SlideIndex) {
+//   try {
+//     sessionStorage.setItem(STORAGE_KEY, String(index));
+//   } catch {
+//     // ignore
+//   }
+// }
 
 /** 로고 클릭 시 호출 → 무조건 메인(1)으로 가도록 저장 */
 export function setHomeSliderToMain() {
@@ -43,67 +47,82 @@ function cn(...inputs: ClassValue[]) {
 const HomeSlider = () => {
   const location = useLocation();
   const { isDesktop } = useResponsive();
-  const { activeMainSlide, setActiveMainSlide } = useHeaderStore();
+  const { activeMainSlide, setActiveMainSlide, setSelectedTab } = useHeaderStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const isInitialJump = useRef(true);
   /** 마운트 시 읽은 복원 인덱스 (한 번만 사용) */
-  const restoreIndexRef = useRef<SlideIndex | null>(null);
+  // const restoreIndexRef = useRef<SlideIndex | null>(null);
 
   // / 에 진입할 때마다(마운트·뒤로가기) sessionStorage 기준으로 복원할 인덱스 결정
   useEffect(() => {
     if (location.pathname !== '/') return;
     setMounted(true);
-    const stored = getStoredSlideIndex();
-    restoreIndexRef.current = stored;
-    setActiveMainSlide(stored);
-  }, [location.pathname, setActiveMainSlide]);
+  }, [location.pathname]);
 
-  const jumpToStored = useCallback(() => {
+  useEffect(() => {
+    if (!mounted || initialized || !containerRef.current) return;
     const container = containerRef.current;
-    if (!container) return;
     const width = container.clientWidth;
     if (width <= 0) return;
-    const index = restoreIndexRef.current ?? getStoredSlideIndex();
-    restoreIndexRef.current = null;
-    container.scrollLeft = width * index;
-    setActiveMainSlide(index);
-    isInitialJump.current = false;
-    setInitialized(true);
-  }, [setActiveMainSlide]);
 
-  // 1. 초기 로드 시 저장된 슬라이드로 점프
-  useEffect(() => {
-    if (!mounted || initialized) return;
-    const timer = setTimeout(jumpToStored, 50);
-    return () => clearTimeout(timer);
-  }, [mounted, initialized, jumpToStored]);
+    let initialIndex = 1;
+    let initialTab: string | null = null;
 
-  // 2. bfcache(뒤로가기로 페이지 복원) 시 스크롤 복원
-  useEffect(() => {
-    const onPageShow = (e: PageTransitionEvent) => {
-      if (!e.persisted || location.pathname !== '/') return;
-      const container = containerRef.current;
-      if (!container || !initialized) return;
-      const stored = getStoredSlideIndex();
-      const width = container.clientWidth;
-      if (width > 0) {
-        container.scrollLeft = width * stored;
-        setActiveMainSlide(stored);
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tabParam = searchParams.get('tab');
+
+      if (tabParam) {
+        if (tabParam === 'department') {
+          initialIndex = 0;
+        } else {
+          initialIndex = 2;
+          // URL 파라미터와 실제 앱 내 탭 이름 매핑
+          const tabMap: Record<string, string> = {
+            map: '명지도',
+            notice: '공지사항',
+            schedule: '학사일정',
+            calendar: '학사일정',
+            meal: '학식',
+            board: '게시판',
+            news: '명대신문',
+            broadcast: '명대뉴스',
+          };
+          initialTab = tabMap[tabParam] || tabParam;
+        }
+      } else {
+        const saved = window.sessionStorage.getItem('main-active-slide');
+        const parsed = saved !== null ? Number(saved) : NaN;
+        if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 2) {
+          initialIndex = Math.round(parsed);
+        }
       }
-    };
-    window.addEventListener('pageshow', onPageShow);
-    return () => window.removeEventListener('pageshow', onPageShow);
-  }, [location.pathname, initialized, setActiveMainSlide]);
+    }
 
-  // 3. 슬라이드가 바뀔 때마다 sessionStorage에 저장 (스와이프·헤더 클릭 모두)
+    const timer = setTimeout(() => {
+      if (!containerRef.current) return;
+      const c = containerRef.current;
+      const w = c.clientWidth;
+      if (w > 0) {
+        c.scrollLeft = w * initialIndex;
+        setActiveMainSlide(initialIndex);
+        if (initialTab) {
+          setSelectedTab(initialTab);
+        }
+        isInitialJump.current = false;
+        setInitialized(true);
+      }
+    }, 30);
+    return () => clearTimeout(timer);
+  }, [mounted, initialized, setActiveMainSlide, setSelectedTab]);
+
   useEffect(() => {
-    if (!initialized) return;
-    setStoredSlideIndex(activeMainSlide as SlideIndex);
+    if (!initialized || typeof window === 'undefined') return;
+    window.sessionStorage.setItem('main-active-slide', String(activeMainSlide));
   }, [activeMainSlide, initialized]);
 
-  // 4. 외부 상태 변경 (로고 클릭 등) 대응
   useEffect(() => {
     if (!initialized || !containerRef.current || isInitialJump.current) return;
     const container = containerRef.current;

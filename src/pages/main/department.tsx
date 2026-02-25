@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import { FiHome } from 'react-icons/fi';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import ko from 'date-fns/locale/ko';
 import { Tabs } from '@/components/atoms/Tabs';
-import Calendar from '@/components/molecules/Calendar';
-import type { CalendarMonthlyRes } from '@/api/main/calendar';
+import DepartmentCalendar from '@/components/molecules/DepartmentCalendar';
 import clsx from 'clsx';
 import { IoIosAdd, IoIosArrowDown, IoIosCheckmark } from 'react-icons/io';
 import { InstagramIcon } from '@/components/atoms/Icon';
@@ -13,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHeaderStore } from '@/store/useHeaderStore';
 import Drawer from '@/components/molecules/Drawer';
+import Pagination from '@/components/molecules/common/Pagination';
 import Footer from '@/components/organisms/Footer';
 import {
   COLLEGE_OPTIONS,
@@ -22,10 +22,14 @@ import {
 } from '@/constants/departments';
 import {
   getDepartmentInfo,
+  getDepartmentNotices,
+  getDepartmentSchedules,
   getStudentCouncilNotices,
   type College,
   type Department,
   type DepartmentInfo,
+  type DepartmentNotice,
+  type DepartmentSchedule,
   type StudentCouncilNotice,
 } from '@/api/departments';
 
@@ -60,6 +64,39 @@ export default function DepartmentMainPage() {
   // 학과 정보 (API 응답)
   const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
 
+  // 학과 일정 (API 응답)
+  const [departmentSchedules, setDepartmentSchedules] = useState<DepartmentSchedule[]>([]);
+
+  // 소속 공지사항 (학과 공지사항 API)
+  const [departmentNotices, setDepartmentNotices] = useState<DepartmentNotice[]>([]);
+  const [noticePage, setNoticePage] = useState(0);
+  const [noticeTotalPages, setNoticeTotalPages] = useState(0);
+  const NOTICE_PAGE_SIZE = 5;
+
+  // 학생회 공지사항 (페이지네이션 + 무한 스크롤)
+  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
+  const [postsPage, setPostsPage] = useState(0);
+  const [postsLast, setPostsLast] = useState(false);
+  const [isPostsLoading, setIsPostsLoading] = useState(false);
+  const POSTS_PAGE_SIZE = 12;
+  const postsLoadMoreRef = useRef<HTMLDivElement>(null);
+
+  // 응답 시점에 선택된 필터와 일치할 때만 반영
+  const filterRef = useRef({
+    college: selectedCollege,
+    department: selectedDepartment,
+    noticePage,
+    postsPage: 0,
+  });
+  useEffect(() => {
+    filterRef.current = {
+      college: selectedCollege,
+      department: selectedDepartment,
+      noticePage,
+      postsPage,
+    };
+  }, [selectedCollege, selectedDepartment, noticePage, postsPage]);
+
   // 사용자의 departmentName에 해당하는 단과대로 자동 설정
   useEffect(() => {
     if (user?.departmentName) {
@@ -76,18 +113,44 @@ export default function DepartmentMainPage() {
 
   // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
     (async () => {
       try {
-        const response = await getDepartmentInfo(selectedCollege, selectedDepartment);
+        const response = await getDepartmentInfo(college, department);
         const info = response.data;
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         if (info) {
           setDepartmentInfo(info);
         } else {
           setDepartmentInfo(null);
         }
       } catch (e) {
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
         console.error(e);
         setDepartmentInfo(null);
+      }
+    })();
+  }, [selectedCollege, selectedDepartment]);
+
+  // 선택된 college, department로 학과 일정 조회
+  useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
+    (async () => {
+      try {
+        const response = await getDepartmentSchedules(college, department);
+        const list = response.data?.schedules ?? [];
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
+        setDepartmentSchedules(list);
+      } catch (e) {
+        if (filterRef.current.college !== college || filterRef.current.department !== department)
+          return;
+        console.error(e);
+        setDepartmentSchedules([]);
       }
     })();
   }, [selectedCollege, selectedDepartment]);
@@ -96,6 +159,20 @@ export default function DepartmentMainPage() {
   const availableDepartments =
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
     [];
+
+  // 현재 사용자의 college, department (auth 기준)
+  const userCollege = DEPARTMENT_OPTIONS.find((opt) =>
+    opt.departments.some((d) => d.value === user?.departmentName),
+  )?.college?.value;
+  const userDepartment = user?.departmentName ?? null;
+
+  // 필터가 사용자의 college, department와 일치할 때만 편집 UI 표시
+  const canEditDepartment =
+    hasAdminPermission(user?.role) &&
+    userCollege !== undefined &&
+    userDepartment != null &&
+    selectedCollege === userCollege &&
+    selectedDepartment === userDepartment;
 
   // 탭 선택 (세션 스토리지에 저장·복원)
   const TAB_STORAGE_KEY = 'department-tab';
@@ -110,15 +187,19 @@ export default function DepartmentMainPage() {
   // 소속 일정
   const [, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
-  const [monthEvents] = useState<CalendarMonthlyRes | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [dayEvents] = useState(CALENDAR_DATA);
-
-  // 소속 공지사항
-  const [noticeData] = useState(NOTICE_DATA);
-
-  // 학생회 공지사항
-  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
+  // 선택한 날짜에 해당하는 학과 일정 (selectedDate 기준으로 필터)
+  const dayEvents = useMemo(() => {
+    const y = selectedDate.getFullYear();
+    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const d = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${d}`;
+    return departmentSchedules.filter((s) => {
+      const start = s.startDateTime.slice(0, 10);
+      const end = s.endDateTime ? s.endDateTime.slice(0, 10) : start;
+      return dateStr >= start && dateStr <= end;
+    });
+  }, [departmentSchedules, selectedDate]);
 
   // 교학팀 전화번호 복사 완료 상태
   const [phoneCopied, setPhoneCopied] = useState(false);
@@ -134,19 +215,116 @@ export default function DepartmentMainPage() {
     }
   };
 
-  // 선택된 college, department로 학생회 공지사항 조회 (전체 선택 시 department는 null로 요청)
+  // 선택된 college, department로 학과 공지사항(소속 공지사항) 조회
   useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
+    const page = noticePage;
     (async () => {
       try {
-        const response = await getStudentCouncilNotices(selectedCollege, selectedDepartment);
-        const notices = response.data?.content || [];
-        setStudentCouncilNotices(notices);
+        const response = await getDepartmentNotices(
+          college,
+          department,
+          page,
+          NOTICE_PAGE_SIZE,
+          'date,desc',
+        );
+        const payload = response.data;
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.noticePage !== page
+        )
+          return;
+        setDepartmentNotices(payload?.content ?? []);
+        setNoticeTotalPages(payload?.totalPages ?? 0);
       } catch (e) {
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.noticePage !== page
+        )
+          return;
         console.error(e);
-        setStudentCouncilNotices([]);
+        setDepartmentNotices([]);
+        setNoticeTotalPages(0);
       }
     })();
+  }, [selectedCollege, selectedDepartment, noticePage]);
+
+  // 단과대/학과 변경 시 학생회 공지 페이지 초기화
+  useEffect(() => {
+    setPostsPage(0);
+    setPostsLast(false);
   }, [selectedCollege, selectedDepartment]);
+
+  // 선택된 college, department로 학생회 공지사항 조회 (페이지네이션, 하단 도달 시 다음 페이지)
+  useEffect(() => {
+    const college = selectedCollege;
+    const department = selectedDepartment;
+    const page = postsPage;
+    if (page === 0) setStudentCouncilNotices([]);
+    setIsPostsLoading(true);
+    (async () => {
+      try {
+        const response = await getStudentCouncilNotices(
+          college,
+          department,
+          page,
+          POSTS_PAGE_SIZE,
+          'publishedAt',
+        );
+        const payload = response.data;
+        const notices = payload?.content ?? [];
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.postsPage !== page
+        )
+          return;
+        if (page === 0) {
+          setStudentCouncilNotices(notices);
+        } else {
+          setStudentCouncilNotices((prev) => [...prev, ...notices]);
+        }
+        setPostsLast(payload?.last ?? true);
+      } catch (e) {
+        if (
+          filterRef.current.college !== college ||
+          filterRef.current.department !== department ||
+          filterRef.current.postsPage !== page
+        )
+          return;
+        console.error(e);
+        if (page === 0) setStudentCouncilNotices([]);
+      } finally {
+        if (
+          filterRef.current.college === college &&
+          filterRef.current.department === department &&
+          filterRef.current.postsPage === page
+        ) {
+          setIsPostsLoading(false);
+        }
+      }
+    })();
+  }, [selectedCollege, selectedDepartment, postsPage]);
+
+  // 학생회 공지사항: 하단 sentinel이 보이면 다음 페이지 로드
+  useEffect(() => {
+    const el = postsLoadMoreRef.current;
+    if (!el || postsLast || isPostsLoading) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting && !postsLast && !isPostsLoading) {
+          setPostsPage((prev) => prev + 1);
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [postsLast, isPostsLoading, currentTab]);
 
   return (
     <section className='flex min-h-screen flex-col'>
@@ -264,9 +442,9 @@ export default function DepartmentMainPage() {
         {currentTab === 'events' && (
           <section className='relative'>
             <div className='flex flex-col'>
-              <Calendar
+              <DepartmentCalendar
                 className='m-5'
-                events={monthEvents}
+                schedules={departmentSchedules}
                 onYearChange={setCurrentYear}
                 onMonthChange={setCurrentMonth}
                 onDateSelect={setSelectedDate}
@@ -278,34 +456,46 @@ export default function DepartmentMainPage() {
                   {format(selectedDate, 'MM.dd (EEE)', { locale: ko })}
                 </span>
               </div>
-              <div>
-                {dayEvents.map((event) => (
-                  <button
-                    key={event.id}
-                    className={clsx(
-                      'flex w-full items-start gap-2 px-5 py-2 text-start',
-                      hasAdminPermission(user?.role) && 'cursor-pointer',
-                    )}
-                    onClick={() => {
-                      // 권한이 OPERATOR 또는 ADMIN인 경우 일정 수정 페이지로 이동
-                      if (hasAdminPermission(user?.role)) {
-                        navigate(`/departments/events/edit/${event.id}`);
-                      }
-                    }}
-                  >
-                    <span className='text-caption02 text-grey-40 min-w-19'>
-                      {format(new Date(event.startDate), 'MM.dd', { locale: ko })}
-                      {event.endDate &&
-                        ` - ${format(new Date(event.endDate), 'MM.dd', { locale: ko })}`}
-                    </span>
-                    <span className='text-caption02 flex-1 text-black'>{event.title}</span>
-                  </button>
-                ))}
+              <div className='mb-10'>
+                {dayEvents.length === 0 ? (
+                  <div className='px-5 py-4'>
+                    <p className='text-body05 text-grey-60 text-center'>일정 없음</p>
+                  </div>
+                ) : (
+                  dayEvents.map((event) => {
+                    const startStr = event.startDateTime.slice(0, 10);
+                    const endStr = event.endDateTime ? event.endDateTime.slice(0, 10) : startStr;
+                    const isOneDay = startStr === endStr;
+                    return (
+                      <button
+                        key={event.uuid}
+                        type='button'
+                        className={clsx(
+                          'flex w-full items-start gap-2 px-5 py-2 text-start',
+                          canEditDepartment && 'cursor-pointer',
+                        )}
+                        onClick={() => {
+                          if (canEditDepartment) {
+                            navigate(`/departments/events/edit/${event.uuid}`);
+                          }
+                        }}
+                      >
+                        <span className='text-caption02 text-grey-40 min-w-19'>
+                          {format(new Date(event.startDateTime), 'MM.dd', { locale: ko })}
+                          {!isOneDay &&
+                            event.endDateTime &&
+                            ` - ${format(new Date(event.endDateTime), 'MM.dd', { locale: ko })}`}
+                        </span>
+                        <span className='text-caption02 flex-1 text-black'>{event.title}</span>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
 
             {/* 일정 추가 버튼: 학과 슬라이드가 활성일 때만 표시 (다른 슬라이드에서 fixed 버튼이 겹치는 것 방지) */}
-            {hasAdminPermission(user?.role) && isDepartmentSlideActive && (
+            {canEditDepartment && isDepartmentSlideActive && (
               <button
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
@@ -323,23 +513,42 @@ export default function DepartmentMainPage() {
         {currentTab === 'notices' && (
           <section>
             <div className='flex flex-col py-5'>
-              {noticeData.map((notice) => (
-                <div
-                  key={notice.id}
-                  className={clsx(
-                    'cursor-pointer px-5 py-2.5',
-                    'hover:bg-blue-05 transition duration-50 hover:transition-none',
-                  )}
-                >
-                  <p className='text-caption04 text-grey-30'>
-                    {format(new Date(notice.createdAt), 'yyyy.MM.dd', { locale: ko })}
-                  </p>
-                  <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
-                    {notice.title}
-                  </p>
+              {departmentNotices.length === 0 ? (
+                <div className='flex items-center justify-center py-10'>
+                  <span className='text-body03'>공지사항 없음</span>
                 </div>
-              ))}
+              ) : (
+                departmentNotices.map((notice) => (
+                  <a
+                    key={notice.departmentNoticeUuid}
+                    href={notice.link}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className={clsx(
+                      'block cursor-pointer px-5 py-2.5',
+                      'hover:bg-blue-05 transition duration-50 hover:transition-none',
+                    )}
+                  >
+                    <p className='text-caption04 text-grey-30'>
+                      {(() => {
+                        const d = notice.publishedAt ? new Date(notice.publishedAt) : null;
+                        return d && isValid(d) ? format(d, 'yyyy.MM.dd', { locale: ko }) : '-';
+                      })()}
+                    </p>
+                    <p className='text-body05 mt-0.5 line-clamp-2 min-h-[3em] text-black'>
+                      {notice.title}
+                    </p>
+                  </a>
+                ))
+              )}
             </div>
+            {noticeTotalPages > 1 && (
+              <Pagination
+                page={noticePage}
+                totalPages={noticeTotalPages}
+                onChange={setNoticePage}
+              />
+            )}
           </section>
         )}
 
@@ -347,7 +556,7 @@ export default function DepartmentMainPage() {
         {currentTab === 'posts' && (
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
-              {hasAdminPermission(user?.role) && selectedDepartment && (
+              {canEditDepartment && (
                 <Link
                   to='/departments/posts/new'
                   className='bg-grey-02 flex aspect-[4/5] items-center justify-center'
@@ -369,11 +578,23 @@ export default function DepartmentMainPage() {
                 </Link>
               ))}
             </div>
-            {studentCouncilNotices.length === 0 && (
+            {/* 무한 스크롤: 하단 도달 시 다음 페이지 로드 */}
+            {!postsLast && studentCouncilNotices.length > 0 && (
+              <div
+                ref={postsLoadMoreRef}
+                className='flex min-h-12 items-center justify-center py-2'
+                aria-hidden
+              >
+                {isPostsLoading && (
+                  <span className='text-caption02 text-grey-40'>불러오는 중...</span>
+                )}
+              </div>
+            )}
+            {studentCouncilNotices.length === 0 && !isPostsLoading && (
               <div
                 className={clsx(
                   'flex items-center justify-center',
-                  hasAdminPermission(user?.role) && selectedDepartment ? 'py-4' : 'py-10',
+                  canEditDepartment ? 'py-4' : 'py-10',
                 )}
               >
                 <span className='text-body03'>게시물 없음</span>
@@ -400,6 +621,7 @@ export default function DepartmentMainPage() {
                   onClick={() => {
                     setSelectedCollege(college.value);
                     setSelectedDepartment(null); // 단과대 변경 시 학과 필터 초기화
+                    setNoticePage(0);
                     setIsCollegeDrawerOpen(false);
                   }}
                   className={clsx(
@@ -431,6 +653,7 @@ export default function DepartmentMainPage() {
               type='button'
               onClick={() => {
                 setSelectedDepartment(null);
+                setNoticePage(0);
                 setIsDepartmentDrawerOpen(false);
               }}
               className={clsx(
@@ -453,6 +676,7 @@ export default function DepartmentMainPage() {
                   type='button'
                   onClick={() => {
                     setSelectedDepartment(department.value);
+                    setNoticePage(0);
                     setIsDepartmentDrawerOpen(false);
                   }}
                   className={clsx(
@@ -478,53 +702,3 @@ export default function DepartmentMainPage() {
     </section>
   );
 }
-
-// 더미 데이터
-const CALENDAR_DATA = [
-  {
-    id: 1,
-    startDate: '2025-01-05T00:00:00.000Z',
-    endDate: null,
-    title: '학기 개시일, 2학기 개강 학기 개시일, 2학기 개강',
-  },
-  {
-    id: 2,
-    startDate: '2025-01-05T00:00:00.000Z',
-    endDate: null,
-    title: '학기 개시일, 2학기 개강 학기 개시일',
-  },
-  {
-    id: 3,
-    startDate: '2025-01-05T09:00:00.000Z',
-    endDate: '2025-01-09T18:00:00.000Z',
-    title: '수강신청 변경 기간 수강신청 변경 기간수강신청 변경 기간 수강신청 변경 기간',
-  },
-];
-
-const NOTICE_DATA = [
-  {
-    id: 1,
-    createdAt: '2025-12-09T09:00:00.000Z',
-    title: '[채용공고] Manyfast Tech-Lead 채용 및 사업설명회',
-  },
-  {
-    id: 2,
-    createdAt: '2025-04-24T10:30:00.000Z',
-    title: '[특강] 융합소프트웨어학부 취업 특강 안내 (메가스터디)',
-  },
-  {
-    id: 3,
-    createdAt: '2025-02-21T14:00:00.000Z',
-    title: '2025학년도 1학기 융합소프트웨어학부 수강신청(증원) 관련 안내 (추가)',
-  },
-  {
-    id: 4,
-    createdAt: '2025-02-06T11:00:00.000Z',
-    title: '2025학년도 인공지능·소프트웨어융합대학 교과과정 개편 안내',
-  },
-  {
-    id: 5,
-    createdAt: '2025-02-05T16:45:00.000Z',
-    title: '2025학년도 1학기 수강신청(데이터베이스 교과목) 관련 안내',
-  },
-];

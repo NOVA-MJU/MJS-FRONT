@@ -43,7 +43,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
               disabled={isCurrentPage}
             >
               {isCurrentPage ? (
-                <span className='text-blue-20 text-[12px] leading-[1.5] font-semibold'>
+                <span className='bg-mju-primary flex h-6 w-6 items-center justify-center rounded-full text-[12px] leading-[1.5] font-semibold text-white'>
                   {pageIndex + 1}
                 </span>
               ) : (

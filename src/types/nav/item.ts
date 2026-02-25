@@ -6,8 +6,7 @@ export type NavKey =
   | 'calendar'
   | 'mentor'
   | 'wiki'
-  | 'msi'
-  | 'myicap';
+  | 'sso';
 
 /**
  * 네비게이션 아이템 정의 타입
