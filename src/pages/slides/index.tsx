@@ -15,6 +15,9 @@ import NoticeSection from '@/components/molecules/sections/notice';
 import FilteringMealSection from '@/components/molecules/sections/filtering-meal';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
+import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
+
 /**
  * 전역 클래스 통합 유틸리티
  */
@@ -40,12 +43,13 @@ type TabType = (typeof TABS)[number];
 
 const SLIDES_TAB_STORAGE_KEY = 'slidesActiveTab';
 
-function getStoredSlidesTab(): TabType {
-  if (typeof window === 'undefined') return 'ALL';
-  const raw = sessionStorage.getItem(SLIDES_TAB_STORAGE_KEY);
-  const found = TABS.find((t) => t === raw);
-  return (found as TabType) ?? 'ALL';
-}
+// function getStoredSlidesTab(): TabType {
+//   if (typeof window === 'undefined') return 'ALL';
+//   const raw = sessionStorage.getItem(SLIDES_TAB_STORAGE_KEY);
+//   const found = TABS.find((t) => t === raw);
+//   return (found as TabType) ?? 'ALL';
+// }
+
 interface TabBarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
@@ -55,6 +59,8 @@ interface TabBarProps {
 
 const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) => {
   const tabRefs = useRef<Partial<Record<TabType, HTMLButtonElement | null>>>({});
+
+  const { trackNavClick } = useNavTracking();
 
   useEffect(() => {
     if (!isPanelVisible) return;
@@ -75,7 +81,14 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
               ref={(el) => {
                 tabRefs.current[tab] = el;
               }}
-              onClick={() => onTabChange(tab)}
+              onClick={() => {
+                onTabChange(tab);
+                trackNavClick({
+                  item_name: `top_tab:${tab}`,
+                  item_label: tab,
+                  nav_group: resolveNavGroupByLabel(tab),
+                });
+              }}
               className={cn(
                 'relative flex h-full items-center justify-center px-3 transition-colors outline-none',
                 isActive ? 'text-mju-primary' : 'text-grey-40',
@@ -198,7 +211,6 @@ const Slides = () => {
   const { selectedTab, setSelectedTab, activeMainSlide } = useHeaderStore();
   const TAB_STORAGE_KEY = 'slides-active-tab';
 
-
   const getInitialTab = (): TabType => {
     if (selectedTab && TABS.includes(selectedTab as TabType)) {
       return selectedTab as TabType;
@@ -212,7 +224,6 @@ const Slides = () => {
     return 'ALL';
   };
 
- 
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTab);
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -225,7 +236,6 @@ const Slides = () => {
       // ignore
     }
   }, [activeTab]);
-
 
   useEffect(() => {
     const el = rootRef.current;
@@ -257,7 +267,6 @@ const Slides = () => {
     syncTab(tab, true);
   };
 
-  
   useEffect(() => {
     const footer = document.querySelector('footer');
     if (!isPanelVisible) {

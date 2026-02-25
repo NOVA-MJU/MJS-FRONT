@@ -1,21 +1,24 @@
-import SearchBar from '../../components/atoms/SearchBar';
 import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useHeaderStore } from '@/store/useHeaderStore';
+import ReactMarkdown from 'react-markdown';
 import {
   getSearchAISummary,
   getSearchResult,
   type GetSearchAISummaryRes,
   type SearchResultItemRes,
 } from '../../api/search';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import type { Category } from '@/api/search';
 import { setHomeSliderToMain } from '@/pages/HomeSlider';
-import { useHeaderStore } from '@/store/useHeaderStore';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
 import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import ReactMarkdown from 'react-markdown';
+import SearchBar from '../../components/atoms/SearchBar';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
 import { Skeleton } from '@/components/atoms/Skeleton';
-import type { Category } from '@/api/search';
+
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
+import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -81,6 +84,8 @@ export default function SearchDetail() {
   const [isAiSummaryLoading, setIsAiSummaryLoading] = useState(false);
 
   const keyword = searchParams.get('keyword');
+
+  const { trackNavClick } = useNavTracking();
 
   /** URL의 tab 쿼리와 동기화 (ALL이면 tab 파라미터 없음) */
   useEffect(() => {
@@ -231,6 +236,13 @@ export default function SearchDetail() {
             }}
             currentTab={currentTab}
             setCurrentTab={handleSetCurrentTab}
+            onTabClick={(key, label) => {
+              trackNavClick({
+                item_name: `top_tab:${key}`,
+                item_label: label,
+                nav_group: resolveNavGroupByLabel(label),
+              });
+            }}
           />
         </section>
         <div className='no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto'>

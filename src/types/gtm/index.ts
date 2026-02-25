@@ -1,5 +1,5 @@
 export type NavSection = 'desktop' | 'mobile';
-export type NavGroup = 'information' | 'community' | 'setting';
+export type NavGroup = 'information' | 'community' | 'setting' | 'etc';
 
 export type GTMCommon = {
   page_path?: string;
@@ -25,7 +25,5 @@ export type GTMEvent =
   | ({ event: 'login_abort' } & Required<Pick<GTMCommon, 'page_path'>> & Partial<GTMCommon>)
   | ({
       event: 'nav_click';
-    } & Required<
-      Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label' | 'section' | 'nav_group'>
-    > &
+    } & Required<Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label' | 'nav_group'>> &
       Partial<GTMCommon>);

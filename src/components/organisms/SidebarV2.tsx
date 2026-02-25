@@ -5,10 +5,12 @@ import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHeaderStore } from '@/store/useHeaderStore';
-import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavKey } from '@/types/nav/item';
 import { logout as apiLogout } from '@/api/user';
+
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
+import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
 
 type SidebarV2Props = {
   isOpen: boolean;
@@ -123,17 +125,11 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     ];
   }, []);
 
-  const toNavGroup = (section: SidebarSection): 'information' | 'community' | 'setting' => {
-    if (section === 'community') return 'community';
-    if (section === 'setting') return 'setting';
-    return 'information';
-  };
-
   const handleItemClick = (item: SidebarItem) => {
     trackNavClick({
       item_name: item.id,
       item_label: item.label,
-      nav_group: toNavGroup(item.section),
+      nav_group: resolveNavGroupByLabel(item.label),
     });
 
     if (item.requiresAuth && !isLoggedIn) {
