@@ -15,6 +15,9 @@ interface Props {
   placeholder?: string;
   error?: boolean;
   errorMessage?: string;
+  /** 제어 모드: 지정 시 이 값으로 열림/닫힘 제어 (다른 드롭다운과 하나만 열리게 할 때 사용) */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const DropdownField = ({
@@ -25,8 +28,16 @@ const DropdownField = ({
   placeholder = '선택하세요',
   error = false,
   errorMessage = '값을 선택해주세요.',
+  open: controlledOpen,
+  onOpenChange,
 }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined && onOpenChange !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (value: boolean) => {
+    if (isControlled) onOpenChange?.(value);
+    else setInternalOpen(value);
+  };
 
   const selectedLabel = options.find((item) => item.value === selected)?.label;
 

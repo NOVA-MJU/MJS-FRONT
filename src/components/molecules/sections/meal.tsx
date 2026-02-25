@@ -1,11 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { IoIosArrowForward } from 'react-icons/io';
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useResponsive } from '@/hooks/useResponse';
 import { useMenuData } from '@/hooks/menu/useMenuData';
-import { ICON_SIZE_LG } from '@/constants/common';
 
 type MenuCategory = 'BREAKFAST' | 'LUNCH' | 'DINNER';
 const EMPTY_MEAL_MARKERS = ['등록된 식단 내용이 없습니다.', '등록된 식단 내용이 없습니다'];
@@ -120,50 +117,11 @@ export default function MealSection({ all = false }: { all?: boolean }) {
   );
 
   /**
-   * 데스크탑 뷰
-   */
-  if (isDesktop)
-    return (
-      <section className='flex w-full flex-col gap-3'>
-        <div className='flex items-center justify-between px-3'>
-          <h3 className='text-heading02 text-mju-primary'>학식</h3>
-          <Link to='/menu'>
-            <IoIosArrowForward className='text-blue-10' size={ICON_SIZE_LG} />
-          </Link>
-        </div>
-        <div className='border-grey-05 flex flex-col gap-5 rounded-xl border-2 p-6'>
-          <div className='flex items-center justify-center gap-4'>
-            <button
-              type='button'
-              onClick={onPrev}
-              disabled={atStart}
-              className='text-grey-40 disabled:text-grey-10'
-              aria-label='이전 날짜'
-            >
-              <IoChevronBack size={24} />
-            </button>
-            <h3 className='text-heading03 text-black'>{dateKey || '-'}</h3>
-            <button
-              type='button'
-              onClick={onNext}
-              disabled={atEnd}
-              className='text-grey-40 disabled:text-grey-10'
-              aria-label='다음 날짜'
-            >
-              <IoChevronForward size={24} />
-            </button>
-          </div>
-          {renderMealCards({ textClassName: 'text-body03' })}
-        </div>
-      </section>
-    );
-
-  /**
    * 모바일 뷰
    */
   if (!isDesktop)
     return (
-      <section className='flex h-full min-h-full w-full flex-col gap-3 p-4'>
+      <section className='flex w-full flex-col gap-3 p-4'>
         {!all && (
           <div className='flex items-center justify-center gap-4'>
             <button
@@ -189,10 +147,10 @@ export default function MealSection({ all = false }: { all?: boolean }) {
         )}
         {renderMealCards({
           textClassName: 'text-body05 text-grey-80',
-          wrapperClassName: 'min-h-0 flex-1 gap-3',
-          cardClassName: 'flex min-h-0 flex-1 flex-col',
+          wrapperClassName: 'min-h-0 flex-1 gap-3 mb-5',
+          cardClassName: 'flex flex-col',
           emptyTextClassName: 'text-grey-30',
-          listClassName: 'min-h-0 flex-1 overflow-y-auto',
+          listClassName: 'min-h-0 flex-1',
           bodyClassName: 'flex min-h-0 flex-1 flex-col',
         })}
       </section>

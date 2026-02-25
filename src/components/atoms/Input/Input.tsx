@@ -48,7 +48,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       field: 'px-4 py-2 text-sm',
       searchbar: 'px-4 py-2 text-sm',
       labelfield: 'px-4 py-2 text-sm',
-      outlined: 'p-3 text-base',
+      outlined: 'p-3 text-body06',
     };
 
     const wrapperStyle: React.CSSProperties = {

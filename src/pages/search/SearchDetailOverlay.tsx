@@ -10,12 +10,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { setHomeSliderToMain } from '@/pages/HomeSlider';
 import { useHeaderStore } from '@/store/useHeaderStore';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
-import { IoMdLink, IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import { IoMdLink, IoIosArrowUp, IoIosArrowDown, IoIosClose, IoIosMenu } from 'react-icons/io';
 import ReactMarkdown from 'react-markdown';
 import { type Sort } from '@/components/molecules/SortButtons';
 import ListEntry, { type SearchTabKey } from './ListEntry';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { Category } from '@/api/search';
+import SidebarV2 from '@/components/organisms/SidebarV2';
 
 type SearchResultType = Parameters<typeof getSearchResult>[1];
 
@@ -69,6 +70,9 @@ export default function SearchDetail() {
   const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
   const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
   const [totalPages, setTotalPages] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleMenu = () => setIsOpen((p) => !p);
+  const closeMenu = () => setIsOpen(false);
 
   const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
     query: '',
@@ -191,7 +195,7 @@ export default function SearchDetail() {
   }, [categoryTab]);
 
   return (
-    <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
+    <div className='fixed inset-0 z-50 flex justify-center bg-black/30'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색바 */}
         <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
@@ -200,24 +204,29 @@ export default function SearchDetail() {
             onClick={() => {
               setHomeSliderToMain();
               setActiveMainSlide(1);
-              navigate('/');
+              if (location.pathname !== '/') navigate('/');
             }}
           >
-            <img
-              src='/logo/ThingoSmallLogo.svg'
-              className='h-full w-full object-contain'
-              alt='로고'
-            />
+            <img src='/logo/ThingoSmallLogo.svg' className='h-full w-full object-contain' />
           </div>
 
-          <div className='min-w-0 flex-1'>
+          <div className='min-w-0 flex-1 py-2'>
             <SearchBar
               initialContent={keyword ?? undefined}
               className='bg-grey-02 w-full rounded-full border-none px-[15px] py-[9px]'
               iconClassName='text-grey-30'
             />
           </div>
+          <button
+            type='button'
+            className='hover:bg-grey-10/50 mr-3 cursor-pointer rounded-md text-xl text-black transition'
+            onClick={toggleMenu}
+            aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
+          >
+            {isOpen ? <IoIosClose /> : <IoIosMenu />}
+          </button>
         </header>
+        <SidebarV2 isOpen={isOpen} onClose={closeMenu} />
         {/* 탭 */}
         <section>
           <ScrollableTap

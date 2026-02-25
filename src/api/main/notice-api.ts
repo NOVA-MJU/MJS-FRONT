@@ -4,13 +4,12 @@ import { NOTICE_API_DEFAULT_SIZE } from '../../constants/common';
 
 export const fetchNotionInfo = async (
   category: string,
-  year?: number,
   page = 0,
   size = NOTICE_API_DEFAULT_SIZE,
   sort: 'asc' | 'desc' = 'desc',
 ): Promise<NoticeResponse> => {
   const response = await apiClient.get('/notices', {
-    params: { category, ...(year ? { year } : {}), page, size, sort },
+    params: { category, year: null, page, size, sort },
   });
   return response.data;
 };

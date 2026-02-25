@@ -7,6 +7,7 @@ interface CommentFormProps {
   handleCommentUpload: () => void;
   MAX_REPLY_LEN: number;
   isLoggedin: boolean;
+  isUploading?: boolean;
 }
 
 /**
@@ -23,6 +24,7 @@ function CommentForm({
   handleCommentUpload,
   MAX_REPLY_LEN,
   isLoggedin,
+  isUploading = false,
 }: CommentFormProps) {
   return (
     <div className='flex flex-col gap-0.5'>
@@ -38,18 +40,23 @@ function CommentForm({
               handleCommentUpload();
             }
           }}
-          disabled={!isLoggedin}
+          disabled={!isLoggedin || isUploading}
         />
         <button
           type='button'
           onClick={handleCommentUpload}
           className={clsx(
-            'bg-grey-20 absolute top-1/2 right-2.5 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-white',
-            isLoggedin && 'cursor-pointer',
+            'absolute top-1/2 right-2.5 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full transition',
+            newComment.trim() ? 'bg-blue-20 text-white' : 'bg-grey-20 text-white',
+            isLoggedin && !isUploading && 'cursor-pointer',
           )}
-          disabled={!isLoggedin}
+          disabled={!isLoggedin || isUploading}
         >
-          <FaArrowUp size='16' />
+          {isUploading ? (
+            <span className='border-grey-20 h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-t-white' />
+          ) : (
+            <FaArrowUp size='16' />
+          )}
         </button>
       </div>
       <span className='text-caption02 text-grey-40 self-end'>

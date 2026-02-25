@@ -1,10 +1,7 @@
 import Layout from '@/pages/layout';
-import AcademicCalendar from '@/pages/academic-calendar';
-import Board from '@/pages/board';
 import BoardDetail from '@/pages/board/detail';
 import BoardEdit from '@/pages/board/edit';
 import BoardWrite from '@/pages/board/write';
-import Broadcast from '@/pages/broadcast';
 import GlobalErrorPage from '@/pages/error';
 import DepartmentPostsDetailPage from '@/pages/main/department-posts-detail';
 import DepartmentPostsNewPage from '@/pages/main/department-posts-new';
@@ -12,22 +9,19 @@ import DepartmentEventsNewPage from '@/pages/main/department-events-new';
 import DepartmentEventsEditPage from '@/pages/main/department-events-edit';
 import DepartmentPostsEditPage from '@/pages/main/department-posts-edit';
 import LoginPage from '@/pages/login';
-import Menu from '@/pages/menu';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
 import ViewComments from '@/pages/mypage/viewComments';
 import ViewLikes from '@/pages/mypage/viewLikes';
 import ViewPosts from '@/pages/mypage/viewPosts';
-import News from '@/pages/news';
-import Notice from '@/pages/notice';
 import Register from '@/pages/register';
 import { AgentationTool } from '@/utils/agentation';
 import type { Location } from 'react-router-dom';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import HomeSlider from '@/pages/HomeSlider';
-import SearchEntry from '@/pages/search/SearchEntry';
 import SearchOverlay from '@/pages/search/SearchOverlay';
 import FindPasswordPage from '@/pages/find-password';
+import SearchDetailOverlay from './pages/search/SearchDetailOverlay';
 
 export default function App() {
   const location = useLocation();
@@ -54,7 +48,7 @@ export default function App() {
           <Route path='/mypage/my-likes/:uuid' element={<ViewLikes />} />
 
           {/* 검색 */}
-          <Route path='/search' element={<SearchEntry />} />
+          <Route path='/search' element={<SearchDetailOverlay />} />
 
           {/* 에러 페이지 */}
           <Route path='*' element={<GlobalErrorPage />} />
@@ -70,14 +64,6 @@ export default function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<Register />} />
           <Route path='/find-password' element={<FindPasswordPage />} />
-
-          {/* 삭제 예정 */}
-          <Route path='/board' element={<Board />} />
-          <Route path='/notice' element={<Notice />} />
-          <Route path='/news' element={<News />} />
-          <Route path='/broadcast' element={<Broadcast />} />
-          <Route path='/academic-calendar' element={<AcademicCalendar />} />
-          <Route path='/menu' element={<Menu />} />
         </Route>
       </Routes>
 

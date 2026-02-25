@@ -3,7 +3,7 @@ import { CardHeader } from '@/components/atoms/Card';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import { useEffect, useState } from 'react';
 import { MdChevronRight } from 'react-icons/md';
@@ -62,7 +62,7 @@ const NoticeSlideHeader = ({ onSeeMoreClick }: { onSeeMoreClick?: () => void }) 
  * 슬라이드용 공지사항 아이템 컴포넌트
  */
 const NoticeSlideCard = ({ info }: { info: NoticeItem }) => {
-  const displayDate = format(new Date(info.date), 'yyyy.MM.dd');
+  const displayDate = formatToDotDate(info.date);
 
   return (
     <a
@@ -101,12 +101,7 @@ export function NoticeSlideSection({
       } else {
         try {
           setIsLoading(true);
-          const fetchedNoticeData = await fetchNotionInfo(
-            selectedTab,
-            recentYear,
-            0,
-            CONTENT_LENGTH,
-          );
+          const fetchedNoticeData = await fetchNotionInfo(selectedTab, 0, CONTENT_LENGTH);
           if (all) setSelectedInfo(fetchedNoticeData.content.slice(0, 5));
           else setSelectedInfo(fetchedNoticeData.content);
           setAllDataCache((prevCache) => ({
@@ -163,7 +158,7 @@ export default function NoticeSection() {
     (async () => {
       try {
         setIsLoading(true);
-        const fetchedNoticeData = await fetchNotionInfo(selectedTab, recentYear, page, 10);
+        const fetchedNoticeData = await fetchNotionInfo(selectedTab, page, 10, 'desc');
         setSelectedInfo(fetchedNoticeData.content);
         setTotalPages(fetchedNoticeData.totalPages);
       } catch (e) {
@@ -173,7 +168,6 @@ export default function NoticeSection() {
         setIsLoading(false);
       }
     })();
-     
   }, [selectedTab, recentYear, page]);
 
   /**
@@ -184,28 +178,26 @@ export default function NoticeSection() {
       href={info.link}
       target='_blank'
       rel='noopener noreferrer'
-      className='hover:bg-blue-05 active:bg-blue-10 flex flex-col gap-[3px] border-b border-[#f0f2f5] px-5 py-[10px] transition-colors last:border-0'
+      className='hover:bg-blue-05 active:bg-blue-10 border-grey-02 flex flex-col gap-[3px] border-b px-5 py-[10px] transition-colors last:border-0'
     >
       <span className='text-[12px] font-semibold text-[#5dabff]'>
         {categoryNameMap[info.category] || info.category}
       </span>
       <p className='line-clamp-2 text-[14px] leading-[1.5] text-[#17171b]'>{info.title}</p>
-      <span className='text-[11px] text-[#aeb2b6]'>
-        {format(new Date(info.date), 'yyyy.MM.dd')}
-      </span>
+      <span className='text-[11px] text-[#aeb2b6]'>{formatToDotDate(info.date)}</span>
     </a>
   );
 
   return (
     <section className='mt-4 flex flex-col'>
-      <div className='mb-4 px-3'>
+      <div className='mb-4 px-4'>
         <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
       </div>
 
-      <div className='flex flex-col'>
+      <div className='border-grey-02 flex flex-col border-t'>
         {isLoading &&
           [...Array(CONTENT_LENGTH)].map((_, index) => (
-            <div key={index} className='border-b border-[#f0f2f5] px-5 py-[10px] last:border-0'>
+            <div key={index} className='border-grey-02 border-b px-5 py-[10px] last:border-0'>
               <Skeleton className='mb-1 h-3 w-10' />
               <Skeleton className='mb-1 h-5 w-full' />
               <Skeleton className='h-3 w-16' />

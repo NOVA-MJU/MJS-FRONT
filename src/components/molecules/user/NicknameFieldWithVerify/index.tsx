@@ -71,7 +71,7 @@ const NicknameFieldWithVerify = ({
                         ? 'main'
                         : 'grey20'
               }
-              className='ml-4 h-12 w-20 md:h-12 md:w-34'
+              className='ml-4 h-11 w-20 md:h-12 md:w-34'
             >
               {isNicknameChecked ? '확인 완료' : isSending ? '확인 중...' : '중복 확인'}
             </Button>

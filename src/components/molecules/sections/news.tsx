@@ -113,7 +113,7 @@ export default function NewsSection({
 
       <div className='flex flex-col'>
         {/* 뉴스 리스트 컨텐츠 */}
-        <div className='flex flex-col'>
+        <div className='border-grey-02 flex flex-col border-t'>
           {isLoading &&
             [...Array(5)].map((_, index) => (
               <div key={index} className='px-5 py-4'>

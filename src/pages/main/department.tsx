@@ -450,6 +450,18 @@ export default function DepartmentMainPage() {
                 onDateSelect={setSelectedDate}
               />
 
+              {/* 캘린더 범례 */}
+              <div className='mt-3 flex items-center justify-end'>
+                <p className='bg-blue-35 h-2.5 w-2.5' />
+                <p className='text-caption04 text-grey-40 ms-1'>전체 (학부·대학원)</p>
+                <p className='bg-blue-15 ms-4 h-2.5 w-2.5' />
+                <p className='text-caption04 text-grey-40 ms-1'>학부</p>
+                <p className='bg-blue-05 ms-4 h-2.5 w-2.5' />
+                <p className='text-caption04 text-grey-40 ms-1'>대학원</p>
+                <p className='bg-grey-02 ms-4 h-2.5 w-2.5' />
+                <p className='text-caption04 text-grey-40 ms-1'>휴일</p>
+              </div>
+
               {/* 선택한 날짜 이벤트 목록 */}
               <div className='border-grey-02 mb-2 border-b-1 px-5 py-1'>
                 <span className='text-body02 text-mju-primary'>

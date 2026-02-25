@@ -40,7 +40,12 @@ export function ScheduleList({
   return (
     <div className='flex flex-col gap-[8px]'>
       {/* 타이틀 영역 - 배경색과 테두리 추가 */}
-      <div className='flex items-center justify-between border-b border-solid border-[#f0f2f5] bg-white py-[4px] pr-[18px] pl-[20px]'>
+      <div
+        className={clsx(
+          'flex items-center justify-between bg-white py-[4px] pr-[18px] pl-[20px]',
+          all ? '' : 'border-grey-10 border-b border-solid',
+        )}
+      >
         <h4 className='text-[16px] leading-[1.5] font-semibold text-[#1778ff]'>
           {(targetDate.getMonth() + 1).toString().padStart(2, '0')}.
           {targetDate.getDate().toString().padStart(2, '0')} ({dayLabels[targetDate.getDay()]})
