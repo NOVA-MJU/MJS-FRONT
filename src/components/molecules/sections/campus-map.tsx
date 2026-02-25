@@ -412,9 +412,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
               {displayInfo.subItems?.map((info, idx) => (
                 <div key={idx} className='contents'>
                   <div className='flex items-start gap-1 pt-0.5'>
-                    <span className='text-body02 text-blue-35 italic-skew font-bold italic'>
-                      {info.location}
-                    </span>
+                    <span className='text-body02 text-blue-35 font-bold'>{info.location}</span>
                     <div className='bg-blue-15 mt-4 h-[10px] w-[1px] rotate-45' />
                   </div>
                   <div className='flex flex-col'>
