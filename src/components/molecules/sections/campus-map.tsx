@@ -270,15 +270,21 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
         className='swiper-no-swiping absolute inset-x-0 top-0 bottom-[210px] z-0 overflow-hidden'
         onTouchStart={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseMove={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       >
         <QuickPinchZoom
           ref={pinchZoomRef}
           onUpdate={onUpdate}
-          wheelScaleFactor={0.005}
+          wheelScaleFactor={200}
           draggableUnZoomed={true}
-          containerProps={{ className: 'h-full' }}
-          enforceBoundsDuringZoom={true}
+          containerProps={{ className: 'h-full w-full' }}
+          enforceBoundsDuringZoom={false}
+          tapZoomFactor={2}
           inertia={true}
+          // Ctrl 키 없이도 마우스 휠만으로 확대/축소 허용
+          shouldInterceptWheel={() => false}
         >
           <div
             ref={mapRef}
