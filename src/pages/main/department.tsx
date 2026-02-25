@@ -406,26 +406,24 @@ export default function DepartmentMainPage() {
           )}
 
           {/* 교학팀 전화번호 */}
-          {selectedDepartment && (
-            <div className='mt-2.5 flex items-center gap-1'>
-              <span className='text-body05 text-grey-80'>교학팀</span>
-              <span className='text-body05 text-grey-30'>
-                {departmentInfo?.academicOfficePhone ?? '-'}
-              </span>
-              <button
-                type='button'
-                onClick={handleCopyPhone}
-                className='text-blue-15 cursor-pointer p-0.75'
-                aria-label='전화번호 복사'
-              >
-                {phoneCopied ? (
-                  <IoIosCheckmark className='text-green-50' />
-                ) : (
-                  <MdOutlineContentCopy />
-                )}
-              </button>
-            </div>
-          )}
+          <div className='mt-2.5 flex items-center gap-1'>
+            <span className='text-body05 text-grey-80'>교학팀</span>
+            <span className='text-body05 text-grey-30'>
+              {departmentInfo?.academicOfficePhone ?? '-'}
+            </span>
+            <button
+              type='button'
+              onClick={handleCopyPhone}
+              className='text-blue-15 cursor-pointer p-0.75'
+              aria-label='전화번호 복사'
+            >
+              {phoneCopied ? (
+                <IoIosCheckmark className='text-green-50' />
+              ) : (
+                <MdOutlineContentCopy />
+              )}
+            </button>
+          </div>
 
           {/* 홈페이지 / 인스타 버튼 */}
           <div className='flex gap-3 pt-3.5'>
