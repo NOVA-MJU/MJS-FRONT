@@ -86,6 +86,7 @@ export default function AcademicScheduleInSearch() {
         />
       </div>
       <ScheduleList
+        viewDate={viewDate}
         selectedDate={selectedDate}
         selectedCategory={selectedCategory}
         onCategoryToggle={() => setIsCategoryOpen(!isCategoryOpen)}

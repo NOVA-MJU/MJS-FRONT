@@ -11,6 +11,7 @@ import DepartmentPostsEditPage from '@/pages/main/department-posts-edit';
 import LoginPage from '@/pages/login';
 import MyPage from '@/pages/mypage';
 import MyPageEdit from '@/pages/mypage/edit';
+import MyPageWithdraw from '@/pages/mypage/withdraw';
 import ViewComments from '@/pages/mypage/viewComments';
 import ViewLikes from '@/pages/mypage/viewLikes';
 import ViewPosts from '@/pages/mypage/viewPosts';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path='/mypage' element={<MyPage />} />
           <Route path='/mypage/:uuid' element={<MyPage />} />
           <Route path='/mypage/:uuid/edit' element={<MyPageEdit />} />
+          <Route path='/mypage/withdraw' element={<MyPageWithdraw />} />
           <Route path='/mypage/my-post/:uuid' element={<ViewPosts />} />
           <Route path='/mypage/my-comment/:uuid' element={<ViewComments />} />
           <Route path='/mypage/my-likes/:uuid' element={<ViewLikes />} />

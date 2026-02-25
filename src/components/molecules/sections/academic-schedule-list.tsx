@@ -11,6 +11,7 @@ const categoryMap: Record<CategoryKey, string> = {
 };
 
 interface ScheduleListProps {
+  viewDate: Date;
   selectedDate: Date | null;
   selectedCategory: CategoryKey;
   onCategoryToggle: () => void;
@@ -25,6 +26,7 @@ interface ScheduleListProps {
  * 학사일정 리스트 컴포넌트
  */
 export function ScheduleList({
+  viewDate,
   selectedDate,
   selectedCategory,
   onCategoryToggle,
@@ -34,22 +36,17 @@ export function ScheduleList({
   dailyScheduleList,
   all = false,
 }: ScheduleListProps) {
-  const targetDate = selectedDate || new Date();
   const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+  const titleText =
+    selectedDate === null
+      ? `${viewDate.getFullYear()}년 ${(viewDate.getMonth() + 1).toString().padStart(2, '0')}월`
+      : `${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}.${selectedDate.getDate().toString().padStart(2, '0')} (${dayLabels[selectedDate.getDay()]})`;
 
   return (
     <div className='flex flex-col gap-[8px]'>
       {/* 타이틀 영역 - 배경색과 테두리 추가 */}
-      <div
-        className={clsx(
-          'flex items-center justify-between bg-white py-[4px] pr-[18px] pl-[20px]',
-          all ? '' : 'border-grey-10 border-b border-solid',
-        )}
-      >
-        <h4 className='text-[16px] leading-[1.5] font-semibold text-[#1778ff]'>
-          {(targetDate.getMonth() + 1).toString().padStart(2, '0')}.
-          {targetDate.getDate().toString().padStart(2, '0')} ({dayLabels[targetDate.getDay()]})
-        </h4>
+      <div className='flex items-center justify-between border-b border-solid border-[#f0f2f5] bg-white py-[4px] pr-[18px] pl-[20px]'>
+        <h4 className='text-body02 text-mju-primary'>{titleText}</h4>
 
         {/* 카테고리 필터 */}
         {!all && (
@@ -106,11 +103,11 @@ export function ScheduleList({
           <div className='bg-grey-02 h-24 w-full animate-pulse rounded-md' />
         ) : dailyScheduleList.length > 0 ? (
           dailyScheduleList.map((event, i) => (
-            <div key={`${event.id}-${i}`} className='flex gap-[12px] px-[20px] py-[8px]'>
-              <span className='shrink-0 text-[12px] leading-[1.5] font-normal text-[#aeb2b6]'>
+            <div key={`${event.id}-${i}`} className='flex gap-2 px-5 py-2'>
+              <span className='text-caption02 text-grey-40 w-20'>
                 {formatDateRange(event.startDate, event.endDate)}
               </span>
-              <p className='flex-1 text-[12px] leading-[1.5] font-normal text-[#17171b]'>
+              <p className='text-caption02 line-clamp-2 flex-1 text-black'>
                 <span className='font-bold'>[{event.categoryLabel}] </span>
                 {removeBracketedContent(event.description)}
               </p>
