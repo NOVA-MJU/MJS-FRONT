@@ -24,8 +24,10 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   // 지도 초기화 완료 상태 관리
   const [isMapReady, setIsMapReady] = useState(false);
-  // 바텀시트 확장 상태: false = peek(260px), true = 확장(70%)
+  // 바텀시트 확장 상태
   const [isExpanded, setIsExpanded] = useState(false);
+  // 현재 선택된 출입구 핀의 ID
+  const [selectedEntranceId, setSelectedEntranceId] = useState<string | null>(null);
   // 드래그 시작 Y좌표
   const dragStartY = useRef<number | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
@@ -148,8 +150,13 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     // 건물 선택 시에는 확장(상세정보 보기), 캠퍼스 선택 시에는 peek 상태로 유지
     if (building) {
       setIsExpanded(true);
+      // 'f-2'(캠퍼스 출입구) 카테고리가 아닌 일반 건물이면 출입구 선택 상태 초기화
+      if (building.id !== 'f-2') {
+        setSelectedEntranceId(null);
+      }
     } else {
       setIsExpanded(false);
+      setSelectedEntranceId(null);
     }
 
     // 활성화된 핀들의 중심 좌표로 지도 이동
@@ -157,14 +164,27 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
       const pinIds = BUILDING_HIGHLIGHT_MAP[building.id] ?? [];
       if (pinIds.length === 0) return;
 
-      // 활성 핀들의 좌표를 가져와 첫 번째 핀으로 이동
-      const activePins = BUILDING_PINS.filter((p) => pinIds.includes(p.id));
-      if (activePins.length === 0) return;
+      // 1. 모든 활성 핀(건물 + 출입구)의 좌표 수집
+      const pinsToHighlight = [
+        ...BUILDING_PINS.filter((p) => pinIds.includes(p.id)),
+        ...ENTRANCE_PINS.filter((p) => pinIds.includes(p.id)),
+      ];
 
-      const firstPin = activePins[0];
+      if (pinsToHighlight.length === 0) return;
+
+      // 2. 출입구 핀이 포함된 경우, 첫 번째 출입구를 대표 선택 상태로 (개별 강조용)
+      const firstEntrance = ENTRANCE_PINS.find((p) => pinIds.includes(p.id));
+      if (firstEntrance) {
+        setSelectedEntranceId(firstEntrance.id);
+      }
+
+      // 3. 모든 활성 핀의 중심점 계산
       const img = imgRef.current;
-      const cx = img.offsetWidth * (firstPin.left / 100);
-      const cy = img.offsetHeight * (firstPin.top / 100);
+      const avgLeft = pinsToHighlight.reduce((acc, p) => acc + p.left, 0) / pinsToHighlight.length;
+      const avgTop = pinsToHighlight.reduce((acc, p) => acc + p.top, 0) / pinsToHighlight.length;
+
+      const cx = img.offsetWidth * (avgLeft / 100);
+      const cy = img.offsetHeight * (avgTop / 100);
 
       pinchZoomRef.current.alignCenter({
         x: cx,
@@ -210,11 +230,15 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
     [handleBuildingSelect],
   );
 
-  // 출입구 핀 클릭 핸들러
-  const handleEntrancePinClick = useCallback(() => {
-    const entranceBuilding = MAP_DATA.campuses[0].buildings.find((b) => b.id === 'f-2');
-    handleBuildingSelect(entranceBuilding || null);
-  }, [handleBuildingSelect]);
+  // 출입구 핀 클릭 핸들러 (ID를 인자로 받아 해당 핀 활성화)
+  const handleEntrancePinClick = useCallback(
+    (pinId: string) => {
+      setSelectedEntranceId(pinId);
+      const entranceBuilding = MAP_DATA.campuses[0].buildings.find((b) => b.id === 'f-2');
+      handleBuildingSelect(entranceBuilding || null);
+    },
+    [handleBuildingSelect],
+  );
 
   // 선택된 항목 기반으로 강조할 핀 ID 목록 계산
   const activePinIds: string[] = selectedBuilding
@@ -301,7 +325,19 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
                 className='absolute -translate-x-1/2 -translate-y-1/2'
                 style={{ left: `${pin.left}%`, top: `${pin.top}%` }}
               >
-                <MapPin size='small' variant='icon' onClick={handleEntrancePinClick} />
+                <MapPin
+                  size={
+                    activePinIds.includes(pin.id) || selectedEntranceId === pin.id
+                      ? 'large'
+                      : 'small'
+                  }
+                  variant={
+                    activePinIds.includes(pin.id) || selectedEntranceId === pin.id
+                      ? 'default'
+                      : 'icon'
+                  }
+                  onClick={() => handleEntrancePinClick(pin.id)}
+                />
               </div>
             ))}
           </div>
