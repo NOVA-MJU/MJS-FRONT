@@ -244,10 +244,9 @@ export default function Calendar({
           {/* 이벤트 표시 */}
           <div className='grid w-full grid-cols-7'>
             {calendarDays.map((item, index) => {
-              // 오늘 날짜 이거나 선택한 날짜가 있는 경우 highlight 표시
+              // 선택한 날짜가 있을 때만 해당 날짜를 highlight (선택값이 없으면 아무 날짜도 선택 표시 안 함)
               const isSelected = isSameDate(item.fullDate, selectedDate);
-              const isToday = item.isToday;
-              const isHighlighted = selectedDate !== null ? isSelected : isToday;
+              const isHighlighted = selectedDate !== null && isSelected;
 
               return (
                 <CalendarItem
