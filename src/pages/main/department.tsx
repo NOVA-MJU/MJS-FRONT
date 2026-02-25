@@ -585,13 +585,14 @@ export default function DepartmentMainPage() {
                   </div>
                 ))
               )}
-            </div>
-            <div className='mt-auto'>
-              <Pagination
-                page={noticePage}
-                totalPages={noticeTotalPages}
-                onChange={setNoticePage}
-              />
+
+              {departmentNotices.length > 0 && (
+                <Pagination
+                  page={noticePage}
+                  totalPages={noticeTotalPages}
+                  onChange={setNoticePage}
+                />
+              )}
             </div>
           </section>
         )}
