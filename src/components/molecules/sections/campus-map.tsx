@@ -243,7 +243,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
       {/* 지도 이미지 영역 (줌/팬 지원) */}
       <div
         ref={containerRef}
-        className='absolute inset-x-0 top-0 bottom-[210px] z-0 overflow-hidden'
+        className='absolute inset-x-0 top-0 bottom-[260px] z-0 overflow-hidden'
       >
         <QuickPinchZoom
           ref={pinchZoomRef}
@@ -312,7 +312,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
         onClick={handleTrackInteraction}
         onTouchMove={handleTrackInteraction}
         className={cn(
-          'absolute bottom-[225px] left-1/2 z-20 h-1.5 w-[80%] -translate-x-1/2 overflow-hidden rounded-[15px] bg-white shadow-[0_0_4px_0_rgba(0,0,0,0.20)] transition-opacity duration-300',
+          'absolute bottom-[275px] left-1/2 z-20 h-1.5 w-[80%] -translate-x-1/2 overflow-hidden rounded-[15px] bg-white shadow-[0_0_4px_0_rgba(0,0,0,0.20)] transition-opacity duration-300',
           isExpanded ? 'pointer-events-none opacity-0' : 'opacity-0', // 초기에는 숨김, contentWidth > containerWidth일 때 onUpdate에서 보이게 함
         )}
       >
@@ -328,7 +328,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
           'absolute right-0 bottom-0 left-0 z-[100] flex flex-col overflow-hidden rounded-t-[20px] bg-white shadow-[0_-4px_8px_rgba(23,23,27,0.14)]',
           'touch-pan-x transition-[height] duration-300 ease-in-out',
         )}
-        style={{ height: isExpanded ? '70%' : '210px' }}
+        style={{ height: isExpanded ? '70%' : '260px' }}
         onTouchStart={(e) => {
           dragStartY.current = e.touches[0].clientY;
         }}
@@ -370,28 +370,26 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
             </div>
           </div>
 
-          {/* 건물 카테고리일 때만 표시되는 구분선 및 S1~S4 정보 블록 (Peek에서도 보임) */}
-          {selectedBuilding?.category === '건물' && (
-            <>
-              {/* 구분선 */}
-              <div className='bg-grey-02 mb-4 h-px w-full shrink-0' />
-              <div className='mb-6 flex gap-2'>
-                {[
-                  { label: '캠퍼스', value: 'S' },
-                  { label: '건물', value: '1~10' },
-                  { label: '층', value: '3' },
-                  { label: '강의실', value: '01~' },
-                ].map((item, idx) => (
-                  <div key={idx} className='flex flex-col items-center gap-1.5'>
-                    <div className='bg-blue-05 text-title02 flex h-[38px] min-w-[50px] items-center justify-center px-2'>
-                      {item.value}
-                    </div>
-                    <span className='text-body05 text-grey-40'>{item.label}</span>
+          {/* S1~S4 정보 블록 (항상 표시) */}
+          <>
+            {/* 구분선 */}
+            <div className='bg-grey-02 mb-4 h-px w-full shrink-0' />
+            <div className='mb-6 flex gap-2'>
+              {[
+                { label: '캠퍼스', value: 'S' },
+                { label: '건물', value: '1~10' },
+                { label: '층', value: '3' },
+                { label: '강의실', value: '01~' },
+              ].map((item, idx) => (
+                <div key={idx} className='flex flex-col items-center gap-1.5'>
+                  <div className='bg-blue-05 text-title02 flex h-[38px] min-w-[50px] items-center justify-center px-2'>
+                    {item.value}
                   </div>
-                ))}
-              </div>
-            </>
-          )}
+                  <span className='text-body05 text-grey-40'>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </>
 
           {/* 편의시설 등 다른 카테고리일 때의 구분선 */}
           {selectedBuilding && selectedBuilding.category !== '건물' && (
