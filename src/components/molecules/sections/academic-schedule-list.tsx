@@ -101,11 +101,11 @@ export function ScheduleList({
           <div className='bg-grey-02 h-24 w-full animate-pulse rounded-md' />
         ) : dailyScheduleList.length > 0 ? (
           dailyScheduleList.map((event, i) => (
-            <div key={`${event.id}-${i}`} className='flex gap-[12px] px-[20px] py-[8px]'>
-              <span className='shrink-0 text-[12px] leading-[1.5] font-normal text-[#aeb2b6]'>
+            <div key={`${event.id}-${i}`} className='flex gap-2 px-5 py-2'>
+              <span className='text-caption02 text-grey-40 w-20'>
                 {formatDateRange(event.startDate, event.endDate)}
               </span>
-              <p className='flex-1 text-[12px] leading-[1.5] font-normal text-[#17171b]'>
+              <p className='text-caption02 line-clamp-2 flex-1 text-black'>
                 <span className='font-bold'>[{event.categoryLabel}] </span>
                 {removeBracketedContent(event.description)}
               </p>

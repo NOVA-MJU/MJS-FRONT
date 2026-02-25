@@ -9,7 +9,7 @@ interface CalendarProps {
   onYearChange: (year: number) => void;
   onMonthChange: (month: number) => void;
   events: CalendarMonthlyRes | null;
-  onDateSelect: (date: Date) => void;
+  onDateSelect: (date: Date | null) => void;
 }
 
 export default function Calendar({
@@ -42,10 +42,11 @@ export default function Calendar({
     );
   };
 
-  // 날짜 클릭 핸들러
+  // 날짜 클릭 핸들러 (같은 날짜 재클릭 시 선택 해제)
   const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-    onDateSelect?.(date);
+    const next = isSameDate(date, selectedDate) ? null : date;
+    setSelectedDate(next);
+    onDateSelect?.(next);
   };
 
   // 이전 달 버튼 핸들러
