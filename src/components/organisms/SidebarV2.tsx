@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosClose } from 'react-icons/io';
 import toast from 'react-hot-toast';
@@ -28,6 +28,35 @@ type SidebarItem = {
 };
 
 const findNavItem = (key: NavKey) => NAV_ITEMS.find((item) => item.key === key);
+
+function UserAvatar({
+  profileImageUrl,
+  fallbackChar,
+}: {
+  profileImageUrl?: string;
+  fallbackChar: string;
+}) {
+  const [loadFailed, setLoadFailed] = useState(false);
+  useEffect(() => {
+    setLoadFailed(false);
+  }, [profileImageUrl]);
+  const showImage = profileImageUrl && profileImageUrl.trim() !== '' && !loadFailed;
+
+  return (
+    <div className='bg-grey-05 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full'>
+      {showImage ? (
+        <img
+          src={profileImageUrl}
+          alt='프로필'
+          className='h-full w-full object-cover'
+          onError={() => setLoadFailed(true)}
+        />
+      ) : (
+        <span className='text-caption01 text-grey-30'>{fallbackChar}</span>
+      )}
+    </div>
+  );
+}
 
 export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
@@ -214,11 +243,10 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         <div className='flex items-center justify-between px-5 py-4'>
           {isLoggedIn && user ? (
             <div className='flex items-center gap-3'>
-              <div className='bg-grey-05 flex h-10 w-10 items-center justify-center rounded-full'>
-                <span className='text-caption01 text-grey-30'>
-                  {(user.nickname || user.name || '닉네임').charAt(0)}
-                </span>
-              </div>
+              <UserAvatar
+                profileImageUrl={user.profileImageUrl}
+                fallbackChar={(user.nickname || user.name || '닉네임').charAt(0)}
+              />
               <div className='flex flex-col'>
                 <span className='text-body03 font-semibold text-black'>
                   {user.nickname || '닉네임'}

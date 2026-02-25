@@ -88,8 +88,7 @@ export function NoticeTabSection() {
     const loadNotices = async () => {
       try {
         setIsLoading(true);
-        const year = new Date().getFullYear();
-        const response = await fetchNotionInfo(activeCategory, year, page, 15);
+        const response = await fetchNotionInfo(activeCategory, page, 15, 'desc');
         setNotices(response.content);
         setTotalPages(response.totalPages);
       } catch (error) {

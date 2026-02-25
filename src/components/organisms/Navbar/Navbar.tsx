@@ -38,7 +38,11 @@ export default function Navbar() {
 
   const location = useLocation();
   const isMainOrLogin =
-    (location.pathname === '/' && activeMainSlide === 1) || location.pathname === '/login';
+    (location.pathname === '/' && activeMainSlide === 1) ||
+    location.pathname === '/login' ||
+    location.pathname === '/register' ||
+    location.pathname === '/mypage' ||
+    location.pathname === '/find-password';
 
   return (
     <nav
@@ -87,6 +91,14 @@ export default function Navbar() {
               iconClassName='text-grey-30'
             />
           </div>
+          <button
+            type='button'
+            className='hover:bg-grey-10/50 mr-3 cursor-pointer rounded-md text-xl text-black transition'
+            onClick={toggleMenu}
+            aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
+          >
+            {isOpen ? <IoIosClose /> : <IoIosMenu />}
+          </button>
         </header>
       )}
 

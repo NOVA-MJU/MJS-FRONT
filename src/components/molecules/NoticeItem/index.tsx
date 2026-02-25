@@ -16,6 +16,7 @@ const categoryLabel: Record<string, string> = {
   career: '진로',
   activity: '학생활동',
   law: '학칙개정',
+  rule: '학칙개정',
   REPORT: '보도',
   SOCIETY: '사회',
   FREE: '자유',
