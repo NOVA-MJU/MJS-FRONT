@@ -93,7 +93,7 @@ export default function Navbar() {
           </div>
           <button
             type='button'
-            className='hover:bg-grey-10/50 cursor-pointer rounded-md text-xl text-black transition'
+            className='hover:bg-grey-10/50 mr-3 cursor-pointer rounded-md text-xl text-black transition'
             onClick={toggleMenu}
             aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
           >

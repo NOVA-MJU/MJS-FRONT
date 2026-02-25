@@ -23,7 +23,7 @@ export default function SearchOverlay() {
   const user = useAuthStore((state) => state.user);
   const recentSearchScope = user?.uuid ?? undefined;
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
-  const recommendedKeywords = ['장학1', '장학2', '장학3', '장학4', '장학5'];
+  const recommendedKeywords = ['장학금', '명대신문', '학번', '중간고사', '축제'];
   const [hotKeywords, setHotKeywords] = useState<string[]>([]);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function SearchOverlay() {
   }, [recentSearchScope]);
 
   return (
-    <div className='fixed inset-0 z-50 flex justify-center bg-black/30 min-[769px]:hidden'>
+    <div className='fixed inset-0 z-50 flex justify-center bg-black/30'>
       <div className='flex h-full w-full flex-col bg-white'>
         {/* 검색 헤더 */}
         <header className='flex h-[60px] min-w-0 items-center gap-4 px-4'>
