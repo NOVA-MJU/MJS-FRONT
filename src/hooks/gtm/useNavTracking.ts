@@ -1,8 +1,8 @@
 import { gtmPush } from '../../utils/gtm';
-import type { NavSection } from '../../types/gtm';
+import type { NavGroup, NavSection } from '../../types/gtm';
 
 export function useNavTracking() {
-  const page_path =
+  const getPagePath = () =>
     typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/';
 
   const getSection = (): NavSection =>
@@ -11,12 +11,18 @@ export function useNavTracking() {
       : 'desktop';
 
   /** nav 아이템 클릭 추적 */
-  const trackNavClick = (item_name: string) => {
+  const trackNavClick = (payload: {
+    item_name: string;
+    item_label: string;
+    nav_group: NavGroup;
+  }) => {
     gtmPush({
       event: 'nav_click',
-      item_name,
+      item_name: payload.item_name,
+      item_label: payload.item_label,
+      nav_group: payload.nav_group,
       section: getSection(),
-      page_path,
+      page_path: getPagePath(),
     });
   };
 

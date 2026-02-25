@@ -123,14 +123,25 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     ];
   }, []);
 
+  const toNavGroup = (section: SidebarSection): 'information' | 'community' | 'setting' => {
+    if (section === 'community') return 'community';
+    if (section === 'setting') return 'setting';
+    return 'information';
+  };
+
   const handleItemClick = (item: SidebarItem) => {
+    trackNavClick({
+      item_name: item.id,
+      item_label: item.label,
+      nav_group: toNavGroup(item.section),
+    });
+
     if (item.requiresAuth && !isLoggedIn) {
       onClose();
       navigate('/login');
       return;
     }
 
-    // 메인 캐러셀/슬라이드로 이동 (경로 대신 슬라이드 인덱스 + 탭)
     const slideTabMap: Record<string, string> = {
       department: 'department', // 학과 → slide 0
       'campus-map': '명지도',
@@ -140,11 +151,9 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       'info-board': '게시판',
       'free-board': '게시판',
     };
+
     const tabOrSlide = slideTabMap[item.id];
     if (tabOrSlide) {
-      if (item.navKey) {
-        trackNavClick(item.navKey);
-      }
       if (tabOrSlide === 'department') {
         setActiveMainSlide(0);
       } else {
@@ -153,10 +162,6 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       }
       onClose();
       return;
-    }
-
-    if (item.navKey) {
-      trackNavClick(item.navKey);
     }
 
     if (item.href) {
@@ -236,7 +241,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         </div>
 
         {/* 메뉴 영역 */}
-        <div className='-mt-1 mt-2 flex-1 overflow-y-auto px-5'>
+        <div className='mt-2 flex-1 overflow-y-auto px-5'>
           {/* Information 섹션 */}
           <section className='border-grey-10 mb-4 border-t pt-4'>
             <h3 className='text-caption text-mju-primary mb-2 font-semibold'>Information</h3>

@@ -5,6 +5,6 @@ export function gtmPush(payload: GTMEvent): void {
   const isDev = import.meta.env.MODE !== 'production';
   window.dataLayer.push({
     ...payload,
-    ...(payload.debug_mode === undefined ? { debug_mode: isDev } : null),
+    ...(payload.debug_mode === undefined ? { debug_mode: isDev } : {}),
   } as GTMEvent);
 }

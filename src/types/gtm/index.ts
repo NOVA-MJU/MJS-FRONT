@@ -1,4 +1,5 @@
 export type NavSection = 'desktop' | 'mobile';
+export type NavGroup = 'information' | 'community' | 'setting';
 
 export type GTMCommon = {
   page_path?: string;
@@ -6,7 +7,10 @@ export type GTMCommon = {
   debug_mode?: boolean;
 
   item_name?: string;
+  item_label?: string;
   section?: NavSection;
+
+  nav_group?: NavGroup;
 };
 
 // 이벤트 유니온
@@ -21,5 +25,7 @@ export type GTMEvent =
   | ({ event: 'login_abort' } & Required<Pick<GTMCommon, 'page_path'>> & Partial<GTMCommon>)
   | ({
       event: 'nav_click';
-    } & Required<Pick<GTMCommon, 'page_path' | 'item_name' | 'section'>> &
+    } & Required<
+      Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label' | 'section' | 'nav_group'>
+    > &
       Partial<GTMCommon>);
