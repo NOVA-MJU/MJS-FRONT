@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
 export default function MainSearchSection() {
+  const [showSlideHint, setShowSlideHint] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,6 +28,19 @@ export default function MainSearchSection() {
   ];
 
   const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateShowSlideHint = () => {
+      const isVeryShortHeight = window.innerHeight < 640;
+      setShowSlideHint(!isVeryShortHeight);
+    };
+
+    updateShowSlideHint();
+    window.addEventListener('resize', updateShowSlideHint);
+    return () => window.removeEventListener('resize', updateShowSlideHint);
+  }, []);
 
   const handleCategoryClick = (path: string, label: string) => {
     // 특정 카테고리는 슬라이드 뷰의 탭으로 연결
@@ -60,7 +75,7 @@ export default function MainSearchSection() {
   };
 
   return (
-    <div className='relative flex h-full w-full flex-col items-center justify-start px-6 pt-8'>
+    <div className='relative flex h-full w-full flex-col items-center justify-start px-6 pt-8 pb-16'>
       <div className='flex h-[230px] w-full max-w-md flex-col items-center justify-center gap-4'>
         <div className='relative'>
           <div className='bg-blue-35 text-caption01 rounded-2xl px-5 py-2.5 whitespace-nowrap text-white shadow-md'>
@@ -104,25 +119,27 @@ export default function MainSearchSection() {
         </div>
       </div>
 
-      <div className='pointer-events-none absolute inset-x-0 bottom-3 flex flex-col gap-1 px-0'>
-        {/* 화살표 좌우 + 옆으로 슬라이드 말풍선 */}
-        <div className='pointer-events-auto flex items-center justify-between'>
-          <div>
-            <img src='/main/main_v2_leftArrow.png' alt='이전' className='-ml-1 h-35 w-35' />
-          </div>
+      {showSlideHint && (
+        <div className='pointer-events-none absolute inset-x-0 bottom-4 flex flex-col gap-1 px-0'>
+          {/* 화살표 좌우 + 옆으로 슬라이드 말풍선 (시각적 안내 전용, 터치 이벤트는 모두 아래로 통과) */}
+          <div className='flex items-center justify-between'>
+            <div>
+              <img src='/main/main_v2_leftArrow.png' alt='이전' className='-ml-1 h-35 w-35' />
+            </div>
 
-          <div className='relative'>
-            <img src='/main/main_v2_rightArrow.png' alt='다음' className='-mr-1 h-35 w-35' />
-            {/* 옆으로 슬라이드 안내 말풍선: 오른쪽 화살표 아래·살짝 오른쪽, 꼬리는 화살표 쪽 */}
-            <img
-              src='/main/slideBallon.svg'
-              alt='옆으로 슬라이드'
-              className='slide-indicator-anim-left absolute top-full right-0 -mt-10 mr-7 h-[28px] w-auto max-w-[80px]'
-              aria-hidden
-            />
+            <div className='relative'>
+              <img src='/main/main_v2_rightArrow.png' alt='다음' className='-mr-1 h-35 w-35' />
+              {/* 옆으로 슬라이드 안내 말풍선: 오른쪽 화살표 아래·살짝 오른쪽, 꼬리는 화살표 쪽 */}
+              <img
+                src='/main/slideBallon.svg'
+                alt='옆으로 슬라이드'
+                className='slide-indicator-anim-left absolute top-full right-0 -mt-10 mr-7 h-[28px] w-auto max-w-[80px]'
+                aria-hidden
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
