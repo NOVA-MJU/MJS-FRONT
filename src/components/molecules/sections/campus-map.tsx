@@ -48,8 +48,8 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
       setTimeout(() => {
         pinchZoomRef.current.scaleTo({
           x: 200,
-          y: 0,
-          scale: 3,
+          y: 100,
+          scale: 2.8,
           animated: false,
         });
         // 줌 설정이 완료되면 지도를 보이게 처리
@@ -243,7 +243,9 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
       {/* 지도 이미지 영역 (줌/팬 지원) */}
       <div
         ref={containerRef}
-        className='absolute inset-x-0 top-0 bottom-[260px] z-0 overflow-hidden'
+        className='swiper-no-swiping absolute inset-x-0 top-0 bottom-[210px] z-0 overflow-hidden'
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       >
         <QuickPinchZoom
           ref={pinchZoomRef}
@@ -312,7 +314,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
         onClick={handleTrackInteraction}
         onTouchMove={handleTrackInteraction}
         className={cn(
-          'absolute bottom-[275px] left-1/2 z-20 h-1.5 w-[80%] -translate-x-1/2 overflow-hidden rounded-[15px] bg-white shadow-[0_0_4px_0_rgba(0,0,0,0.20)] transition-opacity duration-300',
+          'absolute bottom-[225px] left-1/2 z-20 h-1.5 w-[80%] -translate-x-1/2 overflow-hidden rounded-[15px] bg-white shadow-[0_0_4px_0_rgba(0,0,0,0.20)] transition-opacity duration-300',
           isExpanded ? 'pointer-events-none opacity-0' : 'opacity-0', // 초기에는 숨김, contentWidth > containerWidth일 때 onUpdate에서 보이게 함
         )}
       >
@@ -328,7 +330,7 @@ const CampusMap = ({ isActive }: { isActive?: boolean }) => {
           'absolute right-0 bottom-0 left-0 z-[100] flex flex-col overflow-hidden rounded-t-[20px] bg-white shadow-[0_-4px_8px_rgba(23,23,27,0.14)]',
           'touch-pan-x transition-[height] duration-300 ease-in-out',
         )}
-        style={{ height: isExpanded ? '70%' : '260px' }}
+        style={{ height: isExpanded ? '70%' : '210px' }}
         onTouchStart={(e) => {
           dragStartY.current = e.touches[0].clientY;
         }}
