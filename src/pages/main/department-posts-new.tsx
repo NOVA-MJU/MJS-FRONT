@@ -250,7 +250,7 @@ export default function DepartmentPostsNewPage() {
             minRows={2}
             maxLength={MAX_TITLE_LENGTH}
             className={clsx(
-              'border-grey-05 mt-2.5 w-full resize-none rounded-lg border-2 p-3',
+              'border-grey-02 mt-2.5 w-full resize-none rounded-lg border-2 p-3',
               'text-body06 placeholder:text-grey-20 text-black',
             )}
             onChange={(e) => {

@@ -8,7 +8,7 @@ import { type ApiResponse, type Paginated } from './types';
  * @param sortBy 정렬 기준을 입력하세요. 기본값을 'createdAt' 입니다.
  * @param direction 정렬 순서를 입력하세요.
  */
-export type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'commentCount';
+export type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'viewCount';
 export type BoardDirection = 'ASC' | 'DESC';
 export type Category = 'ALL' | 'FREE' | 'NOTICE' | 'INFORMATION';
 
@@ -49,7 +49,7 @@ export interface BoardItem {
   commentCount: number;
   author: string;
   liked: boolean;
-  popular: true;
+  popular: boolean;
 }
 
 /**

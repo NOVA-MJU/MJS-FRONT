@@ -2,16 +2,8 @@ import BroadcastSection from '@/components/molecules/sections/broadcast';
 import MealSection from '@/components/molecules/sections/meal';
 import NewsSection from '@/components/molecules/sections/news';
 import NoticeSection from '@/components/molecules/sections/notice';
-import SearchBar from '@/components/atoms/SearchBar';
-import ProfileSection from '@/components/molecules/sections/profile';
-import WeatherComponent from '@/components/molecules/sections/weather';
-import AdCarousel from '@/components/molecules/sections/advertise';
-import RealtimeRank from '@/components/molecules/sections/rank';
-import HotBoardList from '@/components/molecules/sections/hot-board';
 import AcademicScheduleWidget from '@/components/molecules/sections/academic-schedule-widget';
 import BoardSection from '@/components/molecules/sections/board';
-import { useResponsive } from '@/hooks/useResponse';
-import { FaBullhorn } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import MainCarousel from '@/components/organisms/MainCarousel';
@@ -21,39 +13,6 @@ import AdBannerSection from '@/components/molecules/AdBannerSection';
 import Footer from '@/components/organisms/Footer';
 
 export default function Main() {
-  const { isDesktop } = useResponsive();
-
-  const ANNOUNCEMENT_TEXT = '현재 Version2 작업중입니다! -MJS 일동-';
-
-  if (isDesktop) {
-    return (
-      <div className='flex w-full flex-1 gap-6 px-7 py-12'>
-        <div className='flex min-w-0 flex-2/3 flex-col gap-12'>
-          <div className='flex flex-col gap-3'>
-            <SearchBar />
-            <div className='text-body03 text-mju-secondary line-clamp-1 flex items-center gap-2 px-3'>
-              <FaBullhorn />
-              <span>{ANNOUNCEMENT_TEXT}</span>
-            </div>
-          </div>
-          <MealSection />
-          <NoticeSection />
-          <NewsSection />
-          <BroadcastSection />
-        </div>
-
-        <div className='flex min-w-0 flex-1/3 flex-col gap-12'>
-          <ProfileSection />
-          <WeatherComponent />
-          <AdCarousel />
-          <RealtimeRank />
-          <AcademicScheduleWidget />
-          <HotBoardList />
-        </div>
-      </div>
-    );
-  }
-
   const mobileSlides = [
     <MainSearchSection key='search' />,
 
