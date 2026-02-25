@@ -542,10 +542,10 @@ export default function DepartmentMainPage() {
 
         {/* 소속 공지사항 탭 */}
         {currentTab === 'notices' && (
-          <section>
-            <div className='flex flex-col py-5'>
+          <section className='flex flex-1 flex-col'>
+            <div className='flex flex-1 flex-col py-5'>
               {departmentNotices.length === 0 ? (
-                <div className='flex items-center justify-center py-10'>
+                <div className='flex flex-1 items-center justify-center py-10'>
                   <span className='text-body03'>공지사항 없음</span>
                 </div>
               ) : (
@@ -575,13 +575,13 @@ export default function DepartmentMainPage() {
                 ))
               )}
             </div>
-            {noticeTotalPages > 1 && (
+            <div className='mt-auto'>
               <Pagination
                 page={noticePage}
                 totalPages={noticeTotalPages}
                 onChange={setNoticePage}
               />
-            )}
+            </div>
           </section>
         )}
 
