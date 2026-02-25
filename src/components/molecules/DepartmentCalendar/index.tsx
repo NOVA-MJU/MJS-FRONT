@@ -27,7 +27,7 @@ interface DepartmentCalendarProps {
   events?: CalendarMonthlyRes | null;
   /** 학과 일정 목록 (이 값이 있으면 events 대신 사용) */
   schedules?: DepartmentSchedule[] | null;
-  onDateSelect: (date: Date) => void;
+  onDateSelect: (date: Date | null) => void;
 }
 
 export default function DepartmentCalendar({
@@ -61,10 +61,11 @@ export default function DepartmentCalendar({
     );
   };
 
-  // 날짜 클릭 핸들러
+  // 날짜 클릭 핸들러 (같은 날짜 재클릭 시 선택 해제)
   const handleDateClick = (date: Date) => {
-    setSelectedDate(date);
-    onDateSelect?.(date);
+    const next = isSameDate(date, selectedDate) ? null : date;
+    setSelectedDate(next);
+    onDateSelect?.(next);
   };
 
   // 이전 달 버튼 핸들러
@@ -269,10 +270,9 @@ export default function DepartmentCalendar({
           {/* 이벤트 표시 */}
           <div className='grid w-full grid-cols-7'>
             {calendarDays.map((item, index) => {
-              // 오늘 날짜 이거나 선택한 날짜가 있는 경우 highlight 표시
+              // 선택한 날짜가 있을 때만 해당 날짜를 highlight (선택값이 없으면 아무 날짜도 선택 표시 안 함)
               const isSelected = isSameDate(item.fullDate, selectedDate);
-              const isToday = item.isToday;
-              const isHighlighted = selectedDate !== null ? isSelected : isToday;
+              const isHighlighted = selectedDate !== null && isSelected;
 
               return (
                 <CalendarItem

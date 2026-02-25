@@ -184,22 +184,37 @@ export default function DepartmentMainPage() {
     sessionStorage.setItem(TAB_STORAGE_KEY, currentTab);
   }, [currentTab]);
 
-  // 소속 일정
-  const [, setCurrentYear] = useState<number>(new Date().getFullYear());
-  const [, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  // 선택한 날짜에 해당하는 학과 일정 (selectedDate 기준으로 필터)
+  // 소속 일정 (캘린더 현재 연·월 추적)
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  // 선택한 날짜에 해당하는 학과 일정 (선택 없으면 현재 달의 전체 일정)
   const dayEvents = useMemo(() => {
-    const y = selectedDate.getFullYear();
-    const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const d = String(selectedDate.getDate()).padStart(2, '0');
-    const dateStr = `${y}-${m}-${d}`;
-    return departmentSchedules.filter((s) => {
-      const start = s.startDateTime.slice(0, 10);
-      const end = s.endDateTime ? s.endDateTime.slice(0, 10) : start;
-      return dateStr >= start && dateStr <= end;
-    });
-  }, [departmentSchedules, selectedDate]);
+    let list: DepartmentSchedule[];
+    if (selectedDate) {
+      const y = selectedDate.getFullYear();
+      const m = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const d = String(selectedDate.getDate()).padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+      list = departmentSchedules.filter((s) => {
+        const start = s.startDateTime.slice(0, 10);
+        const end = s.endDateTime ? s.endDateTime.slice(0, 10) : start;
+        return dateStr >= start && dateStr <= end;
+      });
+    } else {
+      const monthStart = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
+      const lastDay = new Date(currentYear, currentMonth, 0).getDate();
+      const monthEnd = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      list = departmentSchedules.filter((s) => {
+        const start = s.startDateTime.slice(0, 10);
+        const end = s.endDateTime ? s.endDateTime.slice(0, 10) : start;
+        return end >= monthStart && start <= monthEnd;
+      });
+    }
+    return [...list].sort(
+      (a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime(),
+    );
+  }, [departmentSchedules, selectedDate, currentYear, currentMonth]);
 
   // 교학팀 전화번호 복사 완료 상태
   const [phoneCopied, setPhoneCopied] = useState(false);
@@ -451,7 +466,7 @@ export default function DepartmentMainPage() {
               />
 
               {/* 캘린더 범례 */}
-              <div className='mt-3 flex items-center justify-end'>
+              <div className='mt-3 flex items-center justify-end px-5'>
                 <p className='bg-blue-35 h-2.5 w-2.5' />
                 <p className='text-caption04 text-grey-40 ms-1'>전체 (학부·대학원)</p>
                 <p className='bg-blue-15 ms-4 h-2.5 w-2.5' />
@@ -465,7 +480,9 @@ export default function DepartmentMainPage() {
               {/* 선택한 날짜 이벤트 목록 */}
               <div className='border-grey-02 mb-2 border-b-1 px-5 py-1'>
                 <span className='text-body02 text-mju-primary'>
-                  {format(selectedDate, 'MM.dd (EEE)', { locale: ko })}
+                  {selectedDate
+                    ? format(selectedDate, 'MM.dd (EEE)', { locale: ko })
+                    : `${currentYear}년 ${currentMonth}월`}
                 </span>
               </div>
               <div className='mb-10'>
@@ -492,13 +509,15 @@ export default function DepartmentMainPage() {
                           }
                         }}
                       >
-                        <span className='text-caption02 text-grey-40 min-w-19'>
+                        <span className='text-caption02 text-grey-40 w-20'>
                           {format(new Date(event.startDateTime), 'MM.dd', { locale: ko })}
                           {!isOneDay &&
                             event.endDateTime &&
                             ` - ${format(new Date(event.endDateTime), 'MM.dd', { locale: ko })}`}
                         </span>
-                        <span className='text-caption02 flex-1 text-black'>{event.title}</span>
+                        <span className='text-caption02 line-clamp-2 flex-1 text-black'>
+                          {event.title}
+                        </span>
                       </button>
                     );
                   })
