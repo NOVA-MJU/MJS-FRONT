@@ -181,9 +181,11 @@ export default function BoardSection({
                         </span>
                       </div>
 
-                      {/* 작성 날짜 */}
+                      {/* 작성 날짜 (미공개 글은 publishedAt이 null일 수 있음) */}
                       <span className='text-caption02 text-grey-40'>
-                        {formatToDotDate(content.publishedAt)}
+                        {content.publishedAt
+                          ? formatToDotDate(content.publishedAt)
+                          : formatToDotDate(content.createdAt)}
                       </span>
                     </div>
                   </div>
