@@ -37,19 +37,18 @@ export const MapPin = ({
           className,
         )}
       >
-        {/* 핀 */}
-        <img src='/assets/location-num.svg' alt='' className='absolute inset-0 h-full w-full' />
+        {/* 배경 핀 */}
+        <img
+          src={variant === 'number' ? '/assets/location-num.svg' : '/assets/location-dot.svg'}
+          alt=''
+          className='absolute inset-0 h-full w-full'
+        />
 
-        {/* 숫자 노출 영역 */}
+        {/* 숫자 노출 영역 (건물 번호일 때만) */}
         {variant === 'number' && (
-          <span className='z-10 mt-[7px] flex h-5 w-full items-center justify-center text-[14px] leading-none font-semibold text-white'>
+          <span className='z-10 mt-[7px] flex h-5 w-full items-center justify-center text-[14px] font-semibold text-white'>
             {value}
           </span>
-        )}
-
-        {/* 기본(흰색 원) */}
-        {variant === 'default' && (
-          <span className='z-10 mt-[10px] block h-[13px] w-[13px] rounded-full bg-white' />
         )}
       </button>
     );
