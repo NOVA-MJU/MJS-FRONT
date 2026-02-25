@@ -99,11 +99,23 @@ export default function AcademicScheduleWidget({
     }
   }, [activeTab, page, getNoticeData]);
 
-  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회 */
-  const handleYearChange = (year: number) =>
+  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회, 선택 날짜·카테고리 초기화 */
+  const handleYearChange = (year: number) => {
+    setSelectedDate(null);
+    setSelectedCategory('all');
     setViewDate((prev) => new Date(year, prev.getMonth(), 1));
-  const handleMonthChange = (month: number) =>
+  };
+  const handleMonthChange = (month: number) => {
+    setSelectedDate(null);
+    setSelectedCategory('all');
     setViewDate((prev) => new Date(prev.getFullYear(), month - 1, 1));
+  };
+
+  /** 날짜 선택 시 카테고리 초기화 */
+  const handleDateSelect = useCallback((date: Date | null) => {
+    setSelectedDate(date);
+    setSelectedCategory('all');
+  }, []);
 
   /**
    * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜가 있으면 해당 날짜 기준, 없으면 현재 달 전체)
@@ -242,7 +254,7 @@ export default function AcademicScheduleWidget({
               <div className='p-4'>
                 <Calendar
                   events={scheduleData}
-                  onDateSelect={setSelectedDate}
+                  onDateSelect={handleDateSelect}
                   onYearChange={handleYearChange}
                   onMonthChange={handleMonthChange}
                 />
@@ -263,6 +275,7 @@ export default function AcademicScheduleWidget({
 
             {/* 일정 리스트 컴포넌트 */}
             <ScheduleList
+              viewDate={viewDate}
               selectedDate={selectedDate}
               selectedCategory={selectedCategory}
               onCategoryToggle={() => setIsCategoryOpen(!isCategoryOpen)}

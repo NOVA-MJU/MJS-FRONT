@@ -11,6 +11,7 @@ const categoryMap: Record<CategoryKey, string> = {
 };
 
 interface ScheduleListProps {
+  viewDate: Date;
   selectedDate: Date | null;
   selectedCategory: CategoryKey;
   onCategoryToggle: () => void;
@@ -25,6 +26,7 @@ interface ScheduleListProps {
  * 학사일정 리스트 컴포넌트
  */
 export function ScheduleList({
+  viewDate,
   selectedDate,
   selectedCategory,
   onCategoryToggle,
@@ -34,17 +36,17 @@ export function ScheduleList({
   dailyScheduleList,
   all = false,
 }: ScheduleListProps) {
-  const targetDate = selectedDate || new Date();
   const dayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+  const titleText =
+    selectedDate === null
+      ? `${viewDate.getFullYear()}년 ${(viewDate.getMonth() + 1).toString().padStart(2, '0')}월`
+      : `${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}.${selectedDate.getDate().toString().padStart(2, '0')} (${dayLabels[selectedDate.getDay()]})`;
 
   return (
     <div className='flex flex-col gap-[8px]'>
       {/* 타이틀 영역 - 배경색과 테두리 추가 */}
       <div className='flex items-center justify-between border-b border-solid border-[#f0f2f5] bg-white py-[4px] pr-[18px] pl-[20px]'>
-        <h4 className='text-[16px] leading-[1.5] font-semibold text-[#1778ff]'>
-          {(targetDate.getMonth() + 1).toString().padStart(2, '0')}.
-          {targetDate.getDate().toString().padStart(2, '0')} ({dayLabels[targetDate.getDay()]})
-        </h4>
+        <h4 className='text-body02 text-mju-primary'>{titleText}</h4>
 
         {/* 카테고리 필터 */}
         {!all && (

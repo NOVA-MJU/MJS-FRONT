@@ -49,8 +49,15 @@ export default function Calendar({
     onDateSelect?.(next);
   };
 
+  // 달 이동 시 선택 날짜 초기화
+  const clearSelection = () => {
+    setSelectedDate(null);
+    onDateSelect?.(null);
+  };
+
   // 이전 달 버튼 핸들러
   const handlePrevMonth = () => {
+    clearSelection();
     if (currentMonth === 1) {
       const newYear = currentYear - 1;
       const newMonth = 12;
@@ -67,6 +74,7 @@ export default function Calendar({
 
   // 다음 달 버튼 핸들러
   const handleNextMonth = () => {
+    clearSelection();
     if (currentMonth === 12) {
       const newYear = currentYear + 1;
       const newMonth = 1;
