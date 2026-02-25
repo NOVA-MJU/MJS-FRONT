@@ -1,56 +1,60 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { gtmPush } from '../../utils/gtm';
 
+type Options = {
+  method?: string; // 기본 'email'
+  pagePath?: string; // 필요 시 외부에서 override
+};
+
 type DoneState = null | 'success';
 
-export function useRegisterTracking(options?: { method?: string }) {
+export function useRegisterTracking(options: Options = {}) {
   const startedRef = useRef(false);
   const doneRef = useRef<DoneState>(null);
-  const formRef = useRef<HTMLFormElement | null>(null);
 
-  const pagePath = location.pathname + location.search;
-  const method = options?.method ?? 'email';
+  const method = options.method ?? 'email';
+  const pagePath =
+    options.pagePath ??
+    (typeof window !== 'undefined'
+      ? window.location.pathname + window.location.search
+      : '/register');
 
-  // 최초 진입
-  useEffect(() => {
-    const el = formRef.current;
-    if (!el) return;
-
-    const onFirstInteract = () => {
-      if (!startedRef.current) {
-        startedRef.current = true;
-        gtmPush({ event: 'sign_up_start', page_path: pagePath });
-      }
-    };
-
-    el.addEventListener('input', onFirstInteract, { once: true, passive: true });
-    el.addEventListener('change', onFirstInteract, { once: true, passive: true });
-
-    return () => {
-      el.removeEventListener('input', onFirstInteract);
-      el.removeEventListener('change', onFirstInteract);
-    };
+  /** 어떤 액션이든 회원가입 플로우가 시작됐음을 1회 기록 */
+  const ensureStarted = useCallback(() => {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      gtmPush({ event: 'sign_up_start', page_path: pagePath });
+    }
   }, [pagePath]);
 
-  // 제출 직전
-  const onSubmitCapture: React.FormEventHandler<HTMLFormElement> = () => {
+  /** 유효성 통과 후 실제 submit 시도(1회든 여러 번이든) */
+  const trackSubmit = useCallback(() => {
+    ensureStarted();
     gtmPush({ event: 'sign_up_submit', page_path: pagePath });
-  };
+  }, [ensureStarted, pagePath]);
 
-  // 성공 마킹
-  const markSuccess = useCallback(() => {
+  /** 회원가입 성공 */
+  const trackSuccess = useCallback(() => {
     doneRef.current = 'success';
     gtmPush({ event: 'sign_up', method });
   }, [method]);
 
-  // 이탈 시 중도 포기
+  /** 중도 이탈(StrictMode 방어 + started && not success) */
+  const strictGuardRef = useRef(true);
   useEffect(() => {
     return () => {
-      if (doneRef.current === null) {
+      // 개발 StrictMode: 첫 cleanup은 스킵
+      if (strictGuardRef.current) {
+        strictGuardRef.current = false;
+        return;
+      }
+
+      if (startedRef.current && doneRef.current === null) {
         gtmPush({ event: 'sign_up_abort', page_path: pagePath });
       }
     };
+     
   }, [pagePath]);
 
-  return { formRef, onSubmitCapture, markSuccess };
+  return { ensureStarted, trackSubmit, trackSuccess };
 }
