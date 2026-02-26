@@ -1,4 +1,3 @@
-export type NavSection = 'desktop' | 'mobile';
 export type NavGroup = 'information' | 'community' | 'setting' | 'etc';
 
 export type GTMCommon = {
@@ -8,9 +7,12 @@ export type GTMCommon = {
 
   item_name?: string;
   item_label?: string;
-  section?: NavSection;
 
   nav_group?: NavGroup;
+
+  keyword_length?: number;
+  search_action?: 'submit' | 'suggestion_click';
+  search_source?: string;
 };
 
 // 이벤트 유니온
@@ -26,4 +28,5 @@ export type GTMEvent =
   | ({
       event: 'nav_click';
     } & Required<Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label' | 'nav_group'>> &
-      Partial<GTMCommon>);
+      Partial<GTMCommon>)
+  | ({ event: 'search_submit' } & Required<Pick<GTMCommon, 'page_path'>> & Partial<GTMCommon>);
