@@ -1,6 +1,5 @@
 import { getBoards, type BoardItem, type Category } from '@/api/board';
 import { CardHeader } from '@/components/atoms/Card';
-import { SkeletonProfile } from '@/components/atoms/Skeleton';
 import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
@@ -10,13 +9,14 @@ import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
+import { useHeaderStore } from '@/store/useHeaderStore';
 
 // 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
 
 // 카테고리·페이지 값을 세션 스토리지에 보관
 const BOARD_TAB_STORAGE_KEY = 'board-section-category';
-const BOARD_PAGE_STORAGE_KEY = 'board-section-page';
+const BOARD_PAGE_STORAGE_KEY_PREFIX = 'board-section-page';
 
 function getStoredCategory(): 'NOTICE' | 'FREE' {
   if (typeof sessionStorage === 'undefined') return 'NOTICE';
@@ -24,9 +24,9 @@ function getStoredCategory(): 'NOTICE' | 'FREE' {
   return stored === 'FREE' ? 'FREE' : 'NOTICE';
 }
 
-function getStoredPage(): number {
+function getStoredPageForCategory(cat: 'NOTICE' | 'FREE'): number {
   if (typeof sessionStorage === 'undefined') return 0;
-  const stored = sessionStorage.getItem(BOARD_PAGE_STORAGE_KEY);
+  const stored = sessionStorage.getItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-${cat}`);
   const num = Number(stored);
   return Number.isInteger(num) && num >= 0 ? num : 0;
 }
@@ -44,13 +44,31 @@ export default function BoardSection({
   all = false,
   onSeeMoreClick,
 }: BoardSectionProps) {
+  const boardCategoryFromNav = useHeaderStore((s) => s.boardCategory);
+  const setBoardCategory = useHeaderStore((s) => s.setBoardCategory);
+
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>(getStoredCategory);
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  const [page, setPage] = useState(getStoredPage);
+  // 사이드바 등에서 정보/자유 게시판 클릭 시 지정된 탭으로 전환 후 초기화
+  useEffect(() => {
+    if (boardCategoryFromNav === 'NOTICE' || boardCategoryFromNav === 'FREE') {
+      setCategory(boardCategoryFromNav);
+      setBoardCategory(null);
+    }
+  }, [boardCategoryFromNav, setBoardCategory]);
+
+  const [pageByCategory, setPageByCategory] = useState<Record<'NOTICE' | 'FREE', number>>(() => ({
+    NOTICE: getStoredPageForCategory('NOTICE'),
+    FREE: getStoredPageForCategory('FREE'),
+  }));
   const [totalPages, setTotalPages] = useState(0);
+
+  const page = pageByCategory[category];
+  const setPage = (nextPage: number) =>
+    setPageByCategory((prev) => ({ ...prev, [category]: nextPage }));
 
   useEffect(() => {
     (async () => {
@@ -76,8 +94,12 @@ export default function BoardSection({
   }, [category]);
 
   useEffect(() => {
-    sessionStorage.setItem(BOARD_PAGE_STORAGE_KEY, String(page));
-  }, [page]);
+    sessionStorage.setItem(
+      `${BOARD_PAGE_STORAGE_KEY_PREFIX}-NOTICE`,
+      String(pageByCategory.NOTICE),
+    );
+    sessionStorage.setItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-FREE`, String(pageByCategory.FREE));
+  }, [pageByCategory]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -137,63 +159,58 @@ export default function BoardSection({
 
       {/* 게시글 리스트 */}
       <div className='flex flex-col pt-4'>
-        {isLoading && [...Array(ITEM_COUNT)].map((_, index) => <SkeletonProfile key={index} />)}
+        {(() => {
+          return contents.map((content, index) => {
+            const isLast = index === contents.length - 1;
 
-        {!isLoading &&
-          (() => {
-            return contents.map((content, index) => {
-              const isLast = index === contents.length - 1;
-
-              return (
-                <Link
-                  key={content.uuid}
-                  to={`/board/${content.uuid}`}
-                  className='active:bg-blue-05 hover:bg-blue-05'
-                >
-                  <div className='px-5 py-2'>
-                    {/* 제목 */}
-                    <div className='flex items-center'>
-                      {content.popular && (
-                        <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
-                          HOT
-                        </div>
-                      )}
-                      <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
-                    </div>
-
-                    {/* 본문 미리보기 */}
-                    <p className='text-body05 mt-1 line-clamp-2 text-black'>
-                      {content.previewContent}
-                    </p>
-
-                    <div className='mt-2 flex items-center justify-between'>
-                      {/* 좋아요 갯수 */}
-                      <div className='flex items-center'>
-                        <HeartIcon className='text-blue-10' filled={content.liked} />
-                        <span className='text-caption02 text-grey-40 ms-1'>
-                          {content.likeCount}
-                        </span>
-
-                        {/* 댓글 갯수 */}
-                        <ChatBubbleIcon className='text-blue-10 ms-2' />
-                        <span className='text-caption02 text-grey-40 ms-1'>
-                          {content.commentCount}
-                        </span>
+            return (
+              <Link
+                key={content.uuid}
+                to={`/board/${content.uuid}`}
+                className='active:bg-blue-05 hover:bg-blue-05'
+              >
+                <div className='px-5 py-2'>
+                  {/* 제목 */}
+                  <div className='flex items-center'>
+                    {content.popular && (
+                      <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
+                        HOT
                       </div>
+                    )}
+                    <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
+                  </div>
 
-                      {/* 작성 날짜 (미공개 글은 publishedAt이 null일 수 있음) */}
-                      <span className='text-caption02 text-grey-40'>
-                        {content.publishedAt
-                          ? formatToDotDate(content.publishedAt)
-                          : formatToDotDate(content.createdAt)}
+                  {/* 본문 미리보기 */}
+                  <p className='text-body05 mt-1 line-clamp-2 text-black'>
+                    {content.previewContent}
+                  </p>
+
+                  <div className='mt-2 flex items-center justify-between'>
+                    {/* 좋아요 갯수 */}
+                    <div className='flex items-center'>
+                      <HeartIcon className='text-blue-10' filled={content.liked} />
+                      <span className='text-caption02 text-grey-40 ms-1'>{content.likeCount}</span>
+
+                      {/* 댓글 갯수 */}
+                      <ChatBubbleIcon className='text-blue-10 ms-2' />
+                      <span className='text-caption02 text-grey-40 ms-1'>
+                        {content.commentCount}
                       </span>
                     </div>
+
+                    {/* 작성 날짜 (미공개 글은 publishedAt이 null일 수 있음) */}
+                    <span className='text-caption02 text-grey-40'>
+                      {content.publishedAt
+                        ? formatToDotDate(content.publishedAt)
+                        : formatToDotDate(content.createdAt)}
+                    </span>
                   </div>
-                  {!isLast && <div className='bg-grey-02 h-px' />}
-                </Link>
-              );
-            });
-          })()}
+                </div>
+                {!isLast && <div className='bg-grey-02 h-px' />}
+              </Link>
+            );
+          });
+        })()}
 
         {/* 예외처리 */}
         {!isLoading && contents.length === 0 && (
@@ -203,7 +220,7 @@ export default function BoardSection({
         )}
 
         {/* 페이지네이션 */}
-        {!isLoading && contents.length > 0 && !all && (
+        {contents.length > 0 && !all && (
           <div className='pb-4'>
             <Pagination page={page} totalPages={totalPages} onChange={setPage} />
           </div>

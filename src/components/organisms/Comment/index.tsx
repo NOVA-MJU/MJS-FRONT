@@ -57,7 +57,7 @@ export default function Comment({
     if (isLoading) return;
     setIsLoading(true);
     try {
-      await deleteComment(boardUuid, commentUuid);
+      await deleteComment(commentUuid);
       setDeleted(true);
     } catch (e) {
       console.error(e);
@@ -118,9 +118,9 @@ export default function Comment({
    */
   if (isDesktop)
     return (
-      <div key={commentUuid} className='gap-3 flex flex-col'>
+      <div key={commentUuid} className='flex flex-col gap-3'>
         <div className='relative flex justify-between'>
-          <div className='gap-3 flex'>
+          <div className='flex gap-3'>
             <Avatar src={profileImageUrl} />
             <div className='flex flex-col gap-[2px]'>
               <span className='text-body02 text-black'>{authorName}</span>
@@ -130,43 +130,43 @@ export default function Comment({
           <div className='flex items-center gap-3'>
             {isAuthor && (
               <button
-                className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
+                className='bg-grey-10 flex cursor-pointer gap-1 rounded-[14px] px-2 py-1'
                 onClick={handleDeleteComment}
               >
-                <span className='text-caption02 text-blue-35 flex gap-1 items-center'>삭제</span>
+                <span className='text-caption02 text-blue-35 flex items-center gap-1'>삭제</span>
               </button>
             )}
-            <button className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'>
-              <span className='text-caption02 text-blue-35 flex gap-1 items-center'>신고</span>
+            <button className='bg-grey-10 flex cursor-pointer gap-1 rounded-[14px] px-2 py-1'>
+              <span className='text-caption02 text-blue-35 flex items-center gap-1'>신고</span>
             </button>
           </div>
         </div>
-        <div className='p-6 gap-3 bg-white rounded-xl'>
+        <div className='gap-3 rounded-xl bg-white p-6'>
           <span className='text-body03 text-black'>{content}</span>
         </div>
-        <div className='gap-3 flex'>
+        <div className='flex gap-3'>
           {!isReply && (
             <button
-              className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
+              className='bg-grey-10 flex cursor-pointer gap-1 rounded-[14px] px-2 py-1'
               onClick={() => setShowReplyForm((prev) => !prev)}
             >
-              <span className='text-caption02 text-blue-35 flex gap-1 items-center'>
+              <span className='text-caption02 text-blue-35 flex items-center gap-1'>
                 {showReplyForm ? <IoChatbubbles /> : <IoChatbubblesOutline />}
                 댓글
               </span>
             </button>
           )}
           <button
-            className='rounded-[14px] gap-1 px-2 py-1 flex bg-grey-10 cursor-pointer'
+            className='bg-grey-10 flex cursor-pointer gap-1 rounded-[14px] px-2 py-1'
             onClick={handleLikeComment}
           >
-            <span className='text-caption02 text-blue-35 flex gap-1 items-center'>
+            <span className='text-caption02 text-blue-35 flex items-center gap-1'>
               {likedLocal ? <IoIosHeart /> : <IoIosHeartEmpty />}
               {`공감 ${likeCountLocal || ''}`}
             </span>
           </button>
         </div>
-        <div className='pl-6 mt-3 gap-6 flex flex-col border-l-2 border-blue-10'>
+        <div className='border-blue-10 mt-3 flex flex-col gap-6 border-l-2 pl-6'>
           {!isReply &&
             repliesLocal.map((comment) => (
               <Comment
@@ -187,9 +187,9 @@ export default function Comment({
             ))}
           {showReplyForm && (
             <div className='flex gap-4'>
-              <div className='flex-1 flex flex-col items-end gap-1'>
+              <div className='flex flex-1 flex-col items-end gap-1'>
                 <input
-                  className='w-full p-3 border-2 border-grey-05 rounded-xl bg-white placeholder-grey-20'
+                  className='border-grey-05 placeholder-grey-20 w-full rounded-xl border-2 bg-white p-3'
                   placeholder='PlaceHolder'
                   type='text'
                   value={newReplyContent}
@@ -204,7 +204,7 @@ export default function Comment({
                 </span>
               </div>
               <button
-                className='w-16 md:w-46 h-12 bg-blue-35 cursor-pointer p-3 rounded-xl'
+                className='bg-blue-35 h-12 w-16 cursor-pointer rounded-xl p-3 md:w-46'
                 onClick={handleCommentReply}
               >
                 <span className='text-body02 text-white'>입력</span>
@@ -222,9 +222,9 @@ export default function Comment({
     return (
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2.5'>
-          <div className='flex gap-3 items-center'>
+          <div className='flex items-center gap-3'>
             <Avatar src={profileImageUrl} className='h-10 w-10' />
-            <div className='flex-1 flex flex-col gap-0.5'>
+            <div className='flex flex-1 flex-col gap-0.5'>
               <span className='text-body04 text-black'>{authorName}</span>
               <span className='text-caption02 text-grey-40'>{formatToElapsedTime(createdAt)}</span>
             </div>
@@ -233,7 +233,7 @@ export default function Comment({
              */}
             {isAuthor && (
               <button
-                className='w-5 h-5 rounded-full bg-grey-20 cursor-pointer text-white'
+                className='bg-grey-20 h-5 w-5 cursor-pointer rounded-full text-white'
                 onClick={handleDeleteComment}
               >
                 <IoIosClose size={20} />
@@ -244,7 +244,7 @@ export default function Comment({
           <div className='flex gap-1.5'>
             {isLoggedin && !isReply && (
               <button
-                className='px-1.5 py-1 flex gap-1 items-center text-caption02 text-blue-35 bg-grey-05 rounded-[14px] cursor-pointer'
+                className='text-caption02 text-blue-35 bg-grey-05 flex cursor-pointer items-center gap-1 rounded-[14px] px-1.5 py-1'
                 onClick={() => setShowReplyForm((prev) => !prev)}
               >
                 {showReplyForm ? <IoChatbubbles /> : <IoChatbubblesOutline />}
@@ -253,7 +253,7 @@ export default function Comment({
             )}
             <button
               className={clsx(
-                'px-1.5 py-1 flex gap-1 items-center text-caption02 text-blue-35 bg-grey-05 rounded-[14px]',
+                'text-caption02 text-blue-35 bg-grey-05 flex items-center gap-1 rounded-[14px] px-1.5 py-1',
                 isLoggedin && 'cursor-pointer',
               )}
               onClick={handleLikeComment}
@@ -282,7 +282,7 @@ export default function Comment({
          * 대댓글 표시
          */}
         {repliesLocal && (
-          <div className='ps-2.5 border-s-2 border-blue-10 flex flex-col gap-4'>
+          <div className='border-blue-10 flex flex-col gap-4 border-s-2 ps-2.5'>
             {repliesLocal.map((comment) => (
               <Comment
                 key={comment.commentUUID}
