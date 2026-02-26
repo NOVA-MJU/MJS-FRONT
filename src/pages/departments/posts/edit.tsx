@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { getStudentCouncilNoticeDetail } from '@/api/departments';
 import {
   updateStudentCouncilNotice,
+  deleteStudentCouncilNotice,
   type College,
   type Department,
 } from '@/api/departments-admin-posts';
@@ -51,6 +52,7 @@ export default function DepartmentPostsEditPage() {
   const [content, setContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState(true);
 
   /**
@@ -180,6 +182,33 @@ export default function DepartmentPostsEditPage() {
       toast.error('게시물 수정에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  /**
+   * 게시글 삭제 핸들러
+   */
+  const handleDeletePost = async () => {
+    if (!uuid) {
+      toast.error('게시물 정보를 찾을 수 없습니다.');
+      return;
+    }
+    if (!college || !department) {
+      toast.error('소속 학과 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
+      return;
+    }
+    if (!window.confirm('게시물을 삭제하시겠습니까?')) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteStudentCouncilNotice(college, department, uuid);
+      toast.success('게시물이 삭제되었습니다.');
+      navigate('/departments', { replace: true });
+    } catch (error) {
+      console.error('게시물 삭제 실패:', error);
+      toast.error('게시물 삭제에 실패했습니다.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -321,8 +350,27 @@ export default function DepartmentPostsEditPage() {
         </div>
       </div>
 
+      {/* 게시글 삭제 버튼 */}
+      <div className='mt-5 px-5'>
+        <button
+          type='button'
+          className='text-body05 bg-grey-40 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg text-white disabled:cursor-not-allowed disabled:opacity-70'
+          disabled={isSubmitting || isDeleting}
+          onClick={handleDeletePost}
+        >
+          {isDeleting ? (
+            <>
+              <span className='border-grey-20 h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-t-white' />
+              <span>삭제 중...</span>
+            </>
+          ) : (
+            '게시물 삭제'
+          )}
+        </button>
+      </div>
+
       {/* 게시글 등록 버튼 */}
-      <div className='p-5'>
+      <div className='mt-2 mb-15 px-5'>
         <button
           type='button'
           onClick={handleSubmit}
@@ -333,9 +381,9 @@ export default function DepartmentPostsEditPage() {
               ? 'bg-grey-02 text-grey-40'
               : 'bg-blue-35 text-white',
           )}
-          aria-label='완료'
+          aria-label='저장'
         >
-          {isSubmitting ? '수정 중...' : '완료'}
+          {isSubmitting ? '저장 중...' : '저장'}
         </button>
       </div>
     </section>

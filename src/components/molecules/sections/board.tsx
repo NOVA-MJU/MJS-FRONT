@@ -3,7 +3,7 @@ import { CardHeader } from '@/components/atoms/Card';
 import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Pagination from '@/components/molecules/common/Pagination';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
@@ -43,7 +43,6 @@ export default function BoardSection({
   all = false,
   onSeeMoreClick,
 }: BoardSectionProps) {
-  const sectionRef = useRef<HTMLElement | null>(null);
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>(getStoredCategory);
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -94,14 +93,8 @@ export default function BoardSection({
     setIsMounted(true);
   }, []);
 
-  // 페이지 변경 시 섹션 상단으로 스크롤
-  useEffect(() => {
-    if (!sectionRef.current) return;
-    sectionRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-  }, [page]);
-
   return (
-    <section ref={sectionRef} className='relative mb-4 flex min-h-[400px] flex-col bg-white'>
+    <section className='relative mb-4 flex min-h-[400px] flex-col bg-white'>
       {all && (
         <CardHeader className='px-3'>
           <h2 className='text-title03 px-2 font-bold text-black'>게시판</h2>
