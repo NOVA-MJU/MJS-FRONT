@@ -15,6 +15,9 @@ import NoticeSection from '@/components/molecules/sections/notice';
 import FilteringMealSection from '@/components/molecules/sections/filtering-meal';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
+import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
+
 /**
  * 전역 클래스 통합 유틸리티
  */
@@ -58,6 +61,8 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
   // 탭바 스크롤 컨테이너 ref
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const { trackNavClick } = useNavTracking();
+
   useEffect(() => {
     if (!isPanelVisible) return;
     const el = tabRefs.current[activeTab];
@@ -82,7 +87,14 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
               ref={(el) => {
                 tabRefs.current[tab] = el;
               }}
-              onClick={() => onTabChange(tab)}
+              onClick={() => {
+                onTabChange(tab);
+                trackNavClick({
+                  item_name: `top_tab:${tab}`,
+                  item_label: tab,
+                  nav_group: resolveNavGroupByLabel(tab),
+                });
+              }}
               className={cn(
                 'relative flex h-full items-center justify-center px-3 transition-colors outline-none',
                 isActive ? 'text-mju-primary' : 'text-grey-40',
