@@ -3,10 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
+import { useHomeMainTracking } from '@/hooks/gtm/useHomeTracking';
+
 export default function MainSearchSection() {
   const [showSlideHint, setShowSlideHint] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
+  const { trackHomeMainClick } = useHomeMainTracking();
 
   type CategoryItem = {
     id: number;
@@ -27,8 +32,6 @@ export default function MainSearchSection() {
     { id: 4, label: '멘토관', imageUrl: '/main/logos/main_mentor.svg', path: '/mentoring' },
   ];
 
-  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -43,6 +46,11 @@ export default function MainSearchSection() {
   }, []);
 
   const handleCategoryClick = (path: string, label: string) => {
+    trackHomeMainClick({
+      item_name: `home_main:${label}`,
+      item_label: label,
+    });
+
     // 특정 카테고리는 슬라이드 뷰의 탭으로 연결
     const tabMap: Record<string, string> = {
       학식: '학식',

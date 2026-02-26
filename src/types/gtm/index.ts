@@ -29,4 +29,8 @@ export type GTMEvent =
       event: 'nav_click';
     } & Required<Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label' | 'nav_group'>> &
       Partial<GTMCommon>)
-  | ({ event: 'search_submit' } & Required<Pick<GTMCommon, 'page_path'>> & Partial<GTMCommon>);
+  | ({ event: 'search_submit' } & Required<Pick<GTMCommon, 'page_path'>> & Partial<GTMCommon>)
+  | ({
+      event: 'home_main_click';
+    } & Required<Pick<GTMCommon, 'page_path' | 'item_name' | 'item_label'>> &
+      Partial<GTMCommon>);
