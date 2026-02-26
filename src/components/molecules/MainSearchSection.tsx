@@ -33,7 +33,8 @@ export default function MainSearchSection() {
     if (typeof window === 'undefined') return;
 
     const updateShowSlideHint = () => {
-      const isVeryShortHeight = window.innerHeight < 640;
+      // height가 일정 이하로 줄어들면 화살표/말풍선 숨겨서 퀵 메뉴 아이콘과 겹침 방지, 흰 바탕만 유지
+      const isVeryShortHeight = window.innerHeight < 650;
       setShowSlideHint(!isVeryShortHeight);
     };
 

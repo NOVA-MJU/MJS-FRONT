@@ -239,24 +239,25 @@
   border-radius: 9999px;
 }
 
-/* 메인 광고 배너: 모바일에서는 가로 꽉 차게, 데스크톱에서는 너무 커지지 않게 제한 */
+/* 메인 광고 배너: 이미지 비율 고정, 모바일 가로 꽉 차게, 데스크톱 max-width 제한 */
 .main-ad-banner {
   width: 100%;
+  aspect-ratio: 393 / 156;
+  overflow: hidden;
 }
 
 .main-ad-banner__image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 @media (min-width: 1024px) {
   .main-ad-banner {
-    display: flex;
-    justify-content: center;
-  }
-
-  .main-ad-banner__image {
     max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
