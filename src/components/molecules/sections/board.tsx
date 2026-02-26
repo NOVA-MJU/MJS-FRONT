@@ -15,7 +15,7 @@ const ITEM_COUNT = 10;
 
 // 카테고리·페이지 값을 세션 스토리지에 보관
 const BOARD_TAB_STORAGE_KEY = 'board-section-category';
-const BOARD_PAGE_STORAGE_KEY = 'board-section-page';
+const BOARD_PAGE_STORAGE_KEY_PREFIX = 'board-section-page';
 
 function getStoredCategory(): 'NOTICE' | 'FREE' {
   if (typeof sessionStorage === 'undefined') return 'NOTICE';
@@ -23,9 +23,9 @@ function getStoredCategory(): 'NOTICE' | 'FREE' {
   return stored === 'FREE' ? 'FREE' : 'NOTICE';
 }
 
-function getStoredPage(): number {
+function getStoredPageForCategory(cat: 'NOTICE' | 'FREE'): number {
   if (typeof sessionStorage === 'undefined') return 0;
-  const stored = sessionStorage.getItem(BOARD_PAGE_STORAGE_KEY);
+  const stored = sessionStorage.getItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-${cat}`);
   const num = Number(stored);
   return Number.isInteger(num) && num >= 0 ? num : 0;
 }
@@ -49,8 +49,15 @@ export default function BoardSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  const [page, setPage] = useState(getStoredPage);
+  const [pageByCategory, setPageByCategory] = useState<Record<'NOTICE' | 'FREE', number>>(() => ({
+    NOTICE: getStoredPageForCategory('NOTICE'),
+    FREE: getStoredPageForCategory('FREE'),
+  }));
   const [totalPages, setTotalPages] = useState(0);
+
+  const page = pageByCategory[category];
+  const setPage = (nextPage: number) =>
+    setPageByCategory((prev) => ({ ...prev, [category]: nextPage }));
 
   useEffect(() => {
     (async () => {
@@ -76,8 +83,12 @@ export default function BoardSection({
   }, [category]);
 
   useEffect(() => {
-    sessionStorage.setItem(BOARD_PAGE_STORAGE_KEY, String(page));
-  }, [page]);
+    sessionStorage.setItem(
+      `${BOARD_PAGE_STORAGE_KEY_PREFIX}-NOTICE`,
+      String(pageByCategory.NOTICE),
+    );
+    sessionStorage.setItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-FREE`, String(pageByCategory.FREE));
+  }, [pageByCategory]);
 
   useEffect(() => {
     setIsMounted(true);
