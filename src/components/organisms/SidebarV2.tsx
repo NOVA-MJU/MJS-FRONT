@@ -5,10 +5,12 @@ import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHeaderStore } from '@/store/useHeaderStore';
-import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavKey } from '@/types/nav/item';
 import { logout as apiLogout } from '@/api/user';
+
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
+import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
 
 type SidebarV2Props = {
   isOpen: boolean;
@@ -168,13 +170,18 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   }, []);
 
   const handleItemClick = (item: SidebarItem) => {
+    trackNavClick({
+      item_name: item.id,
+      item_label: item.label,
+      nav_group: resolveNavGroupByLabel(item.label),
+    });
+
     if (item.requiresAuth && !isLoggedIn) {
       onClose();
       navigate('/login');
       return;
     }
 
-    // 메인 캐러셀/슬라이드로 이동 (경로 대신 슬라이드 인덱스 + 탭)
     const slideTabMap: Record<string, string> = {
       department: 'department', // 학과 → slide 0
       'campus-map': '명지도',
@@ -187,6 +194,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       news: '명대신문',
       broadcast: '명대뉴스',
     };
+
     const tabOrSlide = slideTabMap[item.id];
     if (tabOrSlide) {
       if (item.navKey) {
@@ -206,10 +214,6 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       }
       onClose();
       return;
-    }
-
-    if (item.navKey) {
-      trackNavClick(item.navKey);
     }
 
     if (item.href) {
@@ -294,7 +298,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         )}
 
         {/* 메뉴 영역 */}
-        <div className='-mt-1 mt-2 flex-1 overflow-y-auto px-5'>
+        <div className='mt-2 flex-1 overflow-y-auto px-5'>
           {/* Information 섹션 */}
           <section
             className={`border-grey-10 -mx-5 mb-4 px-5 pt-4 ${isLoggedIn ? 'border-t' : ''}`}

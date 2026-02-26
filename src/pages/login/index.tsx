@@ -31,7 +31,6 @@ export default function LoginPage() {
   }, []);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    onSubmitCapture(e);
     e.preventDefault();
 
     if (id.trim() === '') {
@@ -45,6 +44,7 @@ export default function LoginPage() {
       setEmailError(true);
       return;
     }
+    onSubmitCapture();
 
     try {
       await login(id, pw);

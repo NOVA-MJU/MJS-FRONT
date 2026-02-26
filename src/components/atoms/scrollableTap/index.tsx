@@ -6,6 +6,9 @@ interface TabComponentProps {
   currentTab: string;
   setCurrentTab: (tab: string) => void;
   className?: string;
+
+  //gtm 트래킹
+  onTabClick?: (key: string, label: string) => void;
 }
 
 /**
@@ -18,7 +21,13 @@ interface TabComponentProps {
  * @param setCurrentTab - 탭 클릭 시 호출되는 함수. 클릭된 탭의 **식별자(key)**를 인자로 받습니다.
  * @returns JSX Element
  */
-function ScrollableTap({ tabs, currentTab, setCurrentTab, className }: TabComponentProps) {
+function ScrollableTap({
+  tabs,
+  currentTab,
+  setCurrentTab,
+  className,
+  onTabClick,
+}: TabComponentProps) {
   const tabEntries = Object.entries(tabs);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -48,7 +57,10 @@ function ScrollableTap({ tabs, currentTab, setCurrentTab, className }: TabCompon
             role='tab'
             aria-selected={isSelected}
             aria-controls={`tab-panel-${key}`}
-            onClick={() => setCurrentTab(key)}
+            onClick={() => {
+              setCurrentTab(key);
+              onTabClick?.(key, label);
+            }}
             className={`cursor-pointer p-1 px-4 py-2 whitespace-nowrap md:p-3 ${isSelected ? 'text-mju-primary border-mju-primary border-b-[2px]' : 'text-grey-40'} `}
           >
             {label}
