@@ -9,6 +9,7 @@ import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
+import { useHeaderStore } from '@/store/useHeaderStore';
 
 // 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
@@ -43,10 +44,21 @@ export default function BoardSection({
   all = false,
   onSeeMoreClick,
 }: BoardSectionProps) {
+  const boardCategoryFromNav = useHeaderStore((s) => s.boardCategory);
+  const setBoardCategory = useHeaderStore((s) => s.setBoardCategory);
+
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>(getStoredCategory);
   const [contents, setContents] = useState<BoardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+
+  // 사이드바 등에서 정보/자유 게시판 클릭 시 지정된 탭으로 전환 후 초기화
+  useEffect(() => {
+    if (boardCategoryFromNav === 'NOTICE' || boardCategoryFromNav === 'FREE') {
+      setCategory(boardCategoryFromNav);
+      setBoardCategory(null);
+    }
+  }, [boardCategoryFromNav, setBoardCategory]);
 
   const [pageByCategory, setPageByCategory] = useState<Record<'NOTICE' | 'FREE', number>>(() => ({
     NOTICE: getStoredPageForCategory('NOTICE'),

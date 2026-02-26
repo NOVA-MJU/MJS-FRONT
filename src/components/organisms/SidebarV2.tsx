@@ -62,7 +62,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
   const { isLoggedIn, user, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
-  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
+  const { setActiveMainSlide, setSelectedTab, setBoardCategory } = useHeaderStore();
 
   const items = useMemo<SidebarItem[]>(() => {
     const notice = findNavItem('notice');
@@ -191,6 +191,12 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     if (tabOrSlide) {
       if (item.navKey) {
         trackNavClick(item.navKey);
+      }
+      // 게시판 탭 진입 시 정보/자유 게시판 중 어떤 탭을 선택할지 지정
+      if (item.id === 'info-board') {
+        setBoardCategory('NOTICE');
+      } else if (item.id === 'free-board') {
+        setBoardCategory('FREE');
       }
       if (tabOrSlide === 'department') {
         setActiveMainSlide(0);
