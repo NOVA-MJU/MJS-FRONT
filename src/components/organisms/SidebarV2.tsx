@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosClose } from 'react-icons/io';
 import toast from 'react-hot-toast';
@@ -30,6 +30,35 @@ type SidebarItem = {
 };
 
 const findNavItem = (key: NavKey) => NAV_ITEMS.find((item) => item.key === key);
+
+function UserAvatar({
+  profileImageUrl,
+  fallbackChar,
+}: {
+  profileImageUrl?: string;
+  fallbackChar: string;
+}) {
+  const [loadFailed, setLoadFailed] = useState(false);
+  useEffect(() => {
+    setLoadFailed(false);
+  }, [profileImageUrl]);
+  const showImage = profileImageUrl && profileImageUrl.trim() !== '' && !loadFailed;
+
+  return (
+    <div className='bg-grey-05 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full'>
+      {showImage ? (
+        <img
+          src={profileImageUrl}
+          alt='프로필'
+          className='h-full w-full object-cover'
+          onError={() => setLoadFailed(true)}
+        />
+      ) : (
+        <span className='text-caption01 text-grey-30'>{fallbackChar}</span>
+      )}
+    </div>
+  );
+}
 
 export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
@@ -82,6 +111,21 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         section: 'information',
         path: meal?.path,
         navKey: meal?.key,
+      },
+      {
+        id: 'board-main',
+        label: '게시판',
+        section: 'information',
+      },
+      {
+        id: 'news',
+        label: '명대신문',
+        section: 'information',
+      },
+      {
+        id: 'broadcast',
+        label: '명대뉴스',
+        section: 'information',
       },
 
       // Community 섹션
@@ -144,8 +188,11 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       notice: '공지사항',
       calendar: '학사일정',
       meal: '학식',
+      'board-main': '게시판',
       'info-board': '게시판',
       'free-board': '게시판',
+      news: '명대신문',
+      broadcast: '명대뉴스',
     };
 
     const tabOrSlide = slideTabMap[item.id];
@@ -197,11 +244,10 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         <div className='flex items-center justify-between px-5 py-4'>
           {isLoggedIn && user ? (
             <div className='flex items-center gap-3'>
-              <div className='bg-grey-05 flex h-10 w-10 items-center justify-center rounded-full'>
-                <span className='text-caption01 text-grey-30'>
-                  {(user.nickname || user.name || '닉네임').charAt(0)}
-                </span>
-              </div>
+              <UserAvatar
+                profileImageUrl={user.profileImageUrl}
+                fallbackChar={(user.nickname || user.name || '닉네임').charAt(0)}
+              />
               <div className='flex flex-col'>
                 <span className='text-body03 font-semibold text-black'>
                   {user.nickname || '닉네임'}
@@ -212,6 +258,23 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
               </div>
             </div>
           ) : (
+            <div />
+          )}
+
+          <div className='flex items-center gap-2'>
+            <button
+              type='button'
+              onClick={onClose}
+              aria-label='사이드바 닫기'
+              className='text-grey-30 hover:bg-grey-05 rounded-full p-1'
+            >
+              <IoIosClose size={28} />
+            </button>
+          </div>
+        </div>
+
+        {!isLoggedIn && (
+          <div className='px-5 pb-2'>
             <button
               type='button'
               onClick={() => {
@@ -222,24 +285,15 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
             >
               <img src='/main/LoginBtn.svg' alt='로그인/회원가입' className='h-8 w-auto' />
             </button>
-          )}
-
-          <div className='flex items-center gap-2'>
-            <button
-              type='button'
-              onClick={onClose}
-              aria-label='사이드바 닫기'
-              className='text-grey-30 hover:bg-grey-05 rounded-full p-1'
-            >
-              <IoIosClose size={24} />
-            </button>
           </div>
-        </div>
+        )}
 
         {/* 메뉴 영역 */}
         <div className='mt-2 flex-1 overflow-y-auto px-5'>
           {/* Information 섹션 */}
-          <section className='border-grey-10 mb-4 border-t pt-4'>
+          <section
+            className={`border-grey-10 -mx-5 mb-4 px-5 pt-4 ${isLoggedIn ? 'border-t' : ''}`}
+          >
             <h3 className='text-caption text-mju-primary mb-2 font-semibold'>Information</h3>
             <nav className='flex flex-col'>
               {informationItems.map((item) => (
@@ -247,7 +301,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                   key={item.id}
                   type='button'
                   onClick={() => handleItemClick(item)}
-                  className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
+                  className='text-body03 text-grey-90 hover:bg-blue-10 active:bg-blue-15 flex h-10 items-center rounded-md px-3 transition-colors'
                 >
                   {item.label}
                 </button>
@@ -256,7 +310,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
           </section>
 
           {/* Community 섹션 */}
-          <section className='border-grey-10 mb-4 border-t pt-4'>
+          <section className='border-grey-10 -mx-5 mb-4 border-t px-5 pt-4'>
             <h3 className='text-caption text-mju-primary mb-2 font-semibold'>Community</h3>
             <nav className='flex flex-col'>
               {communityItems.map((item) => (
@@ -264,7 +318,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                   key={item.id}
                   type='button'
                   onClick={() => handleItemClick(item)}
-                  className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
+                  className='text-body03 text-grey-90 hover:bg-blue-10 active:bg-blue-15 flex h-10 items-center rounded-md px-3 transition-colors'
                 >
                   {item.label}
                 </button>
@@ -273,7 +327,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
           </section>
 
           {/* My 섹션 */}
-          <section className='border-grey-10 mb-6 border-t pt-4'>
+          <section className='border-grey-10 -mx-5 mb-6 border-t px-5 pt-4'>
             <h3 className='text-caption text-mju-primary mb-2 font-semibold'>My</h3>
             <nav className='flex flex-col'>
               {settingItems.map((item) =>
@@ -282,7 +336,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                     key={item.id}
                     type='button'
                     onClick={() => handleItemClick(item)}
-                    className='text-body03 hover:bg-blue-05 flex h-10 items-center gap-1.5 rounded-md px-3 text-black'
+                    className='text-body03 hover:bg-blue-10 active:bg-blue-15 flex h-10 items-center gap-1.5 rounded-md px-3 text-black transition-colors'
                   >
                     <span>{item.label}</span>
                     <img src='/main/SSO.svg' alt='' aria-hidden className='h-6 w-6 shrink-0' />
@@ -292,7 +346,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
                     key={item.id}
                     type='button'
                     onClick={() => handleItemClick(item)}
-                    className='text-body03 text-grey-90 hover:bg-blue-05 flex h-10 items-center rounded-md px-3'
+                    className='text-body03 text-grey-90 hover:bg-blue-10 active:bg-blue-15 flex h-10 items-center rounded-md px-3 transition-colors'
                   >
                     {item.label}
                   </button>
@@ -303,7 +357,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         </div>
 
         {isLoggedIn && (
-          <div className='border-grey-10 shrink-0 border-t px-5 py-4'>
+          <div className='-mx-5 shrink-0 px-5 py-4'>
             <button
               type='button'
               onClick={handleBottomLogout}

@@ -19,7 +19,7 @@ import { CommentForm } from '@/components/atoms/CommentForm';
 import { useAuthStore } from '@/store/useAuthStore';
 import { handleError } from '@/utils/error';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
-import { format, parseISO } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 
 const MAX_REPLY_LEN = 100;
 
@@ -49,6 +49,7 @@ export default function BoardDetail() {
   const [isContentLoading, setIsContentLoading] = useState(true);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCommentUploading, setIsCommentUploading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isError, setIsError] = useState(false);
   const { isLoggedIn } = useAuthStore();
@@ -95,7 +96,7 @@ export default function BoardDetail() {
 
   // 댓글 작성 요청
   const handleCommentUpload = async () => {
-    if (!uuid || isContentLoading || isLoading) return;
+    if (!uuid || isContentLoading || isCommentUploading) return;
 
     if (newComment.trim().length < 2) {
       toast.error('댓글을 2글자 이상 작성해 주세요');
@@ -106,14 +107,14 @@ export default function BoardDetail() {
     }
 
     try {
-      setIsLoading(true);
+      setIsCommentUploading(true);
       await postComment(uuid, newComment);
       await getComments(uuid);
       setNewComment('');
     } catch (err) {
       handleError(err, '댓글 작성에 실패했습니다.');
     } finally {
-      setIsLoading(false);
+      setIsCommentUploading(false);
     }
   };
 
@@ -185,7 +186,7 @@ export default function BoardDetail() {
 
             <div className='mt-1 flex items-center justify-between px-5'>
               <div className='text-body05 text-grey-40 flex gap-3'>
-                <span>{format(parseISO(content.publishedAt), 'yyyy.MM.dd')}</span>
+                <span>{formatToDotDate(content.publishedAt)}</span>
                 <span>|</span>
                 <span>{content.author}</span>
               </div>
@@ -207,8 +208,10 @@ export default function BoardDetail() {
               {/* 좋아요 버튼 */}
               <button className='flex cursor-pointer items-center' onClick={handleLikePost}>
                 <span className='text-body04 text-grey-40'>좋아요</span>
-                {content.isLiked ? (
+                {!isLoggedIn ? (
                   <HeartIcon className='text-grey-20' filled />
+                ) : content.isLiked ? (
+                  <HeartIcon className='text-blue-10' filled />
                 ) : (
                   <HeartIcon className='text-blue-10' />
                 )}
@@ -220,7 +223,7 @@ export default function BoardDetail() {
                   {content.canEdit && (
                     <button
                       type='button'
-                      className='text-body05 text-grey-40 cursor-pointer'
+                      className='text-body05 text-grey-40 cursor-pointer px-2 py-1'
                       onClick={() => uuid && navigate(`/board/edit/${uuid}`)}
                     >
                       수정
@@ -229,7 +232,7 @@ export default function BoardDetail() {
                   {content.canDelete && (
                     <button
                       type='button'
-                      className='text-body05 text-grey-40 ms-5 cursor-pointer disabled:opacity-50'
+                      className='text-body05 text-grey-40 ms-1 cursor-pointer px-2 py-1 disabled:opacity-50'
                       onClick={handleDeletePost}
                       disabled={isLoading}
                     >
@@ -252,6 +255,7 @@ export default function BoardDetail() {
                     handleCommentUpload={handleCommentUpload}
                     MAX_REPLY_LEN={MAX_REPLY_LEN}
                     isLoggedin={isLoggedIn}
+                    isUploading={isCommentUploading}
                   />
                 </div>
 

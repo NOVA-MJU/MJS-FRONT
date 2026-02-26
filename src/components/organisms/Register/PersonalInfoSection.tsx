@@ -57,6 +57,8 @@ const PersonalInfoSection = ({
 }: Props) => {
   const [departmentOptions, setDepartmentOptions] = useState<Options[]>([]);
 
+  const [openDropdownId, setOpenDropdownId] = useState<'college' | 'department' | null>(null);
+
   useEffect(() => {
     console.log(college);
     const departmentData = DEPARTMENT_OPTIONS.find((dept) => dept.college.value === college);
@@ -88,12 +90,16 @@ const PersonalInfoSection = ({
             options={COLLEGE_OPTIONS}
             department={college}
             setDepartment={setCollege}
+            open={openDropdownId === 'college'}
+            onOpenChange={(open) => setOpenDropdownId(open ? 'college' : null)}
           />
           <DepartmentDropdownField
             label='학과'
             options={departmentOptions}
             department={department}
             setDepartment={setDepartment}
+            open={openDropdownId === 'department'}
+            onOpenChange={(open) => setOpenDropdownId(open ? 'department' : null)}
           />
           <StudentCodeFieldWithVerify
             studentCode={studentCode}

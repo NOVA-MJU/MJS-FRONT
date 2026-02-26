@@ -1,11 +1,14 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useResponsive } from '@/hooks/useResponse';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperClass } from 'swiper';
+import 'swiper/css';
 import Main from '@/pages';
 import Slides from './slides';
-import DepartmentMainPage from './main/department';
+import DepartmentMainPage from './departments';
 import { useHeaderStore } from '@/store/useHeaderStore';
 
 export const HOME_SLIDER_STORAGE_KEY = 'homeSliderSlide';
@@ -21,20 +24,12 @@ function getStoredSlideIndex(): SlideIndex {
 }
 
 function setStoredSlideIndex(index: SlideIndex) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, String(index));
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem(STORAGE_KEY, String(index));
 }
 
 /** 로고 클릭 시 호출 → 무조건 메인(1)으로 가도록 저장 */
 export function setHomeSliderToMain() {
-  try {
-    sessionStorage.setItem(HOME_SLIDER_STORAGE_KEY, '1');
-  } catch {
-    // ignore
-  }
+  sessionStorage.setItem(HOME_SLIDER_STORAGE_KEY, '1');
 }
 
 /**
@@ -45,111 +40,103 @@ function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * 메인 페이지와 슬라이드 페이지를 가로 스크롤로 연결
+ * Swiper 기반 메인 페이지와 슬라이드 페이지를 가로 스와이프로 연결
  * 뒤로가기로 / 에 돌아오면 sessionStorage에 저장된 슬라이드(학과/메인/슬라이드)로 복원
  */
 const HomeSlider = () => {
   const location = useLocation();
   const { isDesktop } = useResponsive();
   const { activeMainSlide, setActiveMainSlide } = useHeaderStore();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [initialized, setInitialized] = useState(false);
-  const isInitialJump = useRef(true);
-  /** 마운트 시 읽은 복원 인덱스 (한 번만 사용) */
-  const restoreIndexRef = useRef<SlideIndex | null>(null);
+  const isExternalChange = useRef(false);
 
   // / 에 진입할 때마다(마운트·뒤로가기) sessionStorage 기준으로 복원할 인덱스 결정
   useEffect(() => {
     if (location.pathname !== '/') return;
     setMounted(true);
-  }, []);
+    const stored = getStoredSlideIndex();
+    setActiveMainSlide(stored);
+  }, [location.pathname, setActiveMainSlide]);
 
-
+  // 1. Swiper 초기화 시 저장된 슬라이드로 점프
   useEffect(() => {
-    if (!mounted || initialized || !containerRef.current) return;
-    const container = containerRef.current;
-    const width = container.clientWidth;
-    if (width <= 0) return;
+    if (!swiper || !mounted) return;
+    const stored = getStoredSlideIndex();
+    swiper.slideTo(stored, 0);
+  }, [swiper, mounted]);
 
-    let initialIndex = 1;
-    if (typeof window !== 'undefined') {
-      const saved = window.sessionStorage.getItem('main-active-slide');
-      const parsed = saved !== null ? Number(saved) : NaN;
-      if (!Number.isNaN(parsed) && parsed >= 0 && parsed <= 2) {
-        initialIndex = Math.round(parsed);
-      }
-    }
-
-    const timer = setTimeout(() => {
-      if (!containerRef.current) return;
-      const c = containerRef.current;
-      const w = c.clientWidth;
-      if (w > 0) {
-        c.scrollLeft = w * initialIndex;
-        setActiveMainSlide(initialIndex);
-        isInitialJump.current = false;
-        setInitialized(true);
-      }
-    }, 30);
-    return () => clearTimeout(timer);
-  }, [mounted, initialized, setActiveMainSlide]);
-
-  
+  // 2. bfcache(뒤로가기로 페이지 복원) 시 스크롤 복원
   useEffect(() => {
-    if (!initialized || typeof window === 'undefined') return;
-    window.sessionStorage.setItem('main-active-slide', String(activeMainSlide));
-  }, [activeMainSlide, initialized]);
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (!e.persisted || location.pathname !== '/') return;
+      if (!swiper) return;
+      const stored = getStoredSlideIndex();
+      swiper.slideTo(stored, 0);
+      setActiveMainSlide(stored);
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, [location.pathname, swiper, setActiveMainSlide]);
 
-  
+  // 3. 슬라이드가 바뀔 때마다 sessionStorage에 저장
   useEffect(() => {
-    if (!initialized || !containerRef.current || isInitialJump.current) return;
-    const container = containerRef.current;
-    const width = container.clientWidth;
-    const targetScroll = width * activeMainSlide;
-    if (Math.abs(container.scrollLeft - targetScroll) > 20) {
-      container.scrollTo({ left: targetScroll, behavior: 'smooth' });
-    }
-  }, [activeMainSlide, initialized]);
+    if (!swiper) return;
+    setStoredSlideIndex(activeMainSlide as SlideIndex);
+  }, [activeMainSlide, swiper]);
 
-  const handleScroll = () => {
-    if (!containerRef.current || !initialized || isInitialJump.current) return;
-    const container = containerRef.current;
-    const width = container.clientWidth;
-    if (width === 0) return;
-    const index = Math.round(container.scrollLeft / width) as SlideIndex;
-    if (index !== activeMainSlide) {
-      setActiveMainSlide(index);
+  // 4. 외부 상태 변경 (로고 클릭, MainSearchSection 등) 대응 → Swiper 슬라이드 이동
+  useEffect(() => {
+    if (!swiper) return;
+    if (swiper.activeIndex === activeMainSlide) return;
+    isExternalChange.current = true;
+    swiper.slideTo(activeMainSlide);
+  }, [activeMainSlide, swiper]);
+
+  const handleSlideChange = (s: SwiperClass) => {
+    if (isExternalChange.current) {
+      isExternalChange.current = false;
+      return;
     }
+    const index = s.activeIndex as SlideIndex;
+    setActiveMainSlide(index);
   };
 
   if (isDesktop) return <Main />;
   if (!mounted) return null;
 
   return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className={cn(
-        'no-scrollbar flex h-full w-full overflow-x-auto overflow-y-hidden transition-opacity duration-300 select-none',
-        initialized ? 'snap-x snap-mandatory opacity-100' : 'opacity-0',
-      )}
+    <Swiper
+      onSwiper={setSwiper}
+      onSlideChange={handleSlideChange}
+      initialSlide={getStoredSlideIndex()}
+      className={cn('h-full w-full')}
+      resistance={true}
+      resistanceRatio={0}
+      touchReleaseOnEdges={false}
+      nested={true}
+      slidesPerView={1}
+      spaceBetween={0}
     >
       {/* Index 0: 학과 */}
-      <div className='h-full min-w-full snap-center overflow-y-auto'>
-        <DepartmentMainPage />
-      </div>
+      <SwiperSlide className='h-full'>
+        <div className='h-full overflow-y-auto'>
+          <DepartmentMainPage />
+        </div>
+      </SwiperSlide>
 
       {/* Index 1: 메인 홈 */}
-      <div className='h-full min-w-full snap-center overflow-y-auto'>
-        <Main />
-      </div>
+      <SwiperSlide className='h-full'>
+        <div className='h-full overflow-y-auto'>
+          <Main />
+        </div>
+      </SwiperSlide>
 
       {/* Index 2: 슬라이드 */}
-      <div className='h-full min-w-full snap-center overflow-hidden'>
+      <SwiperSlide className='h-full overflow-hidden'>
         <Slides />
-      </div>
-    </div>
+      </SwiperSlide>
+    </Swiper>
   );
 };
 

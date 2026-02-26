@@ -14,7 +14,7 @@ import { ScheduleList } from './academic-schedule-list';
 import { CardHeader } from '@/components/atoms/Card';
 import { Link } from 'react-router-dom';
 import { MdChevronRight } from 'react-icons/md';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 
 /**
  * 학사 일정 카테고리 정의
@@ -71,7 +71,7 @@ export default function AcademicScheduleWidget({
   const getNoticeData = useCallback(async () => {
     try {
       setIsNoticeLoading(true);
-      const res = await fetchNotionInfo('academic', undefined, page, 10);
+      const res = await fetchNotionInfo('academic', page, 10);
       setNotices(res.content);
       setTotalPages(res.totalPages);
     } catch (e) {
@@ -99,44 +99,70 @@ export default function AcademicScheduleWidget({
     }
   }, [activeTab, page, getNoticeData]);
 
-  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회 */
-  const handleYearChange = (year: number) =>
+  /** 캘린더 연/월 변경 시 viewDate 동기화 → 해당 월 데이터 재조회, 선택 날짜·카테고리 초기화 */
+  const handleYearChange = (year: number) => {
+    setSelectedDate(null);
+    setSelectedCategory('all');
     setViewDate((prev) => new Date(year, prev.getMonth(), 1));
-  const handleMonthChange = (month: number) =>
+  };
+  const handleMonthChange = (month: number) => {
+    setSelectedDate(null);
+    setSelectedCategory('all');
     setViewDate((prev) => new Date(prev.getFullYear(), month - 1, 1));
+  };
+
+  /** 날짜 선택 시 카테고리 초기화 */
+  const handleDateSelect = useCallback((date: Date | null) => {
+    setSelectedDate(date);
+    setSelectedCategory('all');
+  }, []);
 
   /**
-   * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜 기준, 없을 시 오늘 기준)
+   * 하단 일정 리스트에 보여줄 일정들 (선택된 날짜가 있으면 해당 날짜 기준, 없으면 현재 달 전체)
    */
   const dailyScheduleList = useMemo(() => {
     if (!scheduleData) return [];
-    const targetDate = selectedDate || new Date();
 
-    // 로컬 날짜 문자열 생성 (YYYY-MM-DD)
-    const year = targetDate.getFullYear();
-    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-    const day = String(targetDate.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-
-    // 전체 일정을 카테고리 정보와 함께 합침
+    // 선택한 필터에 따라 표시할 소스: 전체→all+undergrad+graduate+holiday, 학부→all+undergrad, 대학원→all+graduate, 휴일→holiday
     const allEventsWithCategory: (CalendarScheduleItem & { categoryLabel: string })[] = [];
 
-    if (selectedCategory === 'all' || selectedCategory === 'undergrad') {
+    const includeAll =
+      selectedCategory === 'all' ||
+      selectedCategory === 'undergrad' ||
+      selectedCategory === 'graduate';
+    const includeUndergrad = selectedCategory === 'all' || selectedCategory === 'undergrad';
+    const includeGraduate = selectedCategory === 'all' || selectedCategory === 'graduate';
+    const includeHoliday = selectedCategory === 'all' || selectedCategory === 'holiday';
+
+    if (includeAll) {
+      scheduleData.all.forEach((e) =>
+        allEventsWithCategory.push({ ...e, categoryLabel: '학부·대학원' }),
+      );
+    }
+    if (includeUndergrad) {
       scheduleData.undergrad.forEach((e) =>
         allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.undergrad }),
       );
     }
-    if (selectedCategory === 'all' || selectedCategory === 'graduate') {
+    if (includeGraduate) {
       scheduleData.graduate.forEach((e) =>
         allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.graduate }),
       );
     }
-    if (selectedCategory === 'all' || selectedCategory === 'holiday') {
+    if (includeHoliday) {
       scheduleData.holiday.forEach((e) =>
         allEventsWithCategory.push({ ...e, categoryLabel: categoryMap.holiday }),
       );
     }
 
+    // 선택된 날짜가 없으면 현재 달 전체 일정, 있으면 해당 날짜에 포함되는 일정만
+    if (selectedDate === null) {
+      return allEventsWithCategory;
+    }
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     return allEventsWithCategory.filter((e) => dateStr >= e.startDate && dateStr <= e.endDate);
   }, [scheduleData, selectedDate, selectedCategory]);
 
@@ -228,15 +254,28 @@ export default function AcademicScheduleWidget({
               <div className='p-4'>
                 <Calendar
                   events={scheduleData}
-                  onDateSelect={setSelectedDate}
+                  onDateSelect={handleDateSelect}
                   onYearChange={handleYearChange}
                   onMonthChange={handleMonthChange}
                 />
+
+                {/* 캘린더 범례 */}
+                <div className='mt-3 flex items-center justify-end'>
+                  <p className='bg-blue-35 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>전체 (학부·대학원)</p>
+                  <p className='bg-blue-15 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>학부</p>
+                  <p className='bg-blue-05 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>대학원</p>
+                  <p className='bg-grey-02 ms-4 h-2.5 w-2.5' />
+                  <p className='text-caption04 text-grey-40 ms-1'>휴일</p>
+                </div>
               </div>
             )}
 
             {/* 일정 리스트 컴포넌트 */}
             <ScheduleList
+              viewDate={viewDate}
               selectedDate={selectedDate}
               selectedCategory={selectedCategory}
               onCategoryToggle={() => setIsCategoryOpen(!isCategoryOpen)}
@@ -281,7 +320,7 @@ export default function AcademicScheduleWidget({
                         <span className='text-body05 line-clamp-2 text-black'>{notice.title}</span>
                         {notice.date && (
                           <span className='text-caption04 text-grey-20'>
-                            {format(new Date(notice.date), 'yyyy.MM.dd')}
+                            {formatToDotDate(notice.date)}
                           </span>
                         )}
                       </div>

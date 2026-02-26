@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { IoMdInformationCircleOutline } from 'react-icons/io';
 import Button from '@/components/atoms/Button';
+import { InfoOutlineIcon } from '@/components/atoms/Icon';
 
 /**
  * 로그인 실패 페이지
@@ -13,8 +13,8 @@ export default function LoginErrorPage() {
   return (
     <div className='flex min-h-[calc(100vh-100px)] w-full flex-1 flex-col items-center justify-center gap-10'>
       <div className='flex flex-col items-center gap-3'>
-        <IoMdInformationCircleOutline className='text-grey-20 text-title01' />
-        <p className='text-body03 text-grey-20'>로그인 후 이용 가능합니다.</p>
+        <InfoOutlineIcon className='text-grey-10' />
+        <p className='text-body03 text-grey-30'>로그인 후 이용 가능합니다.</p>
       </div>
       <Button
         variant='main'

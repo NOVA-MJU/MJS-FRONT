@@ -39,7 +39,7 @@ const StudentCodeFieldWithVerify = ({
           variant={
             !studentCode ? 'grey20' : isSending ? 'grey20' : isStuCodeChecked ? 'grey20' : 'main'
           }
-          className='ml-4 h-12 w-20 md:h-12 md:w-34'
+          className='ml-4 h-11 w-20 md:h-12 md:w-34'
         >
           {!studentCode
             ? '중복 확인'

@@ -1,7 +1,7 @@
 import { getBoards, type BoardItem, type Category } from '@/api/board';
 import { CardHeader } from '@/components/atoms/Card';
 import { SkeletonProfile } from '@/components/atoms/Skeleton';
-import { format } from 'date-fns';
+import { formatToDotDate } from '@/utils/date';
 import { handleError } from '@/utils/error';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
@@ -14,13 +14,21 @@ import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
 // 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
 
-// 카테고리 탭 선택 값을 세션 스토리지에 보관
+// 카테고리·페이지 값을 세션 스토리지에 보관
 const BOARD_TAB_STORAGE_KEY = 'board-section-category';
+const BOARD_PAGE_STORAGE_KEY = 'board-section-page';
 
 function getStoredCategory(): 'NOTICE' | 'FREE' {
   if (typeof sessionStorage === 'undefined') return 'NOTICE';
   const stored = sessionStorage.getItem(BOARD_TAB_STORAGE_KEY);
   return stored === 'FREE' ? 'FREE' : 'NOTICE';
+}
+
+function getStoredPage(): number {
+  if (typeof sessionStorage === 'undefined') return 0;
+  const stored = sessionStorage.getItem(BOARD_PAGE_STORAGE_KEY);
+  const num = Number(stored);
+  return Number.isInteger(num) && num >= 0 ? num : 0;
 }
 
 // 메인페이지에 표시할 자유게시판 위젯 컴포넌트
@@ -41,7 +49,7 @@ export default function BoardSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(getStoredPage);
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
@@ -66,6 +74,10 @@ export default function BoardSection({
   useEffect(() => {
     sessionStorage.setItem(BOARD_TAB_STORAGE_KEY, category);
   }, [category]);
+
+  useEffect(() => {
+    sessionStorage.setItem(BOARD_PAGE_STORAGE_KEY, String(page));
+  }, [page]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -140,7 +152,14 @@ export default function BoardSection({
                 >
                   <div className='px-5 py-2'>
                     {/* 제목 */}
-                    <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
+                    <div className='flex items-center'>
+                      {content.popular && (
+                        <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
+                          HOT
+                        </div>
+                      )}
+                      <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
+                    </div>
 
                     {/* 본문 미리보기 */}
                     <p className='text-body05 mt-1 line-clamp-2 text-black'>
@@ -150,7 +169,7 @@ export default function BoardSection({
                     <div className='mt-2 flex items-center justify-between'>
                       {/* 좋아요 갯수 */}
                       <div className='flex items-center'>
-                        <HeartIcon className='text-blue-10' />
+                        <HeartIcon className='text-blue-10' filled={content.liked} />
                         <span className='text-caption02 text-grey-40 ms-1'>
                           {content.likeCount}
                         </span>
@@ -162,9 +181,11 @@ export default function BoardSection({
                         </span>
                       </div>
 
-                      {/* 작성 날짜 */}
+                      {/* 작성 날짜 (미공개 글은 publishedAt이 null일 수 있음) */}
                       <span className='text-caption02 text-grey-40'>
-                        {format(new Date(content.publishedAt), 'yyyy.MM.dd')}
+                        {content.publishedAt
+                          ? formatToDotDate(content.publishedAt)
+                          : formatToDotDate(content.createdAt)}
                       </span>
                     </div>
                   </div>

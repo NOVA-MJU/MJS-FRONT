@@ -52,7 +52,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             />
           )}
         </div>
-        <div className='flex items-start'>
+        <div className='flex items-center'>
           <Input
             ref={ref}
             type={type}
