@@ -4,12 +4,9 @@ import BlockTextEditor from '../../../components/organisms/BlockTextEditor';
 import type { BlockNoteEditor } from '@blocknote/core';
 import NavigationUp from '../../../components/molecules/NavigationUp';
 import { getBlockTextEditorContentPreview } from '../../../components/organisms/BlockTextEditor/util';
-import { deletePost, getBoardDetail, updatePost } from '../../../api/board';
+import { getBoardDetail, updatePost } from '../../../api/board';
 import { DOMAIN_VALUES } from '../../../api/s3upload';
 import { ChevronDownIcon } from '@/components/atoms/Icon';
-import toast from 'react-hot-toast';
-import { handleError } from '@/utils/error';
-
 type Category = 'FREE' | 'NOTICE';
 const CATEGORY_LABEL: Record<Category, string> = {
   FREE: '자유게시판',
@@ -28,7 +25,6 @@ export default function BoardEdit() {
   const editorWrapperRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<BlockNoteEditor>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [title, setTitle] = useState('');
   const [initialContent, setInitialContent] = useState('');
 
@@ -106,7 +102,7 @@ export default function BoardEdit() {
    * 게시글 수정 요청 함수입니다. 제목 또는 본문이 없는 경우 동작하지 않습니다.
    */
   const handleUploadPost = async () => {
-    if (isSaving || isDeleting || !uuid) return;
+    if (isSaving || !uuid) return;
 
     const parsedTitle = title.trim() ?? '';
     const content = JSON.stringify(editorRef.current?.document);
@@ -124,24 +120,6 @@ export default function BoardEdit() {
       console.error('BoardEdit.tsx', e);
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  /**
-   * 게시글 삭제 요청
-   */
-  const handleDeletePost = async () => {
-    if (!uuid || isSaving || isDeleting) return;
-    if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
-    setIsDeleting(true);
-    try {
-      await deletePost(uuid);
-      toast.success('게시글이 삭제되었습니다.');
-      navigate(-2);
-    } catch (e) {
-      handleError(e, '게시글 삭제에 실패했습니다.');
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -219,31 +197,12 @@ export default function BoardEdit() {
           </div>
         </div>
 
-        {/* 게시글 삭제 버튼 */}
-        <div className='mt-4'>
-          <button
-            type='button'
-            className='text-body05 bg-grey-40 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg text-white disabled:cursor-not-allowed disabled:opacity-70'
-            disabled={isSaving || isDeleting}
-            onClick={handleDeletePost}
-          >
-            {isDeleting ? (
-              <>
-                <span className='border-grey-20 h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-t-white' />
-                <span>삭제 중...</span>
-              </>
-            ) : (
-              '게시물 삭제'
-            )}
-          </button>
-        </div>
-
         {/* 완료 버튼 */}
         <div className='mt-4 mb-10'>
           <button
             className={`text-body05 flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg ${hasTitle && hasContent ? 'bg-mju-primary text-white' : 'bg-grey-02 text-grey-40'} disabled:cursor-not-allowed disabled:opacity-70`}
             onClick={handleUploadPost}
-            disabled={isSaving || isDeleting}
+            disabled={isSaving}
           >
             {isSaving ? (
               <>

@@ -207,14 +207,11 @@ export const postCommentReply = async (
 
 /**
  * 게시글 댓글 삭제
- * @param boardUuid 게시글의 uuid를 입력하세요
  * @param commentUuid 댓글의 uuid를 입력하세요
  * @returns 서버 메시지가 표시됩니다
  */
-export const deleteComment = async (boardUuid: string, commentUuid: string) => {
-  const res = await apiClient.delete<ApiResponse<string>>(
-    `/boards/${boardUuid}/comments/${commentUuid}`,
-  );
+export const deleteComment = async (commentUuid: string) => {
+  const res = await apiClient.delete<ApiResponse<string>>(`/boards/comments/${commentUuid}`);
   return res.data.data;
 };
 
