@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import type { FormEventHandler } from 'react';
 import { gtmPush } from '../../utils/gtm';
 
 type Options = {
@@ -20,7 +19,7 @@ export function useLoginTracking(opts: Options = { method: 'email' }) {
     }
   };
 
-  const onSubmitCapture: FormEventHandler<HTMLFormElement> = () => {
+  const onSubmitCapture = () => {
     markStart();
     gtmPush({ event: 'login_submit', page_path: pagePath });
   };
@@ -32,7 +31,7 @@ export function useLoginTracking(opts: Options = { method: 'email' }) {
 
   useEffect(() => {
     return () => {
-      if (doneRef.current === null) {
+      if (startedRef.current && doneRef.current === null) {
         gtmPush({ event: 'login_abort', page_path: pagePath });
       }
     };

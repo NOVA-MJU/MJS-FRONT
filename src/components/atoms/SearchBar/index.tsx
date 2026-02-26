@@ -10,6 +10,8 @@ import { getSearchWordcompletion } from '@/api/search';
 import { addRecentKeyword } from '@/utils/recentSearch';
 import { useAuthStore } from '@/store/useAuthStore';
 
+import { useSearchTracking } from '@/hooks/gtm/useSearchTracking';
+
 interface SearchBarProps {
   /**
    * domain을 설정하면, 검색 수행 시 해당 domain에 맞는 페이지로 이동됩니다
@@ -23,6 +25,7 @@ interface SearchBarProps {
 
   className?: string;
   iconClassName?: string;
+  searchSource?: string;
 }
 
 /**
@@ -36,6 +39,7 @@ export default function SearchBar({
   initialContent,
   className,
   iconClassName,
+  searchSource = 'searchbar',
 }: SearchBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,6 +47,8 @@ export default function SearchBar({
   const user = useAuthStore((state) => state.user);
   const recentSearchScope = user?.uuid ?? undefined;
   const [value, setValue] = useState('');
+
+  const { trackSearchSubmit } = useSearchTracking();
 
   /** 통합검색(domain=search)일 때 기존 쿼리(tab 등) 유지 */
   const getSearchQuery = (keyword: string) => {
@@ -106,15 +112,23 @@ export default function SearchBar({
    * 현재 경로와 클릭한 키워드의 목적지 경로가 같으면 화면을 새로고침
    */
   const handleKeywordClick = (keyword: string) => {
-    addRecentKeyword(keyword, undefined, recentSearchScope);
-    const search = getSearchQuery(keyword);
+    const trimmed = keyword.trim();
+    if (!trimmed) return;
+
+    trackSearchSubmit({
+      keyword: trimmed,
+      method: 'suggestion',
+      search_source: searchSource,
+      search_action: 'suggestion_click',
+    });
+
+    addRecentKeyword(trimmed, undefined, recentSearchScope);
+    const search = getSearchQuery(trimmed);
+
     if (location.pathname === `/${domain}` && location.search === search) {
       window.location.reload();
     } else {
-      navigate({
-        pathname: `/${domain}`,
-        search,
-      });
+      navigate({ pathname: `/${domain}`, search });
     }
   };
 
@@ -166,11 +180,20 @@ export default function SearchBar({
     abortControllerRef.current?.abort();
     setSuggestedKeywords([]);
 
-    if (value?.trim()) {
-      addRecentKeyword(value, undefined, recentSearchScope);
+    const trimmed = value.trim();
+
+    if (trimmed) {
+      trackSearchSubmit({
+        keyword: trimmed,
+        method: 'enter',
+        search_source: searchSource,
+        search_action: 'submit',
+      });
+
+      addRecentKeyword(trimmed, undefined, recentSearchScope);
       navigate({
         pathname: `/${domain}`,
-        search: getSearchQuery(value.trim()),
+        search: getSearchQuery(trimmed),
       });
     } else {
       navigate({
@@ -212,6 +235,7 @@ export default function SearchBar({
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
+                if (e.nativeEvent.isComposing) return;
                 handleSubmitSearch();
               }
             }}
