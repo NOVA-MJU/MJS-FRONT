@@ -145,7 +145,6 @@ export default function NoticeSection() {
   });
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const recentYear = new Date().getFullYear();
-  const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState<number>(() => {
     if (typeof window === 'undefined') return 0;
     const saved = window.sessionStorage.getItem(SESSION_STORAGE_PAGE_KEY);
@@ -168,43 +167,30 @@ export default function NoticeSection() {
     const nextTab = String(tab);
     if (nextTab === selectedTab) {
       if (page !== 0) {
-        setIsLoading(true);
-        setSelectedInfo([]);
-        setTotalPages(0);
         setPage(0);
       }
       return;
     }
 
-    setIsLoading(true);
-    setSelectedInfo([]);
-    setTotalPages(0);
     setPage(0);
     setSelectedTab(nextTab);
   };
 
-  /**
-   * 공지사항 데이터 조회
-   */
+  // 공지사항 데이터 조회
   useEffect(() => {
     (async () => {
       try {
-        setIsLoading(true);
         const fetchedNoticeData = await fetchNotionInfo(selectedTab, page, 10, 'desc');
         setSelectedInfo(fetchedNoticeData.content);
         setTotalPages(fetchedNoticeData.totalPages);
       } catch (e) {
         handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
         setSelectedInfo([]);
-      } finally {
-        setIsLoading(false);
       }
     })();
   }, [selectedTab, recentYear, page]);
 
-  /**
-   * 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
-   */
+  // 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
   const NoticeCard = ({ info }: { info: NoticeItem }) => (
     <a
       href={info.link}
@@ -227,11 +213,13 @@ export default function NoticeSection() {
       </div>
 
       <div className='border-grey-02 flex flex-col border-t'>
-        {!isLoading &&
-          selectedInfo.map((info, i) => <NoticeCard key={`${info.link}-${i}`} info={info} />)}
+        {selectedInfo.map((info, i) => (
+          <NoticeCard key={`${info.link}-${i}`} info={info} />
+        ))}
       </div>
+
       {/* 페이지네이션 */}
-      {!isLoading && selectedInfo.length > 0 && (
+      {selectedInfo.length > 0 && (
         <div className='mb-4'>
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </div>
