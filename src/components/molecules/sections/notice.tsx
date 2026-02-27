@@ -141,6 +141,25 @@ export default function NoticeSection() {
   const [page, setPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
 
+  const handleTabChange = (tab: unknown) => {
+    const nextTab = String(tab);
+    if (nextTab === selectedTab) {
+      if (page !== 0) {
+        setIsLoading(true);
+        setSelectedInfo([]);
+        setTotalPages(0);
+        setPage(0);
+      }
+      return;
+    }
+
+    setIsLoading(true);
+    setSelectedInfo([]);
+    setTotalPages(0);
+    setPage(0);
+    setSelectedTab(nextTab);
+  };
+
   /**
    * 공지사항 데이터 조회
    */
@@ -181,7 +200,7 @@ export default function NoticeSection() {
   return (
     <section className='mt-4 flex flex-col'>
       <div className='mb-4 px-4'>
-        <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+        <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={handleTabChange} />
       </div>
 
       <div className='border-grey-02 flex flex-col border-t'>
