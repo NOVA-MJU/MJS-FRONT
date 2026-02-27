@@ -6,7 +6,7 @@ interface PaginationProps {
   onChange: (page: number) => void;
 }
 
-const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
+export default function Pagination({ page, totalPages, onChange }: PaginationProps) {
   const visibleCount = Math.min(5, totalPages);
   const startPage = Math.floor(page / 5) * 5;
 
@@ -19,7 +19,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
           onChange(page - 1);
           window.scrollTo(0, 0);
         }}
-        className='text-grey-30 flex items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
+        className='text-grey-30 flex cursor-pointer items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
       >
         <IoIosArrowBack size={18} />
         <span className='text-[12px] leading-[1.5] font-normal'>이전</span>
@@ -39,7 +39,7 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
             <button
               key={pageIndex}
               onClick={() => onChange(pageIndex)}
-              className='flex h-6 w-6 items-center justify-center transition-colors'
+              className='flex h-6 w-6 cursor-pointer items-center justify-center transition-colors'
               disabled={isCurrentPage}
             >
               {isCurrentPage ? (
@@ -61,13 +61,11 @@ const Pagination = ({ page, totalPages, onChange }: PaginationProps) => {
           onChange(page + 1);
           window.scrollTo(0, 0);
         }}
-        className='text-grey-30 flex items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
+        className='text-grey-30 flex cursor-pointer items-center gap-0.5 transition-opacity active:opacity-60 disabled:opacity-30'
       >
         <span className='text-[12px] leading-[1.5] font-normal'>다음</span>
         <IoIosArrowForward size={18} />
       </button>
     </nav>
   );
-};
-
-export default Pagination;
+}
