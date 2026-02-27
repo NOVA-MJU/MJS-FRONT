@@ -134,12 +134,35 @@ export function NoticeSlideSection({
 }
 
 export default function NoticeSection() {
-  const [selectedTab, setSelectedTab] = useState('all');
+  const SESSION_STORAGE_SELECTED_TAB_KEY = 'notice:selectedTab';
+  const SESSION_STORAGE_PAGE_KEY = 'notice:page';
+
+  const [selectedTab, setSelectedTab] = useState(() => {
+    if (typeof window === 'undefined') return 'all';
+    const saved = window.sessionStorage.getItem(SESSION_STORAGE_SELECTED_TAB_KEY);
+    if (!saved) return 'all';
+    return Object.prototype.hasOwnProperty.call(tabNameMap, saved) ? saved : 'all';
+  });
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const recentYear = new Date().getFullYear();
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(() => {
+    if (typeof window === 'undefined') return 0;
+    const saved = window.sessionStorage.getItem(SESSION_STORAGE_PAGE_KEY);
+    const parsed = saved ? Number.parseInt(saved, 10) : 0;
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  });
   const [totalPages, setTotalPages] = useState<number>(0);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.setItem(SESSION_STORAGE_SELECTED_TAB_KEY, selectedTab);
+  }, [selectedTab]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.setItem(SESSION_STORAGE_PAGE_KEY, String(page));
+  }, [page]);
 
   const handleTabChange = (tab: unknown) => {
     const nextTab = String(tab);
