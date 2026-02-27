@@ -1,6 +1,5 @@
 import { fetchNotionInfo } from '@/api/main/notice-api';
 import { CardHeader } from '@/components/atoms/Card';
-import { Skeleton } from '@/components/atoms/Skeleton';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToDotDate } from '@/utils/date';
@@ -127,15 +126,6 @@ export function NoticeSlideSection({
       </div>
 
       <div className='flex flex-col pt-1'>
-        {isLoading &&
-          [...Array(CONTENT_LENGTH)].map((_, index) => (
-            <div key={index} className='px-5 py-3'>
-              <div className='flex justify-between gap-2'>
-                <Skeleton className='h-4 flex-1' />
-                <Skeleton className='h-3 w-12' />
-              </div>
-            </div>
-          ))}
         {!isLoading &&
           selectedInfo.map((info, i) => <NoticeSlideCard key={`${info.link}-${i}`} info={info} />)}
       </div>
@@ -195,14 +185,6 @@ export default function NoticeSection() {
       </div>
 
       <div className='border-grey-02 flex flex-col border-t'>
-        {isLoading &&
-          [...Array(CONTENT_LENGTH)].map((_, index) => (
-            <div key={index} className='border-grey-02 border-b px-5 py-[10px] last:border-0'>
-              <Skeleton className='mb-1 h-3 w-10' />
-              <Skeleton className='mb-1 h-5 w-full' />
-              <Skeleton className='h-3 w-16' />
-            </div>
-          ))}
         {!isLoading &&
           selectedInfo.map((info, i) => <NoticeCard key={`${info.link}-${i}`} info={info} />)}
       </div>
