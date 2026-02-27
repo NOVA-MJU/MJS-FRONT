@@ -1,16 +1,14 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoIosClose } from 'react-icons/io';
 import toast from 'react-hot-toast';
 
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHeaderStore } from '@/store/useHeaderStore';
+import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { NAV_ITEMS } from '@/constants/nav';
 import type { NavKey } from '@/types/nav/item';
 import { logout as apiLogout } from '@/api/user';
-
-import { useNavTracking } from '@/hooks/gtm/useNavTracking';
-import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
 
 type SidebarV2Props = {
   isOpen: boolean;
@@ -31,40 +29,11 @@ type SidebarItem = {
 
 const findNavItem = (key: NavKey) => NAV_ITEMS.find((item) => item.key === key);
 
-function UserAvatar({
-  profileImageUrl,
-  fallbackChar,
-}: {
-  profileImageUrl?: string;
-  fallbackChar: string;
-}) {
-  const [loadFailed, setLoadFailed] = useState(false);
-  useEffect(() => {
-    setLoadFailed(false);
-  }, [profileImageUrl]);
-  const showImage = profileImageUrl && profileImageUrl.trim() !== '' && !loadFailed;
-
-  return (
-    <div className='bg-grey-05 flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full'>
-      {showImage ? (
-        <img
-          src={profileImageUrl}
-          alt='프로필'
-          className='h-full w-full object-cover'
-          onError={() => setLoadFailed(true)}
-        />
-      ) : (
-        <span className='text-caption01 text-grey-30'>{fallbackChar}</span>
-      )}
-    </div>
-  );
-}
-
 export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   const navigate = useNavigate();
   const { isLoggedIn, user, resetUser } = useAuthStore();
   const { trackNavClick } = useNavTracking();
-  const { setActiveMainSlide, setSelectedTab, setBoardCategory } = useHeaderStore();
+  const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
 
   const items = useMemo<SidebarItem[]>(() => {
     const notice = findNavItem('notice');
@@ -170,18 +139,13 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
   }, []);
 
   const handleItemClick = (item: SidebarItem) => {
-    trackNavClick({
-      item_name: item.id,
-      item_label: item.label,
-      nav_group: resolveNavGroupByLabel(item.label),
-    });
-
     if (item.requiresAuth && !isLoggedIn) {
       onClose();
       navigate('/login');
       return;
     }
 
+    // 메인 캐러셀/슬라이드로 이동 (경로 대신 슬라이드 인덱스 + 탭)
     const slideTabMap: Record<string, string> = {
       department: 'department', // 학과 → slide 0
       'campus-map': '명지도',
@@ -194,17 +158,10 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       news: '명대신문',
       broadcast: '명대뉴스',
     };
-
     const tabOrSlide = slideTabMap[item.id];
     if (tabOrSlide) {
       if (item.navKey) {
         trackNavClick(item.navKey);
-      }
-      // 게시판 탭 진입 시 정보/자유 게시판 중 어떤 탭을 선택할지 지정
-      if (item.id === 'info-board') {
-        setBoardCategory('NOTICE');
-      } else if (item.id === 'free-board') {
-        setBoardCategory('FREE');
       }
       if (tabOrSlide === 'department') {
         setActiveMainSlide(0);
@@ -214,6 +171,10 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
       }
       onClose();
       return;
+    }
+
+    if (item.navKey) {
+      trackNavClick(item.navKey);
     }
 
     if (item.href) {
@@ -253,10 +214,11 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         <div className='flex items-center justify-between px-5 py-4'>
           {isLoggedIn && user ? (
             <div className='flex items-center gap-3'>
-              <UserAvatar
-                profileImageUrl={user.profileImageUrl}
-                fallbackChar={(user.nickname || user.name || '닉네임').charAt(0)}
-              />
+              <div className='bg-grey-05 flex h-10 w-10 items-center justify-center rounded-full'>
+                <span className='text-caption01 text-grey-30'>
+                  {(user.nickname || user.name || '닉네임').charAt(0)}
+                </span>
+              </div>
               <div className='flex flex-col'>
                 <span className='text-body03 font-semibold text-black'>
                   {user.nickname || '닉네임'}
@@ -298,7 +260,7 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         )}
 
         {/* 메뉴 영역 */}
-        <div className='mt-2 flex-1 overflow-y-auto px-5'>
+        <div className='-mt-1 mt-2 flex-1 overflow-y-auto px-5'>
           {/* Information 섹션 */}
           <section
             className={`border-grey-10 -mx-5 mb-4 px-5 pt-4 ${isLoggedIn ? 'border-t' : ''}`}
