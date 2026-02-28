@@ -5,19 +5,13 @@ import { type ApiResponse, type Paginated } from './types';
  * 게시글 목록을 조회합니다.
  * @param page 페이지네이션 정보를 입력하세요.
  * @param size 페이지네이션 정보를 입력하세요.
- * @param sortBy 정렬 기준을 입력하세요. 기본값을 'createdAt' 입니다.
- * @param direction 정렬 순서를 입력하세요.
  */
-export type BoardSortBy = 'createdAt' | 'title' | 'likeCount' | 'viewCount';
-export type BoardDirection = 'ASC' | 'DESC';
 export type Category = 'ALL' | 'FREE' | 'NOTICE' | 'INFORMATION';
 
 export interface GetBoardsParams {
   page?: number;
   size?: number;
   communityCategory?: Category;
-  sortBy?: BoardSortBy;
-  direction?: BoardDirection;
 }
 
 import { DEFAULT_PAGE_SIZE } from '../constants/common';
@@ -26,11 +20,9 @@ export const getBoards = async ({
   page = 0,
   size = DEFAULT_PAGE_SIZE,
   communityCategory = 'ALL',
-  sortBy = 'createdAt',
-  direction = 'DESC',
 }: GetBoardsParams = {}) => {
   const { data } = await apiClient.get<ApiResponse<Paginated<BoardItem>>>('/boards', {
-    params: { page, size, communityCategory, sortBy, direction },
+    params: { page, size, communityCategory },
   });
   return data.data;
 };

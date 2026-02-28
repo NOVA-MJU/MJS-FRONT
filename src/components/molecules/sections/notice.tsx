@@ -1,6 +1,5 @@
 import { fetchNotionInfo } from '@/api/main/notice-api';
 import { CardHeader } from '@/components/atoms/Card';
-import { Skeleton } from '@/components/atoms/Skeleton';
 import { ChipTabs } from '@/components/atoms/Tabs';
 import type { NoticeItem } from '@/types/notice/noticeInfo';
 import { formatToDotDate } from '@/utils/date';
@@ -127,15 +126,6 @@ export function NoticeSlideSection({
       </div>
 
       <div className='flex flex-col pt-1'>
-        {isLoading &&
-          [...Array(CONTENT_LENGTH)].map((_, index) => (
-            <div key={index} className='px-5 py-3'>
-              <div className='flex justify-between gap-2'>
-                <Skeleton className='h-4 flex-1' />
-                <Skeleton className='h-3 w-12' />
-              </div>
-            </div>
-          ))}
         {!isLoading &&
           selectedInfo.map((info, i) => <NoticeSlideCard key={`${info.link}-${i}`} info={info} />)}
       </div>
@@ -144,35 +134,63 @@ export function NoticeSlideSection({
 }
 
 export default function NoticeSection() {
-  const [selectedTab, setSelectedTab] = useState('all');
+  const SESSION_STORAGE_SELECTED_TAB_KEY = 'notice:selectedTab';
+  const SESSION_STORAGE_PAGE_KEY = 'notice:page';
+
+  const [selectedTab, setSelectedTab] = useState(() => {
+    if (typeof window === 'undefined') return 'all';
+    const saved = window.sessionStorage.getItem(SESSION_STORAGE_SELECTED_TAB_KEY);
+    if (!saved) return 'all';
+    return Object.prototype.hasOwnProperty.call(tabNameMap, saved) ? saved : 'all';
+  });
   const [selectedInfo, setSelectedInfo] = useState<NoticeItem[]>([]);
   const recentYear = new Date().getFullYear();
-  const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(() => {
+    if (typeof window === 'undefined') return 0;
+    const saved = window.sessionStorage.getItem(SESSION_STORAGE_PAGE_KEY);
+    const parsed = saved ? Number.parseInt(saved, 10) : 0;
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+  });
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  /**
-   * 공지사항 데이터 조회
-   */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.setItem(SESSION_STORAGE_SELECTED_TAB_KEY, selectedTab);
+  }, [selectedTab]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.sessionStorage.setItem(SESSION_STORAGE_PAGE_KEY, String(page));
+  }, [page]);
+
+  const handleTabChange = (tab: unknown) => {
+    const nextTab = String(tab);
+    if (nextTab === selectedTab) {
+      if (page !== 0) {
+        setPage(0);
+      }
+      return;
+    }
+
+    setPage(0);
+    setSelectedTab(nextTab);
+  };
+
+  // 공지사항 데이터 조회
   useEffect(() => {
     (async () => {
       try {
-        setIsLoading(true);
         const fetchedNoticeData = await fetchNotionInfo(selectedTab, page, 10, 'desc');
         setSelectedInfo(fetchedNoticeData.content);
         setTotalPages(fetchedNoticeData.totalPages);
       } catch (e) {
         handleError(e, '공지사항을 불러오는 중 오류가 발생했습니다.', { showToast: false });
         setSelectedInfo([]);
-      } finally {
-        setIsLoading(false);
       }
     })();
   }, [selectedTab, recentYear, page]);
 
-  /**
-   * 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
-   */
+  // 공지사항 아이템 컴포넌트 (피그마 디자인 적용)
   const NoticeCard = ({ info }: { info: NoticeItem }) => (
     <a
       href={info.link}
@@ -191,23 +209,17 @@ export default function NoticeSection() {
   return (
     <section className='mt-4 flex flex-col'>
       <div className='mb-4 px-4'>
-        <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={setSelectedTab} />
+        <ChipTabs tabs={tabNameMap} currentTab={selectedTab} setCurrentTab={handleTabChange} />
       </div>
 
       <div className='border-grey-02 flex flex-col border-t'>
-        {isLoading &&
-          [...Array(CONTENT_LENGTH)].map((_, index) => (
-            <div key={index} className='border-grey-02 border-b px-5 py-[10px] last:border-0'>
-              <Skeleton className='mb-1 h-3 w-10' />
-              <Skeleton className='mb-1 h-5 w-full' />
-              <Skeleton className='h-3 w-16' />
-            </div>
-          ))}
-        {!isLoading &&
-          selectedInfo.map((info, i) => <NoticeCard key={`${info.link}-${i}`} info={info} />)}
+        {selectedInfo.map((info, i) => (
+          <NoticeCard key={`${info.link}-${i}`} info={info} />
+        ))}
       </div>
+
       {/* 페이지네이션 */}
-      {!isLoading && selectedInfo.length > 0 && (
+      {selectedInfo.length > 0 && (
         <div className='mb-4'>
           <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </div>
