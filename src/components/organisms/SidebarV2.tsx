@@ -82,11 +82,6 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         navKey: meal?.key,
       },
       {
-        id: 'board-main',
-        label: '게시판',
-        section: 'information',
-      },
-      {
         id: 'news',
         label: '명대신문',
         section: 'information',
