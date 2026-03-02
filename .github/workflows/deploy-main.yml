@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-deploy:
     # PR이 merge 되었고 PR의 소스(head) 브랜치가 develop일 때만 실행됩니다
-    if: github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'develop'
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'develop' }}
 
     runs-on: ubuntu-latest
 
@@ -21,10 +21,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
 
       - name: Install project dependencies
-        run: npm i
+        run: npm ci
 
       - name: Build project
         env:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Sync build folder to S3
         run: |
-          aws s3 sync ./dist s3://s3-mjsearch-front --delete
+          aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
 
       - name: Invalidate CloudFront cache
         run: |
