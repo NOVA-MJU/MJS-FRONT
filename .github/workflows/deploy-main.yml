@@ -40,7 +40,7 @@ jobs:
 
       - name: Sync build folder to S3
         run: |
-          aws s3 sync ./dist s3://${{ vars.S3_BUCKET_NAME }} --delete
+          aws s3 sync ./dist s3://s3-thingo-vite --delete
 
       - name: Invalidate CloudFront cache
         run: |
