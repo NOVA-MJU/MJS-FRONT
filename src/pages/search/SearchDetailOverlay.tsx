@@ -110,7 +110,9 @@ export default function SearchDetail() {
    * 검색 요청 function
    */
   const filterByType = (content: SearchResultItemRes[], type: string) =>
-    content.filter((item) => item.type?.toLowerCase() === type.toLowerCase()).slice(0, 5);
+    content
+      .filter((item) => item.type?.toLowerCase() === type.toLowerCase())
+      .slice(0, type === 'broadcast' ? 2 : 5);
 
   async function handleSearch(text: string) {
     if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
@@ -123,7 +125,8 @@ export default function SearchDetail() {
     } else {
       let type = tapLabel[currentTab];
       if (currentTab === '학사일정' && categoryTab === 'academic') type = 'NOTICE';
-      const category = currentTab === '명대뉴스' ? 'all' : categoryTab;
+      const category =
+        currentTab === '명대뉴스' || categoryTab === 'MJU_CALENDAR' ? 'all' : categoryTab;
       const res = await getSearchResult(text, type, category, sort, page, 10);
       const items = res.content as unknown as SearchResultItemRes[];
       setItems(items);
@@ -158,16 +161,16 @@ export default function SearchDetail() {
       setInitialContent(keyword);
       setIsAiSummaryLoading(true);
       try {
+        await handleSearch(keyword);
+      } catch {
+        // 에러는 상위에서 처리
+      }
+      try {
         await handleGetAiSummary(keyword);
       } catch {
         setAiSummary((prev) => ({ ...prev, summary: '', document_count: 0, sources: [] }));
       } finally {
         setIsAiSummaryLoading(false);
-      }
-      try {
-        await handleSearch(keyword);
-      } catch {
-        // 에러는 상위에서 처리
       }
     })();
   }, [keyword, page]);
