@@ -1,14 +1,13 @@
 import { useState } from 'react';
-
-import { genderOptions } from '../../../constants/gender';
-import { useRegisterHandlers } from '../../../hooks/useRegister';
-import { validatePassword, validateStudentCode } from '../../../utils/validation';
+import { genderOptions } from '@/constants/gender';
+import { useRegisterHandlers } from '@/hooks/useRegister';
+import { isValidPassword, validateStudentCode } from '@/utils/validation';
 import PersonalInfoSection from './PersonalInfoSection';
 import RequiredInfoSection from './RequiredInfoSection';
-import Button from '../../atoms/Button/Button';
 import ProfileInfoSection from './ProfileInfoSection';
+import clsx from 'clsx';
 
-const RegisterForm = () => {
+export default function RegisterForm() {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
   const [confirmPw, setConfirmPw] = useState('');
@@ -48,7 +47,7 @@ const RegisterForm = () => {
     gender,
     department,
   });
-  const isPwValid = validatePassword(pw);
+  const isPwValid = isValidPassword(pw);
   const isPwMatch = pw === confirmPw;
   const confirmError = confirmPw !== '' && !isPwMatch;
   const isStudentCodeValid = validateStudentCode(studentCode);
@@ -112,18 +111,16 @@ const RegisterForm = () => {
         setIsNicknameChecked={setIsNicknameChecked}
       />
       <ProfileInfoSection setProfileImageFile={setProfileImageFile} />
-      <Button
+      <button
         type='submit'
-        variant={formValid ? 'main' : 'grey40'}
         disabled={!formValid}
-        fullWidth
-        size='lg'
-        shape='rounded'
+        className={clsx(
+          'text-body05 w-full rounded-lg p-2.5 transition',
+          formValid ? 'bg-mju-primary cursor-pointer text-white' : 'bg-grey-40 text-white',
+        )}
       >
         Thingo 시작하기
-      </Button>
+      </button>
     </form>
   );
-};
-
-export default RegisterForm;
+}

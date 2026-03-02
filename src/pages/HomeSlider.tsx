@@ -2,7 +2,6 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useResponsive } from '@/hooks/useResponse';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperClass } from 'swiper';
 import 'swiper/css';
@@ -43,9 +42,8 @@ function cn(...inputs: ClassValue[]) {
  * Swiper 기반 메인 페이지와 슬라이드 페이지를 가로 스와이프로 연결
  * 뒤로가기로 / 에 돌아오면 sessionStorage에 저장된 슬라이드(학과/메인/슬라이드)로 복원
  */
-const HomeSlider = () => {
+export default function HomeSlider() {
   const location = useLocation();
-  const { isDesktop } = useResponsive();
   const { activeMainSlide, setActiveMainSlide } = useHeaderStore();
   const [swiper, setSwiper] = useState<SwiperClass | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -102,7 +100,6 @@ const HomeSlider = () => {
     setActiveMainSlide(index);
   };
 
-  if (isDesktop) return <Main />;
   if (!mounted) return null;
 
   return (
@@ -138,6 +135,4 @@ const HomeSlider = () => {
       </SwiperSlide>
     </Swiper>
   );
-};
-
-export default HomeSlider;
+}

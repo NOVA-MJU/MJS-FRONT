@@ -3,8 +3,11 @@ import InputField from '../../molecules/common/InputField';
 import Label from '../../atoms/Label';
 import Button from '../../atoms/Button';
 import { changePassword } from '../../../api/mypage';
+import { isValidPassword } from '../../../utils/validation';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import clsx from 'clsx';
+import { InfoCircleIcon } from '@/components/atoms/Icon';
 
 type RequiredInfoProps = {
   currentPw: string;
@@ -30,10 +33,15 @@ const RequiredInfo = ({
   const user = useAuthStore((state) => state.user);
   const isPwMatch = pw === confirmPw;
   const confirmError = confirmPw !== '' && !isPwMatch;
+  const pwError = pw !== '' && !isValidPassword(pw);
 
   const handlePwChange = async () => {
     if (!currentPw || !pw || !confirmPw) {
       toast.error('모든 비밀번호 항목을 입력해주세요.');
+      return;
+    }
+    if (!isValidPassword(pw)) {
+      toast.error('비밀번호는 8~127자이며, 영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.');
       return;
     }
     if (!isPwMatch) {
@@ -75,7 +83,6 @@ const RequiredInfo = ({
 
           {openForm && (
             <form
-              className='flex flex-col gap-6'
               onSubmit={(e) => {
                 e.preventDefault();
                 handlePwChange();
@@ -90,6 +97,7 @@ const RequiredInfo = ({
                 onChange={(e) => setCurrentPw(e.target.value)}
               />
               <InputField
+                className='mt-6'
                 label='새 비밀번호'
                 placeholder='새 비밀번호를 입력하세요'
                 type='password'
@@ -97,8 +105,22 @@ const RequiredInfo = ({
                 showHr={false}
                 onChange={(e) => setPw(e.target.value)}
               />
+              <div
+                className={clsx(
+                  'text-caption02 mt-2 flex items-center transition',
+                  pwError ? 'text-error' : 'text-grey-30',
+                )}
+              >
+                <InfoCircleIcon />
+                <p className='ms-1'>
+                  {pw.length > 127
+                    ? '비밀번호 입력 길이를 초과했습니다'
+                    : '영문, 숫자, 특수문자 포함 8자 이상'}
+                </p>
+              </div>
 
               <InputField
+                className='mt-6'
                 label='새 비밀번호 확인'
                 type='password'
                 autoComplete='new-password'
@@ -109,7 +131,9 @@ const RequiredInfo = ({
                 error={confirmError}
                 helperText={confirmError ? '입력한 비밀번호와 일치하지 않습니다.' : ''}
               />
+
               <Button
+                className='mt-6'
                 variant='main'
                 type='submit'
                 size='md'

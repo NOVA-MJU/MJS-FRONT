@@ -2,14 +2,20 @@ import { EMAIL_DOMAIN } from '../constants/common';
 
 /**
  * 비밀번호 유효성 검사
- * - 8~16자
+ * - 8~127자
  * - 영문, 숫자, 특수문자 각각 1개 이상 포함
  *
  * @param password - 검증할 비밀번호
  * @returns 유효한 비밀번호인지 여부
  */
-export const validatePassword = (password: string): boolean => {
-  return /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).{8,16}$/.test(password);
+export const isValidPassword = (password: string): boolean => {
+  if (!password) return false;
+  if (password.length < 8 || password.length > 127) return false;
+  if (!/[a-zA-Z]/.test(password)) return false;
+  if (!/\d/.test(password)) return false;
+  if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) return false;
+
+  return true;
 };
 
 /**

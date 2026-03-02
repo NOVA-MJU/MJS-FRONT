@@ -58,7 +58,7 @@ export const MAP_DATA = {
           subItems: [
             {
               location: 'F4',
-              name: '스터디룸, 자유열람시설, 프린터, 학관 구름다리(종합관 2층 연결), 남/여 휴게실',
+              name: '스터디 라운지, 프린터, 학관 구름다리(종합관 2층 연결), 남/여 휴게실',
             },
             {
               location: 'F3',

@@ -77,6 +77,28 @@ export default function FilteringMealSection() {
     <div className='flex flex-col gap-4 px-4'>
       {categoriesToShow.map(({ category, label }) => {
         const meals = mealsByCategory.get(category) ?? [];
+
+        // 개발 환경에서는 더미 데이터를 사용해 레이아웃을 확인할 수 있도록 지원
+        const dummyMeals: Record<MenuCategory, string[]> = {
+          BREAKFAST: ['시리얼', '우유', '토스트', '계란후라이', '샐러드'],
+          LUNCH: [
+            '브로콜리새우죽',
+            '스크램블드에그',
+            '감자크로켓',
+            '고추지토스트&생크림',
+            '그린샐러드&드레싱',
+            '과일주스',
+          ],
+          DINNER: ['돈까스', '밥', '미소된장국', '샐러드', '과일'],
+        };
+        const isDev = import.meta.env.DEV;
+        const effectiveMeals =
+          !isLoading && meals.length === 0 && isDev ? (dummyMeals[category] ?? []) : meals;
+
+        const mealLines: string[] = [];
+        for (let i = 0; i < effectiveMeals.length; i += 3) {
+          mealLines.push(effectiveMeals.slice(i, i + 3).join(', '));
+        }
         return (
           <div key={category} className='border-grey-10 rounded-[10px] border p-4'>
             <div className='flex items-center gap-2'>
@@ -93,13 +115,13 @@ export default function FilteringMealSection() {
                   <Skeleton className='h-5 w-4/5' />
                   <Skeleton className='h-5 w-3/5' />
                 </div>
-              ) : meals.length === 0 ? (
+              ) : effectiveMeals.length === 0 ? (
                 <p className='text-body05 text-grey-80 mt-3'>등록된 식단 내용이 없습니다.</p>
               ) : (
                 <ul className='mt-3 flex flex-col gap-1'>
-                  {meals.map((meal, index) => (
+                  {mealLines.map((line, index) => (
                     <li key={`${category}-${index}`} className='text-body05 text-grey-80'>
-                      {meal}
+                      {line}
                     </li>
                   ))}
                 </ul>
