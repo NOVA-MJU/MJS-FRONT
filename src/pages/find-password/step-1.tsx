@@ -1,20 +1,10 @@
 import { InfoCircleIcon } from '@/components/atoms/Icon';
 import { useResetPassword } from '@/hooks/useFindPw';
+import { isValidPassword } from '@/utils/validation';
 import clsx from 'clsx';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
-/**
- * 비밀번호 조건: 8~16자 영문 대소문자, 숫자 1개 이상, 특수문자 1개 이상
- */
-function isValidPassword(pw: string): boolean {
-  if (!pw || pw.length < 8 || pw.length > 16) return false;
-  if (!/[a-zA-Z]/.test(pw)) return false;
-  if (!/\d/.test(pw)) return false;
-  if (!/[^a-zA-Z0-9]/.test(pw)) return false;
-  return true;
-}
 
 interface FindPasswordStep1Props {
   email: string;
@@ -61,18 +51,19 @@ export default function FindPasswordStep1({ email }: FindPasswordStep1Props) {
               pwError ? 'border-error' : 'border-grey-10',
             )}
           />
-          <span
+          <div
             className={clsx(
-              'text-caption02 mt-2 transition',
+              'text-caption02 mt-2 flex items-center transition',
               pwError ? 'text-error' : 'text-grey-30',
             )}
           >
-            8~16자의 영문 대소문자
-            <br />
-            숫자 1개 이상 포함
-            <br />
-            특수문자 1개 이상 포함
-          </span>
+            <InfoCircleIcon />
+            <p className='ms-1'>
+              {password.length > 127
+                ? '비밀번호 입력 길이를 초과했습니다'
+                : '영문, 숫자, 특수문자 포함 8자 이상'}
+            </p>
+          </div>
 
           {/* 비밀번호 확인 입력칸 */}
           <p
@@ -103,8 +94,8 @@ export default function FindPasswordStep1({ email }: FindPasswordStep1Props) {
           <button
             type='button'
             className={clsx(
-              'text-body05 mt-7 cursor-pointer rounded-lg p-2.5 transition',
-              isReady ? 'bg-mju-primary text-white' : 'bg-grey-40 text-white',
+              'text-body05 mt-7 rounded-lg p-2.5 transition',
+              isReady ? 'bg-mju-primary cursor-pointer text-white' : 'bg-grey-40 text-white',
             )}
             disabled={!isReady || isChanging}
             onClick={handleChangePassword}
