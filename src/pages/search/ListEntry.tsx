@@ -10,7 +10,6 @@ import SortButtons, { type Sort } from '@/components/molecules/SortButtons';
 import type { Category, SearchResultItemRes } from '@/api/search';
 import { ChipTabs, SegmentedControlTabs } from '@/components/atoms/Tabs';
 import { filterByCategoryTab, type FilterCategory } from '@/utils/filterList';
-import AcademicScheduleInSearch from './AcademicScheduleInSearch';
 import Pagination from '@/components/molecules/common/Pagination';
 
 export type SearchTabKey =
@@ -68,6 +67,15 @@ const CommunityLabel: Record<string, string> = {
   FREE: '자유 게시판',
 };
 
+/** 학사일정-캘린더 제목에서 맨 앞 [학부,대학원], [학 부], [대학원] 등 추출 */
+function parseCalendarTitle(title: string): { category: string; cleanTitle: string } {
+  const match = title.match(/^\[([^\]]+)\]\s*(.*)$/);
+  if (match) {
+    return { category: match[1].trim(), cleanTitle: (match[2] ?? '').trim() || title };
+  }
+  return { category: '', cleanTitle: title };
+}
+
 const EMPTY_MESSAGE_CLASS = ({ isLong }: { isLong: boolean }) => {
   if (!isLong) {
     return 'flex h-26 items-center justify-center mx-5 border-1 border-grey-10 rounded-[4px] p-5';
@@ -76,7 +84,11 @@ const EMPTY_MESSAGE_CLASS = ({ isLong }: { isLong: boolean }) => {
 };
 
 // 검색 결과 아이템 렌더링
-function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
+function renderItem(
+  item: SearchResultItemRes,
+  tab: SearchTabKey,
+  categoryTab?: Category | string,
+): ReactNode {
   if (tab === '명대뉴스') {
     return (
       <BroadcastCard
@@ -115,6 +127,20 @@ function renderItem(item: SearchResultItemRes, tab: SearchTabKey): ReactNode {
         commentCount={item.commentCount ?? 0}
         publishedAt={item.date}
         isPopular={false}
+      />
+    );
+  }
+  // 학사일정-캘린더: 제목에서 [학부,대학원] 등 추출 → category로 전달
+  if (tab === '학사일정' && categoryTab === 'MJU_CALENDAR') {
+    const { category: extractedCategory, cleanTitle } = parseCalendarTitle(item.highlightedTitle);
+    return (
+      <NoticeItem
+        key={item.id}
+        id={item.id}
+        category={extractedCategory || item.category}
+        title={cleanTitle}
+        date={item.date}
+        link={item.link}
       />
     );
   }
@@ -283,7 +309,7 @@ export default function ListEntry({
         <div className='mt-3 flex flex-col'>
           <SectionHeader
             title='명대뉴스'
-            showMore={broadcastItems.length === 5}
+            showMore={broadcastItems.length === 2}
             moreTo={getMorePath('명대뉴스')}
             moreSearch={getMoreSearch('명대뉴스', initialContent)}
           />
@@ -340,12 +366,9 @@ export default function ListEntry({
           )}
         </div>
 
-        {/* 학사일정 카테고리일 경우 학사일정 캘린더 출력, 나머지는 필터링 한 결과 출력 */}
+        {/* 필터링 한 결과 출력 */}
         <div className='mb-5 flex flex-col'>
-          {categoryTab === 'MJU_CALENDAR' && currentTab === '학사일정' && (
-            <AcademicScheduleInSearch />
-          )}
-          {filteredItems.map((item) => renderItem(item, currentTab))}
+          {filteredItems.map((item) => renderItem(item, currentTab, categoryTab))}
           {filteredItems.length === 0 &&
             !(categoryTab === 'MJU_CALENDAR' && currentTab === '학사일정') && (
               <div className='flex flex-col items-center justify-center py-50'>
