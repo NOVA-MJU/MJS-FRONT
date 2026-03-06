@@ -133,19 +133,28 @@ export default function DepartmentMainPage() {
     };
   }, [selectedCollege, selectedDepartment, noticePage, postsPage]);
 
-  // 선택이 기본값(경영대 전체)일 때만 사용자 소속 학과로 자동 설정 (저장된 선택은 유지)
+  // 선택이 기본값(경영대 전체)일 때만 사용자 소속 college/학과로 자동 설정 (저장된 선택은 유지)
   useEffect(() => {
-    if (!user?.departmentName) return;
     if (selectedCollege !== 'BUSINESS' || selectedDepartment !== null) return;
-    for (const option of DEPARTMENT_OPTIONS) {
-      const department = option.departments.find((dept) => dept.value === user.departmentName);
-      if (department) {
-        setSelectedCollege(option.college.value);
-        setSelectedDepartment(department.value);
-        break;
+
+    if (user?.departmentName) {
+      // 학과 소속이 있는 경우: college + department 모두 자동 설정
+      for (const option of DEPARTMENT_OPTIONS) {
+        const department = option.departments.find((dept) => dept.value === user.departmentName);
+        if (department) {
+          setSelectedCollege(option.college.value);
+          setSelectedDepartment(department.value);
+          break;
+        }
+      }
+    } else if (user?.college) {
+      // 단과대만 소속된 경우(department null): college만 자동 설정, department는 null 유지
+      const validCollege = COLLEGE_OPTIONS.find((opt) => opt.value === user.college);
+      if (validCollege) {
+        setSelectedCollege(validCollege.value as College);
       }
     }
-  }, [user?.departmentName, selectedCollege, selectedDepartment]);
+  }, [user?.college, user?.departmentName, selectedCollege, selectedDepartment]);
 
   // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
   useEffect(() => {
