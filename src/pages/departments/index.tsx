@@ -197,16 +197,18 @@ export default function DepartmentMainPage() {
     [];
 
   // 현재 사용자의 college, department (auth 기준)
-  const userCollege = DEPARTMENT_OPTIONS.find((opt) =>
-    opt.departments.some((d) => d.value === user?.departmentName),
-  )?.college?.value;
+  // user.college 필드를 우선 사용하고, 없을 경우 departmentName으로 유추
+  const userCollege: College | undefined =
+    (user?.college as College | undefined) ??
+    DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user?.departmentName))
+      ?.college?.value;
   const userDepartment = user?.departmentName ?? null;
 
   // 필터가 사용자의 college, department와 일치할 때만 편집 UI 표시
+  // department가 null인 단과대 관리자의 경우 소속 college + department 미선택(null) 뷰에서 편집 허용
   const canEditDepartment =
     hasAdminPermission(user?.role) &&
     userCollege !== undefined &&
-    userDepartment != null &&
     selectedCollege === userCollege &&
     selectedDepartment === userDepartment;
 
