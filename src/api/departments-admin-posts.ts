@@ -36,7 +36,7 @@ export interface CreateStudentCouncilNoticeResponse {
  */
 export const createStudentCouncilNotice = async (
   college: College,
-  department: Department,
+  department: Department | null,
   noticeData: CreateStudentCouncilNoticeRequest,
 ) => {
   const { data } = await apiClient.post<ApiResponse<CreateStudentCouncilNoticeResponse>>(
@@ -69,7 +69,7 @@ export type UpdateStudentCouncilNoticeResponse = CreateStudentCouncilNoticeRespo
  */
 export const updateStudentCouncilNotice = async (
   college: College,
-  department: Department,
+  department: Department | null,
   noticeUuid: string,
   noticeData: UpdateStudentCouncilNoticeRequest,
 ) => {
@@ -96,7 +96,7 @@ export const updateStudentCouncilNotice = async (
  */
 export const deleteStudentCouncilNotice = async (
   college: College,
-  department: Department,
+  department: Department | null,
   noticeUuid: string,
 ) => {
   const { data } = await apiClient.delete<ApiResponse<string>>(

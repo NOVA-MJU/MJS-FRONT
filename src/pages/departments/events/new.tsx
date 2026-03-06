@@ -20,10 +20,14 @@ export default function DepartmentEventsNewPage() {
   const navigate = useNavigate();
   const { user, isLoggedIn } = useAuthStore();
 
-  const option = user?.departmentName
-    ? DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user.departmentName))
-    : undefined;
-  const college: College | null = option?.college.value ?? null;
+  // user.college 필드를 우선 사용하고, 없을 경우 departmentName으로 유추
+  const college: College | null =
+    (user?.college as College | null | undefined) ??
+    (user?.departmentName
+      ? (DEPARTMENT_OPTIONS.find((opt) =>
+          opt.departments.some((d) => d.value === user.departmentName),
+        )?.college.value ?? null)
+      : null);
   const department: Department | null = (user?.departmentName as Department) ?? null;
 
   const [title, setTitle] = useState('');
@@ -46,8 +50,8 @@ export default function DepartmentEventsNewPage() {
   }
 
   const handleComplete = async () => {
-    if (!college || !department) {
-      toast.error('소속 학과 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
+    if (!college) {
+      toast.error('소속 단과대 정보를 찾을 수 없습니다. 로그인 후 다시 시도해 주세요.');
       return;
     }
     if (!isComplete) return;
