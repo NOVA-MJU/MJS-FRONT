@@ -42,7 +42,7 @@ export interface CreateDepartmentScheduleResponse {
  */
 export const createDepartmentSchedule = async (
   college: College,
-  department: Department,
+  department: Department | null,
   scheduleData: CreateDepartmentScheduleRequest,
 ) => {
   const { data } = await apiClient.post<ApiResponse<CreateDepartmentScheduleResponse>>(
@@ -75,7 +75,7 @@ export type UpdateDepartmentScheduleResponse = CreateDepartmentScheduleResponse;
  */
 export const updateDepartmentSchedule = async (
   college: College,
-  department: Department,
+  department: Department | null,
   scheduleUuid: string,
   scheduleData: UpdateDepartmentScheduleRequest,
 ) => {
@@ -103,7 +103,7 @@ export const updateDepartmentSchedule = async (
  */
 export const deleteDepartmentSchedule = async (
   college: College,
-  department: Department,
+  department: Department | null,
   scheduleUuid: string,
 ) => {
   const { data } = await apiClient.delete<ApiResponse<string>>(
