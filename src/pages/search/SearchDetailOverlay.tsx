@@ -116,12 +116,18 @@ export default function SearchDetail() {
 
   async function handleSearch(text: string) {
     if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
-      const res = await getSearchResult(text, 'all', 'all', sort);
-      const content = res.content as unknown as SearchResultItemRes[];
-      setNoticeItems(filterByType(content, 'notice'));
-      setBoardItems(filterByType(content, 'community'));
-      setNewsItems(filterByType(content, 'news'));
-      setBroadcastItems(filterByType(content, 'broadcast'));
+      const noticeRes = await getSearchResult(text, 'NOTICE', 'all', sort);
+      const communityRes = await getSearchResult(text, 'COMMUNITY', 'all', sort);
+      const newsRes = await getSearchResult(text, 'NEWS', 'all', sort);
+      const broadcastRes = await getSearchResult(text, 'BROADCAST', 'all', sort);
+      const noticeContent = noticeRes.content as unknown as SearchResultItemRes[];
+      const communityContent = communityRes.content as unknown as SearchResultItemRes[];
+      const newsContent = newsRes.content as unknown as SearchResultItemRes[];
+      const broadcastContent = broadcastRes.content as unknown as SearchResultItemRes[];
+      setNoticeItems(filterByType(noticeContent, 'notice'));
+      setBoardItems(filterByType(communityContent, 'community'));
+      setNewsItems(filterByType(newsContent, 'news'));
+      setBroadcastItems(filterByType(broadcastContent, 'broadcast'));
     } else {
       let type = tapLabel[currentTab];
       if (currentTab === '학사일정' && categoryTab === 'academic') type = 'NOTICE';
