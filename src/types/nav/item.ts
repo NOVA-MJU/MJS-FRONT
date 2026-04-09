@@ -1,12 +1,4 @@
-export type NavKey =
-  | 'notice'
-  | 'department'
-  | 'board'
-  | 'meal'
-  | 'calendar'
-  | 'mentor'
-  | 'wiki'
-  | 'sso';
+export type NavKey = 'notice' | 'department' | 'board' | 'meal' | 'calendar' | 'wiki' | 'sso';
 
 /**
  * 네비게이션 아이템 정의 타입

@@ -30,11 +30,11 @@ function cn(...inputs: ClassValue[]) {
  */
 const TABS = [
   'ALL',
+  '학식',
+  '게시판',
   '명지도',
   '공지사항',
   '학사일정',
-  '학식',
-  '게시판',
   '명대신문',
   '명대뉴스',
 ] as const;
@@ -96,14 +96,15 @@ const TabBar = ({ activeTab, onTabChange, isPanelVisible = true }: TabBarProps) 
                 });
               }}
               className={cn(
-                'relative flex h-full items-center justify-center px-3 transition-colors outline-none',
-                isActive ? 'text-mju-primary' : 'text-grey-40',
+                'relative flex h-full items-center justify-center px-5 pt-2.5 pb-2',
+                isActive ? 'text-body04 text-mju-primary' : 'text-body06 text-grey-40',
               )}
             >
-              <span className='text-body04 whitespace-nowrap'>{tab}</span>
+              <span className='text-body06 whitespace-nowrap'>{tab}</span>
+
               {/* 활성화된 탭 하단의 파란색 바 */}
               {isActive && (
-                <div className='bg-mju-primary absolute right-0 bottom-0 left-0 h-[1.5px]' />
+                <div className='bg-mju-primary absolute right-0 bottom-0 left-0 h-[2px]' />
               )}
             </button>
           );

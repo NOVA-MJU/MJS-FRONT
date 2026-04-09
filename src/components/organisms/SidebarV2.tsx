@@ -41,7 +41,6 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
     const board = findNavItem('board');
     const meal = findNavItem('meal');
     const calendar = findNavItem('calendar');
-    const mentor = findNavItem('mentor');
     const sso = findNavItem('sso');
 
     return [
@@ -106,13 +105,6 @@ export default function SidebarV2({ isOpen, onClose }: SidebarV2Props) {
         section: 'community',
         path: board?.path,
         navKey: board?.key,
-      },
-      {
-        id: 'mentor',
-        label: '멘토관 서비스',
-        section: 'community',
-        href: mentor?.href,
-        navKey: mentor?.key,
       },
 
       // Setting 섹션

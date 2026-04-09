@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 const BANNERS = [
-  '/main/bannersJpg/JpgBanner1.jpg',
-  '/main/bannersJpg/JpgBanner2.jpg',
-  '/main/bannersJpg/JpgBanner3.jpg',
+  '/main/banners/banner1.jpg',
+  '/main/banners/banner2.jpg',
+  '/main/banners/banner3.jpg',
 ];
 
 export default function AdBannerSection() {
