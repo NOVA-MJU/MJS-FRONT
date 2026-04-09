@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -61,7 +62,12 @@ function ScrollableTap({
               setCurrentTab(key);
               onTabClick?.(key, label);
             }}
-            className={`cursor-pointer p-1 px-4 py-2 whitespace-nowrap md:p-3 ${isSelected ? 'text-mju-primary border-mju-primary border-b-[2px]' : 'text-grey-40'} `}
+            className={clsx(
+              'cursor-pointer px-5 pt-2.5 pb-2 whitespace-nowrap',
+              isSelected
+                ? 'text-body04 text-mju-primary border-mju-primary border-b-[2px]'
+                : 'text-body06 text-grey-40',
+            )}
           >
             {label}
           </button>
