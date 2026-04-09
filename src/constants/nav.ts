@@ -7,11 +7,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'meal', label: '식단', path: '/menu' },
   { key: 'calendar', label: '학사일정', path: '/academic-calendar' },
   {
-    key: 'mentor',
-    label: '멘토관 서비스',
-    href: 'https://v0-university-career-data-platform.vercel.app/',
-  },
-  {
     key: 'wiki',
     label: '띵지위키',
     href: 'https://namu.wiki/w/%EB%AA%85%EC%A7%80%EB%8C%80%ED%95%99%EA%B5%90',

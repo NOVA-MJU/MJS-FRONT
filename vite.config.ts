@@ -62,7 +62,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // adBanner.svg(7.04 MB) 포함
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         globIgnores: ['**/static/**'],
         navigateFallbackDenylist: [/^\/static\//],
