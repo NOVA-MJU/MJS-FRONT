@@ -24,7 +24,7 @@ export default function MainSearchSection() {
       imageUrl: '/main/logos/main_calender.svg',
       path: '/academic-calendar',
     },
-    { id: 4, label: '멘토관', imageUrl: '/main/logos/main_mentor.svg', path: '/mentoring' },
+    { id: 4, label: '게시판', imageUrl: '/main/logos/main_board.svg', path: '/board' },
   ];
 
   const { setActiveMainSlide, setSelectedTab } = useHeaderStore();
@@ -49,20 +49,12 @@ export default function MainSearchSection() {
       학식: '학식',
       명지도: '명지도',
       학사일정: '학사일정',
+      게시판: '게시판',
     };
 
     if (tabMap[label]) {
       setSelectedTab(tabMap[label]);
       setActiveMainSlide(2); // 슬라이드 뷰로 이동
-      return;
-    }
-
-    if (label === '멘토관') {
-      window.open(
-        'https://v0-university-career-data-platform.vercel.app/',
-        '_blank',
-        'noopener,noreferrer',
-      );
       return;
     }
 
