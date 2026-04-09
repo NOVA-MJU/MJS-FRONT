@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import MealIcon from '../../../../public/img/meal-icon.png';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { useMenuData } from '@/hooks/menu/useMenuData';
+
+const MEAL_ICON_URL = '/img/meal-icon.png';
 
 const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
 /** 항상 오늘 날짜를 "M월 D일 (요일)" 형식으로 반환 */
@@ -102,7 +103,7 @@ export default function FilteringMealSection() {
         return (
           <div key={category} className='border-grey-10 rounded-[10px] border p-4'>
             <div className='flex items-center gap-2'>
-              <img src={MealIcon} alt='meal' className='h-6 w-6 shrink-0' />
+              <img src={MEAL_ICON_URL} alt='meal' className='h-6 w-6 shrink-0' />
               <h4 className='text-body02 text-black'>
                 <span className='text-body02'>{dateLabel || '-'}</span>
                 {dateLabel && <span> {label}</span>}
