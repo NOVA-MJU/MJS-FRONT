@@ -23,6 +23,11 @@ export const DEPARTMENT_NOTICE_STALE_TIME_MS = 5 * 60 * 1000;
 export const SEARCH_STALE_TIME_MS = 2 * 60 * 1000;
 export const SEARCH_SUGGEST_STALE_TIME_MS = 60 * 1000;
 export const AI_SUMMARY_STALE_TIME_MS = 10 * 60 * 1000;
+export const BROADCAST_SEARCH_STALE_TIME_MS = 2 * 60 * 1000;
+export const BOARD_DETAIL_STALE_TIME_MS = 2 * 60 * 1000;
+export const BOARD_COMMENTS_STALE_TIME_MS = 60 * 1000;
+export const MYPAGE_STALE_TIME_MS = 5 * 60 * 1000;
+export const HOT_KEYWORDS_STALE_TIME_MS = 60 * 1000;
 
 export const ICON_SIZE_SM = 12;
 export const ICON_SIZE_MD = 16;
