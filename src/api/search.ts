@@ -86,9 +86,10 @@ export type Category =
  * @param keyword 검색어를 입력하세요.
  * @returns 자동완성 키워드 배열을 return 합니다.
  */
-export const getSearchWordcompletion = async (keyword: string) => {
+export const getSearchWordcompletion = async (keyword: string, signal?: AbortSignal) => {
   const res = await apiClient.get<ApiResponse<string[]>>('/search/suggest', {
     params: { keyword },
+    signal,
   });
   return res.data.data;
 };

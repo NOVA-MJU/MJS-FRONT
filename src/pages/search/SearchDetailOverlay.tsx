@@ -3,12 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useHeaderStore } from '@/store/useHeaderStore';
 import { IoMdLink, IoIosArrowUp, IoIosArrowDown, IoIosClose, IoIosMenu } from 'react-icons/io';
-import {
-  getSearchAISummary,
-  getSearchResult,
-  type GetSearchAISummaryRes,
-  type SearchResultItemRes,
-} from '../../api/search';
 import type { Category } from '@/api/search';
 import { setHomeSliderToMain } from '@/pages/HomeSlider';
 import { ScrollableTap } from '@/components/atoms/scrollableTap/index';
@@ -17,11 +11,23 @@ import ListEntry, { type SearchTabKey } from './ListEntry';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import SidebarV2 from '@/components/organisms/SidebarV2';
 import SearchBar from '../../components/atoms/SearchBar';
-
 import { useNavTracking } from '@/hooks/gtm/useNavTracking';
 import { resolveNavGroupByLabel } from '@/constants/gtm.ts';
+import {
+  useAllSearchQueries,
+  useAiSummaryQuery,
+  useSearchQuery,
+} from '@/hooks/queries/useSearchQueries';
+import type { SearchResultItemRes } from '@/api/search';
 
-type SearchResultType = Parameters<typeof getSearchResult>[1];
+type SearchResultType =
+  | 'NOTICE'
+  | 'MJU_CALENDAR'
+  | 'DEPARTMENT_NOTICE'
+  | 'COMMUNITY'
+  | 'NEWS'
+  | 'BROADCAST'
+  | 'ALL';
 
 const tapLabel: Record<string, SearchResultType | 'ALL'> = {
   ALL: 'ALL',
@@ -37,7 +43,6 @@ function getNoticeSectionMorePath() {
   return '/search';
 }
 
-/** 더보기 링크의 search 문자열 (? 포함) */
 function getNoticeSectionMoreSearch(tab: SearchTabKey, keyword: string) {
   const params = new URLSearchParams();
   params.set('keyword', keyword);
@@ -45,14 +50,17 @@ function getNoticeSectionMoreSearch(tab: SearchTabKey, keyword: string) {
   return `?${params.toString()}`;
 }
 
-/**
- * 모바일 검색 결과 페이지
- *
- * 통합 검색 결과를 표시하는 페이지입니다.
- * 공지사항, 자유게시판, 명대신문 검색 결과를 한 번에 보여줍니다.
- */
 function isValidTab(tab: string | null): tab is SearchTabKey {
   return tab !== null && tapLabel[tab] !== undefined;
+}
+
+function sliceByType(
+  content: SearchResultItemRes[] | undefined,
+  type: string,
+  limit: number,
+): SearchResultItemRes[] {
+  if (!content) return [];
+  return content.filter((item) => item.type?.toLowerCase() === type.toLowerCase()).slice(0, limit);
 }
 
 export default function SearchDetail() {
@@ -65,33 +73,18 @@ export default function SearchDetail() {
   });
   const [categoryTab, setCategoryTab] = useState<Category | string>('all');
   const [isLinkOpen, setIsLinkOpen] = useState(false);
-  const [noticeItems, setNoticeItems] = useState<SearchResultItemRes[]>([]);
-  const [boardItems, setBoardItems] = useState<SearchResultItemRes[]>([]);
-  const [newsItems, setNewsItems] = useState<SearchResultItemRes[]>([]);
-  const [broadcastItems, setBroadcastItems] = useState<SearchResultItemRes[]>([]);
-  const [items, setItems] = useState<SearchResultItemRes[]>([]);
-  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
-  const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
-  const [totalPages, setTotalPages] = useState(1);
+  const [sort, setSort] = useState<Sort>('relevance');
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen((p) => !p);
   const closeMenu = () => setIsOpen(false);
 
-  const [aiSummary, setAiSummary] = useState<GetSearchAISummaryRes>({
-    query: '',
-    summary: '',
-    document_count: 0,
-    sources: [],
-  });
-  const [initialContent, setInitialContent] = useState('');
-  const [sort, setSort] = useState<Sort>('relevance');
-  const [isAiSummaryLoading, setIsAiSummaryLoading] = useState(false);
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const page = pageFromUrl > 0 ? pageFromUrl - 1 : 0;
 
   const keyword = searchParams.get('keyword');
 
   const { trackNavClick } = useNavTracking();
 
-  /** URL의 tab 쿼리와 동기화 (ALL이면 tab 파라미터 없음) */
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (isValidTab(tab) && tab !== currentTab) setCurrentTab(tab);
@@ -100,86 +93,16 @@ export default function SearchDetail() {
   const handleSetCurrentTab = (tab: string) => {
     if (!isValidTab(tab)) return;
     setCurrentTab(tab);
+    setSort('relevance');
+    if (tab !== '게시판' && tab !== '학사일정') setCategoryTab('all');
+    else if (tab === '게시판') setCategoryTab('NOTICE');
+    else if (tab === '학사일정') setCategoryTab('MJU_CALENDAR');
     const next = new URLSearchParams(searchParams);
     if (tab === 'ALL') next.delete('tab');
     else next.set('tab', tab);
+    next.set('page', '1');
     setSearchParams(next, { replace: true });
   };
-
-  /**
-   * 검색 요청 function
-   */
-  const filterByType = (content: SearchResultItemRes[], type: string) =>
-    content
-      .filter((item) => item.type?.toLowerCase() === type.toLowerCase())
-      .slice(0, type === 'broadcast' ? 2 : 5);
-
-  async function handleSearch(text: string) {
-    if (currentTab === 'ALL' || tapLabel[currentTab] === 'ALL') {
-      const noticeRes = await getSearchResult(text, 'NOTICE', 'all', sort);
-      const communityRes = await getSearchResult(text, 'COMMUNITY', 'all', sort);
-      const newsRes = await getSearchResult(text, 'NEWS', 'all', sort);
-      const broadcastRes = await getSearchResult(text, 'BROADCAST', 'all', sort);
-      const noticeContent = noticeRes.content as unknown as SearchResultItemRes[];
-      const communityContent = communityRes.content as unknown as SearchResultItemRes[];
-      const newsContent = newsRes.content as unknown as SearchResultItemRes[];
-      const broadcastContent = broadcastRes.content as unknown as SearchResultItemRes[];
-      setNoticeItems(filterByType(noticeContent, 'notice'));
-      setBoardItems(filterByType(communityContent, 'community'));
-      setNewsItems(filterByType(newsContent, 'news'));
-      setBroadcastItems(filterByType(broadcastContent, 'broadcast'));
-    } else {
-      let type = tapLabel[currentTab];
-      if (currentTab === '학사일정' && categoryTab === 'academic') type = 'NOTICE';
-      const category =
-        currentTab === '명대뉴스' || categoryTab === 'MJU_CALENDAR' ? 'all' : categoryTab;
-      const res = await getSearchResult(text, type, category, sort, page, 10);
-      const items = res.content as unknown as SearchResultItemRes[];
-      setItems(items);
-      setTotalPages(res.totalPages);
-    }
-  }
-
-  async function handleGetAiSummary(text: string) {
-    const res = await getSearchAISummary(text);
-    setAiSummary(res);
-  }
-
-  /**
-   * 페이지 변경 시 url과 함께 반영
-   */
-  const handlePageChange = (newPage: number) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('page', String(newPage + 1));
-    setSearchParams(newParams);
-  };
-
-  /**
-   * 검색어 초기값 반영 (search parameter 반영)
-   */
-  useEffect(() => {
-    (async () => {
-      if (!keyword) {
-        setInitialContent('');
-        setIsAiSummaryLoading(false);
-        return;
-      }
-      setInitialContent(keyword);
-      setIsAiSummaryLoading(true);
-      try {
-        await handleSearch(keyword);
-      } catch {
-        // 에러는 상위에서 처리
-      }
-      try {
-        await handleGetAiSummary(keyword);
-      } catch {
-        setAiSummary((prev) => ({ ...prev, summary: '', document_count: 0, sources: [] }));
-      } finally {
-        setIsAiSummaryLoading(false);
-      }
-    })();
-  }, [keyword, page]);
 
   useEffect(() => {
     setSort('relevance');
@@ -189,24 +112,67 @@ export default function SearchDetail() {
   }, [keyword]);
 
   useEffect(() => {
-    handleSearch(keyword ?? '');
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', '1');
     setSearchParams(newParams);
   }, [sort, categoryTab]);
 
-  useEffect(() => {
-    setSort('relevance');
-    if (currentTab !== '게시판' && currentTab !== '학사일정') setCategoryTab('all');
-    else if (currentTab === '게시판') setCategoryTab('NOTICE');
-    else if (currentTab === '학사일정') setCategoryTab('MJU_CALENDAR');
-    handleSearch(keyword ?? '');
-  }, [currentTab]);
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(newPage + 1));
+    setSearchParams(newParams);
+  };
 
-  useEffect(() => {
-    if (currentTab !== '학사일정') return;
-    handleSearch(keyword ?? '');
-  }, [categoryTab]);
+  const isAllTab = currentTab === 'ALL';
+
+  // ALL 탭: 4가지 타입 병렬 조회
+  const allQueries = useAllSearchQueries(keyword, sort);
+  const [noticeQuery, communityQuery, newsQuery, broadcastQuery] = allQueries;
+
+  const noticeItems = sliceByType(
+    noticeQuery.data?.content as unknown as SearchResultItemRes[],
+    'notice',
+    5,
+  );
+  const boardItems = sliceByType(
+    communityQuery.data?.content as unknown as SearchResultItemRes[],
+    'community',
+    5,
+  );
+  const newsItems = sliceByType(
+    newsQuery.data?.content as unknown as SearchResultItemRes[],
+    'news',
+    5,
+  );
+  const broadcastItems = sliceByType(
+    broadcastQuery.data?.content as unknown as SearchResultItemRes[],
+    'broadcast',
+    2,
+  );
+
+  // 개별 탭: 단일 타입 조회
+  const singleTabType = (() => {
+    if (isAllTab) return 'NOTICE' as const; // enabled=false이므로 실제 호출 안 됨
+    let type = tapLabel[currentTab] as Exclude<SearchResultType, 'ALL'>;
+    if (currentTab === '학사일정' && categoryTab === 'academic') type = 'NOTICE';
+    return type;
+  })();
+  const singleCategory =
+    currentTab === '명대뉴스' || categoryTab === 'MJU_CALENDAR' ? 'all' : categoryTab;
+
+  const singleQuery = useSearchQuery(keyword, singleTabType, singleCategory, sort, page, !isAllTab);
+  const items = (singleQuery.data?.content as unknown as SearchResultItemRes[]) ?? [];
+  const totalPages = singleQuery.data?.totalPages ?? 1;
+
+  // AI 요약
+  const aiSummaryQuery = useAiSummaryQuery(keyword);
+  const aiSummary = aiSummaryQuery.data ?? {
+    query: '',
+    summary: '',
+    document_count: 0,
+    sources: [],
+  };
+  const isAiSummaryLoading = aiSummaryQuery.isLoading;
 
   return (
     <div className='fixed inset-0 z-50 flex justify-center bg-black/30'>
@@ -241,6 +207,7 @@ export default function SearchDetail() {
           </button>
         </header>
         <SidebarV2 isOpen={isOpen} onClose={closeMenu} />
+
         {/* 탭 */}
         <section>
           <ScrollableTap
@@ -263,8 +230,9 @@ export default function SearchDetail() {
             }}
           />
         </section>
+
         <div className='no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto'>
-          {/* ai요약 */}
+          {/* AI 요약 */}
           {currentTab === 'ALL' && (
             <section className='border-grey-10 flex flex-col gap-3.5 border-b-1 p-5'>
               <div className='text-body02 flex w-full items-center text-black'>
@@ -343,6 +311,7 @@ export default function SearchDetail() {
               )}
             </section>
           )}
+
           {/* 검색결과 */}
           <ListEntry
             currentTab={currentTab}
@@ -352,7 +321,7 @@ export default function SearchDetail() {
             broadcastItems={broadcastItems}
             items={items}
             keyword={keyword}
-            initialContent={initialContent}
+            initialContent={keyword ?? ''}
             getMorePath={getNoticeSectionMorePath}
             getMoreSearch={getNoticeSectionMoreSearch}
             sort={sort}
