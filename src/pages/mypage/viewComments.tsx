@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { getMyComments } from '../../api/mypage';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Button from '../../components/atoms/Button';
 import MyListItem from '../../components/molecules/MyListItem';
 import Pagination from '@/components/molecules/common/Pagination';
 import { FormatToDotDate } from '../../utils';
+import { useMyCommentsQuery } from '@/hooks/queries/useMyPageQueries';
 
 interface GroupedCommentPost {
   boardUuid: string;
@@ -26,55 +26,42 @@ const PAGE_SIZE = 10;
  */
 const ViewComments = () => {
   const [contents, setContents] = useState<GroupedCommentPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
 
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-
-  const fetchComments = async (currentPage: number) => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-
-      const res = await getMyComments(currentPage, PAGE_SIZE);
-      const grouped = res.content.reduce<Record<string, GroupedCommentPost>>((acc, cur) => {
-        const id = cur.boardUuid;
-
-        if (!acc[id]) {
-          acc[id] = {
-            boardUuid: cur.boardUuid,
-            boardTitle: cur.boardTitle,
-            boardPreviewContent: cur.boardPreviewContent,
-            boardViewCount: cur.boardViewCount,
-            boardLikeCount: cur.boardLikeCount,
-            boardCreatedAt: cur.boardCreatedAt,
-            comments: [],
-          };
-        }
-
-        if (cur.commentPreviewContent) {
-          acc[id].comments.push(cur.commentPreviewContent);
-        }
-
-        return acc;
-      }, {});
-
-      const groupedArray = Object.values(grouped);
-
-      setContents(groupedArray);
-      setTotalPages(res.totalPages);
-    } catch (e) {
-      console.error(e);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data, isLoading, isError } = useMyCommentsQuery(page, PAGE_SIZE);
 
   useEffect(() => {
-    void fetchComments(page);
-  }, [page]);
+    if (!data) {
+      setContents([]);
+      setTotalPages(0);
+      return;
+    }
+    const grouped = data.content.reduce<Record<string, GroupedCommentPost>>((acc, cur) => {
+      const id = cur.boardUuid;
+
+      if (!acc[id]) {
+        acc[id] = {
+          boardUuid: cur.boardUuid,
+          boardTitle: cur.boardTitle,
+          boardPreviewContent: cur.boardPreviewContent,
+          boardViewCount: cur.boardViewCount,
+          boardLikeCount: cur.boardLikeCount,
+          boardCreatedAt: cur.boardCreatedAt,
+          comments: [],
+        };
+      }
+
+      if (cur.commentPreviewContent) {
+        acc[id].comments.push(cur.commentPreviewContent);
+      }
+
+      return acc;
+    }, {});
+
+    setContents(Object.values(grouped));
+    setTotalPages(data.totalPages);
+  }, [data]);
 
   const handlePageChange = (nextPage: number) => {
     if (nextPage === page) return;
