@@ -246,9 +246,9 @@ export default function SearchDetail() {
           <ScrollableTap
             tabs={{
               ALL: 'ALL',
+              게시판: '게시판',
               공지사항: '공지사항',
               학사일정: '학사일정',
-              게시판: '게시판',
               명대신문: '명대신문',
               명대뉴스: '명대뉴스',
             }}
