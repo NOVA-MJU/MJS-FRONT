@@ -9,7 +9,7 @@ export default function Footer() {
         <div className='text-blue-10 flex items-center gap-3'>
           {/* 깃 아이콘 */}
           <a
-            href='https://github.com/NOVA-MJU/THINGO_BACKEND'
+            href='https://github.com/NOVA-MJU'
             target='_blank'
             rel='noopener noreferrer'
             aria-label='깃허브'
@@ -53,14 +53,14 @@ export default function Footer() {
 
       <div className='text-caption02 text-grey-40 flex items-center gap-4 py-1'>
         <a
-          href='https://www.notion.so/31422ef5d21e8094a29cea25cd2aa4b7'
+          href='https://verbena-ixia-597.notion.site/Thingo-33e22ef5d21e80b08328edd8519b0b4e?source=copy_link'
           target='_blank'
           rel='noopener noreferrer'
         >
           이용약관
         </a>
         <a
-          href='https://www.notion.so/31422ef5d21e800cb597ee4e57f4ffab'
+          href='https://verbena-ixia-597.notion.site/Thingo-33e22ef5d21e807d9738dc14def5de24?source=copy_link'
           target='_blank'
           rel='noopener noreferrer'
         >

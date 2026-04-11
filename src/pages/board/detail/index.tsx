@@ -1,12 +1,4 @@
-import {
-  deletePost,
-  getBoardComments,
-  getBoardDetail,
-  likePost,
-  postComment,
-  type CommentRes,
-  type GetBoardDetailRes,
-} from '@/api/board';
+import { type CommentRes } from '@/api/board';
 import NavigationUp from '@/components/molecules/NavigationUp';
 import BlockTextEditor from '@/components/organisms/BlockTextEditor';
 import GlobalErrorPage from '@/pages/error';
@@ -20,19 +12,16 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { handleError } from '@/utils/error';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
 import { formatToDotDate } from '@/utils/date';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  useBoardCommentsQuery,
+  useBoardDetailQuery,
+  useDeletePostMutation,
+  useLikePostMutation,
+  usePostCommentMutation,
+} from '@/hooks/queries/useBoardDetailQueries';
 
 const MAX_REPLY_LEN = 100;
-
-interface BoardDetail {
-  id: string;
-  title: string;
-  date: string;
-  author: string;
-  viewCount: number;
-  commentCount: number;
-  likeCount: number;
-  content: string;
-}
 
 /**
  * 게시판 상세 페이지
@@ -44,55 +33,27 @@ interface BoardDetail {
 export default function BoardDetail() {
   const navigate = useNavigate();
   const { uuid } = useParams<{ uuid: string }>();
-  const [content, setContent] = useState<GetBoardDetailRes | null>(null);
-  const [comments, setComments] = useState<CommentRes[] | null>(null);
-  const [isContentLoading, setIsContentLoading] = useState(true);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isCommentUploading, setIsCommentUploading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isError, setIsError] = useState(false);
   const { isLoggedIn } = useAuthStore();
+  const queryClient = useQueryClient();
+  const contentQuery = useBoardDetailQuery(uuid);
+  const commentsQuery = useBoardCommentsQuery(uuid, isLoggedIn);
+  const postCommentMutation = usePostCommentMutation(uuid);
+  const likePostMutation = useLikePostMutation(uuid);
+  const deletePostMutation = useDeletePostMutation(uuid);
+  const content = contentQuery.data ?? null;
+  const comments: CommentRes[] | null = isLoggedIn ? (commentsQuery.data ?? []) : null;
+  const isContentLoading = contentQuery.isLoading;
+  const isCommentsLoading = isLoggedIn ? commentsQuery.isLoading : false;
 
-  // 페이지 로드 함수 (로그인된 경우에만 댓글 API 조회)
   useEffect(() => {
-    if (!uuid) return;
-    getContent(uuid);
-    if (isLoggedIn) {
-      getComments(uuid);
-    } else {
-      setComments(null);
-      setIsCommentsLoading(false);
-    }
-  }, [uuid, isLoggedIn]);
-
-  // 게시글 데이터 로드
-  const getContent = async (uuid: string) => {
-    setIsContentLoading(true);
-    try {
-      const res = await getBoardDetail(uuid);
-      setContent(res);
-    } catch (e) {
-      handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
+    if (contentQuery.isError || commentsQuery.isError) {
       setIsError(true);
-    } finally {
-      setIsContentLoading(false);
     }
-  };
-
-  // 댓글 데이터 로드
-  const getComments = async (uuid: string) => {
-    setIsCommentsLoading(true);
-    try {
-      const res = await getBoardComments(uuid);
-      setComments(res);
-    } catch (e) {
-      handleError(e, '댓글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
-      setIsError(true);
-    } finally {
-      setIsCommentsLoading(false);
-    }
-  };
+  }, [contentQuery.isError, commentsQuery.isError]);
 
   // 댓글 작성 요청
   const handleCommentUpload = async () => {
@@ -108,8 +69,7 @@ export default function BoardDetail() {
 
     try {
       setIsCommentUploading(true);
-      await postComment(uuid, newComment);
-      await getComments(uuid);
+      await postCommentMutation.mutateAsync(newComment);
       setNewComment('');
     } catch (err) {
       handleError(err, '댓글 작성에 실패했습니다.');
@@ -128,16 +88,9 @@ export default function BoardDetail() {
     }
     setIsLoading(true);
     try {
-      await likePost(uuid);
       const wasLiked = content.isLiked;
-      setContent((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          likeCount: prev.isLiked ? prev.likeCount - 1 : prev.likeCount + 1,
-          isLiked: !prev.isLiked,
-        };
-      });
+      await likePostMutation.mutateAsync();
+      await queryClient.invalidateQueries({ queryKey: ['board-detail', uuid] });
       if (!wasLiked) {
         toast.success('좋아요를 표시했습니다.');
       }
@@ -154,7 +107,7 @@ export default function BoardDetail() {
     if (!window.confirm('게시글을 삭제하시겠습니까?')) return;
     try {
       setIsLoading(true);
-      await deletePost(uuid);
+      await deletePostMutation.mutateAsync();
       toast.success('게시글이 삭제되었습니다.');
       navigate(-1);
     } catch (err) {

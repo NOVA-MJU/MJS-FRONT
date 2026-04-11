@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { getMyPosts, type MyPostItem } from '../../api/mypage';
+import { useState } from 'react';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Button from '../../components/atoms/Button';
 import MyListItem from '../../components/molecules/MyListItem';
 import Pagination from '@/components/molecules/common/Pagination';
 import { FormatToDotDate } from '@/utils';
+import { useMyPostsQuery } from '@/hooks/queries/useMyPageQueries';
 
 /**
  * 내가 쓴 게시물 페이지
@@ -13,32 +13,10 @@ import { FormatToDotDate } from '@/utils';
  * 게시글 제목, 미리보기, 댓글 수, 좋아요 수, 작성 시간을 보여줍니다.
  */
 const ViewPosts = () => {
-  const [contents, setContents] = useState<MyPostItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-
-  const fetchPosts = async (currentPage: number) => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const pageResult = await getMyPosts(currentPage, 10);
-
-      setContents(pageResult.content);
-      setTotalPages(pageResult.totalPages);
-    } catch (e) {
-      console.error(e);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void fetchPosts(page);
-  }, [page]);
+  const { data, isLoading, isError } = useMyPostsQuery(page, 10);
+  const contents = data?.content ?? [];
+  const totalPages = data?.totalPages ?? 0;
 
   const handlePageChange = (nextPage: number) => {
     if (nextPage === page) return;
