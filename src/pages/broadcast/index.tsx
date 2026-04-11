@@ -1,13 +1,17 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { formatToLocalDate } from '@/utils';
-import { fetchBroadcasts, searchBroadcasts, type BroadcastItem } from '@/api/main/broadcast-api';
+import { type BroadcastItem } from '@/api/main/broadcast-api';
 import LoadingIndicator from '@/components/atoms/LoadingIndicator';
 import Pagination from '@/components/molecules/common/Pagination';
 import { useResponsive } from '@/hooks/useResponse';
 import SearchBar from '@/components/atoms/SearchBar';
 import { HighlightedText } from '@/components/atoms/HighlightedText';
 import { BROADCAST_PAGE_SIZE } from '@/constants/common';
+import {
+  useBroadcastListQuery,
+  useBroadcastSearchQuery,
+} from '@/hooks/queries/useBroadcastPageQuery';
 
 /**
  * 명대방송 페이지
@@ -22,10 +26,9 @@ export default function Broadcast() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [initialKeyword, setInitialKeyword] = useState('');
   const keyword = searchParams.get('keyword');
-  const [totalPage, setTotalPage] = useState(1);
   const page = Number(searchParams.get('page') || '0');
-  const [contents, setContents] = useState<BroadcastItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const normalizedKeyword = (keyword ?? '').trim();
+  const hasKeyword = normalizedKeyword.length > 0;
 
   /**
    * 페이지 번호를 url에 반영합니다
@@ -44,43 +47,16 @@ export default function Broadcast() {
     else setInitialKeyword('');
   }, [keyword]);
 
-  useEffect(() => {
-    /**
-     * 검색어 없는 경우 모든 데이터 조회
-     */
-    if (!keyword) {
-      (async () => {
-        try {
-          setIsLoading(true);
-          const res = await fetchBroadcasts(page, BROADCAST_PAGE_SIZE);
-          setTotalPage(res.totalPages);
-          setContents(res.content);
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setIsLoading(false);
-        }
-      })();
-    }
+  const listQuery = useBroadcastListQuery(page, BROADCAST_PAGE_SIZE);
+  const searchQuery = useBroadcastSearchQuery(normalizedKeyword, page, BROADCAST_PAGE_SIZE);
 
-    /**
-     * 검색어 있는 경우 검색 요청
-     */
-    if (keyword) {
-      (async () => {
-        try {
-          setIsLoading(true);
-          const res = await searchBroadcasts(keyword, 'relevance', page, BROADCAST_PAGE_SIZE);
-          setContents(res.data);
-          setTotalPage(res.totalPages);
-        } catch (e) {
-          console.error(e);
-        } finally {
-          setIsLoading(false);
-        }
-      })();
-    }
-  }, [page, keyword]);
+  const isLoading = hasKeyword ? searchQuery.isLoading : listQuery.isLoading;
+  const contents: BroadcastItem[] = hasKeyword
+    ? (searchQuery.data?.data ?? [])
+    : (listQuery.data?.content ?? []);
+  const totalPage = hasKeyword
+    ? (searchQuery.data?.totalPages ?? 1)
+    : (listQuery.data?.totalPages ?? 1);
 
   /**
    * 로딩 페이지

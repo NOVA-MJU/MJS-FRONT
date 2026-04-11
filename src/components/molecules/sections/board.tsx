@@ -1,20 +1,18 @@
-import { getBoards, type BoardItem, type Category } from '@/api/board';
+import type { Category } from '@/api/board';
 import { CardHeader } from '@/components/atoms/Card';
 import { formatToDotDate } from '@/utils/date';
-import { handleError } from '@/utils/error';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import Pagination from '@/components/molecules/common/Pagination';
 import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { ChatBubbleIcon, HeartIcon } from '@/components/atoms/Icon';
 import { useHeaderStore } from '@/store/useHeaderStore';
+import { useBoardQuery } from '@/hooks/queries/useBoardQuery';
 
-// 카테고리 및 페이지 길이 조절
 const ITEM_COUNT = 10;
 
-// 카테고리·페이지 값을 세션 스토리지에 보관
 const BOARD_TAB_STORAGE_KEY = 'board-section-category';
 const BOARD_PAGE_STORAGE_KEY_PREFIX = 'board-section-page';
 
@@ -31,11 +29,9 @@ function getStoredPageForCategory(cat: 'NOTICE' | 'FREE'): number {
   return Number.isInteger(num) && num >= 0 ? num : 0;
 }
 
-// 메인페이지에 표시할 자유게시판 위젯 컴포넌트
 interface BoardSectionProps {
   showWriteButton?: boolean;
   all?: boolean;
-  /** 제공 시 더보기 클릭으로 호출(예: 슬라이드 게시판 탭으로 이동), 미제공 시 /board로 이동 */
   onSeeMoreClick?: () => void;
 }
 
@@ -48,11 +44,8 @@ export default function BoardSection({
   const setBoardCategory = useHeaderStore((s) => s.setBoardCategory);
 
   const [category, setCategory] = useState<'NOTICE' | 'FREE'>(getStoredCategory);
-  const [contents, setContents] = useState<BoardItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
-  // 사이드바 등에서 정보/자유 게시판 클릭 시 지정된 탭으로 전환 후 초기화
   useEffect(() => {
     if (boardCategoryFromNav === 'NOTICE' || boardCategoryFromNav === 'FREE') {
       setCategory(boardCategoryFromNav);
@@ -64,42 +57,20 @@ export default function BoardSection({
     NOTICE: getStoredPageForCategory('NOTICE'),
     FREE: getStoredPageForCategory('FREE'),
   }));
-  const [totalPages, setTotalPages] = useState(0);
 
   const page = pageByCategory[category];
-  const setPage = (nextPage: number) =>
+  const setPage = (nextPage: number) => {
     setPageByCategory((prev) => ({ ...prev, [category]: nextPage }));
+    sessionStorage.setItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-${category}`, String(nextPage));
+  };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        const res = await getBoards({
-          page,
-          size: ITEM_COUNT,
-          communityCategory: category as Category,
-        });
-        setTotalPages(res.totalPages);
-        setContents(all ? res.content.slice(0, 5) : res.content);
-      } catch (e) {
-        handleError(e, '게시글을 불러오는 중 오류가 발생했습니다.', { showToast: false });
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [category, page, all]);
+  const { data, isLoading } = useBoardQuery(category as Category, page, ITEM_COUNT);
+  const contents = all ? (data?.content?.slice(0, 5) ?? []) : (data?.content ?? []);
+  const totalPages = data?.totalPages ?? 0;
 
   useEffect(() => {
     sessionStorage.setItem(BOARD_TAB_STORAGE_KEY, category);
   }, [category]);
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      `${BOARD_PAGE_STORAGE_KEY_PREFIX}-NOTICE`,
-      String(pageByCategory.NOTICE),
-    );
-    sessionStorage.setItem(`${BOARD_PAGE_STORAGE_KEY_PREFIX}-FREE`, String(pageByCategory.FREE));
-  }, [pageByCategory]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -127,7 +98,6 @@ export default function BoardSection({
         </CardHeader>
       )}
 
-      {/* 탭 네비게이션 */}
       {!all && (
         <div className='bg-grey-02 my-0 flex items-center pt-[8px]'>
           <div className='flex flex-1 items-center overflow-hidden'>
@@ -157,69 +127,50 @@ export default function BoardSection({
         </div>
       )}
 
-      {/* 게시글 리스트 */}
       <div className='flex flex-col pt-4'>
-        {(() => {
-          return contents.map((content, index) => {
-            const isLast = index === contents.length - 1;
-
-            return (
-              <Link
-                key={content.uuid}
-                to={`/board/${content.uuid}`}
-                className='active:bg-blue-05 hover:bg-blue-05'
-              >
-                <div className='px-5 py-2'>
-                  {/* 제목 */}
-                  <div className='flex items-center'>
-                    {content.popular && (
-                      <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
-                        HOT
-                      </div>
-                    )}
-                    <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
-                  </div>
-
-                  {/* 본문 미리보기 */}
-                  <p className='text-body05 mt-1 line-clamp-2 text-black'>
-                    {content.previewContent}
-                  </p>
-
-                  <div className='mt-2 flex items-center justify-between'>
-                    {/* 좋아요 갯수 */}
-                    <div className='flex items-center'>
-                      <HeartIcon className='text-blue-10' filled={content.liked} />
-                      <span className='text-caption02 text-grey-40 ms-1'>{content.likeCount}</span>
-
-                      {/* 댓글 갯수 */}
-                      <ChatBubbleIcon className='text-blue-10 ms-2' />
-                      <span className='text-caption02 text-grey-40 ms-1'>
-                        {content.commentCount}
-                      </span>
+        {contents.map((content, index) => {
+          const isLast = index === contents.length - 1;
+          return (
+            <Link
+              key={content.uuid}
+              to={`/board/${content.uuid}`}
+              className='active:bg-blue-05 hover:bg-blue-05'
+            >
+              <div className='px-5 py-2'>
+                <div className='flex items-center'>
+                  {content.popular && (
+                    <div className='bg-blue-20 text-caption04 me-1 flex h-5 w-10 items-center justify-center rounded-full text-white'>
+                      HOT
                     </div>
-
-                    {/* 작성 날짜 (미공개 글은 publishedAt이 null일 수 있음) */}
-                    <span className='text-caption02 text-grey-40'>
-                      {content.publishedAt
-                        ? formatToDotDate(content.publishedAt)
-                        : formatToDotDate(content.createdAt)}
-                    </span>
-                  </div>
+                  )}
+                  <p className='text-body04 text-grey-80 line-clamp-1'>{content.title}</p>
                 </div>
-                {!isLast && <div className='bg-grey-02 h-px' />}
-              </Link>
-            );
-          });
-        })()}
+                <p className='text-body05 mt-1 line-clamp-2 text-black'>{content.previewContent}</p>
+                <div className='mt-2 flex items-center justify-between'>
+                  <div className='flex items-center'>
+                    <HeartIcon className='text-blue-10' filled={content.liked} />
+                    <span className='text-caption02 text-grey-40 ms-1'>{content.likeCount}</span>
+                    <ChatBubbleIcon className='text-blue-10 ms-2' />
+                    <span className='text-caption02 text-grey-40 ms-1'>{content.commentCount}</span>
+                  </div>
+                  <span className='text-caption02 text-grey-40'>
+                    {content.publishedAt
+                      ? formatToDotDate(content.publishedAt)
+                      : formatToDotDate(content.createdAt)}
+                  </span>
+                </div>
+              </div>
+              {!isLast && <div className='bg-grey-02 h-px' />}
+            </Link>
+          );
+        })}
 
-        {/* 예외처리 */}
         {!isLoading && contents.length === 0 && (
           <div className='flex flex-1 items-center justify-center py-10'>
             <span className='text-body05 text-grey-20'>등록된 게시글이 없습니다.</span>
           </div>
         )}
 
-        {/* 페이지네이션 */}
         {contents.length > 0 && !all && (
           <div className='pb-4'>
             <Pagination page={page} totalPages={totalPages} onChange={setPage} />
@@ -227,7 +178,6 @@ export default function BoardSection({
         )}
       </div>
 
-      {/* 글 작성 버튼 (Floating Action Button) */}
       {!all &&
         isMounted &&
         showWriteButton &&

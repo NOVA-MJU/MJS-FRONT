@@ -20,20 +20,14 @@ import {
   DEPARTMENT_OPTIONS,
   departmentMap,
 } from '@/constants/departments';
+import type { College, Department, DepartmentSchedule } from '@/api/departments';
 import {
-  getDepartmentInfo,
-  getDepartmentNotices,
-  getDepartmentSchedules,
-  getStudentCouncilNotices,
-  type College,
-  type Department,
-  type DepartmentInfo,
-  type DepartmentNotice,
-  type DepartmentSchedule,
-  type StudentCouncilNotice,
-} from '@/api/departments';
+  useDepartmentInfoQuery,
+  useDepartmentNoticesQuery,
+  useDepartmentSchedulesQuery,
+  useStudentCouncilNoticesInfiniteQuery,
+} from '@/hooks/queries/useDepartmentQueries';
 
-// 페이지 탭 구성
 const TABS = {
   events: '소속 일정',
   notices: '소속 공지사항',
@@ -64,7 +58,6 @@ function readStoredDepartmentSelection(): StoredSelection | null {
   }
 }
 
-// 관리자 권한 체크
 const hasAdminPermission = (role: string | undefined): boolean => {
   return role === 'OPERATOR' || role === 'ADMIN';
 };
@@ -75,21 +68,18 @@ export default function DepartmentMainPage() {
   const navigate = useNavigate();
   const isDepartmentSlideActive = activeMainSlide === 0;
 
-  // 단과대 필터 (비로그인 시 기본: 경영대학, 학과 null) — 세션 스토리지에서 복원
   const [selectedCollege, setSelectedCollege] = useState<College>(() => {
     const stored = readStoredDepartmentSelection();
     return stored?.college ?? 'BUSINESS';
   });
   const [isCollegeDrawerOpen, setIsCollegeDrawerOpen] = useState(false);
 
-  // 학과 필터 — 세션 스토리지에서 복원
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(() => {
     const stored = readStoredDepartmentSelection();
     return stored?.department ?? null;
   });
   const [isDepartmentDrawerOpen, setIsDepartmentDrawerOpen] = useState(false);
 
-  // 선택한 단과대/학과를 세션 스토리지에 저장
   useEffect(() => {
     sessionStorage.setItem(
       DEPARTMENT_STORAGE_KEY,
@@ -97,48 +87,10 @@ export default function DepartmentMainPage() {
     );
   }, [selectedCollege, selectedDepartment]);
 
-  // 학과 정보 (API 응답)
-  const [departmentInfo, setDepartmentInfo] = useState<DepartmentInfo | null>(null);
-
-  // 학과 일정 (API 응답)
-  const [departmentSchedules, setDepartmentSchedules] = useState<DepartmentSchedule[]>([]);
-
-  // 소속 공지사항 (학과 공지사항 API)
-  const [departmentNotices, setDepartmentNotices] = useState<DepartmentNotice[]>([]);
-  const [noticePage, setNoticePage] = useState(0);
-  const [noticeTotalPages, setNoticeTotalPages] = useState(0);
-  const NOTICE_PAGE_SIZE = 5;
-
-  // 학생회 공지사항 (페이지네이션 + 무한 스크롤)
-  const [studentCouncilNotices, setStudentCouncilNotices] = useState<StudentCouncilNotice[]>([]);
-  const [postsPage, setPostsPage] = useState(0);
-  const [postsLast, setPostsLast] = useState(false);
-  const [isPostsLoading, setIsPostsLoading] = useState(false);
-  const POSTS_PAGE_SIZE = 12;
-  const postsLoadMoreRef = useRef<HTMLDivElement>(null);
-
-  // 응답 시점에 선택된 필터와 일치할 때만 반영
-  const filterRef = useRef({
-    college: selectedCollege,
-    department: selectedDepartment,
-    noticePage,
-    postsPage: 0,
-  });
-  useEffect(() => {
-    filterRef.current = {
-      college: selectedCollege,
-      department: selectedDepartment,
-      noticePage,
-      postsPage,
-    };
-  }, [selectedCollege, selectedDepartment, noticePage, postsPage]);
-
-  // 선택이 기본값(경영대 전체)일 때만 사용자 소속 college/학과로 자동 설정 (저장된 선택은 유지)
+  // 로그인 사용자 소속으로 자동 설정 (기본값일 때만)
   useEffect(() => {
     if (selectedCollege !== 'BUSINESS' || selectedDepartment !== null) return;
-
     if (user?.departmentName) {
-      // 학과 소속이 있는 경우: college + department 모두 자동 설정
       for (const option of DEPARTMENT_OPTIONS) {
         const department = option.departments.find((dept) => dept.value === user.departmentName);
         if (department) {
@@ -148,80 +100,69 @@ export default function DepartmentMainPage() {
         }
       }
     } else if (user?.college) {
-      // 단과대만 소속된 경우(department null): college만 자동 설정, department는 null 유지
       const validCollege = COLLEGE_OPTIONS.find((opt) => opt.value === user.college);
-      if (validCollege) {
-        setSelectedCollege(validCollege.value as College);
-      }
+      if (validCollege) setSelectedCollege(validCollege.value as College);
     }
   }, [user?.college, user?.departmentName, selectedCollege, selectedDepartment]);
 
-  // 선택된 college, department로 학과 정보 조회 (전체 선택 시 department는 null로 요청)
+  // --- React Query 데이터 조회 ---
+  const { data: departmentInfo } = useDepartmentInfoQuery(selectedCollege, selectedDepartment);
+  const { data: departmentSchedules = [] } = useDepartmentSchedulesQuery(
+    selectedCollege,
+    selectedDepartment,
+  );
+
+  const [noticePage, setNoticePage] = useState(0);
+  const { data: noticesData } = useDepartmentNoticesQuery(
+    selectedCollege,
+    selectedDepartment,
+    noticePage,
+  );
+  const departmentNotices = noticesData?.content ?? [];
+  const noticeTotalPages = noticesData?.totalPages ?? 0;
+
+  const {
+    data: postsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useStudentCouncilNoticesInfiniteQuery(selectedCollege, selectedDepartment);
+  const studentCouncilNotices = postsData?.pages.flatMap((p) => p?.content ?? []) ?? [];
+
+  const postsLoadMoreRef = useRef<HTMLDivElement>(null);
+
+  // 무한 스크롤 IntersectionObserver
   useEffect(() => {
-    const college = selectedCollege;
-    const department = selectedDepartment;
-    (async () => {
-      try {
-        const response = await getDepartmentInfo(college, department);
-        const info = response.data;
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
-          return;
-        if (info) {
-          setDepartmentInfo(info);
-        } else {
-          setDepartmentInfo(null);
+    const el = postsLoadMoreRef.current;
+    if (!el || !hasNextPage || isFetchingNextPage) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
-      } catch (e) {
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
-          return;
-        console.error(e);
-        setDepartmentInfo(null);
-      }
-    })();
-  }, [selectedCollege, selectedDepartment]);
+      },
+      { root: null, rootMargin: '100px', threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // 선택된 college, department로 학과 일정 조회
-  useEffect(() => {
-    const college = selectedCollege;
-    const department = selectedDepartment;
-    (async () => {
-      try {
-        const response = await getDepartmentSchedules(college, department);
-        const list = response.data?.schedules ?? [];
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
-          return;
-        setDepartmentSchedules(list);
-      } catch (e) {
-        if (filterRef.current.college !== college || filterRef.current.department !== department)
-          return;
-        console.error(e);
-        setDepartmentSchedules([]);
-      }
-    })();
-  }, [selectedCollege, selectedDepartment]);
-
-  // 선택된 단과대에 해당하는 학과 목록 가져오기
   const availableDepartments =
     DEPARTMENT_OPTIONS.find((option) => option.college.value === selectedCollege)?.departments ||
     [];
 
-  // 현재 사용자의 college, department (auth 기준)
-  // user.college 필드를 우선 사용하고, 없을 경우 departmentName으로 유추
   const userCollege: College | undefined =
     (user?.college as College | undefined) ??
     DEPARTMENT_OPTIONS.find((opt) => opt.departments.some((d) => d.value === user?.departmentName))
       ?.college?.value;
   const userDepartment = user?.departmentName ?? null;
 
-  // 필터가 사용자의 college, department와 일치할 때만 편집 UI 표시
-  // department가 null인 단과대 관리자의 경우 소속 college + department 미선택(null) 뷰에서 편집 허용
   const canEditDepartment =
     hasAdminPermission(user?.role) &&
     userCollege !== undefined &&
     selectedCollege === userCollege &&
     selectedDepartment === userDepartment;
 
-  // 탭 선택 (세션 스토리지에 저장·복원)
   const TAB_STORAGE_KEY = 'department-tab';
   const [currentTab, setCurrentTab] = useState<string>(() => {
     const saved = sessionStorage.getItem(TAB_STORAGE_KEY);
@@ -231,12 +172,10 @@ export default function DepartmentMainPage() {
     sessionStorage.setItem(TAB_STORAGE_KEY, currentTab);
   }, [currentTab]);
 
-  // 소속 일정 (캘린더 현재 연·월 추적)
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  // 캘린더 연·월 이동 시 선택된 날짜 초기화
   const handleYearChange = (year: number) => {
     setCurrentYear(year);
     setSelectedDate(null);
@@ -246,7 +185,6 @@ export default function DepartmentMainPage() {
     setSelectedDate(null);
   };
 
-  // 선택한 날짜에 해당하는 학과 일정 (선택 없으면 현재 달의 전체 일정)
   const dayEvents = useMemo(() => {
     let list: DepartmentSchedule[];
     if (selectedDate) {
@@ -274,7 +212,6 @@ export default function DepartmentMainPage() {
     );
   }, [departmentSchedules, selectedDate, currentYear, currentMonth]);
 
-  // 교학팀 전화번호 복사 완료 상태
   const [phoneCopied, setPhoneCopied] = useState(false);
   const handleCopyPhone = async () => {
     const phone = departmentInfo?.academicOfficePhone;
@@ -288,121 +225,9 @@ export default function DepartmentMainPage() {
     }
   };
 
-  // 선택된 college, department로 학과 공지사항(소속 공지사항) 조회
-  useEffect(() => {
-    const college = selectedCollege;
-    const department = selectedDepartment;
-    const page = noticePage;
-    (async () => {
-      try {
-        const response = await getDepartmentNotices(
-          college,
-          department,
-          page,
-          NOTICE_PAGE_SIZE,
-          'date,desc',
-        );
-        const payload = response.data;
-        if (
-          filterRef.current.college !== college ||
-          filterRef.current.department !== department ||
-          filterRef.current.noticePage !== page
-        )
-          return;
-        setDepartmentNotices(payload?.content ?? []);
-        setNoticeTotalPages(payload?.totalPages ?? 0);
-      } catch (e) {
-        if (
-          filterRef.current.college !== college ||
-          filterRef.current.department !== department ||
-          filterRef.current.noticePage !== page
-        )
-          return;
-        console.error(e);
-        setDepartmentNotices([]);
-        setNoticeTotalPages(0);
-      }
-    })();
-  }, [selectedCollege, selectedDepartment, noticePage]);
-
-  // 단과대/학과 변경 시 학생회 공지 페이지 초기화
-  useEffect(() => {
-    setPostsPage(0);
-    setPostsLast(false);
-  }, [selectedCollege, selectedDepartment]);
-
-  // 선택된 college, department로 학생회 공지사항 조회 (페이지네이션, 하단 도달 시 다음 페이지)
-  useEffect(() => {
-    const college = selectedCollege;
-    const department = selectedDepartment;
-    const page = postsPage;
-    if (page === 0) setStudentCouncilNotices([]);
-    setIsPostsLoading(true);
-    (async () => {
-      try {
-        const response = await getStudentCouncilNotices(
-          college,
-          department,
-          page,
-          POSTS_PAGE_SIZE,
-          'publishedAt',
-        );
-        const payload = response.data;
-        const notices = payload?.content ?? [];
-        if (
-          filterRef.current.college !== college ||
-          filterRef.current.department !== department ||
-          filterRef.current.postsPage !== page
-        )
-          return;
-        if (page === 0) {
-          setStudentCouncilNotices(notices);
-        } else {
-          setStudentCouncilNotices((prev) => [...prev, ...notices]);
-        }
-        setPostsLast(payload?.last ?? true);
-      } catch (e) {
-        if (
-          filterRef.current.college !== college ||
-          filterRef.current.department !== department ||
-          filterRef.current.postsPage !== page
-        )
-          return;
-        console.error(e);
-        if (page === 0) setStudentCouncilNotices([]);
-      } finally {
-        if (
-          filterRef.current.college === college &&
-          filterRef.current.department === department &&
-          filterRef.current.postsPage === page
-        ) {
-          setIsPostsLoading(false);
-        }
-      }
-    })();
-  }, [selectedCollege, selectedDepartment, postsPage]);
-
-  // 학생회 공지사항: 하단 sentinel이 보이면 다음 페이지 로드
-  useEffect(() => {
-    const el = postsLoadMoreRef.current;
-    if (!el || postsLast || isPostsLoading) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry?.isIntersecting && !postsLast && !isPostsLoading) {
-          setPostsPage((prev) => prev + 1);
-        }
-      },
-      { root: null, rootMargin: '100px', threshold: 0 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [postsLast, isPostsLoading, currentTab]);
-
   return (
     <section className='flex min-h-screen flex-col'>
       <div className='flex gap-2 px-5 py-4'>
-        {/* 단과대 필터 */}
         <button
           className={clsx(
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
@@ -418,7 +243,6 @@ export default function DepartmentMainPage() {
           <IoIosArrowDown className='text-grey-40 flex-shrink-0' />
         </button>
 
-        {/* 학과 필터 */}
         <button
           className={clsx(
             'flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5',
@@ -442,17 +266,12 @@ export default function DepartmentMainPage() {
 
       <div className='flex flex-1 flex-col'>
         <div className='flex flex-col px-5 pt-5 pb-6.5'>
-          {/* 단과대 이름 */}
           <p className='text-title03 text-black'>{collegeMap.get(selectedCollege)}</p>
-
-          {/* 학과 이름 */}
           {selectedDepartment && (
             <p className='text-body04 text-grey-80 mt-0.5'>
               {departmentMap.get(selectedDepartment)}
             </p>
           )}
-
-          {/* 교학팀 전화번호 */}
           <div className='mt-2.5 flex items-center gap-1'>
             <span className='text-body05 text-grey-80'>교학팀</span>
             <span className='text-body05 text-grey-30'>
@@ -471,8 +290,6 @@ export default function DepartmentMainPage() {
               )}
             </button>
           </div>
-
-          {/* 홈페이지 / 인스타 버튼 */}
           <div className='flex gap-3 pt-3.5'>
             {departmentInfo?.homepageUrl ? (
               <a
@@ -499,7 +316,6 @@ export default function DepartmentMainPage() {
           </div>
         </div>
 
-        {/* 탭 선택 */}
         <div className='border-grey-10 border-b-1 px-5'>
           <Tabs
             tabs={TABS}
@@ -509,7 +325,6 @@ export default function DepartmentMainPage() {
           />
         </div>
 
-        {/* 소속 일정 탭 */}
         {currentTab === 'events' && (
           <section className='relative'>
             <div className='flex flex-col'>
@@ -520,8 +335,6 @@ export default function DepartmentMainPage() {
                 onMonthChange={handleMonthChange}
                 onDateSelect={setSelectedDate}
               />
-
-              {/* 캘린더 범례 */}
               <div className='mt-3 flex items-center justify-end px-5'>
                 <p className='bg-blue-35 h-2.5 w-2.5' />
                 <p className='text-caption04 text-grey-40 ms-1'>전체 (학부·대학원)</p>
@@ -532,8 +345,6 @@ export default function DepartmentMainPage() {
                 <p className='bg-grey-02 ms-4 h-2.5 w-2.5' />
                 <p className='text-caption04 text-grey-40 ms-1'>휴일</p>
               </div>
-
-              {/* 선택한 날짜 이벤트 목록 */}
               <div className='border-grey-02 mb-2 border-b-1 px-5 py-1'>
                 <span className='text-body02 text-mju-primary'>
                   {selectedDate
@@ -560,9 +371,7 @@ export default function DepartmentMainPage() {
                           canEditDepartment && 'cursor-pointer',
                         )}
                         onClick={() => {
-                          if (canEditDepartment) {
-                            navigate(`/departments/events/edit/${event.uuid}`);
-                          }
+                          if (canEditDepartment) navigate(`/departments/events/edit/${event.uuid}`);
                         }}
                       >
                         <span className='text-caption02 text-grey-40 w-20'>
@@ -580,15 +389,11 @@ export default function DepartmentMainPage() {
                 )}
               </div>
             </div>
-
-            {/* 일정 추가 버튼: 학과 슬라이드가 활성일 때만 표시 (다른 슬라이드에서 fixed 버튼이 겹치는 것 방지) */}
             {canEditDepartment && isDepartmentSlideActive && (
               <button
                 type='button'
                 className='bg-blue-35 fixed right-5 bottom-10 flex items-center justify-center rounded-full p-2 shadow-[0_0_12px_rgba(0,0,0,0.4)]'
-                onClick={() => {
-                  navigate('/departments/events/new');
-                }}
+                onClick={() => navigate('/departments/events/new')}
               >
                 <IoIosAdd className='text-4xl text-white' />
               </button>
@@ -596,7 +401,6 @@ export default function DepartmentMainPage() {
           </section>
         )}
 
-        {/* 소속 공지사항 탭 */}
         {currentTab === 'notices' && (
           <section className='flex flex-1 flex-col'>
             <div className='flex flex-1 flex-col py-5'>
@@ -630,7 +434,6 @@ export default function DepartmentMainPage() {
                   </div>
                 ))
               )}
-
               {departmentNotices.length > 0 && (
                 <Pagination
                   page={noticePage}
@@ -642,7 +445,6 @@ export default function DepartmentMainPage() {
           </section>
         )}
 
-        {/* 학생회 공지사항 탭 */}
         {currentTab === 'posts' && (
           <section>
             <div className='grid grid-cols-3 gap-1 py-5'>
@@ -668,19 +470,18 @@ export default function DepartmentMainPage() {
                 </Link>
               ))}
             </div>
-            {/* 무한 스크롤: 하단 도달 시 다음 페이지 로드 */}
-            {!postsLast && studentCouncilNotices.length > 0 && (
+            {hasNextPage && studentCouncilNotices.length > 0 && (
               <div
                 ref={postsLoadMoreRef}
                 className='flex min-h-12 items-center justify-center py-2'
                 aria-hidden
               >
-                {isPostsLoading && (
+                {isFetchingNextPage && (
                   <span className='text-caption02 text-grey-40'>불러오는 중...</span>
                 )}
               </div>
             )}
-            {studentCouncilNotices.length === 0 && !isPostsLoading && (
+            {studentCouncilNotices.length === 0 && !isFetchingNextPage && (
               <div
                 className={clsx(
                   'flex items-center justify-center',
@@ -694,13 +495,11 @@ export default function DepartmentMainPage() {
         )}
       </div>
 
-      {/* 단과대 필터 Drawer */}
       <Drawer open={isCollegeDrawerOpen} onOpenChange={setIsCollegeDrawerOpen}>
         <div className='flex flex-col gap-4 py-1.5'>
           <div className='px-5'>
             <h2 className='text-title02 text-black'>단과대 필터</h2>
           </div>
-
           <div className='flex flex-col'>
             {COLLEGE_OPTIONS.map((college) => {
               const isSelected = selectedCollege === college.value;
@@ -710,7 +509,7 @@ export default function DepartmentMainPage() {
                   type='button'
                   onClick={() => {
                     setSelectedCollege(college.value);
-                    setSelectedDepartment(null); // 단과대 변경 시 학과 필터 초기화
+                    setSelectedDepartment(null);
                     setNoticePage(0);
                     setIsCollegeDrawerOpen(false);
                   }}
@@ -730,15 +529,12 @@ export default function DepartmentMainPage() {
         </div>
       </Drawer>
 
-      {/* 학과 필터 Drawer */}
       <Drawer open={isDepartmentDrawerOpen} onOpenChange={setIsDepartmentDrawerOpen}>
         <div className='flex flex-col gap-4 py-1.5'>
           <div className='px-5'>
             <h2 className='text-title02 text-black'>학과 필터</h2>
           </div>
-
           <div className='flex flex-col'>
-            {/* 전체 옵션 */}
             <button
               type='button'
               onClick={() => {
@@ -756,8 +552,6 @@ export default function DepartmentMainPage() {
               전체
               {!selectedDepartment && <IoIosCheckmark className='text-2xl' />}
             </button>
-
-            {/* 학과 목록 */}
             {availableDepartments.map((department) => {
               const isSelected = selectedDepartment === department.value;
               return (
@@ -785,7 +579,6 @@ export default function DepartmentMainPage() {
         </div>
       </Drawer>
 
-      {/* Footer */}
       <div className='mt-auto'>
         <Footer />
       </div>

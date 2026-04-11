@@ -8,7 +8,15 @@ import { Toaster } from 'react-hot-toast';
 import { initAuth } from '@/api/initAuth';
 import React from 'react';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      gcTime: 10 * 60 * 1000,
+    },
+  },
+});
 const root = createRoot(document.getElementById('root')!);
 
 (async () => {
