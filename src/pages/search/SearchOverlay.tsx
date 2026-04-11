@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 import SearchBar from '@/components/atoms/SearchBar';
 import { useEffect, useState } from 'react';
-import { getRealTimeSearch } from '@/api/main/real-time';
 import {
   addRecentKeyword,
   clearRecentKeywords,
@@ -12,6 +11,7 @@ import {
   removeRecentKeyword,
 } from '@/utils/recentSearch';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useRealtimeKeywordQuery } from '@/hooks/queries/useRealtimeKeywordQuery';
 
 function goToSearch(navigate: ReturnType<typeof useNavigate>, keyword: string, scope?: string) {
   addRecentKeyword(keyword, undefined, scope);
@@ -24,13 +24,11 @@ export default function SearchOverlay() {
   const recentSearchScope = user?.uuid ?? undefined;
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const recommendedKeywords = ['장학금', '명대신문', '학번', '중간고사', '축제'];
-  const [hotKeywords, setHotKeywords] = useState<string[]>([]);
+  const { data: hotKeywordData } = useRealtimeKeywordQuery(6);
+  const hotKeywords = hotKeywordData?.data ?? [];
 
   useEffect(() => {
     setSearchHistory(loadRecentKeywords(recentSearchScope));
-    getRealTimeSearch(6).then((res) => {
-      setHotKeywords(res.data);
-    });
   }, [recentSearchScope]);
 
   return (

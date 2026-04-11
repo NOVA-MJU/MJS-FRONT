@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import ActivitiesSection from '../../components/organisms/Mypage/ActivitiesSection';
-import { getProfileStats, type ProfileStatsRes } from '../../api/mypage';
 import ProfileCard from '../../components/molecules/user/ProfileCard';
 import LabelButton from '../../components/atoms/Button/LabelButton';
-import { handleError } from '../../utils/error';
 import { useAuthStore } from '../../store/useAuthStore';
 import LoginErrorPage from '../LoginError';
+import { useProfileStatsQuery } from '@/hooks/queries/useMyPageQueries';
 
 const Mypage: React.FC = () => {
   const user = useAuthStore((state) => state.user);
-  const [stateData, setStateData] = useState<ProfileStatsRes | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getProfileStats();
-        setStateData(data);
-      } catch (err) {
-        handleError(err, '마이페이지 데이터를 불러오는 중 오류가 발생했습니다.', {
-          showToast: false,
-        });
-      }
-    };
-    fetchData();
-  }, []);
+  const { data: stateData } = useProfileStatsQuery();
 
   return (
     <div className='bg-grey-02 flex w-full flex-1 flex-col gap-8 p-6 md:p-12'>

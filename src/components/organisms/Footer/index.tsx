@@ -9,7 +9,7 @@ export default function Footer() {
         <div className='text-blue-10 flex items-center gap-3'>
           {/* 깃 아이콘 */}
           <a
-            href='https://github.com/NOVA-MJU/THINGO_BACKEND'
+            href='https://github.com/NOVA-MJU'
             target='_blank'
             rel='noopener noreferrer'
             aria-label='깃허브'

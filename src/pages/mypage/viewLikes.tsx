@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { getMyLikedPosts, type MyPostItem } from '../../api/mypage';
+import { useState } from 'react';
 import Button from '../../components/atoms/Button';
 import MyListItem from '../../components/molecules/MyListItem';
 import LoadingIndicator from '../../components/atoms/LoadingIndicator';
 import Pagination from '../../components/molecules/common/Pagination';
 import { FormatToDotDate } from '../../utils';
+import { useMyLikedPostsQuery } from '@/hooks/queries/useMyPageQueries';
 
 /**
  * 찜한 글 페이지
@@ -13,33 +13,10 @@ import { FormatToDotDate } from '../../utils';
  * 게시글 제목, 미리보기, 댓글 수, 좋아요 수, 작성 시간을 보여줍니다.
  */
 const ViewLikedPosts = () => {
-  const [contents, setContents] = useState<MyPostItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-
-  const fetchLikedPosts = async (currentPage: number) => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-
-      const pageResult = await getMyLikedPosts(currentPage, 10);
-
-      setContents(pageResult.content);
-      setTotalPages(pageResult.totalPages);
-    } catch (e) {
-      console.error(e);
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void fetchLikedPosts(page);
-  }, [page]);
+  const { data, isLoading, isError } = useMyLikedPostsQuery(page, 10);
+  const contents = data?.content ?? [];
+  const totalPages = data?.totalPages ?? 0;
 
   const handlePageChange = (nextPage: number) => {
     if (nextPage === page) return;
